@@ -24,7 +24,7 @@ def process_file(
     session_folder: FS,
     pipeline_config: PipelineConfig,
     la_code: str,
-) -> (ProcessResult, str):
+) -> ProcessResult:
     errors = ErrorContainer()
     year = pl.discover_year(file_locator)
     if year is None:
