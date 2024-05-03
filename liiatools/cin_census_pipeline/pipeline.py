@@ -154,20 +154,21 @@ def process_session(source_fs: FS, output_fs: FS, la_code: str):
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data.data.export(report_folder, "cin_census_", "csv")
 
+    # TODO: fix issue with handling non-datetimes
     # Run report analysis
-    analysis_data = report_data.data["CIN"]
-
-    expanded_assessment_factors = reports.expanded_assessment_factors(analysis_data)
-    referral_outcomes = reports.referral_outcomes(analysis_data)
-    s47_journeys = reports.s47_journeys(analysis_data)
-
-    analysis_data = DataContainer(
-        {
-            "factors": expanded_assessment_factors,
-            "referrals": referral_outcomes,
-            "S47_journeys": s47_journeys,
-        }
-    )
-
-    analysis_folder = export_folder.makedirs("REPORTS", recreate=True)
-    analysis_data.export(analysis_folder, "cin_census_", "csv")
+    # analysis_data = report_data.data["CIN"]
+    #
+    # expanded_assessment_factors = reports.expanded_assessment_factors(analysis_data)
+    # referral_outcomes = reports.referral_outcomes(analysis_data)
+    # s47_journeys = reports.s47_journeys(analysis_data)
+    #
+    # analysis_data = DataContainer(
+    #     {
+    #         "factors": expanded_assessment_factors,
+    #         "referrals": referral_outcomes,
+    #         "S47_journeys": s47_journeys,
+    #     }
+    # )
+    #
+    # analysis_folder = export_folder.makedirs("REPORTS", recreate=True)
+    # analysis_data.export(analysis_folder, "cin_census_", "csv")
