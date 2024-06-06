@@ -1,5 +1,3 @@
-# TEST !!
-
 from typing import List, Tuple
 
 from dagster import In, Nothing, Out, op
@@ -9,12 +7,12 @@ from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import DataContainer, FileLocator, ErrorContainer
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-from liiatools.cin_census_pipeline.spec import load_schema
+from liiatools.cin_census_pipeline.spec import load_schema, load_schema_path
 from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
 
-from liiatools_pipeline.assets.ssda903 import (
+from liiatools_pipeline.assets.cin import (
     incoming_folder,
-    pipeline_config,
+    pipeline_config_cin,
     process_folder,
 )
 
@@ -26,7 +24,10 @@ from liiatools_pipeline.assets.ssda903 import (
         "incoming_files": Out(List[FileLocator]),
     }
 )
-def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
+
+# Changed names to be cin specific so it doesnt throw error of duplication with ssda903 when run on dagster
+
+def create_session_folder_cin() -> Tuple[FS, str, List[FileLocator]]:
     session_folder, session_id = pl.create_session_folder(process_folder())
     incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
 
@@ -36,9 +37,9 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 @op(
     out={"archive": Out(DataframeArchive)},
 )
-def open_archive(session_id) -> DataframeArchive:
+def open_archive_cin(session_id) -> DataframeArchive:
     archive_folder = process_folder().makedirs("archive", recreate=True)
-    archive = DataframeArchive(archive_folder, pipeline_config(), session_id)
+    archive = DataframeArchive(archive_folder, pipeline_config_cin(), session_id)
     return archive
 
 
@@ -51,7 +52,7 @@ def open_archive(session_id) -> DataframeArchive:
         "session_id": In(str),
     },
 )
-def process_files(
+def process_files_cin(
     session_folder: FS,
     incoming_files: List[FileLocator],
     archive: DataframeArchive,
@@ -85,10 +86,12 @@ def process_files(
             continue
 
         schema = load_schema(year)
+        schema_path = load_schema_path(year=year)
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
+
         try:
-            cleanfile_result = task_cleanfile(file_locator, schema)
+            cleanfile_result = task_cleanfile(file_locator, schema, schema_path)
         except Exception as e:
             error_report.append(
                 dict(
@@ -100,23 +103,28 @@ def process_files(
             )
             continue
 
+
+        # Clean result
         cleanfile_result.data.export(
             session_folder.opendir(SessionNames.CLEANED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
         )
         error_report.extend(cleanfile_result.errors)
 
-        enrich_result = enrich_data(cleanfile_result.data, pipeline_config(), metadata)
+        # Enrich result
+        enrich_result = enrich_data(cleanfile_result.data, pipeline_config_cin(), metadata)
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
         )
         error_report.extend(enrich_result.errors)
 
-        degraded_result = degrade_data(enrich_result.data, pipeline_config(), metadata)
+        # Degrade result
+        degraded_result = degrade_data(enrich_result.data, pipeline_config_cin(), metadata)
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
         )
         error_report.extend(degraded_result.errors)
         archive.add(degraded_result.data)
+
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
@@ -130,7 +138,7 @@ def process_files(
     ins={"archive": In(DataframeArchive), "start": In(Nothing)},
     out={"current_data": Out(DataContainer)},
 )
-def create_current_view(archive: DataframeArchive):
+def create_current_view_cin(archive: DataframeArchive):
     archive.rollup()
     current_folder = process_folder().makedirs("current", recreate=True)
     current_data = archive.current()
@@ -142,10 +150,10 @@ def create_current_view(archive: DataframeArchive):
 
 
 @op(ins={"current_data": In(DataContainer)})
-def create_reports(current_data: DataContainer):
+def create_reports_cin(current_data: DataContainer):
     export_folder = process_folder().makedirs("export", recreate=True)
 
-    for report in ["PAN", "SUFFICIENCY"]:
+    for report in ["PAN"]:
         report_folder = export_folder.makedirs(report, recreate=True)
-        report = prepare_export(current_data, pipeline_config())
+        report = prepare_export(current_data, pipeline_config_cin())
         report.data.export(report_folder, "cin_test_", "csv")
