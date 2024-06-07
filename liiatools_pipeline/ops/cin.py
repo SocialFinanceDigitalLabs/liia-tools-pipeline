@@ -11,9 +11,9 @@ from liiatools.cin_census_pipeline.spec import load_schema, load_schema_path
 from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
 
 from liiatools_pipeline.assets.cin import (
-    incoming_folder,
+    incoming_folder_cin,
     pipeline_config_cin,
-    process_folder,
+    process_folder_cin,
 )
 
 
@@ -28,8 +28,8 @@ from liiatools_pipeline.assets.cin import (
 # Changed names to be cin specific so it doesnt throw error of duplication with ssda903 when run on dagster
 
 def create_session_folder_cin() -> Tuple[FS, str, List[FileLocator]]:
-    session_folder, session_id = pl.create_session_folder(process_folder())
-    incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
+    session_folder, session_id = pl.create_session_folder(process_folder_cin())
+    incoming_files = pl.move_files_for_processing(incoming_folder_cin(), session_folder)
 
     return session_folder, session_id, incoming_files
 
@@ -38,7 +38,7 @@ def create_session_folder_cin() -> Tuple[FS, str, List[FileLocator]]:
     out={"archive": Out(DataframeArchive)},
 )
 def open_archive_cin(session_id) -> DataframeArchive:
-    archive_folder = process_folder().makedirs("archive", recreate=True)
+    archive_folder = process_folder_cin().makedirs("archive", recreate=True)
     archive = DataframeArchive(archive_folder, pipeline_config_cin(), session_id)
     return archive
 
@@ -140,7 +140,7 @@ def process_files_cin(
 )
 def create_current_view_cin(archive: DataframeArchive):
     archive.rollup()
-    current_folder = process_folder().makedirs("current", recreate=True)
+    current_folder = process_folder_cin().makedirs("current", recreate=True)
     current_data = archive.current()
 
     # Write archive
@@ -151,7 +151,7 @@ def create_current_view_cin(archive: DataframeArchive):
 
 @op(ins={"current_data": In(DataContainer)})
 def create_reports_cin(current_data: DataContainer):
-    export_folder = process_folder().makedirs("export", recreate=True)
+    export_folder = process_folder_cin().makedirs("export", recreate=True)
 
     for report in ["PAN"]:
         report_folder = export_folder.makedirs(report, recreate=True)
