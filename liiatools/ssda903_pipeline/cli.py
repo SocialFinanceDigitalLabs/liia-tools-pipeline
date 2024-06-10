@@ -11,7 +11,7 @@ from .pipeline import (
     open_archive,
     process_files,
     create_current_view,
-    create_reports
+    create_reports,
 )
 
 log = logging.getLogger()
@@ -52,12 +52,12 @@ def pipeline(input_location, output_location, input_la_code=None):
     incoming_folder = open_fs(input_location)
     process_folder = open_fs(output_location)
 
-    session_folder, session_id, incoming_files = create_session_folder(process_folder, incoming_folder)
+    session_folder, session_id, incoming_files = create_session_folder(
+        process_folder, incoming_folder
+    )
     archive = open_archive(session_id, process_folder)
 
-    process_files(
-        session_folder, incoming_files, archive, session_id, input_la_code
-    )
+    process_files(session_folder, incoming_files, archive, session_id, input_la_code)
 
     current_folder = create_current_view(archive, process_folder)
 

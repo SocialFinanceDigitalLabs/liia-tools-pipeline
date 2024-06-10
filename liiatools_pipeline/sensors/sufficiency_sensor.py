@@ -1,9 +1,15 @@
-from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor
+from dagster import (
+    RunRequest,
+    RunsFilter,
+    DagsterRunStatus,
+    sensor,
+    DefaultSensorStatus,
+)
 from liiatools_pipeline.jobs.ssda903 import ssda903_incoming
 from liiatools_pipeline.jobs.sufficiency_903 import ssda903_sufficiency
 
 
-@sensor(job=ssda903_sufficiency)
+@sensor(job=ssda903_sufficiency, default_status=DefaultSensorStatus.RUNNING)
 def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(

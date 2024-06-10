@@ -37,7 +37,9 @@ def add_year(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) ->
     return metadata["year"]
 
 
-def to_integer(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str | int:
+def to_integer(
+    row: pd.Series, column_config: ColumnConfig, metadata: Metadata
+) -> str | int:
     try:
         return int(float(row[column_config.id]))
     except ValueError:
