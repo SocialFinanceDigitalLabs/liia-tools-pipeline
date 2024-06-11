@@ -28,7 +28,9 @@ def _normalise_table(df: pd.DataFrame, table_spec: TableConfig) -> pd.DataFrame:
     return df
 
 
-def _create_unique_folder(fs: FS, session_id: str, la_code: str = None, suffix: str = "") -> Tuple[FS, str]:
+def _create_unique_folder(
+    fs: FS, session_id: str, la_code: str = None, suffix: str = ""
+) -> Tuple[FS, str]:
     timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%S")
     try:
         existing_snapshots = fs.listdir(la_code)
@@ -110,7 +112,9 @@ class DataframeArchive:
         for directory in directories:
             snap_id = self.fs.opendir(directory)
             snap_ids = snap_id.listdir("/")
-            snapshots.setdefault(directory, []).extend(f"{directory}/{snap_id}" for snap_id in snap_ids)
+            snapshots.setdefault(directory, []).extend(
+                f"{directory}/{snap_id}" for snap_id in snap_ids
+            )
 
         return snapshots
 
@@ -122,7 +126,9 @@ class DataframeArchive:
         rollups = {}
 
         for folder, snap_ids in folders.items():
-            rollups.setdefault(folder, []).extend(s for s in snap_ids if s.endswith(_rollup_suffix))
+            rollups.setdefault(folder, []).extend(
+                s for s in snap_ids if s.endswith(_rollup_suffix)
+            )
 
         return rollups
 
@@ -140,7 +146,9 @@ class DataframeArchive:
         else:
             folders = {}
             for folder, snap_ids in snapshots.items():
-                folders.setdefault(folder, []).extend(s for s in snap_ids if self.session_id in s)
+                folders.setdefault(folder, []).extend(
+                    s for s in snap_ids if self.session_id in s
+                )
             return folders
 
     def delete_snapshot(self, *snap_ids: str, allow_rollups: bool = False):
@@ -181,7 +189,9 @@ class DataframeArchive:
             snap_id = self.fs.opendir(snap_id)
             combined = self.combine_snapshots(snap_ids)
 
-            snap_dir, snap_name = _create_unique_folder(snap_id, self.session_id, suffix=_rollup_suffix)
+            snap_dir, snap_name = _create_unique_folder(
+                snap_id, self.session_id, suffix=_rollup_suffix
+            )
 
             snap_dir.writetext("snapshots.txt", "\n".join(snap_ids))
 
@@ -245,8 +255,9 @@ class DataframeArchive:
                 if sort_keys:
                     df = df.sort_values(by=sort_keys, ascending=True)
                 df = df.drop_duplicates(
-                    subset=[c.id for c in table_spec.columns if c.unique_key] if
-                    [c.id for c in table_spec.columns if c.unique_key] else None,
+                    subset=[c.id for c in table_spec.columns if c.unique_key]
+                    if [c.id for c in table_spec.columns if c.unique_key]
+                    else None,
                     keep="last",
                 )
                 data[table_spec.id] = df

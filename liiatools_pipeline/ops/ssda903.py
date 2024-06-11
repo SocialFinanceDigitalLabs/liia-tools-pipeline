@@ -72,7 +72,11 @@ def process_files(
             )
             continue
 
-        la_code = input_la_code() if input_la_code() is not None else pl.discover_la(file_locator)
+        la_code = (
+            input_la_code()
+            if input_la_code() is not None
+            else pl.discover_la(file_locator)
+        )
         if la_code is None:
             error_report.append(
                 dict(
@@ -101,19 +105,25 @@ def process_files(
             continue
 
         cleanfile_result.data.export(
-            session_folder.opendir(SessionNames.CLEANED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
+            session_folder.opendir(SessionNames.CLEANED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
         )
         error_report.extend(cleanfile_result.errors)
 
         enrich_result = enrich_data(cleanfile_result.data, pipeline_config(), metadata)
         enrich_result.data.export(
-            session_folder.opendir(SessionNames.ENRICHED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
+            session_folder.opendir(SessionNames.ENRICHED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
         )
         error_report.extend(enrich_result.errors)
 
         degraded_result = degrade_data(enrich_result.data, pipeline_config(), metadata)
         degraded_result.data.export(
-            session_folder.opendir(SessionNames.DEGRADED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
+            session_folder.opendir(SessionNames.DEGRADED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
         )
         error_report.extend(degraded_result.errors)
         archive.add(degraded_result.data, la_code)
@@ -128,7 +138,7 @@ def process_files(
 
 @op(
     ins={"archive": In(DataframeArchive), "start": In(Nothing)},
-    out={"current_folder": Out(FS)}
+    out={"current_folder": Out(FS)},
 )
 def create_current_view(archive: DataframeArchive):
     archive.rollup()

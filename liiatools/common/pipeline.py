@@ -91,9 +91,7 @@ def move_files_for_processing(
         if file_info.is_file:
             try:
                 locator_list.append(
-                    _move_incoming_file(
-                        source_fs, destination_fs, file_path, file_info
-                    )
+                    _move_incoming_file(source_fs, destination_fs, file_path, file_info)
                 )
             except Exception as e:
                 logger.error(f"Error moving file {file_path} to session folder")

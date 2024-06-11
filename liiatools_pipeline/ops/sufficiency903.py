@@ -23,7 +23,6 @@ def ons_area():
     return True
 
 
-
 @op
 def looked_after_child(area):
     create_dimLookedAfterChild()
