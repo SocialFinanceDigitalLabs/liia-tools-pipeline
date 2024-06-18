@@ -128,7 +128,6 @@ def process_files(
 
 @op(
     ins={"archive": In(DataframeArchive), "start": In(Nothing)},
-    out={"current_folder": Out(FS)}
 )
 def create_current_view(archive: DataframeArchive):
     archive.rollup()
@@ -140,12 +139,12 @@ def create_current_view(archive: DataframeArchive):
             la_folder = current_folder.makedirs(la_code, recreate=True)
             current_data.export(la_folder, "ssda903_", "csv")
 
-    return current_folder
 
-
-@op(ins={"current_folder": In(FS)})
-def create_reports(current_folder: FS):
+@op
+def create_reports():
     export_folder = process_folder().makedirs("export", recreate=True)
+    current_folder = process_folder().opendir("current")
+
     aggregate = DataframeAggregator(current_folder, pipeline_config())
     aggregate_data = aggregate.current()
 
