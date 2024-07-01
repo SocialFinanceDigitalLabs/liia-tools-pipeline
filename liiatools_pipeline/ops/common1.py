@@ -7,8 +7,14 @@ from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import DataContainer, FileLocator, ErrorContainer
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-from liiatools.cin_census_pipeline.spec import load_schema, load_schema_path
-from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
+
+# from liiatools.cin_census_pipeline.spec import load_schema, load_schema_path
+from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin, load_schema_path as load_schema_path_cin
+from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
+
+# from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
+from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
+from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
 
 from liiatools_pipeline.assets.common import (
     incoming_folder,
@@ -50,6 +56,8 @@ def open_archive(session_id) -> DataframeArchive:
         "incoming_files": In(List[FileLocator]),
         "archive": In(DataframeArchive),
         "session_id": In(str),
+        # Add dataset_type as an input argument
+        "dataset_type": In(str),
     },
 )
 def process_files(
@@ -57,6 +65,7 @@ def process_files(
     incoming_files: List[FileLocator],
     archive: DataframeArchive,
     session_id: str,
+    dataset_type: str,  # Add dataset_type as a function argument
 ):
     error_report = ErrorContainer()
     for file_locator in incoming_files:
@@ -85,13 +94,36 @@ def process_files(
             )
             continue
 
-        schema = load_schema(year)  # this needs to account for different dataset schemas e.g. ssda903 or cin
-        schema_path = load_schema_path(year=year)  # this only runs for cin pipeline
+        # Determine the schema and schema path based on the dataset type
+        if dataset_type == 'cin':
+            schema = load_schema_cin(year)
+            schema_path = load_schema_path_cin(year=year)
+        elif dataset_type == 'ssda903':
+            schema = load_schema_ssda903(year)
+        else:
+            error_report.append(
+                dict(
+                    type="InvalidDatasetType",
+                    message="Invalid dataset type specified",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
         metadata = dict(year=year, schema=schema, la_code=la_code)
+
+        # old code --
+        # schema = load_schema(year)  # this needs to account for different dataset schemas e.g. ssda903 or cin
+        # schema_path = load_schema_path(year=year)  # this only runs for cin pipeline
 
 
         try:
-            cleanfile_result = task_cleanfile(file_locator, schema, schema_path)  # needs to account for different datasets
+            # cleanfile_result = task_cleanfile(file_locator, schema, schema_path)  # needs to account for different datasets
+            if dataset_type == 'cin':
+                cleanfile_result = task_cleanfile_cin(file_locator, schema, schema_path)
+            elif dataset_type == 'ssda903':
+                cleanfile_result = task_cleanfile_ssda903(file_locator, schema)
+            except Exception as e:
         except Exception as e:
             error_report.append(
                 dict(
@@ -144,7 +176,7 @@ def create_current_view(archive: DataframeArchive):
     current_data = archive.current()
 
     # Write archive
-    current_data.export(current_folder, f"{dataset}_", "csv")  # you may need to write dataset() with the brackets, although I'm not 100% sure
+    current_data.export(current_folder, f"{dataset()}_", "csv")  # you may need to write dataset() with the brackets, although I'm not 100% sure
 
     return current_data
 
@@ -156,4 +188,4 @@ def create_reports(current_data: DataContainer):
     for report in ["PAN"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report = prepare_export(current_data, pipeline_config())
-        report.data.export(report_folder, f"{dataset}_", "csv")
+        report.data.export(report_folder, f"{dataset()}_", "csv")
