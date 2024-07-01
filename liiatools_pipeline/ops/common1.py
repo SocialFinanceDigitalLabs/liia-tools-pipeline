@@ -85,13 +85,13 @@ def process_files(
             )
             continue
 
-        schema = load_schema(year)
-        schema_path = load_schema_path(year=year)
+        schema = load_schema(year)  # this needs to account for different dataset schemas e.g. ssda903 or cin
+        schema_path = load_schema_path(year=year)  # this only runs for cin pipeline
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
 
         try:
-            cleanfile_result = task_cleanfile(file_locator, schema, schema_path)
+            cleanfile_result = task_cleanfile(file_locator, schema, schema_path)  # needs to account for different datasets
         except Exception as e:
             error_report.append(
                 dict(
@@ -144,7 +144,7 @@ def create_current_view(archive: DataframeArchive):
     current_data = archive.current()
 
     # Write archive
-    current_data.export(current_folder, f"{dataset}_", "csv")
+    current_data.export(current_folder, f"{dataset}_", "csv")  # you may need to write dataset() with the brackets, although I'm not 100% sure
 
     return current_data
 
