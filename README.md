@@ -97,3 +97,10 @@ The idea is each code server will have its own setup which will be a copy of wha
 Note: Multiple libraries, pipelines, etc can exist in a single code server. Different servers should
 be used if they have conflicting requirements (e.g. different python versions)
 
+### Deploying
+
+docker build . -t dockerhubuser/repo:latest
+docker tag dockerhubuser/repo:latest dockerhubuser/repo:some.version.number
+docker push dockerhubuser/repo:latest
+docker push dockerhubuser/repo:some.version.number
+
