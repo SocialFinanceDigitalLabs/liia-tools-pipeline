@@ -1,4 +1,4 @@
-column_map.SocialWorker:
+column_map.social_worker:
   type: add
   description: Adds new table for the 2024 return
   value:

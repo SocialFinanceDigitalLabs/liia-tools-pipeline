@@ -1,5 +1,5 @@
 from dagster import job
-from liiatools_pipeline.ops.sufficiency903 import (
+from liiatools_pipeline.ops.ssda903_org import (
     dim_tables,
     ons_area,
     looked_after_child,
@@ -7,7 +7,13 @@ from liiatools_pipeline.ops.sufficiency903 import (
     postcode,
     episode,
     ofsted_inspection,
+    create_reports
 )
+
+
+@job
+def ssda903_reports():
+    create_reports()
 
 
 @job()

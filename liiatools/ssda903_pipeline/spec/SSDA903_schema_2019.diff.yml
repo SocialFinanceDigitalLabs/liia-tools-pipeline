@@ -1,4 +1,4 @@
-column_map.Episodes.REC.category:
+column_map.episodes.REC.category:
   type: modify
   description: Updated REC codes for 2019 schema
   value:
@@ -24,7 +24,7 @@ column_map.Episodes.REC.category:
     - code: "E16"
     - code: "E17"
     - code: "E8"
-column_map.Episodes.REASON_PLACE_CHANGE.category:
+column_map.episodes.REASON_PLACE_CHANGE.category:
   type: modify
   description: Updated REC codes for 2019 schema
   value:

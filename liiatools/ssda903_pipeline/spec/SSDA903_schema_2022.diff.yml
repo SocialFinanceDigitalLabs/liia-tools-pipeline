@@ -1,4 +1,4 @@
-column_map.OC3.ACTIV.category:
+column_map.oc3.ACTIV.category:
   type: modify
   description: Updated REC codes for 2019 schema
   value:

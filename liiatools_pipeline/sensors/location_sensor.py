@@ -3,7 +3,7 @@ from hashlib import sha1
 from dagster import RunRequest, SkipReason, RunConfig, sensor, DefaultSensorStatus
 from fs import open_fs
 from fs.walk import Walker
-from liiatools_pipeline.jobs.ssda903 import ssda903_incoming
+from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
 from decouple import config as env_config
 
 
@@ -46,7 +46,7 @@ def generate_run_key(folder_location, files):
 
 
 @sensor(
-    job=ssda903_incoming,
+    job=ssda903_clean,
     minimum_interval_seconds=60,
     description="Monitors Specified Location for 903 Files",
     default_status=DefaultSensorStatus.RUNNING,

@@ -3,7 +3,7 @@ import logging
 import uuid
 from datetime import datetime
 from os.path import basename, dirname
-from typing import Iterable, List, Tuple
+from typing import List, Tuple
 from enum import Enum
 
 import pandas as pd
@@ -11,7 +11,7 @@ import numpy as np
 import yaml
 from fs.base import FS
 from fs.info import Info
-from fs.move import move_file, copy_file
+from fs.move import copy_file
 
 from liiatools.common.constants import ProcessNames, SessionNames
 from liiatools.common.checks import check_year, check_la
@@ -103,6 +103,27 @@ def move_files_for_processing(
                     raise e
 
     return locator_list
+
+
+def move_files_for_sharing(
+    source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+):
+    """
+    Moves all files from a source filesystem to the shared folder.
+    """
+    source_file_list = source_fs.walk.info(namespaces=["details"])
+
+    for file_path, file_info in source_file_list:
+        if file_info.is_file:
+            try:
+                dest_path = file_path.split("/")[-1]
+                copy_file(source_fs, file_path, destination_fs, dest_path)
+            except Exception as e:
+                logger.error(f"Error moving file {file_path} to destination folder")
+                if continue_on_error:
+                    pass
+                else:
+                    raise e
 
 
 def restore_session_folder(session_fs: FS) -> List[FileLocator]:
