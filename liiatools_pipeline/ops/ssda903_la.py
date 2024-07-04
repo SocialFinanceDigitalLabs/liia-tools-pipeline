@@ -1,23 +1,26 @@
 from typing import List, Tuple
 
-from dagster import In, Nothing, Out, op
+from dagster import In, Out, op
 from fs.base import FS
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
-from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
-from liiatools.common.transform import degrade_data, enrich_data, prepare_export
+from liiatools.common.transform import degrade_data, enrich_data
 from liiatools.ssda903_pipeline.spec import load_schema
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
 
 from liiatools_pipeline.assets.ssda903 import (
     incoming_folder,
+    workspace_folder,
+    shared_folder,
     pipeline_config,
-    process_folder,
     la_code as input_la_code,
 )
+
+from dagster import get_dagster_logger
+log = get_dagster_logger(__name__)
 
 
 @op(
@@ -28,33 +31,33 @@ from liiatools_pipeline.assets.ssda903 import (
     }
 )
 def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
-    session_folder, session_id = pl.create_session_folder(process_folder())
+    session_folder, session_id = pl.create_session_folder(workspace_folder())
     incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
 
     return session_folder, session_id, incoming_files
 
 
 @op(
-    out={"archive": Out(DataframeArchive)},
+    out={"current": Out(DataframeArchive)},
 )
-def open_archive(session_id) -> DataframeArchive:
-    archive_folder = process_folder().makedirs("archive", recreate=True)
-    archive = DataframeArchive(archive_folder, pipeline_config(), session_id)
-    return archive
+def open_current() -> DataframeArchive:
+    current_folder = workspace_folder().makedirs("current", recreate=True)
+    current = DataframeArchive(current_folder, pipeline_config(), "ssda903")
+    return current
 
 
 @op(
     ins={
         "session_folder": In(FS),
         "incoming_files": In(List[FileLocator]),
-        "archive": In(DataframeArchive),
+        "current": In(DataframeArchive),
         "session_id": In(str),
     },
 )
 def process_files(
     session_folder: FS,
     incoming_files: List[FileLocator],
-    archive: DataframeArchive,
+    current: DataframeArchive,
     session_id: str,
 ):
     error_report = ErrorContainer()
@@ -116,40 +119,31 @@ def process_files(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER), file_locator.meta["uuid"] + "_", "parquet"
         )
         error_report.extend(degraded_result.errors)
-        archive.add(degraded_result.data, la_code)
+        current.add(degraded_result.data, la_code, year)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
 
     error_report.set_property("session_id", session_id)
-    with session_folder.open("error_report.csv", "w") as FILE:
+    error_report_name = f"{input_la_code()}_ssda903_{session_id}_error_report.csv" if input_la_code() is not None else f"ssda903_{session_id}_error_report.csv"
+    with session_folder.open(error_report_name, "w") as FILE:
         error_report.to_dataframe().to_csv(FILE, index=False)
 
 
+@op()
+def move_current_view():
+    current_folder = workspace_folder().opendir("current")
+    destination_folder = shared_folder().makedirs("current", recreate=True)
+    pl.move_files_for_sharing(current_folder, destination_folder)
+
+
 @op(
-    ins={"archive": In(DataframeArchive), "start": In(Nothing)},
-    out={"current_folder": Out(FS)}
+    ins={"current": In(DataframeArchive)},
 )
-def create_current_view(archive: DataframeArchive):
-    archive.rollup()
-    current_folder = process_folder().makedirs("current", recreate=True)
+def create_concatenated_view(current: DataframeArchive):
+    concat_folder = shared_folder().makedirs("concatenated", recreate=True)
     for la_code in authorities.codes:
-        current_data = archive.current(la_code)
+        concat_data = current.current(la_code)
 
-        if current_data:
-            la_folder = current_folder.makedirs(la_code, recreate=True)
-            current_data.export(la_folder, "ssda903_", "csv")
-
-    return current_folder
-
-
-@op(ins={"current_folder": In(FS)})
-def create_reports(current_folder: FS):
-    export_folder = process_folder().makedirs("export", recreate=True)
-    aggregate = DataframeAggregator(current_folder, pipeline_config())
-    aggregate_data = aggregate.current()
-
-    for report in ["PAN", "SUFFICIENCY"]:
-        report_folder = export_folder.makedirs(report, recreate=True)
-        report = prepare_export(aggregate_data, pipeline_config())
-        report.data.export(report_folder, "ssda903_", "csv")
+        if concat_data:
+            concat_data.export(concat_folder, f"{la_code}_ssda903_", "csv")

@@ -110,7 +110,6 @@ def process_files(
 
 
 def create_current_view(archive: DataframeArchive, process_folder: FS) -> FS:
-    archive.rollup()
     current_folder = process_folder.makedirs("current", recreate=True)
     for la_code in authorities.codes:
         current_data = archive.current(la_code)
