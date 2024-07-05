@@ -19,9 +19,6 @@ from liiatools_pipeline.assets.ssda903 import (
     la_code as input_la_code,
 )
 
-from dagster import get_dagster_logger
-log = get_dagster_logger(__name__)
-
 
 @op(
     out={
