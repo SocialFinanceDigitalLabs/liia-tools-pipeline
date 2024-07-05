@@ -14,7 +14,7 @@ from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 
 def test_create_session_folder():
     dest_fs = open_fs("mem://")
-    session_folder = create_session_folder(dest_fs)
+    session_folder = create_session_folder(dest_fs, SessionNames)
     assert session_folder
 
 
@@ -91,7 +91,9 @@ def test_discover_year_dir_year():
 def test_discover_year_file_year():
     samples_fs = open_fs(DIR_903.as_posix())
     locator = FileLocator(
-        samples_fs, "SSDA903_episodes.csv", original_path="/SSDA903_2022-23_episodes.csv"
+        samples_fs,
+        "SSDA903_episodes.csv",
+        original_path="/SSDA903_2022-23_episodes.csv",
     )
     assert discover_year(locator) == 2023
 
@@ -99,7 +101,9 @@ def test_discover_year_file_year():
 def test_discover_year_dir_and_file_year():
     samples_fs = open_fs(DIR_903.as_posix())
     locator = FileLocator(
-        samples_fs, "SSDA903_episodes.csv", original_path="/2021/SSDA903_2022-23_episodes.csv"
+        samples_fs,
+        "SSDA903_episodes.csv",
+        original_path="/2021/SSDA903_2022-23_episodes.csv",
     )
     assert discover_year(locator) == 2021
 
@@ -115,6 +119,8 @@ def test_discover_la():
 def test_discover_la_no_la():
     samples_fs = open_fs(DIR_903.as_posix())
     locator = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/SSDA903_2020_episodes.csv"
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/SSDA903_2020_episodes.csv",
     )
     assert discover_la(locator) is None

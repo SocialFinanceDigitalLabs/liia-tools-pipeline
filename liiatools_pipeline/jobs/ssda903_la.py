@@ -8,9 +8,7 @@ def ssda903_clean():
     session_folder, session_id, incoming_files = ssda903.create_session_folder()
     current = ssda903.open_current()
 
-    ssda903.process_files(
-        session_folder, incoming_files, current, session_id
-    )
+    ssda903.process_files(session_folder, incoming_files, current, session_id)
 
 
 @job

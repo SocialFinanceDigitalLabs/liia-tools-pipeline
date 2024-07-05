@@ -58,7 +58,14 @@ class DataframeArchive:
             if table_spec.id in data:
                 self._add_table(la_dir, la_code, year, table_spec, data[table_spec.id])
 
-    def _add_table(self, la_dir: FS, la_code: str, year: int, table_spec: TableConfig, df: pd.DataFrame):
+    def _add_table(
+        self,
+        la_dir: FS,
+        la_code: str,
+        year: int,
+        table_spec: TableConfig,
+        df: pd.DataFrame,
+    ):
         """
         Add a table to the archive.
         """
@@ -76,7 +83,9 @@ class DataframeArchive:
         for directory in directories:
             snapshots = self.fs.listdir(f"/{directory}/{self.dataset}")
             for snap in snapshots:
-                la_snapshots.setdefault(directory, []).append(f"{directory}/{self.dataset}/{snap}")
+                la_snapshots.setdefault(directory, []).append(
+                    f"{directory}/{self.dataset}/{snap}"
+                )
 
         return la_snapshots
 
@@ -158,8 +167,9 @@ class DataframeArchive:
                 if sort_keys:
                     df = df.sort_values(by=sort_keys, ascending=True)
                 df = df.drop_duplicates(
-                    subset=[c.id for c in table_spec.columns if c.unique_key] if
-                    [c.id for c in table_spec.columns if c.unique_key] else None,
+                    subset=[c.id for c in table_spec.columns if c.unique_key]
+                    if [c.id for c in table_spec.columns if c.unique_key]
+                    else None,
                     keep="last",
                 )
                 data[table_spec.id] = df

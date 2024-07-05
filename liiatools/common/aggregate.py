@@ -52,7 +52,8 @@ class DataframeAggregator:
         return data
 
     def combine_files(
-        self, files: Iterable[str],
+        self,
+        files: Iterable[str],
     ) -> DataContainer:
         """
         Combine a list of files into a single dataframe.
@@ -67,9 +68,7 @@ class DataframeAggregator:
 
         return combined
 
-    def _combine_files(
-        self, *sources: DataContainer
-    ) -> DataContainer:
+    def _combine_files(self, *sources: DataContainer) -> DataContainer:
         """
         Combine a new files into an existing set of dataframes.
         """

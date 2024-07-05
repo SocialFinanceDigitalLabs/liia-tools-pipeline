@@ -18,3 +18,9 @@ class SessionNames(StrEnum):
     CLEANED_FOLDER = "cleaned"
     ENRICHED_FOLDER = "enriched"
     DEGRADED_FOLDER = "degraded"
+
+
+class SessionNamesOrg(StrEnum):
+    """Enum for org session folders."""
+
+    INCOMING_FOLDER = "incoming"
