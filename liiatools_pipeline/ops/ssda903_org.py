@@ -30,7 +30,9 @@ from sufficiency_data_transform.all_dim_and_fact import (
     }
 )
 def create_org_session_folder() -> FS:
-    session_folder, session_id = pl.create_session_folder(workspace_folder(), SessionNamesOrg)
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesOrg
+    )
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
     concat_folder = incoming_folder().opendir("concatenated")
@@ -45,7 +47,7 @@ def create_org_session_folder() -> FS:
     },
 )
 def create_reports(
-        session_folder: FS,
+    session_folder: FS,
 ):
     export_folder = workspace_folder().makedirs("current/ssda903", recreate=True)
     aggregate = DataframeAggregator(session_folder, pipeline_config())

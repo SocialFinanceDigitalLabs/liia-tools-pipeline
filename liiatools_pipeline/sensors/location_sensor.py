@@ -52,9 +52,7 @@ def generate_run_key(folder_location, files):
     default_status=DefaultSensorStatus.RUNNING,
 )
 def location_sensor(context):
-    context.log.info(
-        "Opening folder location: {}".format(env_config("INPUT_LOCATION"))
-    )
+    context.log.info("Opening folder location: {}".format(env_config("INPUT_LOCATION")))
     folder_location = env_config("INPUT_LOCATION")
     wildcards = env_config("903_WILDCARDS").split(",")
     directory_pointer = open_location(folder_location)

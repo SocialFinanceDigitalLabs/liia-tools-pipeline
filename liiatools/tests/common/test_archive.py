@@ -56,7 +56,9 @@ def test_archive(archive: DataframeArchive):
     archive.add(dataset, la_code, year)
 
     snapshots = archive.list_snapshots()
-    assert snapshots == {la_code: ["BAR/ssda903/BAR_2022_table1.csv", "BAR/ssda903/BAR_2022_table2.csv"]}
+    assert snapshots == {
+        la_code: ["BAR/ssda903/BAR_2022_table1.csv", "BAR/ssda903/BAR_2022_table2.csv"]
+    }
 
     snap = archive.load_snapshot("BAR/ssda903/BAR_2022_table1.csv")
     assert snap["table1"].shape == (2, 2)
