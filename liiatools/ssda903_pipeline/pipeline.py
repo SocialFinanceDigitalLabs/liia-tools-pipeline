@@ -21,7 +21,7 @@ logger = logging.getLogger()
 
 
 def create_session_folder(process_folder: FS, incoming_folder: FS) -> Tuple[FS, str, List[FileLocator]]:
-    session_folder, session_id = pl.create_session_folder(process_folder)
+    session_folder, session_id = pl.create_session_folder(process_folder, SessionNames)
     incoming_files = pl.move_files_for_processing(incoming_folder, session_folder)
 
     return session_folder, session_id, incoming_files

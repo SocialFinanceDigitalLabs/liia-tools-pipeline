@@ -7,13 +7,15 @@ from liiatools_pipeline.ops.ssda903_org import (
     postcode,
     episode,
     ofsted_inspection,
-    create_reports
+    create_reports,
+    create_org_session_folder,
 )
 
 
 @job
 def ssda903_reports():
-    create_reports()
+    session_folder = create_org_session_folder()
+    create_reports(session_folder)
 
 
 @job()

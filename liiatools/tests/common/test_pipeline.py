@@ -14,7 +14,7 @@ from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 
 def test_create_session_folder():
     dest_fs = open_fs("mem://")
-    session_folder = create_session_folder(dest_fs)
+    session_folder = create_session_folder(dest_fs, SessionNames)
     assert session_folder
 
 

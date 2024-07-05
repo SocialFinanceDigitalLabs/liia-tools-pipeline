@@ -31,7 +31,7 @@ log = get_dagster_logger(__name__)
     }
 )
 def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
-    session_folder, session_id = pl.create_session_folder(workspace_folder())
+    session_folder, session_id = pl.create_session_folder(workspace_folder(), SessionNames)
     incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
 
     return session_folder, session_id, incoming_files

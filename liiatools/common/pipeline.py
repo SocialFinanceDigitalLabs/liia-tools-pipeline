@@ -62,7 +62,7 @@ def create_process_folders(destination_fs: FS):
         destination_fs.makedirs(folder, recreate=True)
 
 
-def create_session_folder(destination_fs: FS) -> Tuple[FS, str]:
+def create_session_folder(destination_fs: FS, session_names) -> Tuple[FS, str]:
     """
     Create a new session folder in the output filesystem with the standard folders
     """
@@ -70,7 +70,7 @@ def create_session_folder(destination_fs: FS) -> Tuple[FS, str]:
     session_folder = destination_fs.makedirs(
         f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
     )
-    for folder in SessionNames:
+    for folder in session_names:
         session_folder.makedirs(folder)
     return session_folder, session_id
 
