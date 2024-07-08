@@ -1,12 +1,13 @@
 from dagster import repository
 from liiatools.common._fs_serializer import register
 
-from liiatools_pipeline.jobs.ssda903_la import (
-    ssda903_clean,
-    ssda903_move_current,
-    ssda903_concatenate,
+from liiatools_pipeline.jobs.common import (
+    clean,
+    move_current,
+    concatenate,
+    reports,
 )
-from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency, ssda903_reports
+from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.jobs.cin import cin_incoming
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.sensors.location_sensor import location_sensor
@@ -24,10 +25,10 @@ def sync():
     https://docs.dagster.io/overview/repositories-workspaces/repositories
     """
     jobs = [
-        ssda903_clean,
-        ssda903_move_current,
-        ssda903_concatenate,
-        ssda903_reports,
+        clean,
+        move_current,
+        concatenate,
+        reports,
         external_incoming,
         ssda903_sufficiency,
         cin_incoming,
