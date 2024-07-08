@@ -80,7 +80,7 @@ def test_add_table_name():
         get_table_name(["CHILD", "SEX", "DOB", "ETHNIC", "UPN", "MOTHER", "MC_DOB"])[
             "table_name"
         ]
-        == "Header"
+        == "header"
     )
 
     for table_name, table_data in schema.table.items():
@@ -129,19 +129,19 @@ def test_match_config_to_cell():
         event = list(stream)[0]
         return getattr(event, "column_spec", None)
 
-    assert match_cell(table_name="Header", header="CHILD").string == "alphanumeric"
+    assert match_cell(table_name="header", header="CHILD").string == "alphanumeric"
 
     assert match_cell(header="CHILD") is None
 
-    assert match_cell(table_name="Header") is None
+    assert match_cell(table_name="header") is None
 
     assert match_cell() is None
 
     assert match_cell(table_name="UNKNOWN", header="CHILD") is None
 
-    assert match_cell(table_name="Header", header="UNKNOWN") is None
+    assert match_cell(table_name="header", header="UNKNOWN") is None
 
-    assert match_cell(table_name="Header", header=None) is None
+    assert match_cell(table_name="header", header=None) is None
 
     assert match_cell(table_name=None, header="CHILD") is None
 

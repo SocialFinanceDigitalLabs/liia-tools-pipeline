@@ -1,5 +1,5 @@
 column_map:
-    AD1:
+    ad1:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -40,8 +40,7 @@ column_map:
        - code: "L3"
        - code: "L4"
        canbeblank: no
-
-    Episodes:
+    episodes:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -172,8 +171,7 @@ column_map:
       URN:
        string: "alphanumeric"
        canbeblank: yes
-
-    Header:
+    header:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -241,7 +239,7 @@ column_map:
       MC_DOB:
        date: "%d/%m/%Y"
        canbeblank: yes
-    Missing:
+    missing:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -259,7 +257,7 @@ column_map:
       MIS_END:
        date: "%d/%m/%Y"
        canbeblank: yes
-    OC2:
+    oc2:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -320,7 +318,7 @@ column_map:
        - code: "0"
        - code: "1"
        canbeblank: yes
-    OC3:
+    oc3:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -385,7 +383,7 @@ column_map:
        - code: "Z2"
        - code: "0"
        canbeblank: no
-    PlacedAdoption:
+    placed_adoption:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -405,7 +403,7 @@ column_map:
        - code: "RD3"
        - code: "RD4"
        canbeblank: yes
-    PrevPerm:
+    prev_perm:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -426,7 +424,7 @@ column_map:
       DATE_PERM:
        date: "%d/%m/%Y"
        canbeblank: yes
-    Reviews:
+    reviews:
       CHILD:
        string: "alphanumeric"
        canbeblank: no
@@ -447,7 +445,7 @@ column_map:
        - code: "PN6"
        - code: "PN7"
        canbeblank: no
-    UASC:
+    uasc:
       CHILD:
        string: "alphanumeric"
        canbeblank: no

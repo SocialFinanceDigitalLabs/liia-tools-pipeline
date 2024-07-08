@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Iterable, List
 
 import pandas as pd
@@ -21,9 +22,9 @@ class DataframeAggregator:
         self.fs = fs
         self.config = config
 
-    def list_directories(self) -> List[str]:
+    def list_files(self) -> List[str]:
         """
-        List the directories in the current directory.
+        List the files in the current directory.
         """
         return sorted(self.fs.listdir("/"))
 
@@ -31,18 +32,19 @@ class DataframeAggregator:
         """
         Get the current session as a datacontainer.
         """
-        directories = self.list_directories()
-        return self.combine_files(directories)
+        files = self.list_files()
+        return self.combine_files(files)
 
-    def load_file(self, directory) -> DataContainer:
+    def load_file(self, file) -> DataContainer:
         """
         Load a file from the current directory.
         """
-        current_dir = self.fs.opendir(directory)
         data = DataContainer()
+        table_id = re.search(r"_([a-zA-Z0-9]*)\.", file)
+
         for table_spec in self.config.table_list:
-            if current_dir.exists("ssda903_" + table_spec.id + ".csv"):
-                with current_dir.open("ssda903_" + table_spec.id + ".csv", "rb") as f:
+            if table_id and table_id.group(1) == table_spec.id:
+                with self.fs.open(file, "r") as f:
                     df = pd.read_csv(f)
                     df = _normalise_table(df, table_spec)
                     data[table_spec.id] = df
@@ -51,17 +53,17 @@ class DataframeAggregator:
 
     def combine_files(
         self,
-        directories: Iterable[str],
+        files: Iterable[str],
     ) -> DataContainer:
         """
         Combine a list of files into a single dataframe.
 
         """
         combined = DataContainer()
-        for directory in directories:
+        for file in files:
             combined = self._combine_files(
                 combined,
-                self.load_file(directory),
+                self.load_file(file),
             )
 
         return combined

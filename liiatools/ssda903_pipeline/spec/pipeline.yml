@@ -1,5 +1,5 @@
 table_list:
-- id: AD1
+- id: ad1
   columns:
   - id: CHILD
     type: string
@@ -29,7 +29,7 @@ table_list:
     type: integer
     enrich: year
     sort: 0
-- id: Episodes
+- id: episodes
   retain:
   - PAN
   - SUFFICIENCY
@@ -73,7 +73,7 @@ table_list:
     type: integer
     enrich: year
     sort: 1
-- id: Header
+- id: header
   retain:
   - PAN
   - SUFFICIENCY
@@ -109,7 +109,7 @@ table_list:
     type: integer
     enrich: year
     sort: 1
-- id: Missing
+- id: missing
   retain:
   - PAN
   - SUFFICIENCY
@@ -136,7 +136,7 @@ table_list:
     type: integer
     enrich: year
     sort: 0
-- id: OC2
+- id: oc2
   retain:
   - PAN
   - SUFFICIENCY
@@ -196,7 +196,7 @@ table_list:
     unique_key: true
     enrich: year
     sort: 0
-- id: OC3
+- id: oc3
   retain:
   - PAN
   - SUFFICIENCY
@@ -227,7 +227,7 @@ table_list:
     unique_key: true
     enrich: year
     sort: 0
-- id: PlacedAdoption
+- id: placed_adoption
   columns:
   - id: CHILD
     type: string
@@ -250,7 +250,7 @@ table_list:
     type: integer
     enrich: year
     sort: 0
-- id: PrevPerm
+- id: prev_perm
   retain:
   - PAN
   columns:
@@ -275,7 +275,7 @@ table_list:
     type: integer
     enrich: year
     sort: 0
-- id: Reviews
+- id: reviews
   retain:
   - PAN
   columns:
@@ -298,7 +298,7 @@ table_list:
     type: integer
     enrich: year
     sort: 0
-- id: UASC
+- id: uasc
   retain:
   - PAN
   - SUFFICIENCY
@@ -322,7 +322,7 @@ table_list:
     type: integer
     enrich: year
     sort: 1
-- id: SocialWorker
+- id: social_worker
   columns:
   - id: CHILD
     type: string

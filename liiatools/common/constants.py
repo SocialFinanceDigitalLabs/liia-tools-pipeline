@@ -8,9 +8,7 @@ class ProcessNames(StrEnum):
     """Enum for process folders."""
 
     SESSIONS_FOLDER = "sessions"
-    ARCHIVE_FOLDER = "archive"
     CURRENT_FOLDER = "current"
-    EXPORT_FOLDER = "export"
 
 
 class SessionNames(StrEnum):
@@ -20,3 +18,9 @@ class SessionNames(StrEnum):
     CLEANED_FOLDER = "cleaned"
     ENRICHED_FOLDER = "enriched"
     DEGRADED_FOLDER = "degraded"
+
+
+class SessionNamesOrg(StrEnum):
+    """Enum for org session folders."""
+
+    INCOMING_FOLDER = "incoming"

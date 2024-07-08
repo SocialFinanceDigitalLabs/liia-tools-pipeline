@@ -37,12 +37,13 @@ def fs():
 
 @pytest.fixture
 def archive(fs, cfg: PipelineConfig) -> DataframeArchive:
-    archive = DataframeArchive(fs, cfg, "20240430T092230.112993")
+    archive = DataframeArchive(fs, cfg, "ssda903")
     return archive
 
 
 def test_archive(archive: DataframeArchive):
     la_code = "BAR"
+    year = 2022
     dataset = {
         "table1": pd.DataFrame([{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]),
         "table2": pd.DataFrame(
@@ -52,103 +53,37 @@ def test_archive(archive: DataframeArchive):
             ]
         ),
     }
-    session = archive.add(dataset, la_code)
-    assert session
+    archive.add(dataset, la_code, year)
 
     snapshots = archive.list_snapshots()
-    assert snapshots == {la_code: [session]}
+    assert snapshots == {
+        la_code: ["BAR/ssda903/BAR_2022_table1.csv", "BAR/ssda903/BAR_2022_table2.csv"]
+    }
 
-    snap = archive.load_snapshot(session)
+    snap = archive.load_snapshot("BAR/ssda903/BAR_2022_table1.csv")
     assert snap["table1"].shape == (2, 2)
     assert snap["table1"]["name"].tolist() == ["foo", "bar"]
-
-    assert snap.keys() == dataset.keys()
 
 
 def test_combine(archive: DataframeArchive):
     la_code = "BAR"
+    year = 2022
     dataset = {
         "table1": pd.DataFrame([{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]),
     }
-    archive.add(dataset, la_code)
+    archive.add(dataset, la_code, year)
+    current = archive.current(la_code)
+    table_1 = current["table1"]
 
-    dataset = {
-        "table1": pd.DataFrame([{"id": 1, "name": "Foo"}, {"id": 3, "name": "FooBar"}]),
-    }
-    archive.add(dataset, la_code)
+    assert sorted(table_1.id.tolist()) == [1, 2]
+    assert sorted(table_1.name.tolist()) == sorted(["foo", "bar"])
 
     dataset = {
         "table1": pd.DataFrame([{"id": 4, "name": "SNAFU"}]),
     }
-    archive.add(dataset, la_code)
+    archive.add(dataset, la_code, year)
+    current = archive.current(la_code)
+    table_1 = current["table1"]
 
-    snapshots = archive.list_snapshots()
-    assert len(snapshots[la_code]) == 3
-
-    combined = archive.current(la_code)
-    table_1 = combined["table1"]
-
-    assert sorted(table_1.id.tolist()) == [1, 2, 3, 4]
-    assert sorted(table_1.name.tolist()) == sorted(["Foo", "bar", "FooBar", "SNAFU"])
-
-
-def test_rollup(archive: DataframeArchive):
-    la_code = "BAR"
-    dataset = {
-        "table1": pd.DataFrame([{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]),
-    }
-    archive.add(dataset, la_code)
-
-    dataset = {
-        "table1": pd.DataFrame([{"id": 1, "name": "Foo"}, {"id": 3, "name": "FooBar"}]),
-    }
-    archive.add(dataset, la_code)
-
-    # We have now archived two snapshots
-    assert len(archive.list_snapshots()[la_code]) == 2
-
-    # And the current view should be a combination of the two
-    table_1 = archive.current(la_code)["table1"]
-    assert sorted(table_1.id.tolist()) == [1, 2, 3]
-    assert sorted(table_1.name.tolist()) == sorted(["Foo", "bar", "FooBar"])
-
-    # Let's create a rollup
-    archive.rollup()
-
-    # We have another snapshot
-    assert len(archive.list_snapshots()[la_code]) == 3
-
-    # Let's add some more data
-    dataset = {
-        "table1": pd.DataFrame([{"id": 4, "name": "SNAFU"}]),
-    }
-    archive.add(dataset, la_code)
-
-    # Let's delete the snapshots prior to the rollup
-    snapshot_list = archive.list_snapshots()[la_code]
-    archive.delete_snapshot(*snapshot_list[:2])
-
-    # We only have two left
-    assert len(archive.list_snapshots()[la_code]) == 2
-
-    # But the combined view still reflects the data from those snapshots
-    table_1 = archive.current(la_code)["table1"]
-    assert sorted(table_1.id.tolist()) == [1, 2, 3, 4]
-    assert sorted(table_1.name.tolist()) == sorted(["Foo", "bar", "FooBar", "SNAFU"])
-
-    # We can't accidentally delete the rollup
-    with pytest.raises(Exception):
-        archive.delete_snapshot(*snapshot_list)
-
-    # But we can delete it if we want to - but let's create a new one first
-    archive.rollup()
-    old_snaps = archive.list_snapshots()[la_code][:-1]
-    archive.delete_snapshot(*old_snaps, allow_rollups=True)
-
-    # Only one file left
-    assert len(archive.list_snapshots()[la_code]) == 1
-
-    # But all the data
-    table_1 = archive.current(la_code)["table1"]
-    assert sorted(table_1.id.tolist()) == [1, 2, 3, 4]
-    assert sorted(table_1.name.tolist()) == sorted(["Foo", "bar", "FooBar", "SNAFU"])
+    assert sorted(table_1.id.tolist()) == [4]
+    assert sorted(table_1.name.tolist()) == sorted(["SNAFU"])
