@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 
 def check_year(filename):
@@ -77,3 +78,46 @@ def check_la(filename):
         return match.group(0)
 
     raise ValueError
+
+
+def check_year_within_range(
+    year, retention_period, new_year_start_month=1, as_at_date=datetime.now()
+):
+    """
+    Check that year is within permitted range of data retention policy
+    The check is made with reference to the as_at_date which will normally be the current date
+
+    :param year: The year to check
+    :param retention_period: The number of years to go back
+    :param new_year_start_month: The month which signifies start of a new year for data retention policy
+    :param as_at_date: The reference date against which we are checking the valid range
+    :return: True if year is within range, False otherwise
+    """
+
+    year_to_check = int(year)
+    current_year = as_at_date.year
+    current_month = as_at_date.month
+    if current_month < new_year_start_month:
+        earliest_allowed_year = current_year - retention_period
+        latest_allowed_year = current_year
+    else:
+        earliest_allowed_year = (
+            current_year - retention_period + 1
+        )  # roll forward one year
+        latest_allowed_year = current_year + 1
+
+    return earliest_allowed_year <= year_to_check <= latest_allowed_year
+
+
+def check_la_signature(la_code, pipeline_config):
+    """
+    Check the la has signed the data sharing agreement according to the config
+
+    :param la_code: The LA code to check
+    :param pipeline_config: The pipeline config object with the la signatures
+    :return: True if the la has signed the data sharing agreement, False otherwise
+    """
+    try:
+        return True if pipeline_config[la_code] == "Yes" else False
+    except KeyError:
+        return False

@@ -1,6 +1,6 @@
 import logging
 from typing import Callable, Dict
-
+from datetime import datetime
 import pandas as pd
 
 from liiatools.common.data import (
@@ -105,7 +105,7 @@ def degrade_data(
 
 def prepare_export(
     data: DataContainer, config: PipelineConfig, profile: str = None
-) -> ProcessResult:
+) -> DataContainer:
     """
     Prepare data for export by removing columns that are not required for the given profile
     or for all configured tables if no profile is given.
@@ -145,4 +145,29 @@ def prepare_export(
             # Return the subset
             data_container[table_name] = table[table_columns].copy()
 
-    return ProcessResult(data=data_container, errors=None)
+    return data_container
+
+
+def apply_retention(
+    data: DataContainer, config: PipelineConfig, profile: str, year_column: str
+) -> DataContainer:
+    """
+    Apply retention rules to the data.
+
+    :param data: The data to apply retention to
+    :param config: The pipeline config
+    :param profile: The profile to apply retention for
+    :param year_column: The column containing the year for data retention
+    :return: The data with retention applied
+    """
+    data_container = DataContainer()
+    retention_period = config.retention_period[profile]
+    current_year = datetime.now().year
+
+    for table_name in data:
+        table = data[table_name].copy()
+        data_container[table_name] = table[
+            table[year_column] > current_year - retention_period
+        ].copy()
+
+    return data_container
