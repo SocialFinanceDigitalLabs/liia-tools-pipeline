@@ -1,16 +1,33 @@
 from dagster import job
-from liiatools_pipeline.ops import common1
-from liiatools_pipeline.assets.common import dataset
+# from liiatools_pipeline.ops import common1
+# from liiatools_pipeline.assets.common import dataset
+from liiatools_pipeline.ops import common_la
+from liiatools_pipeline.ops.common_org import (
+    create_reports,
+    create_org_session_folder,
+)
+
 
 @job
-def incoming():  # I don't think there is a need to change the name of this function, it could just be "incoming"
-    session_folder, session_id, incoming_files = common1.create_session_folder()
-    archive = common1.open_archive(session_id)
+def clean():
+    session_folder, session_id, incoming_files = common_la.create_session_folder()
+    current = common_la.open_current()
 
-    processed = common1.process_files(
-        session_folder, incoming_files, archive, session_id
-    )
+    common_la.process_files(session_folder, incoming_files, current, session_id)
 
-    current_data = common1.create_current_view(archive, start=processed)
 
-    common1.create_reports(current_data)
+@job
+def move_current():
+    common_la.move_current_view()
+
+
+@job
+def concatenate():
+    current = common_la.open_current()
+    common_la.create_concatenated_view(current)
+
+
+@job
+def reports():
+    session_folder = create_org_session_folder()
+    create_reports(session_folder)
