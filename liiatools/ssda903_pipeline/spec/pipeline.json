@@ -4,50 +4,182 @@
     "SUFFICIENCY": 7
   },
   "la_signed": {
-    "821": "Yes",
-    "822": "Yes",
-    "823": "Yes",
-    "873": "Yes",
-    "874": "Yes",
-    "881": "Yes",
-    "882": "Yes",
-    "883": "Yes",
-    "919": "Yes",
-    "926": "Yes",
-    "935": "Yes",
-    "BAD": "Yes",
-    "BAR": "Yes",
-    "BEX": "Yes",
-    "BRE": "Yes",
-    "BRO": "Yes",
-    "CAM": "Yes",
-    "CIT": "Yes",
-    "CRO": "Yes",
-    "EAL": "Yes",
-    "ENF": "Yes",
-    "GRE": "Yes",
-    "HAC": "Yes",
-    "HAF": "Yes",
-    "HAY": "Yes",
-    "HAW": "Yes",
-    "HAV": "Yes",
-    "HIL": "Yes",
-    "HOU": "Yes",
-    "ISL": "Yes",
-    "KAC": "Yes",
-    "KUT": "Yes",
-    "LAM": "Yes",
-    "LEW": "Yes",
-    "MER": "Yes",
-    "NEW": "Yes",
-    "RED": "Yes",
-    "RUT": "Yes",
-    "SOU": "Yes",
-    "SUT": "Yes",
-    "TOW": "Yes",
-    "WAL": "Yes",
-    "WAN": "Yes",
-    "WES": "Yes"
+    "Bedford": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Cambridgeshire County": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Central Bedfordshire": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Essex County": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Hertfordshire County": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Luton": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Norfolk County": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Peterborough": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Southend-on-Sea": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Suffolk County": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Thurrock": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Barking and Dagenham": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Barnet": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Bexley": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Brent": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Bromley": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Camden": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "City of London": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Croydon": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Ealing": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Enfield": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Greenwich": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Hackney": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Hammersmith and Fulham": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Haringey": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Harrow": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Havering": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Hillingdon": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Hounslow": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Islington": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Kensington and Chelsea": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Kingston upon Thames": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Lambeth": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Lewisham": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Merton": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Newham": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Redbridge": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Richmond upon Thames": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Southwark": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Sutton": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Tower Hamlets": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Waltham Forest": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Wandsworth": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    },
+    "Westminster": {
+      "PAN": "Yes",
+      "SUFFICIENCY": "Yes"
+    }
   },
   "table_list": [
     {

@@ -109,15 +109,22 @@ def check_year_within_range(
     return earliest_allowed_year <= year_to_check <= latest_allowed_year
 
 
-def check_la_signature(la_code, pipeline_config):
+def check_la_signature(pipeline_config, report):
     """
-    Check the la has signed the data sharing agreement according to the config
+    Check the LAs that have signed the data sharing agreement according to the config
 
-    :param la_code: The LA code to check
     :param pipeline_config: The pipeline config object with the la signatures
-    :return: True if the la has signed the data sharing agreement, False otherwise
+    :param report: The report to check for signature status (e.g., PAN, SUFFICIENCY)
+    :return: A list of LAs that have signed the data sharing agreement
     """
-    try:
-        return True if pipeline_config[la_code] == "Yes" else False
-    except KeyError:
-        return False
+    signed_las = []
+
+    for la_code, signature_status in pipeline_config.items():
+        try:
+            if signature_status[report] == "Yes":
+                signed_las.append(la_code)
+        except KeyError:
+            continue
+
+    return signed_las
+

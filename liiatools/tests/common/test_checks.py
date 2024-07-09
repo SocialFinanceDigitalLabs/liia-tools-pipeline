@@ -59,9 +59,18 @@ def test_check_year_within_range():
 
 
 def test_check_la_signature():
-    pipeline_config = {"BAR": "Yes", "BEX": "No"}
+    pipeline_config = {
+        "BAR": {
+            "PAN": "Yes",
+            "SUFFICIENCY": "Yes"
+        },
+        "BEX": {
+            "PAN": "Yes",
+            "SUFFICIENCY": "No"
+        },
+    }
 
-    assert check_la_signature("BAR", pipeline_config) is True
-    assert check_la_signature("BEX", pipeline_config) is False
-    assert check_la_signature("CAM", pipeline_config) is False
-    assert check_la_signature(None, pipeline_config) is False
+    assert check_la_signature(pipeline_config, "PAN") == ["BAR", "BEX"]
+    assert check_la_signature(pipeline_config, "SUFFICIENCY") == ["BAR"]
+    assert check_la_signature(pipeline_config, None) == []
+    assert check_la_signature(pipeline_config, "") == []
