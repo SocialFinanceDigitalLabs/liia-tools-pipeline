@@ -1,11 +1,5 @@
 from dagster import job
-# from liiatools_pipeline.ops import common1
-# from liiatools_pipeline.assets.common import dataset
 from liiatools_pipeline.ops import common_la
-from liiatools_pipeline.ops.common_org import (
-    create_reports,
-    create_org_session_folder,
-)
 
 
 @job
@@ -25,9 +19,3 @@ def move_current():
 def concatenate():
     current = common_la.open_current()
     common_la.create_concatenated_view(current)
-
-
-@job
-def reports():
-    session_folder = create_org_session_folder()
-    create_reports(session_folder)
