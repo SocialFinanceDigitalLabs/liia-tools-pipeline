@@ -41,13 +41,11 @@ class FileConfig(Config):
         "incoming_files": Out(List[FileLocator]),
     }
 )
-def create_session_folder(dataset_type: str) -> Tuple[FS, str, List[FileLocator]]:
-    log.info(f"Creating session folder for dataset type: {dataset_type}")
+def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
     incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
-    log.info(f"Session folder created: {session_folder}, session_id: {session_id}, incoming_files: {incoming_files}")
 
     return session_folder, session_id, incoming_files
 
@@ -67,8 +65,6 @@ def open_current() -> DataframeArchive:
         "incoming_files": In(List[FileLocator]),
         "current": In(DataframeArchive),
         "session_id": In(str),
-        # Add dataset_type as an input argument
-        "dataset_type": In(str),
     },
 )
 def process_files(
@@ -76,9 +72,8 @@ def process_files(
     incoming_files: List[FileLocator],
     current: DataframeArchive,
     session_id: str,
-    dataset_type: str,
 ):
-    log.info(f"Processing files for dataset type: {dataset_type}")
+    log.info(f"Processing files for dataset type: {dataset}")
 
     error_report = ErrorContainer()
     for file_locator in incoming_files:
@@ -112,11 +107,11 @@ def process_files(
             continue
 
         # Determine the schema and schema path based on the dataset type
-        if dataset_type == 'cin':
+        if dataset == 'cin':
             schema = load_schema_cin(year)
             schema_path = load_schema_path_cin(year=year)
             task_cleanfile = task_cleanfile_cin
-        elif dataset_type == 'ssda903':
+        elif dataset == 'ssda903':
             schema = load_schema_ssda903(year)
             task_cleanfile = task_cleanfile_ssda903
         else:
