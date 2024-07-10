@@ -107,17 +107,6 @@ def process_files(
             )
             continue
 
-        if check_la_signature(la_code, pipeline_config().la_signed) is False:
-            error_report.append(
-                dict(
-                    type="InvalidLA",
-                    message="Invalid local authority signature",
-                    filename=file_locator.name,
-                    uuid=uuid,
-                )
-            )
-            continue
-
         schema = load_schema(year)
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
