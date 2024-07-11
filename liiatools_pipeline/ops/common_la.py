@@ -7,6 +7,7 @@ from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
+from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data
 
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin, load_schema_path as load_schema_path_cin
@@ -129,11 +130,11 @@ def process_files(
 
         try:
             cleanfile_result = task_cleanfile(file_locator, schema, schema_path)
-        except Exception as e:
+        except StreamError as e:
             error_report.append(
                 dict(
                     type="StreamError",
-                    message="Failed to clean file. Check log files for technical errors.",
+                    message=str(e),
                     filename=file_locator.name,
                     uuid=uuid,
                 )
