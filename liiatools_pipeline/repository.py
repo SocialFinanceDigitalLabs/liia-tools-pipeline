@@ -1,10 +1,12 @@
 from dagster import repository
 from liiatools.common._fs_serializer import register
 
-from liiatools_pipeline.jobs.common import (
+from liiatools_pipeline.jobs.common_la import (
     clean,
     move_current,
     concatenate,
+)
+from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency

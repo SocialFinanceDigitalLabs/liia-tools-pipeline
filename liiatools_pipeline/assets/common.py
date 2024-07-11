@@ -1,8 +1,6 @@
 from dagster import asset
 from decouple import config as env_config
 from fs import open_fs
-from liiatools.cin_census_pipeline.spec import load_pipeline_config as load_pipeline_config_cin
-from liiatools.ssda903_pipeline.spec import load_pipeline_config as load_pipeline_config_ssda903
 from liiatools.common.reference import authorities
 
 import logging
@@ -19,16 +17,12 @@ def dataset():
 def pipeline_config():
     # add argument that will allow either 903 or CIN
     dataset = env_config("DATASET", cast=str)
-    if dataset == "cin":
-        return load_pipeline_config_cin()
-    elif dataset == "ssda903":
-        return load_pipeline_config_ssda903()
-    # leave else statement for errors
-    else:
-        logger.info("Dataset specified isn't valid. Defaulting to None")
-        dataset = None
-        return dataset
-# add log to check what return load_pipeline_config gives
+    try:
+        return globals()[f"load_pipeline_config_{dataset}"]()
+    except KeyError:
+        logger.info(f"Dataset specified: {dataset} isn't valid. Defaulting to None")
+        return None
+    # add log to check what return load_pipeline_config gives
 
 
 @asset
