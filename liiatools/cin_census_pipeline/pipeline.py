@@ -11,6 +11,7 @@ from liiatools.common.data import (
     PipelineConfig,
     ProcessResult,
 )
+from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 
 from liiatools.cin_census_pipeline.spec import (
@@ -62,12 +63,12 @@ def process_file(
     # Normalise the data and export to the session 'cleaned' folder
     try:
         cleanfile_result = task_cleanfile(file_locator, schema, schema_path)
-    except Exception as e:
+    except StreamError as e:
         logger.exception(f"Error cleaning file {file_locator.name}")
         errors.append(
             dict(
                 type="StreamError",
-                message="Failed to clean file. Check log files for technical errors.",
+                message=str(e),
                 filename=file_locator.name,
             )
         )

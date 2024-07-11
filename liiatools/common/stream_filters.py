@@ -1,8 +1,6 @@
 import logging
 import xmlschema
 import tablib
-from io import BytesIO, StringIO
-from typing import Iterable, Union, Any, Dict
 import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
 from typing import Iterable, Union, Any, Dict, List
@@ -66,7 +64,7 @@ def tablib_parse(source: FileLocator):
         logger.debug("Failed to open %s as a sheet", filename)
         pass
 
-    raise StreamError(f"Could not parse {source} as a tabular format")
+    raise StreamError(f"Could not parse as a tabular format")
 
 
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
