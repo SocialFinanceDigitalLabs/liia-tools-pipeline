@@ -124,6 +124,27 @@ def move_files_for_sharing(
                     raise e
 
 
+def move_error_report(
+        source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+):
+    """
+    Move the error report from a source filesystem to a destination filesystem
+    """
+    source_file_list = source_fs.walk.info(namespaces=["details"])
+
+    for file_path, file_info in source_file_list:
+        if file_info.is_file and file_path.endswith("_error_report.csv"):
+            try:
+                dest_path = file_path.split("/")[-1]
+                copy_file(source_fs, file_path, destination_fs, dest_path)
+            except Exception as e:
+                logger.error(f"Error moving file {file_path} to destination folder")
+                if continue_on_error:
+                    pass
+                else:
+                    raise e
+
+
 def restore_session_folder(session_fs: FS) -> List[FileLocator]:
     """
     Should we ever need to re-run a pipeline, this function will restore the session folder and return the metadata just like the create_session_folder function.

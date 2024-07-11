@@ -4,7 +4,7 @@ from dagster import In, Out, op
 from fs.base import FS
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
-from liiatools.common.checks import check_year_within_range, check_la_signature
+from liiatools.common.checks import check_year_within_range
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
@@ -32,7 +32,8 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
-    incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
+    incoming_files = incoming_folder().opendir("ssda903")
+    incoming_files = pl.move_files_for_processing(incoming_files, session_folder)
 
     return session_folder, session_id, incoming_files
 
@@ -107,17 +108,6 @@ def process_files(
             )
             continue
 
-        if check_la_signature(la_code, pipeline_config().la_signed) is False:
-            error_report.append(
-                dict(
-                    type="InvalidLA",
-                    message="Invalid local authority signature",
-                    filename=file_locator.name,
-                    uuid=uuid,
-                )
-            )
-            continue
-
         schema = load_schema(year)
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
@@ -171,8 +161,14 @@ def process_files(
         if input_la_code() is not None
         else f"ssda903_{session_id}_error_report.csv"
     )
-    with session_folder.open(error_report_name, "w") as FILE:
-        error_report.to_dataframe().to_csv(FILE, index=False)
+
+    destination_logs = shared_folder().makedirs("logs", recreate=True)
+    incoming_logs = incoming_folder().makedirs("logs", recreate=True)
+    log_locations = [session_folder, destination_logs, incoming_logs]
+
+    for location in log_locations:
+        with location.open(error_report_name, "w") as FILE:
+            error_report.to_dataframe().to_csv(FILE, index=False)
 
 
 @op()

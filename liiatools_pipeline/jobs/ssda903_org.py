@@ -9,7 +9,13 @@ from liiatools_pipeline.ops.ssda903_org import (
     ofsted_inspection,
     create_reports,
     create_org_session_folder,
+    move_error_report,
 )
+
+
+@job
+def ssda903_move_error_report():
+    move_error_report()
 
 
 @job

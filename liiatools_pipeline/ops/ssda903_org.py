@@ -63,6 +63,13 @@ def create_reports(
         report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
 
 
+@op()
+def move_error_report():
+    source_folder = incoming_folder().opendir("logs")
+    destination_folder = shared_folder().makedirs("logs", recreate=True)
+    pl.move_error_report(source_folder, destination_folder)
+
+
 @op
 def dim_tables():
     create_dim_tables()
