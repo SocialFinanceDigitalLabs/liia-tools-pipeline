@@ -33,13 +33,13 @@ def log_dir(build_dir):
 
 
 @pytest.mark.skipif(os.environ.get("SKIP_E2E"), reason="Skipping end-to-end tests")
-def test_end_to_end(liiatools_dir, build_dir):
+def test_end_to_end(build_dir):
     incoming_dir = build_dir / "incoming"
     incoming_dir.mkdir(parents=True, exist_ok=True)
     pipeline_dir = build_dir / "pipeline"
     pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-    shutil.copy(CIN_2022, incoming_dir / f"cin-2022.xml")
+    shutil.copy(CIN_2022, incoming_dir / f"BAR_cin_2022.xml")
 
     runner = CliRunner()
     result = runner.invoke(
@@ -47,17 +47,17 @@ def test_end_to_end(liiatools_dir, build_dir):
         [
             "cin-census",
             "pipeline",
-            "-c",
-            "BAD",
-            "--input",
+            "--input-location",
             incoming_dir.as_posix(),
-            "--output",
+            "--output-location",
             pipeline_dir.as_posix(),
         ],
         catch_exceptions=False,
     )
 
     assert result.exit_code == 0
+
+    shutil.rmtree(build_dir.parents[1])
 
 
 @pytest.mark.skip("Old pipeline")
@@ -69,7 +69,7 @@ def test_end_to_end_old(liiatools_dir, build_dir, log_dir):
             "cin-census",
             "cleanfile",
             "--i",
-            str(liiatools_dir / "cin_census_pipeline/spec/samples/cin-2022.xml"),
+            str(liiatools_dir / "cin_census_pipeline/spec/samples/BAR_cin_2022.xml"),
             "--o",
             str(build_dir),
             "--la_log_dir",

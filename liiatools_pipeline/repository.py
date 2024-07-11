@@ -10,7 +10,6 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.jobs.cin import cin_incoming
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.sensors.location_sensor import location_sensor
 from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
@@ -33,7 +32,6 @@ def sync():
         reports,
         external_incoming,
         ssda903_sufficiency,
-        cin_incoming,
     ]
     schedules = []
     sensors = [location_sensor, sufficiency_sensor]

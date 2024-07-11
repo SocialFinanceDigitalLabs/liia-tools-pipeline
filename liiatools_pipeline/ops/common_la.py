@@ -1,7 +1,9 @@
+import logging
 from dagster import Config
 from typing import List, Tuple
 from dagster import In, Out, op
 from fs.base import FS
+
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
@@ -9,15 +11,10 @@ from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data
-
-from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin, load_schema_path as load_schema_path_cin
-from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
-
+from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
+from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
-
-from dagster import get_dagster_logger
-
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     workspace_folder,
@@ -27,7 +24,10 @@ from liiatools_pipeline.assets.common import (
     dataset,
 )
 
+from dagster import get_dagster_logger
 log = get_dagster_logger()
+
+logger = logging.getLogger(__name__)
 
 
 class FileConfig(Config):
@@ -74,8 +74,6 @@ def process_files(
     current: DataframeArchive,
     session_id: str,
 ):
-    log.info(f"Processing files for dataset type: {dataset}")
-
     error_report = ErrorContainer()
     for file_locator in incoming_files:
         uuid = file_locator.meta["uuid"]
@@ -107,29 +105,16 @@ def process_files(
             )
             continue
 
-        # Determine the schema and schema path based on the dataset type
-        if dataset == 'cin':
-            schema = load_schema_cin(year)
-            schema_path = load_schema_path_cin(year=year)
-            task_cleanfile = task_cleanfile_cin
-        elif dataset == 'ssda903':
-            schema = load_schema_ssda903(year)
-            task_cleanfile = task_cleanfile_ssda903
-        else:
-            error_report.append(
-                dict(
-                    type="InvalidDatasetType",
-                    message="Invalid dataset type specified",
-                    filename=file_locator.name,
-                    uuid=uuid,
-                )
-            )
+        try:
+            schema = globals()[f"load_schema_{dataset()}"](year)
+        except KeyError:
+            logger.info(f"Dataset specified: {dataset} isn't valid. Defaulting to None")
             continue
 
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
         try:
-            cleanfile_result = task_cleanfile(file_locator, schema, schema_path)
+            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](file_locator, schema)
         except StreamError as e:
             error_report.append(
                 dict(

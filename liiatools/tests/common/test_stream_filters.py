@@ -30,7 +30,7 @@ from liiatools.common.stream_filters import (
 )
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 from liiatools.cin_census_pipeline.spec.samples import CIN_2022
-from liiatools.cin_census_pipeline.spec import load_schema, load_schema_path
+from liiatools.cin_census_pipeline.spec import load_schema
 
 
 def test_parse_tabular_csv():
@@ -90,7 +90,7 @@ def test_add_context():
 
 
 def test_add_schema():
-    schema = load_schema(year=2022)
+    schema, schema_path = load_schema(year=2022)
     stream = [
         StartElement(tag="Message", context=("Message",)),
         StartElement(tag="Header", context=("Message", "Header")),
@@ -114,7 +114,7 @@ def test_add_schema():
 
 
 def _xml_to_stream(root) -> Iterable[ParseEvent]:
-    schema = load_schema(2022)
+    schema, schema_path = load_schema(2022)
 
     input = BytesIO(ET.tostring(root, encoding="utf-8"))
     stream = dom_parse(input, filename="test.xml")
@@ -134,29 +134,29 @@ def test_validate_all_valid():
     for event in stream:
         assert not hasattr(event, "errors")
 
-
-def test_validate_missing_required_field():
-    with CIN_2022.open("rb") as f:
-        root = ET.parse(f).getroot()
-
-    parent = root.find(".//CSWWWorker")
-    el = parent.find("AgencyWorker")
-    parent.remove(el)
-
-    stream = _xml_to_stream(root)
-
-    errors = []
-    for event in stream:
-        if hasattr(event, "errors"):
-            errors.append(event.errors)
-
-    assert list(errors[0])[0] == {
-        "type": "ValidationError",
-        "message": "Invalid node",
-        "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
-    }
-
 # TODO update to work with CIN rather than CSWW
+# def test_validate_missing_required_field():
+#     with CIN_2022.open("rb") as f:
+#         root = ET.parse(f).getroot()
+#
+#     parent = root.find(".//CSWWWorker")
+#     el = parent.find("AgencyWorker")
+#     parent.remove(el)
+#
+#     stream = _xml_to_stream(root)
+#
+#     errors = []
+#     for event in stream:
+#         if hasattr(event, "errors"):
+#             errors.append(event.errors)
+#
+#     assert list(errors[0])[0] == {
+#         "type": "ValidationError",
+#         "message": "Invalid node",
+#         "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
+#     }
+#
+#
 # def test_validate_reordered_required_field():
 #     with CIN_2022.open("rb") as f:
 #         root = ET.parse(f).getroot()
