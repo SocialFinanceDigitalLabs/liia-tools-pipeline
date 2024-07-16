@@ -20,3 +20,9 @@ def ssda903_move_current():
 def ssda903_concatenate():
     current = ssda903.open_current()
     ssda903.create_concatenated_view(current)
+
+
+@job
+def ssda903_fix_episodes():
+    session_folder = ssda903.create_fix_episodes_session_folder()
+    ssda903.fix_episodes(session_folder)
