@@ -8,6 +8,8 @@ from liiatools.common.pipeline import (
     move_files_for_processing,
     restore_session_folder,
     discover_la,
+    discover_term,
+    Term,
 )
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 

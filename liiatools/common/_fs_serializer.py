@@ -39,6 +39,8 @@ def deserialise(data: dict) -> FS:
     else:
         raise NotImplementedError(f"Cannot deserialize {data}")
 
+    if data["subpath"]:
+        fs = fs.opendir(data["subpath"])
     return fs
 
 

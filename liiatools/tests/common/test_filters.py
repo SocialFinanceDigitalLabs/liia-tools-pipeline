@@ -7,6 +7,7 @@ from liiatools.common import stream_filters
 from liiatools.common.spec.__data_schema import Column
 
 from liiatools.ssda903_pipeline.spec import load_schema as s903_schema
+from liiatools.annex_a_pipeline.spec import load_schema as annex_a_schema
 
 
 def test_collect_row():
@@ -119,6 +120,39 @@ def test_add_table_name():
         }
     ]
 
+    schema = annex_a_schema()
+
+    assert (
+        get_table_name(
+            [
+                "Child Unique ID",
+                "Gender",
+                "Ethnicity",
+                "Date of Birth",
+                "Age of Child (Years)",
+                "Date of Contact",
+                "Contact Source",
+            ]
+        )["table_name"]
+        == "List 1"
+    )
+
+    assert (
+        get_table_name(
+            [
+                "Child ID",
+                "Gender",
+                "Ethnicity",
+                "Date Birth",
+                "Age",
+                "Age",
+                "Date of Contact",
+                "Contact Source",
+            ]
+        )["table_name"]
+        == "List 1"
+    )
+
 
 def test_match_config_to_cell():
     schema = s903_schema(2040)
@@ -144,6 +178,21 @@ def test_match_config_to_cell():
     assert match_cell(table_name="header", header=None) is None
 
     assert match_cell(table_name=None, header="CHILD") is None
+
+    schema = annex_a_schema()
+
+    assert (
+        match_cell(table_name="List 1", header="Child Unique ID").string
+        == "alphanumeric"
+    )
+
+    assert match_cell(table_name="List 1", header="Child Unique ID").header_regex == [
+        "/.*child.*id.*/i"
+    ]
+
+    assert (
+        match_cell(table_name="List 1", header="Gender").category[0].code == "b) Female"
+    )
 
 
 def assert_errors(event, *types):

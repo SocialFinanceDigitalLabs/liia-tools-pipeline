@@ -11,6 +11,11 @@ def to_dataframe(data: List[Dict], table_config: Dict[str, Column]) -> pd.DataFr
         if column_spec.type == "date":
             # Set dtype on date columns
             df[column_name] = pd.to_datetime(df[column_name], errors="raise").dt.date
+        elif column_spec.type == "time":
+            # Set type on time columns
+            df[column_name] = pd.to_datetime(
+                df[column_name], format="%H:%M:%S", errors="coerce"
+            ).dt.time
         elif column_spec.type == "category":
             # set type to categorical
             df[column_name] = df[column_name].astype("category")
@@ -19,6 +24,11 @@ def to_dataframe(data: List[Dict], table_config: Dict[str, Column]) -> pd.DataFr
                 # set type to Int64
                 df[column_name] = pd.to_numeric(df[column_name], errors="raise").astype(
                     "Int64"
+                )
+            if column_spec.numeric.type == "float":
+                # set type to float
+                df[column_name] = pd.to_numeric(df[column_name], errors="raise").astype(
+                    "float"
                 )
     return df
 

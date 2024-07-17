@@ -142,5 +142,5 @@ def create_reports(current_folder: FS, process_folder: FS):
 
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
-        report = prepare_export(aggregate_data, load_pipeline_config())
-        report.data.export(report_folder, "ssda903_", "csv")
+        report_data = prepare_export(aggregate_data, load_pipeline_config(), profile=report)
+        report_data.data.export(report_folder, "ssda903_", "csv")
