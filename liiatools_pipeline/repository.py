@@ -9,10 +9,12 @@ from liiatools_pipeline.jobs.common_la import (
 from liiatools_pipeline.jobs.common_org import (
     reports,
 )
-from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
+from liiatools_pipeline.jobs.common_org import ssda903_sufficiency
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.sensors.location_sensor import location_sensor
 from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
+from liiatools_pipeline.sensors.move_current_sensor import move_current_sensor
+from liiatools_pipeline.sensors.concatenate_sensor import concatenate_sensor
 
 register()
 
@@ -34,7 +36,11 @@ def sync():
         ssda903_sufficiency,
     ]
     schedules = []
-    sensors = [location_sensor, sufficiency_sensor]
+    sensors = [location_sensor,
+               sufficiency_sensor,
+               move_current_sensor,
+               concatenate_sensor,
+    ]
 
     return jobs + schedules + sensors
 

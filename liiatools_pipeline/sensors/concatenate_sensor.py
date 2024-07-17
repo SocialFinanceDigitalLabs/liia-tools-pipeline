@@ -12,5 +12,11 @@ def concatenate_sensor(context):
         order_by="update_timestamp",
         ascending=False,
     )
-    for run_record in run_records:
-        yield RunRequest(run_key=run_record.dagster_run.run_id)
+
+    if run_records:  # Ensure there is at least one run record
+        latest_run_record = run_records[0]  # Get the most recent run record
+        yield RunRequest(run_key=latest_run_record.dagster_run.run_id)
+
+    # for run_record in run_records:
+    #     yield RunRequest(run_key=run_record.dagster_run.run_id)
+

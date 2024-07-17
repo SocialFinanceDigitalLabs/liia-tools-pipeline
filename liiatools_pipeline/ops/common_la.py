@@ -108,7 +108,7 @@ def process_files(
         try:
             schema = globals()[f"load_schema_{dataset()}"](year)
         except KeyError:
-            logger.info(f"Dataset specified: {dataset} isn't valid. Defaulting to None")
+            logger.info(f"Dataset specified: {dataset()} isn't valid. Defaulting to None")
             continue
 
         metadata = dict(year=year, schema=schema, la_code=la_code)
@@ -179,5 +179,5 @@ def create_concatenated_view(current: DataframeArchive):
         concat_data = current.current(la_code)
 
         if concat_data:
-            concat_data.export(concat_folder, f"{la_code}_{dataset()}", "csv")
+            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
 
