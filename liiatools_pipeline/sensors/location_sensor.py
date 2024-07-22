@@ -4,6 +4,7 @@ from dagster import RunRequest, SkipReason, RunConfig, sensor, DefaultSensorStat
 from fs import open_fs
 from fs.walk import Walker
 from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
+from liiatools_pipeline.jobs.ssda903_org import ssda903_reports
 from decouple import config as env_config
 
 
@@ -74,3 +75,35 @@ def location_sensor(context):
             run_key=generate_run_key(folder_location, files),
             run_config=RunConfig(),
         )
+
+@sensor(
+    job=ssda903_reports,
+    minimum_interval_seconds=60,
+    description="Monitors Specified Location for ssda903 concatenated outputs",
+    default_status=DefaultSensorStatus.RUNNING,
+)
+def ssda903_reports_sensor(context):
+    context.log.info("Opening folder location: {}".format(env_config("SHARED_LOCATION")))
+    folder_location = env_config("SHARED_LOCATION")
+    wildcards = env_config("CONCAT_WILDCARDS").split(",")
+    directory_pointer = open_location(folder_location)
+    concat_folder = directory_pointer().opendir("concatenated")
+
+    context.log.info("Analysing folder contents:")
+    directory_contents = directory_walker(concat_folder, wildcards)
+
+    context.log.info("Generating Run Key")
+    files = []
+    for filename in directory_contents:
+        files.append(filename.lstrip("/"))
+
+    if not files:
+        context.log.info("No files found, skipping run")
+        yield SkipReason("No files present")
+    else:
+        context.log.info("Differences found, executing run")
+        yield RunRequest(
+            run_key=generate_run_key(folder_location, files),
+            run_config=RunConfig(),
+        )
+        
