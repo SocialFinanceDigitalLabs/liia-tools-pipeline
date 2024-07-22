@@ -52,7 +52,7 @@ def generate_run_key(folder_location, files):
     description="Monitors Specified Location for 903 Files",
     default_status=DefaultSensorStatus.RUNNING,
 )
-def location_sensor(context):
+def ssda903_pipeline_sensor(context):
     context.log.info("Opening folder location: {}".format(env_config("INPUT_LOCATION")))
     folder_location = env_config("INPUT_LOCATION")
     wildcards = env_config("903_WILDCARDS").split(",")
@@ -106,4 +106,3 @@ def ssda903_reports_sensor(context):
             run_key=generate_run_key(folder_location, files),
             run_config=RunConfig(),
         )
-        
