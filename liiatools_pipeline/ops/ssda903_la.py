@@ -1,7 +1,8 @@
 from typing import List, Tuple
 
-from dagster import In, Out, op
+from dagster import In, Out, op, Config
 from fs.base import FS
+from fs import open_fs
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
@@ -12,12 +13,15 @@ from liiatools.ssda903_pipeline.spec import load_schema
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
 
 from liiatools_pipeline.assets.ssda903 import (
-    incoming_folder,
     workspace_folder,
     shared_folder,
     pipeline_config,
     la_code as input_la_code,
 )
+
+
+class FileConfig(Config):
+    incoming_folder: str
 
 
 @op(
@@ -27,11 +31,11 @@ from liiatools_pipeline.assets.ssda903 import (
         "incoming_files": Out(List[FileLocator]),
     }
 )
-def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
+def create_session_folder(config: FileConfig) -> Tuple[FS, str, List[FileLocator]]:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
-    incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
+    incoming_files = pl.move_files_for_processing(open_fs(config.incoming_folder), session_folder)
 
     return session_folder, session_id, incoming_files
 
