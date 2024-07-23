@@ -1,8 +1,12 @@
-from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor
+from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor, DefaultSensorStatus
 from liiatools_pipeline.jobs.common_la import move_current, concatenate
 
 
-@sensor(job=concatenate)
+@sensor(
+    job=concatenate,
+    description="Runs concatenate job once move_current job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+)
 def concatenate_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(

@@ -1,8 +1,12 @@
-from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor
+from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor, DefaultSensorStatus
 from liiatools_pipeline.jobs.common_la import clean, move_current
 
 
-@sensor(job=move_current)
+@sensor(
+    job=move_current,
+    description="Runs move_current job once clean job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+)
 def move_current_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
