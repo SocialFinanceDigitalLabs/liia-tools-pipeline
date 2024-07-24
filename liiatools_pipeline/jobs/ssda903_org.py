@@ -9,7 +9,13 @@ from liiatools_pipeline.ops.ssda903_org import (
     ofsted_inspection,
     create_reports,
     create_org_session_folder,
+    move_current_and_concat_view,
 )
+
+
+@job
+def ssda903_move_current_and_concat():
+    move_current_and_concat_view()
 
 
 @job

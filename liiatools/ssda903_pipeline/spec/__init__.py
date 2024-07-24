@@ -62,13 +62,31 @@ def load_schema(year: int) -> DataSchema:
 
         for key, diff_obj in diff.items():
             diff_type = diff_obj["type"]
-            assert diff_type in ("add", "modify"), f"Unknown diff type {diff_type}"
+            assert diff_type in (
+                "add",
+                "modify",
+                "rename",
+                "remove",
+            ), f"Unknown diff type {diff_type}"
             path = key.split(".")
             parent = full_schema
-            for item in path[:-1]:
-                parent = parent[item]
 
-            parent[path[-1]] = diff_obj["value"]
+            if diff_type in ["add", "modify"]:
+                for item in path[:-1]:
+                    parent = parent[item]
+                parent[path[-1]] = diff_obj["value"]
+
+            elif diff_type == "rename":
+                dict = parent[path[0]][path[1]]
+                dict[diff_obj["value"]] = dict.pop(path[-1])
+
+            elif diff_type == "remove":
+                if len(path) == 2:  # Remove columns
+                    dict = parent[path[0]][path[1]]
+                    [dict.pop(key) for key in diff_obj["value"]]
+                elif len(path) == 1:  # Remove files
+                    dict = parent[path[0]]
+                    [dict.pop(key) for key in diff_obj["value"]]
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)

@@ -175,7 +175,7 @@ def move_current_view():
     ins={"current": In(DataframeArchive)},
 )
 def create_concatenated_view(current: DataframeArchive):
-    concat_folder = shared_folder().makedirs("concatenated", recreate=True)
+    concat_folder = shared_folder().makedirs("concatenated/ssda903", recreate=True)
     for la_code in authorities.codes:
         concat_data = current.current(la_code)
 
