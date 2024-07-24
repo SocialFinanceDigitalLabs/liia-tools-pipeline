@@ -70,7 +70,7 @@ def ssda903_pipeline_sensor(context):
         context.log.info("No files found, skipping run")
         yield SkipReason("No files present")
     else:
-        context.log.info("Differences found, executing run")
+        context.log.info("Files found, executing run")
         yield RunRequest(
             run_key=generate_run_key(folder_location, files),
             run_config=RunConfig(),
@@ -83,13 +83,13 @@ def ssda903_pipeline_sensor(context):
     default_status=DefaultSensorStatus.RUNNING,
 )
 def ssda903_reports_sensor(context):
-    context.log.info("Opening folder location: {}".format(env_config("SHARED_LOCATION")))
-    folder_location = env_config("SHARED_LOCATION")
-    wildcards = env_config("CONCAT_WILDCARDS").split(",")
+    context.log.info("Opening folder location: {}".format(env_config("INPUT_LOCATION")))
+    folder_location = env_config("INPUT_LOCATION")
     directory_pointer = open_location(folder_location)
-    concat_folder = directory_pointer().opendir("concatenated")
+    concat_folder = directory_pointer.opendir("concatenated/903")
 
     context.log.info("Analysing folder contents:")
+    wildcards = env_config("903_WILDCARDS").split(",")
     directory_contents = directory_walker(concat_folder, wildcards)
 
     context.log.info("Generating Run Key")
@@ -101,8 +101,8 @@ def ssda903_reports_sensor(context):
         context.log.info("No files found, skipping run")
         yield SkipReason("No files present")
     else:
-        context.log.info("Differences found, executing run")
+        context.log.info("Files found, executing run")
         yield RunRequest(
-            run_key=generate_run_key(folder_location, files),
+            run_key=generate_run_key(concat_folder, files),
             run_config=RunConfig(),
         )
