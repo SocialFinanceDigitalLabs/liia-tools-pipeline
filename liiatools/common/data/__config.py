@@ -31,7 +31,7 @@ class TableConfig(BaseModel):
         """
         Returns a list of column ids that should be used to sort the table in order of priority
         """
-        sort_keys = [(c.id, c.sort) for c in self.columns if c.sort]
+        sort_keys = [(c.id, c.sort) for c in self.columns if c.sort is not None]
         sort_keys.sort(key=lambda x: x[1])
         return [c[0] for c in sort_keys]
 
