@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-COLUMNS = [
+__COLUMNS = [
     "DECOM",
     "RNE",
     "LS",
@@ -19,7 +19,7 @@ COLUMNS = [
     "YEAR",
 ]
 
-DATES = [
+__DATES = [
     "DECOM",
     "DEC",
     "DECOM_previous",
@@ -28,7 +28,7 @@ DATES = [
     "DEC_next",
 ]
 
-COLUMNS_TO_KEEP = [
+__COLUMNS_TO_KEEP = [
     "CHILD",
     "LA",
     "DECOM",
@@ -425,8 +425,8 @@ def stage_1(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     """
     # Add columns to dataframe to identify which rules should be applied at stage 1
     ssda903_df = ssda903_df.sort_values(["CHILD", "DECOM"], ignore_index=True)
-    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, COLUMNS)
-    ssda903_df_stage1 = format_datetime(ssda903_df_stage1, DATES)
+    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, __COLUMNS)
+    ssda903_df_stage1 = format_datetime(ssda903_df_stage1, __DATES)
     ssda903_df_stage1 = add_latest_year_and_source_for_la(ssda903_df_stage1)
     ssda903_df_stage1 = add_stage1_rule_identifier_columns(ssda903_df_stage1)
     ssda903_df_stage1 = identify_stage1_rule_to_apply(ssda903_df_stage1)
@@ -443,16 +443,16 @@ def stage_2(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     :param ssda903_df: Dataframe with SSDA903 Episodes data
     :return: Dataframe with stage 2 rules identified and applied
     """
-    ssda903_df_stage2 = ssda903_df[COLUMNS_TO_KEEP]
-    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, COLUMNS)
-    ssda903_df_stage2 = format_datetime(ssda903_df_stage2, DATES)
+    ssda903_df_stage2 = ssda903_df[__COLUMNS_TO_KEEP]
+    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, __COLUMNS)
+    ssda903_df_stage2 = format_datetime(ssda903_df_stage2, __DATES)
     ssda903_df_stage2 = add_stage2_rule_identifier_columns(ssda903_df_stage2)
     ssda903_df_stage2 = identify_stage2_rule_to_apply(ssda903_df_stage2)
 
     # Apply the stage 2 rules
     ssda903_df_stage2_applied = apply_stage2_rules(ssda903_df_stage2)
 
-    ssda903_df_final = ssda903_df_stage2_applied[COLUMNS_TO_KEEP]
+    ssda903_df_final = ssda903_df_stage2_applied[__COLUMNS_TO_KEEP]
     ssda903_df_final = ssda903_df_final.sort_values(
         ["CHILD", "DECOM"], ignore_index=True
     )
