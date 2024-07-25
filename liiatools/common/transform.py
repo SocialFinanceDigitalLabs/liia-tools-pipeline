@@ -172,10 +172,11 @@ def apply_retention(
         table = data[table_name].copy()
         data_container[table_name] = table[
             table[year_column] > current_year - retention_period
-        ].copy()
+        ]
 
+        table = data_container[table_name].copy()
         data_container[table_name] = table[
             table[la_column].isin(signed_las)
-            ].copy()
+            ]
 
     return data_container

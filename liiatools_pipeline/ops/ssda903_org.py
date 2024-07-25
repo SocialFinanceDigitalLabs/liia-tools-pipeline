@@ -24,6 +24,16 @@ from sufficiency_data_transform.all_dim_and_fact import (
 )
 
 
+@op()
+def move_current_and_concat_view():
+    current_folder = incoming_folder().opendir("current")
+    destination_folder = shared_folder()
+    pl.move_files_for_sharing(current_folder, destination_folder)
+
+    concat_folder = incoming_folder().opendir("concatenated/ssda903")
+    pl.move_files_for_sharing(concat_folder, destination_folder)
+
+
 @op(
     out={
         "session_folder": Out(FS),
@@ -35,7 +45,7 @@ def create_org_session_folder() -> FS:
     )
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
-    concat_folder = incoming_folder().opendir("concatenated")
+    concat_folder = incoming_folder().opendir("concatenated/ssda903")
     pl.move_files_for_sharing(concat_folder, session_folder)
 
     return session_folder
