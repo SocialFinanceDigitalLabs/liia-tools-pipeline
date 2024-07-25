@@ -5,10 +5,11 @@ from fs.base import FS
 from fs import open_fs
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
+from liiatools.common.checks import check_year_within_range, check_la_signature
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
-from liiatools.common.transform import degrade_data, enrich_data
+from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.ssda903_pipeline.spec import load_schema
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
 
@@ -78,6 +79,22 @@ def process_files(
             )
             continue
 
+        if (
+            check_year_within_range(
+                year, max(pipeline_config().retention_period.values())
+            )
+            is False
+        ):
+            error_report.append(
+                dict(
+                    type="RetentionPeriod",
+                    message="This file is not within the year ranges of data retention policy",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+
         la_code = (
             input_la_code()
             if input_la_code() is not None
@@ -109,6 +126,10 @@ def process_files(
                 )
             )
             continue
+
+        cleanfile_result.data = prepare_export(
+            cleanfile_result.data, pipeline_config(), profile="PAN"
+        )
 
         cleanfile_result.data.export(
             session_folder.opendir(SessionNames.CLEANED_FOLDER),
@@ -158,7 +179,7 @@ def move_current_view():
     ins={"current": In(DataframeArchive)},
 )
 def create_concatenated_view(current: DataframeArchive):
-    concat_folder = shared_folder().makedirs("concatenated", recreate=True)
+    concat_folder = shared_folder().makedirs("concatenated/ssda903", recreate=True)
     for la_code in authorities.codes:
         concat_data = current.current(la_code)
 

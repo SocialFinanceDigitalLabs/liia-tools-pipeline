@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from pydantic import BaseModel, ConfigDict
 
@@ -42,6 +42,8 @@ class TableConfig(BaseModel):
 class PipelineConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    retention_period: Dict
+    la_signed: Dict
     table_list: List[TableConfig]
 
     def __getitem__(self, value) -> TableConfig:
