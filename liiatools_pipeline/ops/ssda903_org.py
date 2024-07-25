@@ -4,7 +4,7 @@ from fs.base import FS
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
-from liiatools.common.transform import prepare_export
+from liiatools.common.transform import prepare_export, apply_retention
 
 from liiatools_pipeline.assets.ssda903 import (
     pipeline_config,
@@ -66,8 +66,11 @@ def create_reports(
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
-        report_data.data.export(report_folder, "ssda903_", "csv")
-        report_data.data.export(shared_folder(), f"{report}_ssda903_", "csv")
+        report_data = apply_retention(
+            report_data, pipeline_config(), profile=report, year_column="YEAR", la_column="LA"
+        )
+        report_data.export(report_folder, "ssda903_", "csv")
+        report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
 
 
 @op
