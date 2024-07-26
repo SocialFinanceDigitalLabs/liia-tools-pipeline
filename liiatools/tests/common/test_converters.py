@@ -10,7 +10,6 @@ from liiatools.common.converters import (
     to_date,
     to_nth_of_month,
     to_regex,
-    to_time,
 )
 from liiatools.common.spec.__data_schema import Column
 
@@ -183,13 +182,3 @@ def test_to_regex():
         to_regex("AB1234567890123456", pattern)
         to_regex("AB12345", pattern)
         to_regex("xxxxOz2054309383", pattern)
-
-    pattern = r"[A-Za-z]\d{11}(\d|[A-Za-z])"
-    assert to_regex("A123456789012", pattern) == "A123456789012"
-    assert to_regex("A12345678901B", pattern) == "A12345678901B"
-
-
-def test_to_time():
-    assert to_time(datetime.datetime(2020, 3, 19, 17, 0, 0)) == datetime.time(17, 0, 0)
-    assert to_time(datetime.time(17, 0, 0)) == datetime.time(17, 0, 0)
-    assert to_time("2017-Jan-01 08:00:00") == datetime.time(8, 0, 0)

@@ -25,7 +25,6 @@ from liiatools.common.converters import (
     to_postcode,
     to_regex,
     to_category,
-    to_time,
 )
 
 from .spec.__data_schema import Column, DataSchema, Numeric, Category
@@ -78,7 +77,7 @@ def tablib_parse(source: FileLocator):
         logger.debug("Failed to open %s as a sheet", filename)
         pass
 
-    raise StreamError(f"Could not parse {source} as a tabular format")
+    raise StreamError(f"Could not parse as a tabular format")
 
 
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
@@ -306,8 +305,6 @@ def conform_cell_types(event, preserve_value=False):
         converter = lambda x: str(x)
     elif column_spec.type == "regex":
         converter = lambda x: to_regex(x, column_spec.cell_regex)
-    elif column_spec.type == "time":
-        converter = lambda x: to_time(x, column_spec.time)
     else:
         return EventErrors.add_to_event(
             event, type="UnknownType", message=f"Unknown cell type {column_spec.type}"

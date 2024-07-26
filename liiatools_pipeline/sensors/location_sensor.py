@@ -4,6 +4,8 @@ from dagster import RunRequest, SkipReason, RunConfig, sensor, DefaultSensorStat
 from fs import open_fs
 from fs.walk import Walker
 from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
+# from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
+from liiatools_pipeline.jobs.common_la import clean
 from decouple import config as env_config
 
 
@@ -46,7 +48,8 @@ def generate_run_key(folder_location, files):
 
 
 @sensor(
-    job=ssda903_clean,
+    # Changed job= "ssda903_clean" to "clean" from jobs.common
+    job=clean,
     minimum_interval_seconds=60,
     description="Monitors Specified Location for 903 Files",
     default_status=DefaultSensorStatus.RUNNING,
@@ -63,6 +66,7 @@ def location_sensor(context):
     context.log.info("Generating Run Key")
     files = []
     for filename in directory_contents:
+        #files.append(directory_pointer.getsyspath(filename))
         files.append(filename.lstrip("/"))
 
     if not files:

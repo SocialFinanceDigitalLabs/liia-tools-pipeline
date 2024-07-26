@@ -10,7 +10,7 @@ def test_load_schema():
 
 def test_too_early():
     with pytest.raises(ValueError):
-        load_schema(2015)
+        load_schema(2016)
 
 
 def test_diff_applied():

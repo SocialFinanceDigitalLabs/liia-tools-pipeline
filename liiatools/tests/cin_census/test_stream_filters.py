@@ -6,7 +6,7 @@ from liiatools.common.spec.__data_schema import (
     Numeric,
     Category,
 )
-from liiatools.cin_census_pipeline.spec import load_schema_path
+from liiatools.cin_census_pipeline.spec import load_schema
 from liiatools.cin_census_pipeline.stream_filters import add_column_spec
 
 
@@ -25,7 +25,7 @@ def test_add_column_spec():
     string_schema = Schema((0, 1), Name("{http://www.w3.org/2001/XMLSchema}string"))
     alphanumeric_schema = Schema((1, 1), Name(None))
 
-    schema_path = load_schema_path(2022)
+    schema, schema_path = load_schema(2022)
     stream = [
         TextNode(text=None, schema=category_schema),
         TextNode(text=None, schema=numeric_schema),
