@@ -791,7 +791,7 @@ def test__update_dec_stage1():
         }
     )
     data[["DEC", "DECOM_next"]] = data[["DEC", "DECOM_next"]].apply(
-        pd.to_datetime, format="%Y-%m-%d"
+        lambda row: pd.to_datetime(row, format="%Y-%m-%d", errors="raise").dt.date
     )
     data["DEC"] = data.apply(_update_dec_stage1, axis=1)
     assert data["DEC"].astype(str).tolist() == [
