@@ -316,7 +316,15 @@
           "type": "integer",
           "enrich": "year",
           "sort": 1
-        }
+        },
+        {
+        "id": "YEAR_latest",
+        "type": "integer"
+        },
+        {
+          "id": "Episode_source",
+          "type": "category"
+        }        
       ]
     },
     {

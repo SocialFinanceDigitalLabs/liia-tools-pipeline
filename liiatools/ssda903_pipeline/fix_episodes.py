@@ -48,6 +48,11 @@ __COLUMNS_TO_KEEP = [
     "Episode_source",
 ]
 
+__DATES_TO_KEEP = [
+    "DECOM",
+    "DEC",
+]
+
 
 def create_previous_and_next_episode(
     dataframe: pd.DataFrame, columns: list
@@ -83,7 +88,21 @@ def format_datetime(dataframe: pd.DataFrame, date_columns: list) -> pd.DataFrame
     :return: Dataframe with date columns showing as datetime data type
     """
     dataframe[date_columns] = dataframe[date_columns].apply(
-        lambda row: pd.to_datetime(row, format="%Y-%m-%d", errors="raise").dt.date
+        pd.to_datetime, format="%Y-%m-%d", errors="coerce"
+        )
+    return dataframe
+
+
+def format_date(dataframe: pd.DataFrame, date_columns: list) -> pd.DataFrame:
+    """
+    Format date columns to date type
+
+    :param dataframe: Dataframe with SSDA903 Episodes data
+    :param date_columns: List of columns containing dates as datetime data type
+    :return: Dataframe with date columns showing as date data type
+    """
+    dataframe[date_columns] = dataframe[date_columns].apply(
+        lambda col: pd.to_datetime(col, format="%Y-%m-%d", errors="coerce").dt.date
     )
     return dataframe
 
@@ -453,6 +472,7 @@ def stage_2(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     ssda903_df_stage2_applied = apply_stage2_rules(ssda903_df_stage2)
 
     ssda903_df_final = ssda903_df_stage2_applied[__COLUMNS_TO_KEEP]
+    ssda903_df_final = format_date(ssda903_df_final, __DATES_TO_KEEP)
     ssda903_df_final = ssda903_df_final.sort_values(
         ["CHILD", "DECOM"], ignore_index=True
     )
