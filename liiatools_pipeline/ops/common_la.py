@@ -1,23 +1,38 @@
+import logging
+from dagster import Config
 from typing import List, Tuple
-
 from dagster import In, Out, op
 from fs.base import FS
+
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
+from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data
-from liiatools.ssda903_pipeline.spec import load_schema
-from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
-
-from liiatools_pipeline.assets.ssda903 import (
+from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
+from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
+from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
+from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
+from liiatools_pipeline.assets.common import (
     incoming_folder,
     workspace_folder,
     shared_folder,
     pipeline_config,
     la_code as input_la_code,
+    dataset,
 )
+
+from dagster import get_dagster_logger
+log = get_dagster_logger()
+
+logger = logging.getLogger(__name__)
+
+
+class FileConfig(Config):
+    filename: str
+    name: str
 
 
 @op(
@@ -41,7 +56,7 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 )
 def open_current() -> DataframeArchive:
     current_folder = workspace_folder().makedirs("current", recreate=True)
-    current = DataframeArchive(current_folder, pipeline_config(), "ssda903")
+    current = DataframeArchive(current_folder, pipeline_config(), f"{dataset()}")
     return current
 
 
@@ -90,16 +105,21 @@ def process_files(
             )
             continue
 
-        schema = load_schema(year)
+        try:
+            schema = globals()[f"load_schema_{dataset()}"](year)
+        except KeyError:
+            logger.info(f"Dataset specified: {dataset()} isn't valid. Defaulting to None")
+            continue
+
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
         try:
-            cleanfile_result = task_cleanfile(file_locator, schema)
-        except Exception as e:
+            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](file_locator, schema)
+        except StreamError as e:
             error_report.append(
                 dict(
                     type="StreamError",
-                    message="Failed to clean file. Check log files for technical errors.",
+                    message=str(e),
                     filename=file_locator.name,
                     uuid=uuid,
                 )
@@ -135,9 +155,9 @@ def process_files(
 
     error_report.set_property("session_id", session_id)
     error_report_name = (
-        f"{input_la_code()}_ssda903_{session_id}_error_report.csv"
+        f"{input_la_code()}_{dataset()}_{session_id}_error_report.csv"
         if input_la_code() is not None
-        else f"ssda903_{session_id}_error_report.csv"
+        else f"{dataset()}_{session_id}_error_report.csv"
     )
     with session_folder.open(error_report_name, "w") as FILE:
         error_report.to_dataframe().to_csv(FILE, index=False)
@@ -159,4 +179,5 @@ def create_concatenated_view(current: DataframeArchive):
         concat_data = current.current(la_code)
 
         if concat_data:
-            concat_data.export(concat_folder, f"{la_code}_ssda903_", "csv")
+            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
+

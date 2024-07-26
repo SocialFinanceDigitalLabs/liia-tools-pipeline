@@ -30,6 +30,8 @@ from liiatools.common.stream_filters import (
 )
 from liiatools.annex_a_pipeline.spec.samples import DIR as DIR_AA
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
+from liiatools.cin_census_pipeline.spec.samples import CIN_2022
+from liiatools.cin_census_pipeline.spec import load_schema
 
 
 def test_parse_tabular_csv():
@@ -99,54 +101,54 @@ def test_add_context():
     assert context_stream[4].context == ("Message",)
 
 
-# def test_add_schema():
-#     schema = load_schema(year=2022)
-#     stream = [
-#         StartElement(tag="Message", context=("Message",)),
-#         StartElement(tag="Header", context=("Message", "Header")),
-#         TextNode(cell="string", text=None, context=("Message", "Header")),
-#         EndElement(tag="Header", context=("Message", "Header")),
-#         EndElement(tag="Message", context=("Message",)),
-#     ]
-#
-#     schema_stream = list(add_schema(stream, schema=schema))
-#
-#     assert schema_stream[0].schema.name == "Message"
-#     assert schema_stream[0].schema.occurs == (1, 1)
-#     assert schema_stream[1].schema.name == "Header"
-#     assert schema_stream[1].schema.occurs == (0, 1)
-#     assert schema_stream[2].schema.name == "Header"
-#     assert schema_stream[2].schema.occurs == (0, 1)
-#     assert schema_stream[3].schema.name == "Header"
-#     assert schema_stream[3].schema.occurs == (0, 1)
-#     assert schema_stream[4].schema.name == "Message"
-#     assert schema_stream[4].schema.occurs == (1, 1)
-#
-#
-# def _xml_to_stream(root) -> Iterable[ParseEvent]:
-#     schema = load_schema(2022)
-#
-#     input = BytesIO(ET.tostring(root, encoding="utf-8"))
-#     stream = dom_parse(input, filename="test.xml")
-#     stream = strip_text(stream)
-#     stream = add_context(stream)
-#     stream = add_schema(stream, schema=schema)
-#     stream = validate_elements(stream)
-#     return list(stream)
-#
-#
-# def test_validate_all_valid():
-#     with CSWW_2022.open("rb") as f:
-#         root = ET.parse(f).getroot()
-#
-#     stream = _xml_to_stream(root)
-#
-#     for event in stream:
-#         assert not hasattr(event, "errors")
-#
-#
+def test_add_schema():
+    schema, schema_path = load_schema(year=2022)
+    stream = [
+        StartElement(tag="Message", context=("Message",)),
+        StartElement(tag="Header", context=("Message", "Header")),
+        TextNode(cell="string", text=None, context=("Message", "Header")),
+        EndElement(tag="Header", context=("Message", "Header")),
+        EndElement(tag="Message", context=("Message",)),
+    ]
+
+    schema_stream = list(add_schema(stream, schema=schema))
+
+    assert schema_stream[0].schema.name == "Message"
+    assert schema_stream[0].schema.occurs == (1, 1)
+    assert schema_stream[1].schema.name == "Header"
+    assert schema_stream[1].schema.occurs == (0, 1)
+    assert schema_stream[2].schema.name == "Header"
+    assert schema_stream[2].schema.occurs == (0, 1)
+    assert schema_stream[3].schema.name == "Header"
+    assert schema_stream[3].schema.occurs == (0, 1)
+    assert schema_stream[4].schema.name == "Message"
+    assert schema_stream[4].schema.occurs == (1, 1)
+
+
+def _xml_to_stream(root) -> Iterable[ParseEvent]:
+    schema, schema_path = load_schema(2022)
+
+    input = BytesIO(ET.tostring(root, encoding="utf-8"))
+    stream = dom_parse(input, filename="test.xml")
+    stream = strip_text(stream)
+    stream = add_context(stream)
+    stream = add_schema(stream, schema=schema)
+    stream = validate_elements(stream)
+    return list(stream)
+
+
+def test_validate_all_valid():
+    with CIN_2022.open("rb") as f:
+        root = ET.parse(f).getroot()
+
+    stream = _xml_to_stream(root)
+
+    for event in stream:
+        assert not hasattr(event, "errors")
+
+# TODO update to work with CIN rather than CSWW
 # def test_validate_missing_required_field():
-#     with CSWW_2022.open("rb") as f:
+#     with CIN_2022.open("rb") as f:
 #         root = ET.parse(f).getroot()
 #
 #     parent = root.find(".//CSWWWorker")
@@ -168,7 +170,7 @@ def test_add_context():
 #
 #
 # def test_validate_reordered_required_field():
-#     with CSWW_2022.open("rb") as f:
+#     with CIN_2022.open("rb") as f:
 #         root = ET.parse(f).getroot()
 #
 #     el_parent = root.find(".//AgencyWorker/..")
@@ -191,7 +193,7 @@ def test_add_context():
 #
 #
 # def test_validate_unexpected_node():
-#     with CSWW_2022.open("rb") as f:
+#     with CIN_2022.open("rb") as f:
 #         root = ET.parse(f).getroot()
 #
 #     parent = root.find(".//CSWWWorker")

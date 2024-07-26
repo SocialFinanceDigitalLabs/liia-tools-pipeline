@@ -1,17 +1,34 @@
-import logging
 from dagster import asset
 from decouple import config as env_config
 from fs import open_fs
-
 from liiatools.common.reference import authorities
-from liiatools.ssda903_pipeline.spec import load_pipeline_config
+from liiatools.cin_census_pipeline.spec import load_pipeline_config as load_pipeline_config_cin
+from liiatools.ssda903_pipeline.spec import load_pipeline_config as load_pipeline_config_ssda903
 
+import logging
 logger = logging.getLogger(__name__)
 
 
 @asset
+def dataset():
+    dataset = env_config("DATASET", cast=str)
+    return dataset
+
+
+@asset
 def pipeline_config():
-    return load_pipeline_config()
+    dataset = env_config("DATASET", cast=str)
+    try:
+        return globals()[f"load_pipeline_config_{dataset}"]()
+    except KeyError:
+        logger.info(f"Dataset specified: {dataset} isn't valid. Defaulting to None")
+        return None
+
+
+@asset
+def process_folder():
+    output_location = env_config("OUTPUT_LOCATION", cast=str)
+    return open_fs(output_location)
 
 
 @asset

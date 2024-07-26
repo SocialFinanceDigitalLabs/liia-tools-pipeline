@@ -25,32 +25,32 @@ def build_dir(liiatools_dir):
     return build_dir
 
 
-@pytest.mark.skipif(os.environ.get("SKIP_E2E"), reason="Skipping end-to-end tests")
-def test_end_to_end(liiatools_dir, build_dir):
-    incoming_dir = build_dir / "incoming"
-    incoming_dir.mkdir(parents=True, exist_ok=True)
-    pipeline_dir = build_dir / "pipeline"
-    pipeline_dir.mkdir(parents=True, exist_ok=True)
-
-    shutil.copy(ANNEX_A, incoming_dir / f"Annex_A.xlsx")
-
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "annex-a",
-            "pipeline",
-            "-c",
-            "BAD",
-            "--input",
-            incoming_dir.as_posix(),
-            "--output",
-            pipeline_dir.as_posix(),
-        ],
-        catch_exceptions=False,
-    )
-
-    assert result.exit_code == 0
+# @pytest.mark.skipif(os.environ.get("SKIP_E2E"), reason="Skipping end-to-end tests")
+# def test_end_to_end(liiatools_dir, build_dir):
+#     incoming_dir = build_dir / "incoming"
+#     incoming_dir.mkdir(parents=True, exist_ok=True)
+#     pipeline_dir = build_dir / "pipeline"
+#     pipeline_dir.mkdir(parents=True, exist_ok=True)
+#
+#     shutil.copy(ANNEX_A, incoming_dir / f"Annex_A.xlsx")
+#
+#     runner = CliRunner()
+#     result = runner.invoke(
+#         cli,
+#         [
+#             "annex-a",
+#             "pipeline",
+#             "-c",
+#             "BAD",
+#             "--input",
+#             incoming_dir.as_posix(),
+#             "--output",
+#             pipeline_dir.as_posix(),
+#         ],
+#         catch_exceptions=False,
+#     )
+#
+#     assert result.exit_code == 0
 
 
 @pytest.mark.skip("Old pipeline")

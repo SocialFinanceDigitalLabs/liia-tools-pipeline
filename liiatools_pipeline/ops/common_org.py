@@ -6,11 +6,12 @@ from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.transform import prepare_export
 
-from liiatools_pipeline.assets.ssda903 import (
+from liiatools_pipeline.assets.common import (
     pipeline_config,
     incoming_folder,
     workspace_folder,
     shared_folder,
+    dataset,
 )
 
 from sufficiency_data_transform.all_dim_and_fact import (
@@ -22,6 +23,9 @@ from sufficiency_data_transform.all_dim_and_fact import (
     create_factEpisode,
     create_factOfstedInspection,
 )
+
+from dagster import get_dagster_logger
+log = get_dagster_logger()
 
 
 @op(
@@ -49,15 +53,17 @@ def create_org_session_folder() -> FS:
 def create_reports(
     session_folder: FS,
 ):
-    export_folder = workspace_folder().makedirs("current/ssda903", recreate=True)
+    export_folder = workspace_folder().makedirs(f"current/{dataset()}", recreate=True)
     aggregate = DataframeAggregator(session_folder, pipeline_config())
     aggregate_data = aggregate.current()
+    # log.info(pipeline_config())
 
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
-        report_data.data.export(report_folder, "ssda903_", "csv")
-        report_data.data.export(shared_folder(), f"{report}_ssda903_", "csv")
+        report_data.data.export(report_folder, f"{dataset()}", "csv")
+        report_data.data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
+
 
 
 @op

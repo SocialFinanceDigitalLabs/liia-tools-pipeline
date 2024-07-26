@@ -1,5 +1,6 @@
 from dagster import job
-from liiatools_pipeline.ops.ssda903_org import (
+
+from liiatools_pipeline.ops.common_org import (
     dim_tables,
     ons_area,
     looked_after_child,
@@ -13,7 +14,7 @@ from liiatools_pipeline.ops.ssda903_org import (
 
 
 @job
-def ssda903_reports():
+def reports():
     session_folder = create_org_session_folder()
     create_reports(session_folder)
 
@@ -27,3 +28,4 @@ def ssda903_sufficiency():
     pc = postcode()
     episode(area, lac, pc, prov, dim)
     ofsted_inspection(dim, prov)
+
