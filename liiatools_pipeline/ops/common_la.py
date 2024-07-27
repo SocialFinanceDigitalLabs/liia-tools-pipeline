@@ -15,6 +15,10 @@ from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
+from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
+from liiatools.annex_a_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_annex_a
+
+
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     workspace_folder,
