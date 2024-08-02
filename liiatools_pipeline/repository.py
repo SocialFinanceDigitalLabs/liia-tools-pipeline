@@ -8,7 +8,7 @@ from liiatools_pipeline.jobs.ssda903_la import (
     ssda903_fix_episodes,
 )
 from liiatools_pipeline.jobs.ssda903_org import (
-    ssda903_move_error_report
+    ssda903_move_error_report,
     ssda903_move_current_and_concat,
     ssda903_sufficiency,
     ssda903_reports,
