@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import uuid
+import re
 from datetime import datetime
 from os.path import basename, dirname
 from typing import List, Tuple
@@ -104,18 +105,28 @@ def move_files_for_processing(
 
 
 def move_files_for_sharing(
-    source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+    source_fs: FS,
+    destination_fs: FS,
+    continue_on_error: bool = False,
+    required_table_id: str = None,
 ):
     """
-    Moves all files from a source filesystem to the shared folder.
+    Moves all files from a source filesystem to the shared folder. Allow movement of only specific files using the
+    required_table_id parameter.
     """
     source_file_list = source_fs.walk.info(namespaces=["details"])
 
     for file_path, file_info in source_file_list:
         if file_info.is_file:
             try:
-                dest_path = file_path.split("/")[-1]
-                copy_file(source_fs, file_path, destination_fs, dest_path)
+                if required_table_id is None:
+                    dest_path = file_path.split("/")[-1]
+                    copy_file(source_fs, file_path, destination_fs, dest_path)
+                else:
+                    table_id = re.search(r"_([a-zA-Z0-9]*)\.", file_path)
+                    if table_id and table_id.group(1) == required_table_id:
+                        dest_path = file_path.split("/")[-1]
+                        copy_file(source_fs, file_path, destination_fs, dest_path)
             except Exception as e:
                 logger.error(f"Error moving file {file_path} to destination folder")
                 if continue_on_error:

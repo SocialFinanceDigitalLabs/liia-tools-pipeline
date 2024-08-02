@@ -8,7 +8,7 @@
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
-    "Cambridgeshire County": {
+    "Cambridgeshire": {
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
@@ -16,11 +16,11 @@
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
-    "Essex County": {
+    "Essex": {
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
-    "Hertfordshire County": {
+    "Hertfordshire": {
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
@@ -28,7 +28,7 @@
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
-    "Norfolk County": {
+    "Norfolk": {
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
@@ -40,7 +40,7 @@
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
-    "Suffolk County": {
+    "Suffolk": {
       "PAN": "Yes",
       "SUFFICIENCY": "Yes"
     },
@@ -316,7 +316,15 @@
           "type": "integer",
           "enrich": "year",
           "sort": 1
-        }
+        },
+        {
+        "id": "YEAR_latest",
+        "type": "integer"
+        },
+        {
+          "id": "Episode_source",
+          "type": "category"
+        }        
       ]
     },
     {
