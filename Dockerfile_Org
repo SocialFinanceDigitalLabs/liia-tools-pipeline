@@ -23,6 +23,7 @@ ENV VIRTUAL_ENV=/code/.venv \
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY liiatools /code/liiatools
 COPY liiatools_pipeline /code/liiatools_pipeline
+COPY external_dataset /code/external_dataset
 
 # Copy the correct Repository File
 COPY liiatools_pipeline/repository_org.py /code/liiatools_pipeline/repository.py
