@@ -23,6 +23,7 @@ ENV VIRTUAL_ENV=/code/.venv \
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY liiatools /code/liiatools
 COPY liiatools_pipeline /code/liiatools_pipeline
+COPY external_dataset /code/external_dataset
 
 RUN apt-get update && apt-get install -y --no-install-recommends
 
