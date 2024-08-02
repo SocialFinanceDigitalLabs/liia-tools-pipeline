@@ -1,9 +1,13 @@
-from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor
+from dagster import RunRequest, RunsFilter, DagsterRunStatus, sensor,  DefaultSensorStatus
 from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 
 
-@sensor(job=ssda903_sufficiency)
+@sensor(
+    job=ssda903_sufficiency,
+    description="Completion of the 903 cleanfile job before running the sufficiency process for 903 Files",
+    default_status=DefaultSensorStatus.RUNNING,
+)
 def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
