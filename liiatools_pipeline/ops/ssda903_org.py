@@ -67,7 +67,11 @@ def create_reports(
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
         report_data = apply_retention(
-            report_data, pipeline_config(), profile=report, year_column="YEAR", la_column="LA"
+            report_data,
+            pipeline_config(),
+            profile=report,
+            year_column="YEAR",
+            la_column="LA",
         )
         report_data.export(report_folder, "ssda903_", "csv")
         report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
