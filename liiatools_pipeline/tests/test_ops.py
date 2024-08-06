@@ -1,54 +1,70 @@
-import os
-import shutil
 import pytest
-import uuid
-from dagster import Config
-from typing import List, Tuple
-from dagster import In, Out, op
-from fs.base import FS
+import shutil
+from fs import open_fs
 from pathlib import Path
-from liiatools.common import pipeline as pl
+
+import liiatools
 from liiatools_pipeline.ops.common_la import (
     create_session_folder,
     open_current,
     process_files,
     move_current_view,
-    create_concatenated_view)
-from unittest.mock import MagicMock, patch
-import unittest
-from liiatools_pipeline.assets.common import dataset
-from liiatools.common.archive import DataframeArchive  # Adjust this import based on your actual module structure
-import tempfile
+    create_concatenated_view,
+)
 
 
-class FileConfig(Config):
-    filename: str
-    name: str
+@pytest.fixture(scope="session")
+def liiatools_dir():
+    return Path(liiatools.__file__).parent
 
 
-def test_create_session_folder():
+@pytest.fixture(scope="session")
+def build_dir(liiatools_dir):
+    build_dir = liiatools_dir / "../build/tests/"
+    if build_dir.exists():
+        shutil.rmtree(build_dir)
+    build_dir.mkdir(parents=True, exist_ok=True)
+
+    for directory in ["process", "incoming", "workspace", "shared"]:
+        (build_dir / directory).mkdir(parents=True, exist_ok=True)
+
+    return build_dir
+
+
+@pytest.fixture(autouse=True)
+def cleanup_files(build_dir):
+    yield
+    if build_dir.exists():
+        shutil.rmtree(build_dir.parents[0])
+
+
+@pytest.fixture
+def mock_env_vars(monkeypatch, build_dir):
+    monkeypatch.setenv("DATASET", "cin")
+    monkeypatch.setenv("OUTPUT_LOCATION", f"{str(build_dir)}/process")
+    monkeypatch.setenv("INPUT_LOCATION", f"{str(build_dir)}/incoming")
+    monkeypatch.setenv("WORKSPACE_LOCATION", f"{str(build_dir)}/workspace")
+    monkeypatch.setenv("SHARED_LOCATION", f"{str(build_dir)}/shared")
+
+
+def test_create_session_folder(mock_env_vars, build_dir):
+    source_fs = open_fs(f"{str(build_dir)}/incoming")
+    source_fs.writetext("file1.txt", "foo")
+    source_fs.writetext("file2.txt", "bar")
+
     session_folder, session_id, incoming_files = create_session_folder()
 
     assert session_folder
     assert session_id
-    assert incoming_files
+    assert len(incoming_files) == 2
 
 
-def test_open_current():
-    current_folder = open_current()
+def test_open_current(mock_env_vars, build_dir):
+    current = open_current()
 
-    assert current_folder
-
-
-# Assuming the actual implementations of these functions exist in your module
-def workspace_folder():
-    return Path(
-        "C:/Users/disha.javur/OneDrive - Social Finance Ltd/Desktop/GitHUb/liia-python/liiatools_pipeline/sample_output/temp_dir/workspace")
-
-
-def shared_folder():
-    return Path(
-        "C:/Users/disha.javur/OneDrive - Social Finance Ltd/Desktop/GitHUb/liia-python/liiatools_pipeline/sample_output/temp_dir/shared")
+    assert current.config.table_list[0].columns[0].id == "LAchildID"
+    assert current.config.table_list[0].id == "cin"
+    assert current.dataset == "cin"
 
 
 def move_current_view():

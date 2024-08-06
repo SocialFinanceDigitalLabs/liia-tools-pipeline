@@ -1,5 +1,5 @@
 table_list:
-- id: CIN
+- id: cin
   retain:
   - PAN
   columns:

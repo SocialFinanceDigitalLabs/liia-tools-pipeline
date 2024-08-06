@@ -1,10 +1,16 @@
-from dagster import asset
 import pytest
 from fs.base import FS
-from dagster import build_op_context
-from unittest.mock import patch, MagicMock
-from liiatools_pipeline.assets.common import dataset, pipeline_config, process_folder, incoming_folder, workspace_folder, shared_folder, la_code
-from fs.memoryfs import MemoryFS
+from unittest.mock import patch
+
+from liiatools_pipeline.assets.common import (
+    dataset,
+    pipeline_config,
+    process_folder,
+    incoming_folder,
+    workspace_folder,
+    shared_folder,
+    la_code,
+)
 
 
 # Mock environment variables for testing
@@ -23,11 +29,10 @@ def test_dataset(mock_env_vars):
     assert result == "cin"
 
 
-@patch("liiatools_pipeline.assets.common.load_pipeline_config_cin")
 def test_pipeline_config(mock_env_vars):
     result = pipeline_config()
-    assert result.table_list[0].id == "ad1"
-    assert result.table_list[0].columns[0].id == "CHILD"
+    assert result.table_list[0].id == "cin"
+    assert result.table_list[0].columns[0].id == "LAchildID"
 
 
 def test_process_folder(mock_env_vars):
