@@ -1,5 +1,5 @@
 import unittest
-
+from datetime import datetime
 from liiatools.common.checks import (
     check_year,
     check_la,
@@ -20,6 +20,13 @@ def test_check_year():
     assert check_year("file_version_12_18/19") == "2019"
     assert check_year("file_version_1_18/19_final") == "2019"
     assert check_year("file_version_1_1819") == "2019"
+
+class TestUtils(unittest.TestCase):
+    def test_check_year_within_range(self):
+        self.assertTrue(check_year_within_range('2022', 5, 1, datetime(2023, 7, 29)))
+        self.assertTrue(check_year_within_range('2023', 5, 1, datetime(2023, 7, 29)))
+        self.assertFalse(check_year_within_range('2016', 5, 1, datetime(2023, 7, 29)))
+        self.assertTrue(check_year_within_range('2024', 5, 1, datetime(2023, 7, 29)))
 
 
 class TestCheckYear(unittest.TestCase):
