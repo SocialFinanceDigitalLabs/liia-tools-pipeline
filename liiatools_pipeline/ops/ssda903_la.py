@@ -17,12 +17,12 @@ from liiatools_pipeline.assets.ssda903 import (
     workspace_folder,
     shared_folder,
     pipeline_config,
-    la_code as input_la_code,
 )
 
 
 class FileConfig(Config):
     incoming_folder: str
+    input_la_code: str | None
 
 
 @op(
@@ -63,6 +63,7 @@ def process_files(
     incoming_files: List[FileLocator],
     current: DataframeArchive,
     session_id: str,
+    config: FileConfig,
 ):
     error_report = ErrorContainer()
     for file_locator in incoming_files:
@@ -96,8 +97,8 @@ def process_files(
             continue
 
         la_code = (
-            input_la_code()
-            if input_la_code() is not None
+            config.input_la_code
+            if config.input_la_code is not None
             else pl.discover_la(file_locator)
         )
         if la_code is None:
@@ -160,8 +161,8 @@ def process_files(
 
     error_report.set_property("session_id", session_id)
     error_report_name = (
-        f"{input_la_code()}_ssda903_{session_id}_error_report.csv"
-        if input_la_code() is not None
+        f"{config.input_la_code}_ssda903_{session_id}_error_report.csv"
+        if config.input_la_code is not None
         else f"ssda903_{session_id}_error_report.csv"
     )
     with session_folder.open(error_report_name, "w") as FILE:

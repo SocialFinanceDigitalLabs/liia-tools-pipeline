@@ -12,6 +12,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
 from liiatools_pipeline.ops.ssda903_la import FileConfig
+from liiatools.common.checks import check_la
 
 
 def directory_walker(folder_location, wildcards, context):
@@ -67,9 +68,9 @@ def ssda903_schedule(context):
     context.log.info("Analysing folder contents")
     directory_contents = directory_walker(folder_location, wildcards, context)
 
-    for la, files in directory_contents.items():
+    for la_path, files in directory_contents.items():
         context.log.info("Generating Run Key")
-        run_key = generate_run_key(f"{folder_location}/{la}/ssda903", files)
+        run_key = generate_run_key(f"{folder_location}/{la_path}/ssda903", files)
 
         run_records = context.instance.get_run_records(
             filters=RunsFilter(
@@ -83,14 +84,23 @@ def ssda903_schedule(context):
         previous_run_id = [
             run.dagster_run.tags["dagster/run_key"]
             for run in run_records
-            if la
+            if la_path
             in run.dagster_run.run_config["ops"]["create_session_folder"]["config"][
                 "incoming_folder"
             ]
-        ][0]
+        ]
+
+        previous_run_id = previous_run_id[0] if previous_run_id else []
 
         previous_matching_run_id = (
             previous_run_id if run_key == previous_run_id else None
+        )
+
+        la = check_la(la_path)
+
+        file_config = FileConfig(
+            incoming_folder=f"{folder_location}/{la_path}/ssda903",
+            input_la_code=la
         )
 
         if previous_matching_run_id is None:
@@ -99,9 +109,8 @@ def ssda903_schedule(context):
                 run_key=run_key,
                 run_config=RunConfig(
                     ops={
-                        "create_session_folder": FileConfig(
-                            incoming_folder=f"{folder_location}/{la}/ssda903"
-                        )
+                        "create_session_folder": file_config,
+                        "process_files": file_config
                     }
                 ),
             )
