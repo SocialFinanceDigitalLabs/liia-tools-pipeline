@@ -43,6 +43,3 @@ def sync():
     ]
 
     return jobs + schedules + sensors
-
-
-# sufficiency_sensor
