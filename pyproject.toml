@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "liiatools-dagster"
-version = "0.2.0"
+version = "0.2.1"
 description = "Children's Services Data Tools - Utilities for cleaning and normalising CS data by Social Finance"
 authors = [
     "Michael Hanks <michael.hanks@socialfinance.org.uk>",
@@ -40,7 +40,7 @@ dagster = "1.6.14"
 dagster-webserver = "^1.6.11"
 dagster-docker = "^0.22.11"
 dagster-postgres = "^0.22.11"
-sufficiency-data-transform = "0.1.7"
+sufficiency-data-transform = "0.1.9"
 alembic = "^1.13.1"
 python-dateutil = "^2.9.0.post0"
 

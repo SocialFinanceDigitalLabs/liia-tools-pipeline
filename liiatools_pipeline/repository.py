@@ -5,11 +5,13 @@ from liiatools_pipeline.jobs.ssda903_la import (
     ssda903_clean,
     ssda903_move_current,
     ssda903_concatenate,
+    ssda903_fix_episodes,
 )
 from liiatools_pipeline.jobs.ssda903_org import (
+    ssda903_move_error_report,
     ssda903_move_current_and_concat,
     ssda903_sufficiency,
-    ssda903_reports
+    ssda903_reports,
 )
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.sensors.ssda903_pipeline_sensor import ssda903_schedule
@@ -30,6 +32,8 @@ def sync():
         ssda903_clean,
         ssda903_move_current,
         ssda903_concatenate,
+        ssda903_move_error_report,
+        ssda903_fix_episodes,
         ssda903_move_current_and_concat,
         ssda903_reports,
         external_incoming,
