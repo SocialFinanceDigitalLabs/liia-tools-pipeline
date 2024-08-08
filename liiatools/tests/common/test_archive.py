@@ -9,6 +9,11 @@ from liiatools.common.data import ColumnConfig, PipelineConfig, TableConfig
 @pytest.fixture
 def cfg():
     cfg = PipelineConfig(
+        retention_period={"PAN": 12, "SUFFICIENCY": 7},
+        la_signed={
+            "BAR": "Yes",
+            "CAM": "No",
+        },
         table_list=[
             TableConfig(
                 id="table1",
@@ -24,7 +29,7 @@ def cfg():
                     ColumnConfig(id="date", type="date"),
                 ],
             ),
-        ]
+        ],
     )
     return cfg
 

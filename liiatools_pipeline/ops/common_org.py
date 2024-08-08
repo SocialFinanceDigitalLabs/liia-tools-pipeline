@@ -4,7 +4,7 @@ from fs.base import FS
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
-from liiatools.common.transform import prepare_export
+from liiatools.common.transform import prepare_export, apply_retention
 
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -26,6 +26,16 @@ from sufficiency_data_transform.all_dim_and_fact import (
 
 from dagster import get_dagster_logger
 log = get_dagster_logger()
+
+
+@op()
+def move_current_and_concat_view():
+    current_folder = incoming_folder().opendir("current")
+    destination_folder = shared_folder()
+    pl.move_files_for_sharing(current_folder, destination_folder)
+
+    concat_folder = incoming_folder().opendir("concatenated/ssda903")
+    pl.move_files_for_sharing(concat_folder, destination_folder)
 
 
 @op(
@@ -56,7 +66,6 @@ def create_reports(
     export_folder = workspace_folder().makedirs(f"current/{dataset()}", recreate=True)
     aggregate = DataframeAggregator(session_folder, pipeline_config())
     aggregate_data = aggregate.current()
-    # log.info(pipeline_config())
 
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
@@ -64,6 +73,22 @@ def create_reports(
         report_data.data.export(report_folder, f"{dataset()}", "csv")
         report_data.data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
 
+        report_data = apply_retention(
+            report_data,
+            pipeline_config(),
+            profile=report,
+            year_column="YEAR",
+            la_column="LA",
+        )
+        report_data.export(report_folder, "ssda903_", "csv")
+        report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
+
+
+@op()
+def move_error_report():
+    source_folder = incoming_folder().opendir("logs")
+    destination_folder = shared_folder().makedirs("logs", recreate=True)
+    pl.move_error_report(source_folder, destination_folder)
 
 
 @op

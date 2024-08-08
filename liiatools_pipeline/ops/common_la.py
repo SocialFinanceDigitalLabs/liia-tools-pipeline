@@ -1,20 +1,26 @@
 import logging
 from dagster import Config
+import re
+import pandas as pd
 from typing import List, Tuple
 from dagster import In, Out, op
 from fs.base import FS
 
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
-from liiatools.common.constants import SessionNames
-from liiatools.common.data import FileLocator, ErrorContainer
+from liiatools.common.checks import check_year_within_range
+from liiatools.common.constants import SessionNames, SessionNamesFixEpisodes
+from liiatools.common.data import FileLocator, ErrorContainer, DataContainer
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
-from liiatools.common.transform import degrade_data, enrich_data
+from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
+from liiatools.ssda903_pipeline.fix_episodes import stage_1, stage_2
+
+
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     workspace_folder,
@@ -89,6 +95,22 @@ def process_files(
             )
             continue
 
+        if (
+            check_year_within_range(
+                year, max(pipeline_config().retention_period.values())
+            )
+            is False
+        ):
+            error_report.append(
+                dict(
+                    type="RetentionPeriod",
+                    message="This file is not within the year ranges of data retention policy",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+
         la_code = (
             input_la_code()
             if input_la_code() is not None
@@ -126,6 +148,10 @@ def process_files(
             )
             continue
 
+        cleanfile_result.data = prepare_export(
+            cleanfile_result.data, pipeline_config(), profile="PAN"
+        )
+
         cleanfile_result.data.export(
             session_folder.opendir(SessionNames.CLEANED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -159,8 +185,14 @@ def process_files(
         if input_la_code() is not None
         else f"{dataset()}_{session_id}_error_report.csv"
     )
-    with session_folder.open(error_report_name, "w") as FILE:
-        error_report.to_dataframe().to_csv(FILE, index=False)
+
+    destination_logs = shared_folder().makedirs("logs", recreate=True)
+    incoming_logs = incoming_folder().makedirs("logs", recreate=True)
+    log_locations = [session_folder, destination_logs, incoming_logs]
+
+    for location in log_locations:
+        with location.open(error_report_name, "w") as FILE:
+            error_report.to_dataframe().to_csv(FILE, index=False)
 
 
 @op()
@@ -181,3 +213,47 @@ def create_concatenated_view(current: DataframeArchive):
         if concat_data:
             concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
 
+
+
+@op(
+    out={
+        "session_folder": Out(FS),
+    }
+)
+def create_fix_episodes_session_folder() -> FS:
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesFixEpisodes
+    )
+    session_folder = session_folder.opendir(SessionNamesFixEpisodes.INCOMING_FOLDER)
+
+    concat_folder = shared_folder().opendir("concatenated/ssda903")
+    pl.move_files_for_sharing(
+        concat_folder, session_folder, required_table_id="episodes"
+    )
+
+    return session_folder
+
+
+@op(
+    ins={
+        "session_folder": In(FS),
+    },
+)
+def fix_episodes(
+    session_folder: FS,
+):
+    concat_folder = shared_folder().opendir("concatenated/ssda903")
+    files = session_folder.listdir("/")
+
+    for file in files:
+        data = DataContainer()
+        episode_table = re.search(r"episodes", file)
+        la_code = re.search(r"([A-Za-z0-9]*)_", file)
+        if episode_table is not None:
+            with session_folder.open(file, "r") as f:
+                df = pd.read_csv(f)
+                df = stage_1(df)
+                df = stage_2(df)
+                data[episode_table.group(0)] = df
+
+        data.export(concat_folder, f"{la_code.group(1)}_ssda903_", "csv")

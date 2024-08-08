@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from pydantic import BaseModel, ConfigDict
 
@@ -31,7 +31,7 @@ class TableConfig(BaseModel):
         """
         Returns a list of column ids that should be used to sort the table in order of priority
         """
-        sort_keys = [(c.id, c.sort) for c in self.columns if c.sort]
+        sort_keys = [(c.id, c.sort) for c in self.columns if c.sort is not None]
         sort_keys.sort(key=lambda x: x[1])
         return [c[0] for c in sort_keys]
 
@@ -42,6 +42,8 @@ class TableConfig(BaseModel):
 class PipelineConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    retention_period: Dict
+    la_signed: Dict
     table_list: List[TableConfig]
 
     def __getitem__(self, value) -> TableConfig:
