@@ -26,12 +26,6 @@ def pipeline_config():
 
 
 @asset
-def process_folder():
-    output_location = env_config("OUTPUT_LOCATION", cast=str)
-    return open_fs(output_location)
-
-
-@asset
 def incoming_folder():
     input_location = env_config("INPUT_LOCATION", cast=str)
     return open_fs(input_location)

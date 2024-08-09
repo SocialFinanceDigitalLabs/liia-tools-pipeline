@@ -14,19 +14,6 @@ from liiatools_pipeline.assets.common import (
     dataset,
 )
 
-from sufficiency_data_transform.all_dim_and_fact import (
-    create_dim_tables,
-    create_dimONSArea,
-    create_dimLookedAfterChild,
-    create_dimOfstedProvider,
-    create_dimPostcode,
-    create_factEpisode,
-    create_factOfstedInspection,
-)
-
-from dagster import get_dagster_logger
-log = get_dagster_logger()
-
 
 @op()
 def move_current_and_concat_view():
@@ -49,7 +36,7 @@ def create_org_session_folder() -> FS:
     )
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
-    concat_folder = incoming_folder().opendir("concatenated")
+    concat_folder = incoming_folder().opendir(f"concatenated/{dataset()}")
     pl.move_files_for_sharing(concat_folder, session_folder)
 
     return session_folder
@@ -70,9 +57,6 @@ def create_reports(
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
-        report_data.data.export(report_folder, f"{dataset()}", "csv")
-        report_data.data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
-
         report_data = apply_retention(
             report_data,
             pipeline_config(),
@@ -80,8 +64,8 @@ def create_reports(
             year_column="YEAR",
             la_column="LA",
         )
-        report_data.export(report_folder, "ssda903_", "csv")
-        report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
+        report_data.export(report_folder, f"{dataset()}", "csv")
+        report_data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
 
 
 @op()
@@ -90,42 +74,3 @@ def move_error_report():
     destination_folder = shared_folder().makedirs("logs", recreate=True)
     pl.move_error_report(source_folder, destination_folder)
 
-
-@op
-def dim_tables():
-    create_dim_tables()
-    return True
-
-
-@op
-def ons_area():
-    create_dimONSArea()
-    return True
-
-
-@op
-def looked_after_child(area):
-    create_dimLookedAfterChild()
-    return True
-
-
-@op
-def ofsted_provider(area):
-    create_dimOfstedProvider()
-    return True
-
-
-@op
-def postcode():
-    create_dimPostcode()
-    return True
-
-
-@op
-def episode(area, lac, pc, prov, dim):
-    create_factEpisode()
-
-
-@op
-def ofsted_inspection(dim, prov):
-    create_factOfstedInspection()

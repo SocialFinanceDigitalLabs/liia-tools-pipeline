@@ -1,4 +1,3 @@
-import logging
 import re
 from typing import Iterable, List
 
@@ -8,10 +7,6 @@ from fs.base import FS
 from liiatools.common.archive import _normalise_table
 from liiatools.common.data import DataContainer, PipelineConfig
 
-from dagster import get_dagster_logger
-log = get_dagster_logger()
-
-logger = logging.getLogger(__name__)
 
 
 class DataframeAggregator:
@@ -66,7 +61,6 @@ class DataframeAggregator:
         """
         combined = DataContainer()
         for file in files:
-            log.info(file)
             combined = self._combine_files(
                 combined,
                 self.load_file(file),
@@ -84,7 +78,6 @@ class DataframeAggregator:
             table_id = table_spec.id
             all_sources = []
             for source in sources:
-                # log.info(source)
                 if table_id in source:
                     all_sources.append(source[table_id])
 

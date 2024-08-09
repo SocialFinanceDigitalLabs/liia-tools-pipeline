@@ -11,7 +11,7 @@ from liiatools.common.stream_record import text_collector, HeaderEvent, _reduce_
 class CINEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "CIN"
+        return "cin"
 
     pass
 

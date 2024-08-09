@@ -30,11 +30,6 @@ from liiatools_pipeline.assets.common import (
     dataset,
 )
 
-from dagster import get_dagster_logger
-log = get_dagster_logger()
-
-logger = logging.getLogger(__name__)
-
 
 class FileConfig(Config):
     filename: str
@@ -62,7 +57,7 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 )
 def open_current() -> DataframeArchive:
     current_folder = workspace_folder().makedirs("current", recreate=True)
-    current = DataframeArchive(current_folder, pipeline_config(), f"{dataset()}")
+    current = DataframeArchive(current_folder, pipeline_config(), "dataset()")
     return current
 
 
@@ -130,7 +125,6 @@ def process_files(
         try:
             schema = globals()[f"load_schema_{dataset()}"](year)
         except KeyError:
-            logger.info(f"Dataset specified: {dataset()} isn't valid. Defaulting to None")
             continue
 
         metadata = dict(year=year, schema=schema, la_code=la_code)
@@ -206,12 +200,12 @@ def move_current_view():
     ins={"current": In(DataframeArchive)},
 )
 def create_concatenated_view(current: DataframeArchive):
-    concat_folder = shared_folder().makedirs("concatenated", recreate=True)
+    concat_folder = shared_folder().makedirs(f"concatenated/{dataset()}", recreate=True)
     for la_code in authorities.codes:
         concat_data = current.current(la_code)
 
-        if concat_data:
-            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
+        # if concat_data:
+        #     concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
 
 
 

@@ -1,6 +1,5 @@
 from pathlib import Path
 from xmlschema import XMLSchema
-import pandas as pd
 
 from sfdata_stream_parser.filters import generic
 
