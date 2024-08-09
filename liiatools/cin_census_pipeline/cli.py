@@ -19,12 +19,12 @@ click_log.basic_config(log)
 
 
 @click.group()
-def s903():
-    """Functions for cleaning, minimising and aggregating SSDA903 files"""
+def cin_census():
+    """Functions for cleaning, minimising and aggregating CIN census files"""
     pass
 
 
-@s903.command()
+@cin_census.command()
 @click.option(
     "--input-location",
     "-i",

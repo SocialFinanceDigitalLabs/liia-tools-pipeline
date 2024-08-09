@@ -1,6 +1,5 @@
 # Project specific 
 .idea
-.nux/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -142,3 +141,7 @@ dmypy.json
 history
 schedules
 storage
+
+# liia-tools sessions
+liiatools_pipeline/sample_output
+liiatools_pipeline/Input data

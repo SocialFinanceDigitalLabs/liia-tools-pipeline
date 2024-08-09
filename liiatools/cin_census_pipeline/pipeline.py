@@ -1,21 +1,29 @@
 import logging
-
 from typing import List, Tuple
 from fs.base import FS
 
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.aggregate import DataframeAggregator
-from liiatools.common.constants import SessionNames
+from liiatools.common.constants import ProcessNames, SessionNames
 from liiatools.common.data import (
+    DataContainer,
     ErrorContainer,
     FileLocator,
+    PipelineConfig,
+    ProcessResult,
 )
 from liiatools.common.reference import authorities
+from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 
-from liiatools.ssda903_pipeline.spec import load_pipeline_config, load_schema
-from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
+from liiatools.cin_census_pipeline.spec import (
+    load_pipeline_config,
+    load_schema,
+)
+from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
+from liiatools.cin_census_pipeline.reports import reports
+
 
 logger = logging.getLogger()
 
@@ -130,7 +138,7 @@ def create_current_view(archive: DataframeArchive, process_folder: FS) -> FS:
 
         if current_data:
             la_folder = current_folder.makedirs(la_code, recreate=True)
-            current_data.export(la_folder, "ssda903_", "csv")
+            current_data.export(la_folder, "cin_census_", "csv")
 
     return current_folder
 
@@ -140,7 +148,27 @@ def create_reports(current_folder: FS, process_folder: FS):
     aggregate = DataframeAggregator(current_folder, load_pipeline_config())
     aggregate_data = aggregate.current()
 
-    for report in ["PAN", "SUFFICIENCY"]:
+    for report in ["PAN"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report = prepare_export(aggregate_data, load_pipeline_config())
-        report.export(report_folder, "ssda903_", "csv")
+        report.data.export(report_folder, "cin_census_", "csv")
+
+
+    # TODO: fix issue with handling non-datetimes
+    # Run report analysis
+    # analysis_data = report_data.data["CIN"]
+    #
+    # expanded_assessment_factors = reports.expanded_assessment_factors(analysis_data)
+    # referral_outcomes = reports.referral_outcomes(analysis_data)
+    # s47_journeys = reports.s47_journeys(analysis_data)
+    #
+    # analysis_data = DataContainer(
+    #     {
+    #         "factors": expanded_assessment_factors,
+    #         "referrals": referral_outcomes,
+    #         "S47_journeys": s47_journeys,
+    #     }
+    # )
+    #
+    # analysis_folder = export_folder.makedirs("REPORTS", recreate=True)
+    # analysis_data.export(analysis_folder, "cin_census_", "csv")

@@ -1,6 +1,5 @@
 import unittest
 from datetime import datetime
-
 from liiatools.common.checks import (
     check_year,
     check_la,
