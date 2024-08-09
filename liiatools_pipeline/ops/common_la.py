@@ -1,6 +1,4 @@
 from dagster import Config
-import re
-import pandas as pd
 from typing import List, Tuple
 from dagster import In, Out, op
 from fs.base import FS
@@ -56,7 +54,7 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 )
 def open_current() -> DataframeArchive:
     current_folder = workspace_folder().makedirs("current", recreate=True)
-    current = DataframeArchive(current_folder, pipeline_config(), "dataset()")
+    current = DataframeArchive(current_folder, pipeline_config(), dataset())
     return current
 
 
@@ -203,50 +201,5 @@ def create_concatenated_view(current: DataframeArchive):
     for la_code in authorities.codes:
         concat_data = current.current(la_code)
 
-        # if concat_data:
-        #     concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
-
-
-
-@op(
-    out={
-        "session_folder": Out(FS),
-    }
-)
-def create_fix_episodes_session_folder() -> FS:
-    session_folder, session_id = pl.create_session_folder(
-        workspace_folder(), SessionNamesFixEpisodes
-    )
-    session_folder = session_folder.opendir(SessionNamesFixEpisodes.INCOMING_FOLDER)
-
-    concat_folder = shared_folder().opendir("concatenated/ssda903")
-    pl.move_files_for_sharing(
-        concat_folder, session_folder, required_table_id="episodes"
-    )
-
-    return session_folder
-
-
-@op(
-    ins={
-        "session_folder": In(FS),
-    },
-)
-def fix_episodes(
-    session_folder: FS,
-):
-    concat_folder = shared_folder().opendir("concatenated/ssda903")
-    files = session_folder.listdir("/")
-
-    for file in files:
-        data = DataContainer()
-        episode_table = re.search(r"episodes", file)
-        la_code = re.search(r"([A-Za-z0-9]*)_", file)
-        if episode_table is not None:
-            with session_folder.open(file, "r") as f:
-                df = pd.read_csv(f)
-                df = stage_1(df)
-                df = stage_2(df)
-                data[episode_table.group(0)] = df
-
-        data.export(concat_folder, f"{la_code.group(1)}_ssda903_", "csv")
+        if concat_data:
+            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
