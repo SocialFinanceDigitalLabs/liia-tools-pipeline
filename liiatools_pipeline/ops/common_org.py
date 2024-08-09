@@ -21,7 +21,7 @@ def move_current_and_concat_view():
     destination_folder = shared_folder()
     pl.move_files_for_sharing(current_folder, destination_folder)
 
-    concat_folder = incoming_folder().opendir("concatenated/ssda903")
+    concat_folder = incoming_folder().opendir(f"concatenated/{dataset()}")
     pl.move_files_for_sharing(concat_folder, destination_folder)
 
 
