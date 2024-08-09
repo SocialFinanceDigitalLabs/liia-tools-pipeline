@@ -8,7 +8,6 @@ from liiatools.common.archive import _normalise_table
 from liiatools.common.data import DataContainer, PipelineConfig
 
 
-
 class DataframeAggregator:
     """
     The dataframe aggregator aggregates dataframes that are stored in a filesystem.
@@ -31,9 +30,7 @@ class DataframeAggregator:
         Get the current session as a datacontainer.
         """
         files = self.list_files()
-        # log.info(files)
         return self.combine_files(files)
-
 
     def load_file(self, file) -> DataContainer:
         """
