@@ -9,9 +9,8 @@
 
 name: Publish Docker image
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   push_to_registry:
@@ -31,13 +30,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_URL }}
+          images: ${{ secrets.DOCKERHUB_PLATFORM_URL }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile_Client
           push: true
-          tags: ${{ secrets.DOCKERHUB_URL }}:latest
+          tags: ${{ secrets.DOCKERHUB_PLATFORM_URL }}:latest
           labels: ${{ steps.meta.outputs.labels }}
