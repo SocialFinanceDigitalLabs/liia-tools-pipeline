@@ -12,9 +12,13 @@ from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
-from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
+from liiatools.cin_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_cin,
+)
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
-from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
+from liiatools.ssda903_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_ssda903,
+)
 
 
 from liiatools_pipeline.assets.common import (
@@ -126,7 +130,9 @@ def process_files(
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](file_locator, schema)
+            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](
+                file_locator, schema
+            )
         except StreamError as e:
             error_report.append(
                 dict(

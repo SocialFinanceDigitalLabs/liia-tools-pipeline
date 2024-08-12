@@ -7,7 +7,7 @@ from liiatools_pipeline.ops.ssda903_org import (
     ofsted_provider,
     postcode,
     episode,
-    ofsted_inspection
+    ofsted_inspection,
 )
 
 

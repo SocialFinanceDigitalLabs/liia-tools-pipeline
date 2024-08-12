@@ -22,4 +22,3 @@ def move_current_and_concat():
 def reports():
     session_folder = create_org_session_folder()
     create_reports(session_folder)
-

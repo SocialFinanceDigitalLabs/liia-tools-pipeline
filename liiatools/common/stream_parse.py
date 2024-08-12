@@ -36,7 +36,9 @@ def dom_parse(source, filename, **kwargs):
                 if elem.tail:
                     yield TextNode(cell=elem.tail, filename=filename, text=None)
             elif action == "comment":
-                yield CommentNode(cell=elem.text, node=elem, filename=filename, text=None)
+                yield CommentNode(
+                    cell=elem.text, node=elem, filename=filename, text=None
+                )
             elif action == "pi":
                 yield ProcessingInstructionNode(
                     name=elem.target,

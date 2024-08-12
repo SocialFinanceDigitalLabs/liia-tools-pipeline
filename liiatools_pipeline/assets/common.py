@@ -3,8 +3,13 @@ from dagster import asset
 from decouple import config as env_config
 from fs import open_fs
 from liiatools.common.reference import authorities
-from liiatools.cin_census_pipeline.spec import load_pipeline_config as load_pipeline_config_cin
-from liiatools.ssda903_pipeline.spec import load_pipeline_config as load_pipeline_config_ssda903
+from liiatools.cin_census_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_cin,
+)
+from liiatools.ssda903_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_ssda903,
+)
+
 logger = logging.getLogger(__name__)
 
 

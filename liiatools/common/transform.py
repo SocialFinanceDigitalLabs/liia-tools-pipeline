@@ -150,7 +150,11 @@ def prepare_export(
 
 
 def apply_retention(
-    data: DataContainer, config: PipelineConfig, profile: str, year_column: str, la_column: str
+    data: DataContainer,
+    config: PipelineConfig,
+    profile: str,
+    year_column: str,
+    la_column: str,
 ) -> DataContainer:
     """
     Apply retention rules to the data including number of years for each profile/use case and LAs that have signed
@@ -175,8 +179,6 @@ def apply_retention(
         ]
 
         table = data_container[table_name].copy()
-        data_container[table_name] = table[
-            table[la_column].isin(signed_las)
-            ]
+        data_container[table_name] = table[table[la_column].isin(signed_las)]
 
     return data_container

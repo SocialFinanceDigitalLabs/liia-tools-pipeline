@@ -134,6 +134,7 @@ def test_validate_all_valid():
     for event in stream:
         assert not hasattr(event, "errors")
 
+
 # TODO update to work with CIN rather than CSWW
 # def test_validate_missing_required_field():
 #     with CIN_2022.open("rb") as f:

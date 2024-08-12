@@ -153,7 +153,6 @@ def create_reports(current_folder: FS, process_folder: FS):
         report = prepare_export(aggregate_data, load_pipeline_config())
         report.data.export(report_folder, "cin_census_", "csv")
 
-
     # TODO: fix issue with handling non-datetimes
     # Run report analysis
     # analysis_data = report_data.data["CIN"]

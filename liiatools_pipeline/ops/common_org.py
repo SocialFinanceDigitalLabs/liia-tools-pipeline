@@ -73,4 +73,3 @@ def move_error_report():
     source_folder = incoming_folder().opendir("logs")
     destination_folder = shared_folder().makedirs("logs", recreate=True)
     pl.move_error_report(source_folder, destination_folder)
-
