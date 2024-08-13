@@ -24,6 +24,7 @@ def s903():
     pass
 
 
+@s903.command()
 @click.option(
     "--input-location",
     "-i",
@@ -38,7 +39,6 @@ def s903():
     type=click.Path(file_okay=False, writable=True),
     help="Output folder",
 )
-@s903.command()
 @click.option(
     "--input-la-code",
     "-c",

@@ -1,6 +1,5 @@
 import unittest
 from datetime import datetime
-
 from liiatools.common.checks import (
     check_year,
     check_la,
@@ -60,14 +59,8 @@ def test_check_year_within_range():
 
 def test_check_la_signature():
     pipeline_config = {
-        "BAR": {
-            "PAN": "Yes",
-            "SUFFICIENCY": "Yes"
-        },
-        "BEX": {
-            "PAN": "Yes",
-            "SUFFICIENCY": "No"
-        },
+        "BAR": {"PAN": "Yes", "SUFFICIENCY": "Yes"},
+        "BEX": {"PAN": "Yes", "SUFFICIENCY": "No"},
     }
 
     assert check_la_signature(pipeline_config, "PAN") == ["BAR", "BEX"]

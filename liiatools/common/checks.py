@@ -127,4 +127,3 @@ def check_la_signature(pipeline_config, report):
             continue
 
     return signed_las
-
