@@ -4,8 +4,7 @@
     "la_column": "LA"
   },
   "retention_period": {
-    "PAN": 12,
-    "SUFFICIENCY": 7
+    "PAN": 12
   },
   "la_signed": {
     "Bedford": {
