@@ -7,12 +7,12 @@ from liiatools_pipeline.jobs.common_la import (
     concatenate,
 )
 from liiatools_pipeline.jobs.common_org import (
-    reports,
     move_error_reports,
     move_current_and_concat,
+    reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.ops.ssda903_la import fix_episodes
+from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.sensors.location_sensor import location_sensor
 from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
@@ -34,10 +34,10 @@ def sync():
         clean,
         move_current,
         concatenate,
-        fix_episodes,
         move_error_reports,
         move_current_and_concat,
         reports,
+        ssda903_fix_episodes,
         external_incoming,
         ssda903_sufficiency,
     ]
