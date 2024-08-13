@@ -34,10 +34,10 @@ def sync():
         clean,
         move_current,
         concatenate,
+        ssda903_fix_episodes,
         move_error_reports,
         move_current_and_concat,
         reports,
-        ssda903_fix_episodes,
         external_incoming,
         ssda903_sufficiency,
     ]
