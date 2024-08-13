@@ -8,7 +8,7 @@ from liiatools_pipeline.jobs.common_la import (
 )
 from liiatools_pipeline.jobs.common_org import (
     reports,
-    move_error_report,
+    move_error_reports,
     move_current_and_concat,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
@@ -35,7 +35,7 @@ def sync():
         move_current,
         concatenate,
         fix_episodes,
-        move_error_report,
+        move_error_reports,
         move_current_and_concat,
         reports,
         external_incoming,

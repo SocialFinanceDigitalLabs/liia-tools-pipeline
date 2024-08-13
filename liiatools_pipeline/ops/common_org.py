@@ -54,17 +54,17 @@ def create_reports(
     aggregate = DataframeAggregator(session_folder, pipeline_config())
     aggregate_data = aggregate.current()
 
-    for report in ["PAN", "SUFFICIENCY"]:
+    for report in pipeline_config().retention_period.keys():
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
         report_data = apply_retention(
             report_data,
             pipeline_config(),
             profile=report,
-            year_column="YEAR",
-            la_column="LA",
+            year_column=pipeline_config().retention_columns["year_column"],
+            la_column=pipeline_config().retention_columns["la_column"],
         )
-        report_data.export(report_folder, f"{dataset()}", "csv")
+        report_data.export(report_folder, f"{dataset()}_", "csv")
         report_data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
 
 

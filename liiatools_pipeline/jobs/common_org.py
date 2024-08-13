@@ -9,7 +9,7 @@ from liiatools_pipeline.ops.common_org import (
 
 
 @job
-def move_error_report():
+def move_error_reports():
     move_error_report()
 
 

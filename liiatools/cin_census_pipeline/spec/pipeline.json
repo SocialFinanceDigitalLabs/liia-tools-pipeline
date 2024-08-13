@@ -1,4 +1,8 @@
 {
+  "retention_columns": {
+    "year_column": "Year",
+    "la_column": "LA"
+  },
   "retention_period": {
     "PAN": 12,
     "SUFFICIENCY": 7
