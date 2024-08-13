@@ -84,7 +84,7 @@ def format_datetime(dataframe: pd.DataFrame, date_columns: list) -> pd.DataFrame
     """
     dataframe[date_columns] = dataframe[date_columns].apply(
         lambda row: pd.to_datetime(row, format="%Y-%m-%d", errors="raise").dt.date
-        )
+    )
     return dataframe
 
 
@@ -198,9 +198,7 @@ def _is_previous_episode_submitted_later(row: pd.Series) -> bool:
     :param row: Row from dataframe with SSDA903 Episodes data
     :return: True if previous episode was submitted in later file YEAR, False otherwise
     """
-    return (
-            row.DEC.isnull() & row.Has_previous_episode & (row.YEAR_previous > row.YEAR)
-    )
+    return row.DEC.isnull() & row.Has_previous_episode & (row.YEAR_previous > row.YEAR)
 
 
 def _stage1_rule_to_apply(row: pd.Series) -> str:

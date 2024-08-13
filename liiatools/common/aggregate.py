@@ -1,4 +1,3 @@
-import logging
 import re
 from typing import Iterable, List
 
@@ -7,8 +6,6 @@ from fs.base import FS
 
 from liiatools.common.archive import _normalise_table
 from liiatools.common.data import DataContainer, PipelineConfig
-
-logger = logging.getLogger(__name__)
 
 
 class DataframeAggregator:
