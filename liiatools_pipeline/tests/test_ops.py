@@ -185,25 +185,3 @@ def test_create_concatenated_view(mock_env_vars, build_dir):
     # Check that the concatenated file is created in the shared folder
     concat_folder = setup_directories[f"concat_folder/{dataset()}"]
     assert concat_folder.exists()
-
-#
-# class TestConcatenateFiles(unittest.TestCase):
-#     def setUp(self):
-#         # Mock config and dataset for DataframeArchive
-#         mock_config = unittest.mock.MagicMock()  # Or create a suitable mock or dummy config object
-#         mock_dataset = "cin"  # Example dataset name
-#
-#         # Create mock data and DataframeArchive
-#         mock_data = {"822": MockData(), "823": MockData()}
-#         self.current = DataframeArchive(mock_data, mock_config, mock_dataset)
-#
-#     def test_create_concatenated_view(self, setup_directories, mock_env_vars, build_dir):
-#         # Move the CSV file using the function under test
-#         create_concatenated_view(setup_directories, self.current)
-#
-#         # Check that the CSV file has been moved to the shared folder
-#         concat_folder = setup_directories["concatenated"]
-#         # csv_file_moved = shared_current / "cin_test.csv"
-#
-#         assert concat_folder.exists()
-#         # assert setup_directories['csv_file'].exists()  # Ensure the original file is also present in workspace
