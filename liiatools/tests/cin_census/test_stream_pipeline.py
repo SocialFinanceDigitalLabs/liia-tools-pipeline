@@ -19,8 +19,8 @@ def test_task_cleanfile():
     errors = result.errors
 
     assert len(data) == 1
-    assert len(data["CIN"]) == 10
-    assert len(data["CIN"].columns) == 33
+    assert len(data["cin"]) == 10
+    assert len(data["cin"].columns) == 33
 
     assert len(errors) == 0
 
@@ -44,8 +44,8 @@ def test_task_cleanfile_error():
     errors = result.errors
 
     assert len(data) == 1
-    assert len(data["CIN"]) == 10
-    assert len(data["CIN"].columns) == 33
+    assert len(data["cin"]) == 10
+    assert len(data["cin"].columns) == 33
 
     assert errors[0]["type"] == "ConversionError"
     assert errors[0]["message"] == "Could not convert to date"
