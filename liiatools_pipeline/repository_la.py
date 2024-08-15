@@ -1,14 +1,10 @@
 from dagster import repository
 from liiatools.common._fs_serializer import register
 
-from liiatools_pipeline.jobs.ssda903_la import (
-    ssda903_move_current,   ## Where is this now?
-    ssda903_fix_episodes,
-)
 from liiatools_pipeline.jobs.common_la import move_current, concatenate, clean
 from liiatools_pipeline.sensors.common import concatenate_sensor, move_current_sensor
 from liiatools_pipeline.sensors.location_sensor import location_sensor
-
+from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 register()
 
 
