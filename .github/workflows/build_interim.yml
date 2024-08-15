@@ -38,5 +38,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_INTERIM_URL }}:latest
+          tags: ${{ secrets.DOCKERHUB_INTERIM_URL }}:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}

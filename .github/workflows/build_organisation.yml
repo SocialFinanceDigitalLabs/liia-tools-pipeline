@@ -38,5 +38,5 @@ jobs:
           context: .
           file: ./Dockerfile_Org
           push: true
-          tags: ${{ secrets.DOCKERHUB_ORGANISATION_URL }}:latest
+          tags: ${{ secrets.DOCKERHUB_ORGANISATION_URL }}:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
