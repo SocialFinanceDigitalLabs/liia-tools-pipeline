@@ -25,7 +25,7 @@ COPY liiatools /code/liiatools
 COPY liiatools_pipeline /code/liiatools_pipeline
 
 # Copy the correct Repository File
-COPY liiatools_pipeline/repository_client.py /code/liiatools_pipeline/repository.py
+COPY liiatools_pipeline/repository_la.py /code/liiatools_pipeline/repository.py
 
 RUN apt-get update && apt-get install -y --no-install-recommends
 
