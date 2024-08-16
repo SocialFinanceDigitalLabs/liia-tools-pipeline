@@ -8,7 +8,6 @@ from liiatools_pipeline.jobs.common_la import (
 )
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.sensors.location_sensor import location_sensor
-from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
 from liiatools_pipeline.sensors.move_current_sensor import move_current_sensor
 from liiatools_pipeline.sensors.concatenate_sensor import concatenate_sensor
 
