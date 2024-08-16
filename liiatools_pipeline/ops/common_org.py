@@ -5,23 +5,30 @@ from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.transform import prepare_export, apply_retention
+from liiatools_pipeline.ops.common_config import CleanConfig
 
 from liiatools_pipeline.assets.common import (
     pipeline_config,
     incoming_folder,
     workspace_folder,
     shared_folder,
-    dataset,
 )
 
 
 @op()
-def move_current_and_concat_view():
+def move_error_report():
+    source_folder = incoming_folder().opendir("logs")
+    destination_folder = shared_folder().makedirs("logs", recreate=True)
+    pl.move_error_report(source_folder, destination_folder)
+
+
+@op()
+def move_current_and_concat_view(config: CleanConfig):
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
     pl.move_files_for_sharing(current_folder, destination_folder)
 
-    concat_folder = incoming_folder().opendir(f"concatenated/{dataset()}")
+    concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
     pl.move_files_for_sharing(concat_folder, destination_folder)
 
 
@@ -30,13 +37,13 @@ def move_current_and_concat_view():
         "session_folder": Out(FS),
     }
 )
-def create_org_session_folder() -> FS:
+def create_org_session_folder(config: CleanConfig) -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesOrg
     )
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
-    concat_folder = incoming_folder().opendir(f"concatenated/{dataset()}")
+    concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
     pl.move_files_for_sharing(concat_folder, session_folder)
 
     return session_folder
@@ -49,8 +56,11 @@ def create_org_session_folder() -> FS:
 )
 def create_reports(
     session_folder: FS,
+    config: CleanConfig,
 ):
-    export_folder = workspace_folder().makedirs(f"current/{dataset()}", recreate=True)
+    export_folder = workspace_folder().makedirs(
+        f"current/{config.dataset}", recreate=True
+    )
     aggregate = DataframeAggregator(session_folder, pipeline_config())
     aggregate_data = aggregate.current()
 
@@ -64,12 +74,5 @@ def create_reports(
             year_column=pipeline_config().retention_columns["year_column"],
             la_column=pipeline_config().retention_columns["la_column"],
         )
-        report_data.export(report_folder, f"{dataset()}_", "csv")
-        report_data.export(shared_folder(), f"{report}_{dataset()}_", "csv")
-
-
-@op()
-def move_error_report():
-    source_folder = incoming_folder().opendir("logs")
-    destination_folder = shared_folder().makedirs("logs", recreate=True)
-    pl.move_error_report(source_folder, destination_folder)
+        report_data.export(report_folder, f"{config.dataset}_", "csv")
+        report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

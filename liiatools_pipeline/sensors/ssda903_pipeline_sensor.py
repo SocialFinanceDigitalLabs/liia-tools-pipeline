@@ -10,23 +10,23 @@ from fs import open_fs
 from fs.walk import Walker
 from decouple import config as env_config
 
-from liiatools_pipeline.jobs.ssda903_la import ssda903_clean
-from liiatools_pipeline.ops.ssda903_la import FileConfig
+from liiatools_pipeline.jobs.common_la import clean
+from liiatools_pipeline.ops.common_config import CleanConfig
 from liiatools.common.checks import check_la
 
 
-def directory_walker(folder_location, wildcards, context):
+def directory_walker(folder_location, context, dataset):
     """
     Walks through the specified directory and returns a dictionary
     of files for each LA
     """
-    walker = Walker(filter=wildcards)
+    walker = Walker()
     dir_pointer = open_fs(folder_location)
     directories = dir_pointer.listdir("/")
     dir_contents = {}
 
     for directory in directories:
-        la_directory = open_fs(f"{folder_location}/{directory}/ssda903")
+        la_directory = open_fs(f"{folder_location}/{directory}/{dataset}")
         dir_contents[directory] = [
             file.lstrip("/") for file in walker.files(la_directory)
         ]
@@ -55,26 +55,25 @@ def generate_run_key(folder_location, files):
 
 
 @schedule(
-    job=ssda903_clean,
-    cron_schedule="0 0 * * *",
+    job=clean,
+    cron_schedule="* * * * *",
     description="Monitors specified location for 903 files every day at midnight",
 )
 def ssda903_schedule(context):
+    dataset = "ssda903"
     folder_location = env_config("INPUT_LOCATION")
     context.log.info(f"Opening folder location: {folder_location}")
 
-    wildcards = env_config("903_WILDCARDS").split(",")
-
     context.log.info("Analysing folder contents")
-    directory_contents = directory_walker(folder_location, wildcards, context)
+    directory_contents = directory_walker(folder_location, context, dataset)
 
     for la_path, files in directory_contents.items():
         context.log.info("Generating Run Key")
-        run_key = generate_run_key(f"{folder_location}/{la_path}/ssda903", files)
+        run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
 
         run_records = context.instance.get_run_records(
             filters=RunsFilter(
-                job_name=ssda903_clean.name,
+                job_name=clean.name,
                 statuses=[DagsterRunStatus.SUCCESS],
             ),
             order_by="update_timestamp",
@@ -86,7 +85,7 @@ def ssda903_schedule(context):
             for run in run_records
             if la_path
             in run.dagster_run.run_config["ops"]["create_session_folder"]["config"][
-                "incoming_folder"
+                "dataset_folder"
             ]
         ]
 
@@ -98,9 +97,11 @@ def ssda903_schedule(context):
 
         la = check_la(la_path)
 
-        file_config = FileConfig(
-            incoming_folder=f"{folder_location}/{la_path}/ssda903",
-            input_la_code=la
+        clean_config = CleanConfig(
+            dataset_folder=f"{folder_location}/{la_path}/{dataset}",
+            la_folder=f"{folder_location}/{la_path}",
+            input_la_code=la,
+            dataset=dataset,
         )
 
         if previous_matching_run_id is None:
@@ -109,8 +110,9 @@ def ssda903_schedule(context):
                 run_key=run_key,
                 run_config=RunConfig(
                     ops={
-                        "create_session_folder": file_config,
-                        "process_files": file_config
+                        "create_session_folder": clean_config,
+                        "open_current": clean_config,
+                        "process_files": clean_config,
                     }
                 ),
             )
