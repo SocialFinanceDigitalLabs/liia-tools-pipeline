@@ -33,7 +33,6 @@ def sync():
         location_sensor,
         move_current_sensor,
         concatenate_sensor,
-        sufficiency_sensor,
     ]
 
     return jobs + schedules + sensors
