@@ -6,3 +6,7 @@ class CleanConfig(Config):
     la_folder: str | None
     input_la_code: str | None
     dataset: str | None
+
+
+class ReportsConfig(Config):
+    dataset: str

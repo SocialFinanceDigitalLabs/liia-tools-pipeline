@@ -5,7 +5,7 @@ from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.transform import prepare_export, apply_retention
-from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.ops.common_config import ReportsConfig
 
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -23,7 +23,7 @@ def move_error_report():
 
 
 @op()
-def move_current_and_concat_view(config: CleanConfig):
+def move_current_and_concat_view(config: ReportsConfig):
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
     pl.move_files_for_sharing(current_folder, destination_folder)
@@ -37,7 +37,7 @@ def move_current_and_concat_view(config: CleanConfig):
         "session_folder": Out(FS),
     }
 )
-def create_org_session_folder(config: CleanConfig) -> FS:
+def create_org_session_folder(config: ReportsConfig) -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesOrg
     )
@@ -56,7 +56,7 @@ def create_org_session_folder(config: CleanConfig) -> FS:
 )
 def create_reports(
     session_folder: FS,
-    config: CleanConfig,
+    config: ReportsConfig,
 ):
     export_folder = workspace_folder().makedirs(
         f"current/{config.dataset}", recreate=True

@@ -14,7 +14,7 @@ from liiatools_pipeline.jobs.common_org import (
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.external_dataset import external_incoming
-from liiatools_pipeline.schedules.location_schedule import clean_schedule
+from liiatools_pipeline.sensors.location_schedule import clean_schedule
 from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
 from liiatools_pipeline.sensors.job_success_sensor import (
     move_current_sensor,
