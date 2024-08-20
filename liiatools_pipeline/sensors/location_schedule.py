@@ -28,19 +28,19 @@ def input_directory_walker(folder_location, context, dataset):
     directories = dir_pointer.listdir("/")
     dir_contents = {}
 
-    for directory in directories:
-        la_directory = open_fs(f"{folder_location}/{directory}/{dataset}")
-        dir_contents[directory] = [
-            file.lstrip("/") for file in walker.files(la_directory)
+    for directory_str in directories:
+        directory = open_fs(f"{folder_location}/{directory_str}/{dataset}")
+        dir_contents[directory_str] = [
+            file.lstrip("/") for file in walker.files(directory)
         ]
 
-        if not dir_contents[directory]:
+        if not dir_contents[directory_str]:
             context.log.info(f"No files in {folder_location} have been found")
 
     return dir_contents
 
 
-def episodes_directory_walker(folder_location, context, dataset):
+def concat_directory_walker(folder_location, context, dataset):
     walker = Walker()
     try:
         concat_folder = open_fs(f"{folder_location}/concatenated/{dataset}")
@@ -49,7 +49,9 @@ def episodes_directory_walker(folder_location, context, dataset):
         dir_contents = [file.lstrip("/") for file in walker.files(concat_folder)]
 
     except fs.errors.CreateFailed:
-        context.log.info(f"Failed to open folder location: {folder_location}/concatenated/{dataset}")
+        context.log.info(
+            f"Failed to open folder location: {folder_location}/concatenated/{dataset}"
+        )
         dir_contents = None
 
     return dir_contents
@@ -72,15 +74,14 @@ def generate_run_key(folder_location, files):
     return hash_object.hexdigest()
 
 
-def find_previous_matching_run(run_records, run_key, la_path, dataset):
+def find_previous_matching_run(
+    run_records, run_key, la_path, dataset, key_op, key_folder
+):
     previous_run_id = [
         run.dagster_run.tags["dagster/run_key"]
         for run in run_records
         if all(
-            var
-            in run.dagster_run.run_config["ops"]["create_session_folder"]["config"][
-                "dataset_folder"
-            ]
+            var in run.dagster_run.run_config["ops"][key_op]["config"][key_folder]
             for var in (la_path, dataset)
         )
     ]
@@ -119,7 +120,12 @@ def clean_schedule(context):
             )
 
             previous_matching_run_id = find_previous_matching_run(
-                run_records, run_key, la_path, dataset
+                run_records,
+                run_key,
+                la_path,
+                dataset,
+                "create_session_folder",
+                "dataset_folder",
             )
             la = check_la(la_path)
 
@@ -159,44 +165,41 @@ def reports_schedule(context):
     context.log.info(f"Allowed datasets: {allowed_datasets}")
     for dataset in allowed_datasets:
         context.log.info("Analysing folder contents")
-        directory_contents = input_directory_walker(folder_location, context, dataset)
+        files = concat_directory_walker(folder_location, context, dataset)
 
-        for la_path, files in directory_contents.items():
-            context.log.info("Generating Run Key")
-            run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
+        context.log.info("Generating Run Key")
+        run_key = generate_run_key(f"{folder_location}/concatenated/{dataset}", files)
 
-            run_records = context.instance.get_run_records(
-                filters=RunsFilter(
-                    job_name=clean.name,
-                    statuses=[DagsterRunStatus.SUCCESS],
+        run_records = context.instance.get_run_records(
+            filters=RunsFilter(
+                job_name=reports.name,
+                statuses=[DagsterRunStatus.SUCCESS],
+            ),
+            order_by="update_timestamp",
+            ascending=False,
+        )
+
+        previous_matching_run_id = find_previous_matching_run(
+            run_records, run_key, "", dataset, "create_org_session_folder", "dataset"
+        )
+
+        clean_config = CleanConfig(
+            dataset_folder=None,
+            la_folder=None,
+            input_la_code=None,
+            dataset=dataset,
+        )
+
+        if previous_matching_run_id is None:
+            context.log.info("Differences found, executing run")
+            yield RunRequest(
+                run_key=run_key,
+                run_config=RunConfig(
+                    ops={
+                        "create_org_session_folder": clean_config,
+                        "create_reports": clean_config,
+                    }
                 ),
-                order_by="update_timestamp",
-                ascending=False,
             )
-
-            previous_matching_run_id = find_previous_matching_run(
-                run_records, run_key, la_path, dataset
-            )
-            la = check_la(la_path)
-
-            clean_config = CleanConfig(
-                dataset_folder=f"{folder_location}/{la_path}/{dataset}",
-                la_folder=f"{folder_location}/{la_path}",
-                input_la_code=la,
-                dataset=dataset,
-            )
-
-            if previous_matching_run_id is None:
-                context.log.info("Differences found, executing run")
-                yield RunRequest(
-                    run_key=run_key,
-                    run_config=RunConfig(
-                        ops={
-                            "create_session_folder": clean_config,
-                            "open_current": clean_config,
-                            "process_files": clean_config,
-                        }
-                    ),
-                )
-            else:
-                context.log.info("No new files found, skipping run")
+        else:
+            context.log.info("No new files found, skipping run")

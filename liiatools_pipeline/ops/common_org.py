@@ -5,7 +5,7 @@ from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.transform import prepare_export, apply_retention
-from liiatools_pipeline.ops.common_config import ReportsConfig
+from liiatools_pipeline.ops.common_config import CleanConfig
 
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -23,7 +23,7 @@ def move_error_report():
 
 
 @op()
-def move_current_and_concat_view(config: ReportsConfig):
+def move_current_and_concat_view(config: CleanConfig):
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
     pl.move_files_for_sharing(current_folder, destination_folder)
@@ -37,7 +37,7 @@ def move_current_and_concat_view(config: ReportsConfig):
         "session_folder": Out(FS),
     }
 )
-def create_org_session_folder(config: ReportsConfig) -> FS:
+def create_org_session_folder(config: CleanConfig) -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesOrg
     )
@@ -56,23 +56,25 @@ def create_org_session_folder(config: ReportsConfig) -> FS:
 )
 def create_reports(
     session_folder: FS,
-    config: ReportsConfig,
+    config: CleanConfig,
 ):
     export_folder = workspace_folder().makedirs(
         f"current/{config.dataset}", recreate=True
     )
-    aggregate = DataframeAggregator(session_folder, pipeline_config())
+    aggregate = DataframeAggregator(session_folder, pipeline_config(config))
     aggregate_data = aggregate.current()
 
-    for report in pipeline_config().retention_period.keys():
+    for report in pipeline_config(config).retention_period.keys():
         report_folder = export_folder.makedirs(report, recreate=True)
-        report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
+        report_data = prepare_export(
+            aggregate_data, pipeline_config(config), profile=report
+        )
         report_data = apply_retention(
             report_data,
-            pipeline_config(),
+            pipeline_config(config),
             profile=report,
-            year_column=pipeline_config().retention_columns["year_column"],
-            la_column=pipeline_config().retention_columns["la_column"],
+            year_column=pipeline_config(config).retention_columns["year_column"],
+            la_column=pipeline_config(config).retention_columns["la_column"],
         )
         report_data.export(report_folder, f"{config.dataset}_", "csv")
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

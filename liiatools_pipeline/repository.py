@@ -14,12 +14,18 @@ from liiatools_pipeline.jobs.common_org import (
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.external_dataset import external_incoming
-from liiatools_pipeline.sensors.location_schedule import clean_schedule
-from liiatools_pipeline.sensors.sufficiency_sensor import sufficiency_sensor
+from liiatools_pipeline.sensors.location_schedule import (
+    clean_schedule,
+    reports_schedule,
+)
 from liiatools_pipeline.sensors.job_success_sensor import (
     move_current_sensor,
     concatenate_sensor,
     ssda903_fix_episodes_sensor,
+    move_error_reports_sensor,
+    move_current_and_concat_sensor,
+    external_incoming_sensor,
+    sufficiency_sensor,
 )
 
 register()
@@ -46,11 +52,15 @@ def sync():
     ]
     schedules = [
         clean_schedule,
+        reports_schedule,
     ]
     sensors = [
         move_current_sensor,
         concatenate_sensor,
         ssda903_fix_episodes_sensor,
+        move_error_reports_sensor,
+        move_current_and_concat_sensor,
+        external_incoming_sensor,
         sufficiency_sensor,
     ]
 
