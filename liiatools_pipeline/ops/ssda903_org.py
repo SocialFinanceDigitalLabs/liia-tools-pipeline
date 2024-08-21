@@ -7,25 +7,21 @@ from liiatools.ssda903_pipeline.sufficiency_transform import (
     ons_transform,
     postcode_transform,
     ofsted_transform,
-    ss903_transform
+    ss903_transform,
 )
-from liiatools_pipeline.assets.common import (
-    shared_folder,
-    workspace_folder
-)
-from liiatools_pipeline.assets.external_dataset import (
-    external_data_folder
-)
+from liiatools_pipeline.assets.common import shared_folder, workspace_folder
+from liiatools_pipeline.assets.external_dataset import external_data_folder
+
 
 # This op should be ported to the external_dataset pipeline as it only needs to run once
 @op
 def output_lookup_tables():
-    output_folder = shared_folder()
     dim_dfs = dict_to_dfs()
     dim_dfs = DataContainer(dim_dfs)
-    dim_dfs.export(output_folder, "", "csv")
+    dim_dfs.export(shared_folder(), "", "csv")
 
-# This op should be ported to the external_dataset pipeine as it only needs to run when external inputs are changed
+
+# This op should be ported to the external_dataset pipeline as it only needs to run when external inputs are changed
 @op
 def create_dim_fact_tables():
     ext_folder = external_data_folder()
@@ -63,7 +59,9 @@ def create_dim_fact_tables():
     Episode = open_file(s903_folder, "ssda903_Episodes.csv")
 
     # Transform tables
-    LookedAfterChild, factEpisode = ss903_transform(LookedAfterChild, UASC, ONSArea, Episode, Postcode, OfstedProvider)
+    LookedAfterChild, factEpisode = ss903_transform(
+        LookedAfterChild, UASC, ONSArea, Episode, Postcode, OfstedProvider
+    )
     dim_tables["dimLookedAfterChild"] = LookedAfterChild
     dim_tables["factEpisode"] = factEpisode
 
