@@ -111,7 +111,7 @@ def test_discover_year_dir_and_file_year():
 def test_discover_la():
     samples_fs = open_fs(DIR_903.as_posix())
     locator = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/822_2020_episodes.csv"
+        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020_episodes_822"
     )
     assert discover_la(locator) == "822"
 
