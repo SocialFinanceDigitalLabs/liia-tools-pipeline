@@ -16,7 +16,6 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 
@@ -35,7 +34,6 @@ def find_previous_matching_ssda903_run(run_records):
     job=move_current,
     description="Runs move_current job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def move_current_sensor(context):
     run_records = context.instance.get_run_records(
@@ -62,7 +60,6 @@ def move_current_sensor(context):
     job=concatenate,
     description="Runs concatenate job once move_current job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def concatenate_sensor(context):
     run_records = context.instance.get_run_records(
@@ -96,7 +93,6 @@ def concatenate_sensor(context):
     job=ssda903_fix_episodes,
     description="Runs ssda903_fix_episodes job once concatenate job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def ssda903_fix_episodes_sensor(context):
     run_records = context.instance.get_run_records(
@@ -119,7 +115,6 @@ def ssda903_fix_episodes_sensor(context):
     job=move_error_reports,
     description="Runs move_error_reports job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def move_error_reports_sensor(context):
     run_records = context.instance.get_run_records(
@@ -142,7 +137,6 @@ def move_error_reports_sensor(context):
     job=move_current_and_concat,
     description="Runs move_current_and_concat job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def move_current_and_concat_sensor(context):
     run_records = context.instance.get_run_records(
@@ -180,7 +174,6 @@ def move_current_and_concat_sensor(context):
     job=ssda903_sufficiency,
     description="Runs ssda903_sufficiency job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
 )
 def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
