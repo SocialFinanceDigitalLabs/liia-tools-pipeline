@@ -653,7 +653,7 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> pd.DataFrame:
+def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
     """Creates a dimension table with all Ofsted providers and a fact table with all Ofsted inspections"""
     fs_ofs = fs.opendir("Ofsted")
 
@@ -670,19 +670,19 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> pd.DataFrame:
 
         # Open providers_in_year file
         providers_in_file = (
-            "Provider_level_in_year_20" f"{last_year}" "-" f"{year}" ".csv"
+            f"Provider_level_in_year_20{last_year}-{year}.csv"
         )
         providers_in_df = open_file(fs_ofs, providers_in_file)
 
         # Open closed file
-        closed_file = "Closed_childrens_homes_31Mar" f"{year}" ".csv"
+        closed_file = f"Closed_childrens_homes_31Mar{year}.csv"
         closed_df = open_file(fs_ofs, closed_file)
 
         # Merge on URN to add closure info to richer providers_in record
         providers_closed = providers_in_df.merge(closed_df, on="URN", how="outer")
 
         # Open providers_places file
-        providers_places_file = "Providers_places_at_31_Aug_20" f"{year}" ".csv"
+        providers_places_file = f"Providers_places_at_31_Aug_20{year}.csv"
         providers_places = open_file(fs_ofs, providers_places_file)
 
         # Concatenate providers_places with merged providers_closed df
@@ -748,12 +748,12 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> pd.DataFrame:
         last_year = int(year) - 1
 
         # Open provider at file
-        provider_at_file = "Provider_level_at_31_Aug_20" f"{year}" ".csv"
+        provider_at_file = f"Provider_level_at_31_Aug_20{year}.csv"
         provider_at_df = open_file(fs_ofs, provider_at_file)
 
         # Open providers_in_year file and keep only full inspections
         provider_in_file = (
-            "Provider_level_in_year_20" f"{last_year}" "-" f"{year}" ".csv"
+            f"Provider_level_in_year_20{last_year}-{year}.csv"
         )
         provider_in_df = open_file(fs_ofs, provider_in_file)
         provider_in_df = provider_in_df.loc[
@@ -832,8 +832,8 @@ def ss903_transform(
     Episode: pd.DataFrame,
     Postcode: pd.DataFrame,
     OfstedProvider: pd.DataFrame,
-) -> pd.DataFrame:
-    """Takes three ssda903 files (header and uasc) and creates:
+) -> (pd.DataFrame, pd.DataFrame):
+    """Takes three ssda903 files (header, episodes and uasc) and creates:
     - a dimension table with one row per child
     - a fact table with one row per episode"""
     # Create LookedAfterChild table

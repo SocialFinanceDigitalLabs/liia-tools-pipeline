@@ -54,9 +54,9 @@ def create_dim_fact_tables():
     # Create dimLookedAfterChild and factEpisode table
     # Open ssda903 files
     s903_folder = workspace.opendir("current/ssda903/PAN")
-    LookedAfterChild = open_file(s903_folder, "ssda903_Header.csv")
-    UASC = open_file(s903_folder, "ssda903_UASC.csv")
-    Episode = open_file(s903_folder, "ssda903_Episodes.csv")
+    LookedAfterChild = open_file(s903_folder, "ssda903_header.csv")
+    UASC = open_file(s903_folder, "ssda903_uasc.csv")
+    Episode = open_file(s903_folder, "ssda903_episodes.csv")
 
     # Transform tables
     LookedAfterChild, factEpisode = ss903_transform(
