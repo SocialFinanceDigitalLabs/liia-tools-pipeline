@@ -177,29 +177,6 @@ def move_current_and_concat_sensor(context):
 
 
 @sensor(
-    job=external_incoming,
-    description="Runs external_incoming job once reports job is complete",
-    default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=5,
-)
-def external_incoming_sensor(context):
-    run_records = context.instance.get_run_records(
-        filters=RunsFilter(
-            job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
-        ),
-        order_by="update_timestamp",
-        ascending=False,
-    )
-
-    if run_records:  # Ensure there is at least one run record
-        latest_run_record = run_records[0]  # Get the most recent run record
-        yield RunRequest(
-            run_key=latest_run_record.dagster_run.run_id,
-        )
-
-
-@sensor(
     job=ssda903_sufficiency,
     description="Runs ssda903_sufficiency job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,

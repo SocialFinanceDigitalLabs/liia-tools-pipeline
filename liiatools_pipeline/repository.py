@@ -24,7 +24,6 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     ssda903_fix_episodes_sensor,
     move_error_reports_sensor,
     move_current_and_concat_sensor,
-    external_incoming_sensor,
     sufficiency_sensor,
 )
 
@@ -60,7 +59,6 @@ def sync():
         ssda903_fix_episodes_sensor,
         move_error_reports_sensor,
         move_current_and_concat_sensor,
-        external_incoming_sensor,
         sufficiency_sensor,
     ]
 
