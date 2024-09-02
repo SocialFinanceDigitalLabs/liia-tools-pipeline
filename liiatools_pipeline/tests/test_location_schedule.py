@@ -1,4 +1,7 @@
 import pytest
+import logging
+import unittest
+from unittest.mock import MagicMock
 from collections import namedtuple
 from dagster import build_op_context
 
@@ -101,6 +104,8 @@ def test_find_previous_matching_run_no_records(mock_run_record):
 def test_find_previous_matching_run_missing_run_key(mock_run_record):
     la_path, dataset, key_op, key_folder, context, run, dagster_run = mock_run_record
 
+    context.log.error = MagicMock()
+
     run_3 = run(
         dagster_run(
             {"dagster/run_key_missing": "run_key_3"},
@@ -121,10 +126,15 @@ def test_find_previous_matching_run_missing_run_key(mock_run_record):
     )
 
     assert previous_run_id is None
+    context.log.error.assert_called_with(
+        f"dagster/run_key not found in tags. No previous run key found: {run_3.dagster_run.tags}"
+    )
 
 
 def test_find_previous_matching_run_missing_key_op(mock_run_record):
     la_path, dataset, key_op, key_folder, context, run, dagster_run = mock_run_record
+
+    context.log.error = MagicMock()
 
     run_4 = run(
         dagster_run(
@@ -146,10 +156,15 @@ def test_find_previous_matching_run_missing_key_op(mock_run_record):
     )
 
     assert previous_run_id is None
+    context.log.error.assert_called_with(
+        f"{key_op} not found in run_config. No previous run config found: {run_4.dagster_run.run_config}"
+    )
 
 
 def test_find_previous_matching_run_missing_key_folder(mock_run_record):
     la_path, dataset, key_op, key_folder, context, run, dagster_run = mock_run_record
+
+    context.log.error = MagicMock()
 
     run_5 = run(
         dagster_run(
@@ -171,3 +186,6 @@ def test_find_previous_matching_run_missing_key_folder(mock_run_record):
     )
 
     assert previous_run_id is None
+    context.log.error.assert_called_with(
+        f"{key_folder} not found in run_config. No previous run config found: {run_5.dagster_run.run_config}"
+    )

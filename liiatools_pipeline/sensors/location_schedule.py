@@ -99,7 +99,7 @@ def find_previous_matching_run(
             )
         elif key_folder in str(e):
             context.log.error(
-                f"{key_folder} not found in tags. No previous run config found: {run_records[0].dagster_run.run_config}"
+                f"{key_folder} not found in run_config. No previous run config found: {run_records[0].dagster_run.run_config}"
             )
 
         previous_run_id = None
