@@ -7,6 +7,7 @@ from dagster import (
     schedule,
     RunsFilter,
     DagsterRunStatus,
+    DefaultScheduleStatus,
 )
 from fs import open_fs
 from fs.walk import Walker
@@ -69,22 +70,39 @@ def generate_run_key(folder_location, files):
                 file_path, namespaces=["details"]
             ).modified
 
-            hash_object.update(str(last_modified_time).encode())
+            hash_object.update(f"{last_modified_time}_{folder_location}".encode())
 
     return hash_object.hexdigest()
 
 
 def find_previous_matching_run(
-    run_records, run_key, la_path, dataset, key_op, key_folder
+    run_records, run_key, la_path, dataset, key_op, key_folder, context
 ):
-    previous_run_id = [
-        run.dagster_run.tags["dagster/run_key"]
-        for run in run_records
-        if all(
-            var in run.dagster_run.run_config["ops"][key_op]["config"][key_folder]
-            for var in (la_path, dataset)
-        )
-    ]
+    try:
+        previous_run_id = [
+            run.dagster_run.tags["dagster/run_key"]
+            for run in run_records
+            if all(
+                var in run.dagster_run.run_config["ops"][key_op]["config"][key_folder]
+                for var in (la_path, dataset)
+            )
+        ]
+
+    except KeyError as e:
+        if "dagster/run_key" in str(e):
+            context.log.error(
+                f"dagster/run_key not found in tags. No previous run key found: {run_records[0].dagster_run.tags}"
+            )
+        elif key_op in str(e):
+            context.log.error(
+                f"{key_op} not found in run_config. No previous run config found: {run_records[0].dagster_run.run_config}"
+            )
+        elif key_folder in str(e):
+            context.log.error(
+                f"{key_folder} not found in tags. No previous run config found: {run_records[0].dagster_run.run_config}"
+            )
+
+        previous_run_id = None
 
     previous_run_id = previous_run_id[0] if previous_run_id else []
     previous_matching_run_id = previous_run_id if run_key == previous_run_id else None
@@ -95,6 +113,7 @@ def find_previous_matching_run(
     job=clean,
     cron_schedule=env_config("CLEAN_SCHEDULE"),
     description="Monitors specified location for data files according to the CLEAN_SCHEDULE environment variable",
+    default_status=DefaultScheduleStatus.RUNNING,
 )
 def clean_schedule(context):
     folder_location = env_config("INPUT_LOCATION")
@@ -126,6 +145,7 @@ def clean_schedule(context):
                 dataset,
                 "create_session_folder",
                 "dataset_folder",
+                context,
             )
             la = check_la(la_path)
 
@@ -156,6 +176,7 @@ def clean_schedule(context):
     job=reports,
     cron_schedule=env_config("REPORTS_SCHEDULE"),
     description="Monitors specified location for data files according to the REPORTS_SCHEDULE environment variable",
+    default_status=DefaultScheduleStatus.RUNNING,
 )
 def reports_schedule(context):
     folder_location = env_config("INPUT_LOCATION")
@@ -180,7 +201,13 @@ def reports_schedule(context):
         )
 
         previous_matching_run_id = find_previous_matching_run(
-            run_records, run_key, "", dataset, "create_org_session_folder", "dataset"
+            run_records,
+            run_key,
+            "",
+            dataset,
+            "create_org_session_folder",
+            "dataset",
+            context,
         )
 
         clean_config = CleanConfig(

@@ -84,26 +84,6 @@ def check_la(directory):
     raise ValueError
 
 
-def check_dataset(directory):
-    """
-    Check a directory to see if it contains the dataset associated with a pipeline, if it does, return that code
-    Expected directory formats:
-        Fons-a821f-Cambridgeshire-873/ssda903/873_2020_ad1.csv
-        Fons-04cd3-Thurrock-883/cin/883_2020_ad1.csv
-        Fons-0fg93-Hackney-HAC/ssda903/HAC_2020_ad1.csv
-
-    :param directory: Directory that contains an LA code
-    :return: An LA code within the string
-    :raises ValueError: If no LA is found
-    """
-    for pattern in authorities.codes:
-        match = re.search(f"{pattern}$", directory)
-        if match:
-            return match.group(0)
-
-    raise ValueError
-
-
 def check_year_within_range(
     year, retention_period, new_year_start_month=1, as_at_date=datetime.now()
 ):
