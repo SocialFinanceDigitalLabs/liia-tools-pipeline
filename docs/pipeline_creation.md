@@ -326,11 +326,3 @@ from liiatools.new_pipeline.spec import load_pipeline_config as load_pipeline_co
 from liiatools.new_pipeline.spec import load_schema as load_schema_dataset
 from liiatools.new_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_dataset
 ```
-
-## 9. Adjust the [ops/common_org.py](/liiatools_pipeline/ops/common_org.py) file to include the new use case you have created (if any)
-
-* You just need to add the use case into the create_reports function like so:
-
-```python
-for report in ["PAN", "SUFFICIENCY", "NEW_USE_CASE"]:
-```
