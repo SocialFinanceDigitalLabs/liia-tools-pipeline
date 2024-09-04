@@ -1,7 +1,7 @@
-from dagster import Config
 from typing import List, Tuple
 from dagster import In, Out, op
 from fs.base import FS
+from fs import open_fs
 
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
@@ -20,20 +20,16 @@ from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
 
-
 from liiatools_pipeline.assets.common import (
-    incoming_folder,
     workspace_folder,
     shared_folder,
     pipeline_config,
-    la_code as input_la_code,
-    dataset,
 )
+from liiatools_pipeline.ops.common_config import CleanConfig
 
+from dagster import get_dagster_logger
 
-class FileConfig(Config):
-    filename: str
-    name: str
+log = get_dagster_logger(__name__)
 
 
 @op(
@@ -43,11 +39,13 @@ class FileConfig(Config):
         "incoming_files": Out(List[FileLocator]),
     }
 )
-def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
+def create_session_folder(config: CleanConfig) -> Tuple[FS, str, List[FileLocator]]:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
-    incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
+    incoming_files = pl.move_files_for_processing(
+        open_fs(config.dataset_folder), session_folder
+    )
 
     return session_folder, session_id, incoming_files
 
@@ -55,9 +53,9 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 @op(
     out={"current": Out(DataframeArchive)},
 )
-def open_current() -> DataframeArchive:
+def open_current(config: CleanConfig) -> DataframeArchive:
     current_folder = workspace_folder().makedirs("current", recreate=True)
-    current = DataframeArchive(current_folder, pipeline_config(), dataset())
+    current = DataframeArchive(current_folder, pipeline_config(config), config.dataset)
     return current
 
 
@@ -74,6 +72,7 @@ def process_files(
     incoming_files: List[FileLocator],
     current: DataframeArchive,
     session_id: str,
+    config: CleanConfig,
 ):
     error_report = ErrorContainer()
     for file_locator in incoming_files:
@@ -92,7 +91,7 @@ def process_files(
 
         if (
             check_year_within_range(
-                year, max(pipeline_config().retention_period.values())
+                year, max(pipeline_config(config).retention_period.values())
             )
             is False
         ):
@@ -107,8 +106,8 @@ def process_files(
             continue
 
         la_code = (
-            input_la_code()
-            if input_la_code() is not None
+            config.input_la_code
+            if config.input_la_code is not None
             else pl.discover_la(file_locator)
         )
         if la_code is None:
@@ -123,14 +122,14 @@ def process_files(
             continue
 
         try:
-            schema = globals()[f"load_schema_{dataset()}"](year)
+            schema = globals()[f"load_schema_{config.dataset}"](year)
         except KeyError:
             continue
 
         metadata = dict(year=year, schema=schema, la_code=la_code)
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](
+            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
                 file_locator, schema
             )
         except StreamError as e:
@@ -145,7 +144,7 @@ def process_files(
             continue
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, pipeline_config(), profile="PAN"
+            cleanfile_result.data, pipeline_config(config), profile="PAN"
         )
 
         cleanfile_result.data.export(
@@ -155,7 +154,9 @@ def process_files(
         )
         error_report.extend(cleanfile_result.errors)
 
-        enrich_result = enrich_data(cleanfile_result.data, pipeline_config(), metadata)
+        enrich_result = enrich_data(
+            cleanfile_result.data, pipeline_config(config), metadata
+        )
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -163,7 +164,9 @@ def process_files(
         )
         error_report.extend(enrich_result.errors)
 
-        degraded_result = degrade_data(enrich_result.data, pipeline_config(), metadata)
+        degraded_result = degrade_data(
+            enrich_result.data, pipeline_config(config), metadata
+        )
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -177,13 +180,13 @@ def process_files(
 
     error_report.set_property("session_id", session_id)
     error_report_name = (
-        f"{input_la_code()}_{dataset()}_{session_id}_error_report.csv"
-        if input_la_code() is not None
-        else f"{dataset()}_{session_id}_error_report.csv"
+        f"{config.input_la_code}_{config.dataset}_{session_id}_error_report.csv"
+        if config.input_la_code is not None
+        else f"{config.dataset}_{session_id}_error_report.csv"
     )
 
     destination_logs = shared_folder().makedirs("logs", recreate=True)
-    incoming_logs = incoming_folder().makedirs("logs", recreate=True)
+    incoming_logs = open_fs(config.la_folder).makedirs("logs", recreate=True)
     log_locations = [session_folder, destination_logs, incoming_logs]
 
     for location in log_locations:
@@ -201,10 +204,12 @@ def move_current_view():
 @op(
     ins={"current": In(DataframeArchive)},
 )
-def create_concatenated_view(current: DataframeArchive):
-    concat_folder = shared_folder().makedirs(f"concatenated/{dataset()}", recreate=True)
+def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
+    concat_folder = shared_folder().makedirs(
+        f"concatenated/{config.dataset}", recreate=True
+    )
     for la_code in authorities.codes:
         concat_data = current.current(la_code)
 
         if concat_data:
-            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
+            concat_data.export(concat_folder, f"{la_code}_{config.dataset}_", "csv")

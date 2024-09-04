@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
 
+from liiatools.common.reference import authorities
+
 
 def check_year(filename):
     """
@@ -62,20 +64,22 @@ def check_year(filename):
     raise ValueError
 
 
-def check_la(filename):
+def check_la(directory):
     """
-    Check a filename to see if it contains the three-digit code associated with an LA, if it does, return that code
-    Expected filename formats:
-        822_2023_header.csv
-        935_2023_episodes.csv
+    Check a directory to see if it contains the three-digit code associated with an LA, if it does, return that code
+    Expected directory formats:
+        Fons-a821f-Cambridgeshire-873
+        Fons-04cd3-Thurrock-883
+        Fons-0fg93-Hackney-HAC
 
-    :param filename: Filename that contains an LA code
+    :param directory: Directory that contains an LA code
     :return: An LA code within the string
     :raises ValueError: If no LA is found
     """
-    match = re.search(r"^\d{3}", filename)
-    if match:
-        return match.group(0)
+    for pattern in authorities.codes:
+        match = re.search(f"{pattern}$", directory)
+        if match:
+            return match.group(0)
 
     raise ValueError
 

@@ -669,9 +669,7 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
         last_year = int(year) - 1
 
         # Open providers_in_year file
-        providers_in_file = (
-            f"Provider_level_in_year_20{last_year}-{year}.csv"
-        )
+        providers_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
         providers_in_df = open_file(fs_ofs, providers_in_file)
 
         # Open closed file
@@ -752,9 +750,7 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
         provider_at_df = open_file(fs_ofs, provider_at_file)
 
         # Open providers_in_year file and keep only full inspections
-        provider_in_file = (
-            f"Provider_level_in_year_20{last_year}-{year}.csv"
-        )
+        provider_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
         provider_in_df = open_file(fs_ofs, provider_in_file)
         provider_in_df = provider_in_df.loc[
             provider_in_df["Inspection event type"] == "Full inspection"
