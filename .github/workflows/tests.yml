@@ -19,8 +19,6 @@ jobs:
         architecture: "x64"
       env:
         AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
-        CLEAN_SCHEDULE: "* * * * *"
-        REPORTS_SCHEDULE: "* * * * *"
 
     - name: Cache dependencies
       uses: actions/cache@v2
@@ -39,6 +37,9 @@ jobs:
         poetry install
 
     - name: Test with pytest
+      env:
+        CLEAN_SCHEDULE: "* * * * *"
+        REPORTS_SCHEDULE: "* * * * *"
       run: |
         poetry run pytest
 
