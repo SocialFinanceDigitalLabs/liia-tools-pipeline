@@ -43,23 +43,14 @@ def sync():
         move_current,
         concatenate,
         ssda903_fix_episodes,
-        move_error_reports,
-        move_current_and_concat,
-        reports,
-        external_incoming,
-        ssda903_sufficiency,
     ]
     schedules = [
         clean_schedule,
-        reports_schedule,
     ]
     sensors = [
         move_current_sensor,
         concatenate_sensor,
         ssda903_fix_episodes_sensor,
-        move_error_reports_sensor,
-        move_current_and_concat_sensor,
-        sufficiency_sensor,
     ]
 
     return jobs + schedules + sensors
