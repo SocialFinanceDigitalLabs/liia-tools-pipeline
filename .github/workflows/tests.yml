@@ -19,6 +19,8 @@ jobs:
         architecture: "x64"
       env:
         AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+        CLEAN_SCHEDULE: "* * * * *"
+        REPORTS_SCHEDULE: "* * * * *"
 
     - name: Cache dependencies
       uses: actions/cache@v2
