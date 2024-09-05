@@ -1,124 +1,70 @@
-from dagster import op, In, Out
-from fs.base import FS
+from dagster import op
 
-from liiatools.common.aggregate import DataframeAggregator
-from liiatools.common import pipeline as pl
-from liiatools.common.constants import SessionNamesOrg
-from liiatools.common.transform import prepare_export, apply_retention
-
-from liiatools_pipeline.assets.ssda903 import (
-    pipeline_config,
-    incoming_folder,
-    workspace_folder,
-    shared_folder,
+from liiatools.common.data import DataContainer
+from liiatools.ssda903_pipeline.sufficiency_transform import (
+    dict_to_dfs,
+    open_file,
+    ons_transform,
+    postcode_transform,
+    ofsted_transform,
+    ss903_transform,
 )
-
-from sufficiency_data_transform.all_dim_and_fact import (
-    create_dim_tables,
-    create_dimONSArea,
-    create_dimLookedAfterChild,
-    create_dimOfstedProvider,
-    create_dimPostcode,
-    create_factEpisode,
-    create_factOfstedInspection,
-)
+from liiatools_pipeline.assets.common import shared_folder, workspace_folder
+from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 
-@op()
-def move_current_and_concat_view():
-    current_folder = incoming_folder().opendir("current")
-    destination_folder = shared_folder()
-    pl.move_files_for_sharing(current_folder, destination_folder)
-
-    concat_folder = incoming_folder().opendir("concatenated/ssda903")
-    pl.move_files_for_sharing(concat_folder, destination_folder)
+# This op should be ported to the external_dataset pipeline as it only needs to run once
+@op
+def output_lookup_tables():
+    dim_dfs = dict_to_dfs()
+    dim_dfs = DataContainer(dim_dfs)
+    dim_dfs.export(shared_folder(), "", "csv")
 
 
-@op(
-    out={
-        "session_folder": Out(FS),
-    }
-)
-def create_org_session_folder() -> FS:
-    session_folder, session_id = pl.create_session_folder(
-        workspace_folder(), SessionNamesOrg
+# This op should be ported to the external_dataset pipeline as it only needs to run when external inputs are changed
+@op
+def create_dim_fact_tables():
+    ext_folder = external_data_folder()
+    workspace = workspace_folder()
+    output_folder = shared_folder()
+
+    # Create empty dictionary to store tables
+    dim_tables = {}
+
+    # Create dimONSArea table
+    # Open external file
+    ONSArea = open_file(ext_folder, "ONS_Area.csv")
+    # Transform ONSArea table
+    ONSArea = ons_transform(ONSArea)
+    dim_tables["dimONSArea"] = ONSArea
+
+    # Create dimPostcode table
+    # Open external file
+    Postcode = open_file(ext_folder, "ONSPD_reduced_to_postcode_sector.csv")
+    # Transform Postcode table
+    Postcode = postcode_transform(Postcode)
+    dim_tables["dimPostcode"] = Postcode
+
+    # Create dimOfstedProvider and factOfstedInspection tables
+    # Open and transform files
+    OfstedProvider, factOfstedInspection = ofsted_transform(ext_folder, ONSArea)
+    dim_tables["dimOfstedProvider"] = OfstedProvider
+    dim_tables["factOfstedInspection"] = factOfstedInspection
+
+    # Create dimLookedAfterChild and factEpisode table
+    # Open ssda903 files
+    s903_folder = workspace.opendir("current/ssda903/PAN")
+    LookedAfterChild = open_file(s903_folder, "ssda903_header.csv")
+    UASC = open_file(s903_folder, "ssda903_uasc.csv")
+    Episode = open_file(s903_folder, "ssda903_episodes.csv")
+
+    # Transform tables
+    LookedAfterChild, factEpisode = ss903_transform(
+        LookedAfterChild, UASC, ONSArea, Episode, Postcode, OfstedProvider
     )
-    session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
+    dim_tables["dimLookedAfterChild"] = LookedAfterChild
+    dim_tables["factEpisode"] = factEpisode
 
-    concat_folder = incoming_folder().opendir("concatenated/ssda903")
-    pl.move_files_for_sharing(concat_folder, session_folder)
-
-    return session_folder
-
-
-@op(
-    ins={
-        "session_folder": In(FS),
-    },
-)
-def create_reports(
-    session_folder: FS,
-):
-    export_folder = workspace_folder().makedirs("current/ssda903", recreate=True)
-    aggregate = DataframeAggregator(session_folder, pipeline_config())
-    aggregate_data = aggregate.current()
-
-    for report in ["PAN", "SUFFICIENCY"]:
-        report_folder = export_folder.makedirs(report, recreate=True)
-        report_data = prepare_export(aggregate_data, pipeline_config(), profile=report)
-        report_data = apply_retention(
-            report_data,
-            pipeline_config(),
-            profile=report,
-            year_column="YEAR",
-            la_column="LA",
-        )
-        report_data.export(report_folder, "ssda903_", "csv")
-        report_data.export(shared_folder(), f"{report}_ssda903_", "csv")
-
-
-@op()
-def move_error_report():
-    source_folder = incoming_folder().opendir("logs")
-    destination_folder = shared_folder().makedirs("logs", recreate=True)
-    pl.move_error_report(source_folder, destination_folder)
-
-
-@op
-def dim_tables():
-    create_dim_tables()
-    return True
-
-
-@op
-def ons_area():
-    create_dimONSArea()
-    return True
-
-
-@op
-def looked_after_child(area):
-    create_dimLookedAfterChild()
-    return True
-
-
-@op
-def ofsted_provider(area):
-    create_dimOfstedProvider()
-    return True
-
-
-@op
-def postcode():
-    create_dimPostcode()
-    return True
-
-
-@op
-def episode(area, lac, pc, prov, dim):
-    create_factEpisode()
-
-
-@op
-def ofsted_inspection(dim, prov):
-    create_factOfstedInspection()
+    # Export tables
+    dim_tables = DataContainer(dim_tables)
+    dim_tables.export(output_folder, "", "csv")

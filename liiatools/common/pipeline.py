@@ -136,7 +136,7 @@ def move_files_for_sharing(
 
 
 def move_error_report(
-        source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+    source_fs: FS, destination_fs: FS, continue_on_error: bool = False
 ):
     """
     Move the error report from a source filesystem to a destination filesystem

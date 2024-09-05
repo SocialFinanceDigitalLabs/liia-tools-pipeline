@@ -1,6 +1,5 @@
 import unittest
 from datetime import datetime
-
 from liiatools.common.checks import (
     check_year,
     check_la,
@@ -36,8 +35,9 @@ class TestCheckYear(unittest.TestCase):
 
 
 def test_check_la():
-    assert check_la("822_2023_header.csv") == "822"
-    assert check_la("935_2023_episodes.csv") == "935"
+    assert check_la("Fons-a821f-Cambridgeshire-873") == "873"
+    assert check_la("Fons-04cd3-Thurrock-883") == "883"
+    assert check_la("Fons-0fg93-Hackney-HAC") == "HAC"
 
 
 class TestCheckLA(unittest.TestCase):
@@ -60,14 +60,8 @@ def test_check_year_within_range():
 
 def test_check_la_signature():
     pipeline_config = {
-        "BAR": {
-            "PAN": "Yes",
-            "SUFFICIENCY": "Yes"
-        },
-        "BEX": {
-            "PAN": "Yes",
-            "SUFFICIENCY": "No"
-        },
+        "BAR": {"PAN": "Yes", "SUFFICIENCY": "Yes"},
+        "BEX": {"PAN": "Yes", "SUFFICIENCY": "No"},
     }
 
     assert check_la_signature(pipeline_config, "PAN") == ["BAR", "BEX"]

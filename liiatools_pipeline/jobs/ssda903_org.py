@@ -1,41 +1,9 @@
 from dagster import job
-from liiatools_pipeline.ops.ssda903_org import (
-    dim_tables,
-    ons_area,
-    looked_after_child,
-    ofsted_provider,
-    postcode,
-    episode,
-    ofsted_inspection,
-    create_reports,
-    create_org_session_folder,
-    move_error_report,
-    move_current_and_concat_view,
-)
+
+from liiatools_pipeline.ops import ssda903_org as ssda903
 
 
 @job
-def ssda903_move_error_report():
-    move_error_report()
-
-
-@job
-def ssda903_move_current_and_concat():
-    move_current_and_concat_view()
-
-
-@job
-def ssda903_reports():
-    session_folder = create_org_session_folder()
-    create_reports(session_folder)
-
-
-@job()
 def ssda903_sufficiency():
-    dim = dim_tables()
-    area = ons_area()
-    lac = looked_after_child(area)
-    prov = ofsted_provider(area)
-    pc = postcode()
-    episode(area, lac, pc, prov, dim)
-    ofsted_inspection(dim, prov)
+    ssda903.output_lookup_tables()
+    ssda903.create_dim_fact_tables()
