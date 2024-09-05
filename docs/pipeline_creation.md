@@ -161,6 +161,10 @@ String
 
 ```json
 {
+    "retention_columns": {
+    "year_column": "YEAR_COLUMN",
+    "la_column": "LA_COLUMN"
+    },
     "retention_period": {
         "USE_CASE_1": 12,
         "USE_CASE_2": 7,
@@ -199,6 +203,7 @@ String
 ```
 * Details of the different available values can be found in the PipelineConfig class in the [__config.py](/liiatools/common/data/__config.py) file.
 * Details of the different possible enrich and degrade functions can be found in the [_transform_functions.py](/liiatools/common/_transform_functions.py) file.
+* The retention columns should align with the columns created for year and LA in the table_list section of this pipeline.json file.
 
 ## 4. Create the new_pipeline/spec/_\_init__.py file which will load the schema and the pipeline
 
