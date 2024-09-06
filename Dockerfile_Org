@@ -17,8 +17,7 @@ RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 FROM python:3.10-slim-buster AS runtime
 
 ENV VIRTUAL_ENV=/code/.venv \
-    PATH="/code/.venv/bin:$PATH" \
-    PYTHONPATH="/code:${PYTHONPATH}"
+    PATH="/code/.venv/bin:$PATH"
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY liiatools /code/liiatools
