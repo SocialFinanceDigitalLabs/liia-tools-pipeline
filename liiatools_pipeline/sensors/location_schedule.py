@@ -1,4 +1,5 @@
 from hashlib import sha1
+import sys
 
 import fs.errors
 from dagster import (
@@ -136,6 +137,7 @@ def clean_schedule(context):
                 ),
                 order_by="update_timestamp",
                 ascending=False,
+                limit=1000,
             )
 
             previous_matching_run_id = find_previous_matching_run(
@@ -199,6 +201,7 @@ def reports_schedule(context):
             ),
             order_by="update_timestamp",
             ascending=False,
+            limit=1000,
         )
 
         previous_matching_run_id = find_previous_matching_run(
