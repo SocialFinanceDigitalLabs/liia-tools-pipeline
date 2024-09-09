@@ -19,12 +19,19 @@ from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 
-def find_previous_matching_dataset_run(run_records, dataset):
-    previous_run_id = [
-        run.dagster_run.run_id
-        for run in run_records
-        if dataset == run.dagster_run.tags["dataset"]
-    ]
+def find_previous_matching_dataset_run(run_records, dataset, context):
+    try:
+        previous_run_id = [
+            run.dagster_run.run_id
+            for run in run_records
+            if dataset == run.dagster_run.tags["dataset"]
+        ]
+
+    except KeyError:
+        context.log.error(
+            f"'dataset' not found in tags. No previous run id found"
+        )
+        previous_run_id = None
 
     previous_run_id = previous_run_id[0] if previous_run_id else None
     return previous_run_id
@@ -51,6 +58,7 @@ def move_current_sensor(context):
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
+                context,
             )  # Get the most recent dataset run id
             yield RunRequest(
                 run_key=latest_run_id,
@@ -79,6 +87,7 @@ def concatenate_sensor(context):
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
+                context,
             )  # Get the most recent dataset run id
             concat_config = CleanConfig(
                 dataset=dataset,
@@ -112,7 +121,8 @@ def ssda903_fix_episodes_sensor(context):
 
     latest_run_id = find_previous_matching_dataset_run(
         run_records,
-        "ssda903"
+        "ssda903",
+        context,
     )  # Get the most recent ssda903 run id
     if latest_run_id:  # Ensure there is at least one ssda903 run record
         yield RunRequest(run_key=latest_run_id, run_config=RunConfig())
@@ -161,6 +171,7 @@ def move_current_and_concat_sensor(context):
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
+                context,
             )  # Get the most recent dataset run id
             clean_config = CleanConfig(
                 dataset_folder=None,
@@ -195,7 +206,8 @@ def sufficiency_sensor(context):
 
     latest_run_id = find_previous_matching_dataset_run(
         run_records,
-        "ssda903"
+        "ssda903",
+        context,
     )  # Get the most recent ssda903 run id
     if latest_run_id:  # Ensure there is at least one ssda903 run record
         yield RunRequest(
