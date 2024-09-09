@@ -160,6 +160,7 @@ def clean_schedule(context):
                 context.log.info("Differences found, executing run")
                 yield RunRequest(
                     run_key=run_key,
+                    tags={"dataset": dataset},
                     run_config=RunConfig(
                         ops={
                             "create_session_folder": clean_config,
@@ -221,6 +222,7 @@ def reports_schedule(context):
             context.log.info("Differences found, executing run")
             yield RunRequest(
                 run_key=run_key,
+                tags={"dataset": dataset},
                 run_config=RunConfig(
                     ops={
                         "create_org_session_folder": clean_config,
