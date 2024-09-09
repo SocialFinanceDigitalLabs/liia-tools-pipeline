@@ -82,7 +82,9 @@ This is a Dagster code server library which is setup to be used as a code server
 ### Local Development
 1. Run `poetry install`
 2. Copy `.env.sample` to `.env` and fill in the variables there as needed
-3. Run the following command: `poetry run dagster dev -f .\liiatools_pipeline\repository.py`
+3. Run the following command:
+   * For LA-level pipeline work: `poetry run dagster dev -f .\liiatools_pipeline\repository_la.py`
+   * For Region-level (Organisation) pipeline work: `poetry run dagster dev -f .\liiatools_pipeline\repository_org.py`
 4. Once running, navigate to http://localhost:3000/
 5. Add the pre-commit hook by running `pre-commit install`. This will ensure your code is formatted before you commit something
    
@@ -96,11 +98,3 @@ The idea is each code server will have its own setup which will be a copy of wha
 
 Note: Multiple libraries, pipelines, etc can exist in a single code server. Different servers should
 be used if they have conflicting requirements (e.g. different python versions)
-
-### Deploying
-
-docker build . -t dockerhubuser/repo:latest
-docker tag dockerhubuser/repo:latest dockerhubuser/repo:some.version.number
-docker push dockerhubuser/repo:latest
-docker push dockerhubuser/repo:some.version.number
-
