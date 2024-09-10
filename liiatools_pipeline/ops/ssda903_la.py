@@ -60,7 +60,7 @@ def fix_episodes(
                     df = stage_1(df)
                     df = stage_2(df)
                     data[episode_table.group(0)] = df
-                except Exception as err:
+                except TypeError as err:
                     log.error(f"Fixing episodes table failed: {err}")
         log.info(f"Exporting episodes fix for {file}...")
         data.export(concat_folder, f"{la_code.group(1)}_ssda903_", "csv")
