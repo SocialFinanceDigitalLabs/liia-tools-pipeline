@@ -20,23 +20,23 @@ For steps 1-6, there will be:
 * a 'workspace' file area, containing 'current' and 'sessions' folders. 
   * the 'current' folder contains a copy of the processed data appropriately cleaned and minimised. 
   * the 'sessions' folder contains a history of each session, including the incoming, cleaned, enriched and degraded files as well as an error report. 
-  * these folders are only visible to the pipeline but can be accessed by technical staff in case of troubleshoothing. 
+  * these folders are only visible to the pipeline but can be accessed by technical staff in case of troubleshooting. 
 * a 'shared' file area, containing 'current', 'concatenated' and 'error_report' folders.
   * the 'current' folder contains a copy of the data from the 'workspace/current' folder.
   * the 'concatenated' folder contains the concatenated data produced in step 6.
   * the 'error_report' folder contains a copy of the error report from the 'input/sessions' folder.
-  * this folder can seen by the LA account and accessed by central pipelines for creating reports.
+  * this folder can be accessed by central pipelines for creating reports.
 
 For step 7, there will be:
 
-* an 'input' file area, which will be the previous steps 'shared/concatenated' folder.
+* an 'input' file area, which will be the previous steps' 'shared/concatenated' folder.
 * a 'workspace' file area, containing 'current' and 'sessions' folders. 
   * the 'current' folder contains a copy of the reports created for each use case. 
   * the 'sessions' folder contains a history of each session, including the incoming files. 
-  * these folders are only visible to the pipeline but can be accessed by technical staff in case of troubleshoothing. 
-* a 'shared' file area, containing a copy of the reports created for each use case and an 'error_report' folder.
+  * these folders are only visible to the pipeline but can be accessed by technical staff in case of troubleshooting. 
+* a 'shared' file area, containing a copy of all files to be shared with the Organisation and an 'error_report' folder.
   * the 'error_report' folder contains a copy of the error report from the 'input/sessions' folder from the previous steps.
-  * this folder can seen by the Organisation account.
+  * this folder can seen by the Organisation account, so any files in here can be downloaded by the regional hub users.
 
 ## Prep data
 
@@ -57,11 +57,11 @@ Returns:
 * Detects the year.
 * Checks the year is within the retention policy.
 * Reads and parses the incoming files.
-* Ensures that the data is in a consistent format and that all required fields are present. 
+* Ensures that the data is in a format consistent with the schema and that all required fields are present. 
 * Collects "error" information of any quality problems identified such as:
 
   * File older than retention policy
-  * Unknown files
+  * Unknown files i.e. cannot be matched against any in the schema
   * Blank files
   * Missing headers
   * Missing fields
@@ -69,8 +69,8 @@ Returns:
   * Incorrectly formatted data / categories
   * Missing data
 
-* Creates dataframes for the indetified tables
-* Applies retention policy to dataframes, including file names, headers and year.
+* Creates dataframes for the identified tables
+* Applies retention policy to dataframes, including file names, headers and year e.g. a file (or a column within a file) that is not used in any outputs that the regional hub is permitted to access will not be processed.
 
 Inputs:
 
@@ -106,9 +106,9 @@ Outputs:
 
 Removes sensitive columns and data, or masks / blanks / degrades the data to meet data minimisation rules.
 
-Working on each of the tables in turn, this process will degrade the data to meet data minimisation rules:
+Working on each of the tables in turn, this process will degrade the data to meet data minimisation rules that should be specified in the processing instructions received. Examples of this include:
 
-  * Dates all set to the first of the month
+  * Dates of birth all set to the first of the month
   * Postcodes all set to the first 4 characters (excluding spaces)
 
 Inputs:
@@ -139,4 +139,4 @@ Concatenates the data of multiple years into a single dataframe for each LA and 
 
 ## Prepare reports
 
-Use the concatenated data to create reports to be shared. These can vary from a further concatenated dataset, combining multiple LAs data, to specific analyses built around several datasets.
+Use the concatenated data to create reports to be shared. These can vary from a further concatenated dataset, combining multiple LAs data, to specific analytical outputs built around several datasets.
