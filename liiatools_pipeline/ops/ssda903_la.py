@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-from dagster import In, Out, op
+from dagster import In, Out, op, get_dagster_logger
 from fs.base import FS
 
 from liiatools.common import pipeline as pl
@@ -12,6 +12,8 @@ from liiatools_pipeline.assets.common import (
     workspace_folder,
     shared_folder,
 )
+
+log = get_dagster_logger()
 
 
 @op(
@@ -41,18 +43,24 @@ def create_fix_episodes_session_folder() -> FS:
 def fix_episodes(
     session_folder: FS,
 ):
+    log.info("Opening Concatenated folder for 903...")
     concat_folder = shared_folder().opendir("concatenated/ssda903")
     files = session_folder.listdir("/")
 
     for file in files:
+        log.info(f"Fixing episodes for {file}")
         data = DataContainer()
         episode_table = re.search(r"episodes", file)
         la_code = re.search(r"([A-Za-z0-9]*)_", file)
         if episode_table is not None:
+            log.info("Episode table found...")
             with session_folder.open(file, "r") as f:
-                df = pd.read_csv(f)
-                df = stage_1(df)
-                df = stage_2(df)
-                data[episode_table.group(0)] = df
-
+                try:
+                    df = pd.read_csv(f)
+                    df = stage_1(df)
+                    df = stage_2(df)
+                    data[episode_table.group(0)] = df
+                except Exception as err:
+                    log.error(f"Fixing episodes table failed: {err}")
+        log.info(f"Exporting episodes fix for {file}...")
         data.export(concat_folder, f"{la_code.group(1)}_ssda903_", "csv")

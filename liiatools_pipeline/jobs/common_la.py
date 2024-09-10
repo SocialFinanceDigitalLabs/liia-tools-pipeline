@@ -1,6 +1,9 @@
 from dagster import job
 from liiatools_pipeline.ops import common_la
 
+from dagster import get_dagster_logger
+
+log = get_dagster_logger(__name__)
 
 @job
 def clean():

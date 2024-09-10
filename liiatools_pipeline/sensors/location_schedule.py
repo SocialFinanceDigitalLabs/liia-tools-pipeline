@@ -54,6 +54,9 @@ def concat_directory_walker(folder_location, context, dataset):
             f"Failed to open folder location: {folder_location}/concatenated/{dataset}"
         )
         dir_contents = None
+    except Exception as err:
+        context.log.info(f"Some other error occurred {err}")
+        dir_contents = None
 
     return dir_contents
 
