@@ -1,4 +1,4 @@
-from dagster import op, In, Out
+from dagster import op, In, Out, get_dagster_logger
 from fs.base import FS
 
 from liiatools.common.aggregate import DataframeAggregator
@@ -14,6 +14,7 @@ from liiatools_pipeline.assets.common import (
     shared_folder,
 )
 
+log = get_dagster_logger()
 
 @op()
 def move_error_report():
@@ -58,17 +59,21 @@ def create_reports(
     session_folder: FS,
     config: CleanConfig,
 ):
+    log.info("Creating Export Directories")
     export_folder = workspace_folder().makedirs(
         f"current/{config.dataset}", recreate=True
     )
+    log.info("Aggregating Data Frames")
     aggregate = DataframeAggregator(session_folder, pipeline_config(config))
     aggregate_data = aggregate.current()
 
     for report in pipeline_config(config).retention_period.keys():
+        log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
         report_data = prepare_export(
             aggregate_data, pipeline_config(config), profile=report
         )
+        log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
             report_data,
             pipeline_config(config),
@@ -76,5 +81,7 @@ def create_reports(
             year_column=pipeline_config(config).retention_columns["year_column"],
             la_column=pipeline_config(config).retention_columns["la_column"],
         )
+
+        log.info(f"Exporting report {report}...")
         report_data.export(report_folder, f"{config.dataset}_", "csv")
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

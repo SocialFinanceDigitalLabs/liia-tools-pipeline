@@ -7,9 +7,11 @@ log = get_dagster_logger(__name__)
 
 @job
 def clean():
+    log.info("Creating Session Folder...")
     session_folder, session_id, incoming_files = common_la.create_session_folder()
     current = common_la.open_current()
 
+    log.info("Processing files...")
     common_la.process_files(session_folder, incoming_files, current, session_id)
 
 
