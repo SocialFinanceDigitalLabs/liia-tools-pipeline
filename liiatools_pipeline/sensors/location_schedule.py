@@ -190,6 +190,7 @@ def reports_schedule(context):
 
         context.log.info("Generating Run Key")
         run_key = generate_run_key(f"{folder_location}/concatenated/{dataset}", files)
+        context.log.debug(f"Run Key: {run_key}")
 
         run_records = context.instance.get_run_records(
             filters=RunsFilter(
@@ -199,6 +200,7 @@ def reports_schedule(context):
             order_by="update_timestamp",
             ascending=False,
         )
+        context.log.debug(f"List of run records: {run_records}")
 
         previous_matching_run_id = find_previous_matching_run(
             run_records,
@@ -216,6 +218,7 @@ def reports_schedule(context):
             input_la_code=None,
             dataset=dataset,
         )
+        context.log.debug(f"Config used: {clean_config}")
 
         if previous_matching_run_id is None:
             context.log.info("Differences found, executing run")
