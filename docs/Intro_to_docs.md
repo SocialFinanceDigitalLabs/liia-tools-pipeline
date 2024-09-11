@@ -14,6 +14,10 @@ This documentation is designed to provide guidance to developers looking to unde
 
 * Data sharing infrastructure: The pipelines have been written to be run on cloud infrastructure that can be accessed by both the data controllers, who upload input data to the infrastructure, and the data processor, who retrieves output data from the infrastructure. The pipelines assume that the infrastructure has already managed the upload of data, has separated that data into distinct areas belonging to each data controller, and has labelled those areas in such a way that the controller can be identified by the pipeline code. When the pipeline code begins, it inherits from the infrastructure's scheduler the necessary information about the location of the input file to be processed and the identity of the data controller.
 
+* The infrastructure is separated into two separate sections:
+    * LA / upload account: This is the area where data is uploaded and first processed to produce cleaned files that have been degraded, enriched and formatted against the schema. No data can be directly accessed from this area by any users of the infrastructure. The data produced at the end of jobs that run on this area is accessed by the jobs that run on the organisation / regional hub account.
+    * Organisation / regional hub account: This is the area where data is compiled into regional outputs. The data produced at the end of jobs that run on this area is accessible by the data processor.
+
 * Schema-based validation and processing: A key foundation for the pipelines is the schema. This describes two fundamental aspects of the processing:
     * the structure of the input datasets, including:
         * the fields
@@ -24,4 +28,5 @@ This documentation is designed to provide guidance to developers looking to unde
         * whether files, or fields within files, should be retained for a specific output
         * whether fields should be degraded e.g. reducing the granularity of geographical locators
         * how long files should be retained before being deleted
+
 The schema for a dataset should correspond exactly to the processing detailed in the Information Governance for the use cases relevant to that dataset. An audit of the schema should be able to map every data transformation and decision to an instruction detailed in the Information Governance.
