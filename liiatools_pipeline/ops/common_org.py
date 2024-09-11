@@ -20,6 +20,7 @@ log = get_dagster_logger()
 def move_error_report():
     source_folder = incoming_folder().opendir("logs")
     destination_folder = shared_folder().makedirs("logs", recreate=True)
+    log.info("Moving Error Reports to destination...")
     pl.move_error_report(source_folder, destination_folder)
 
 
@@ -27,8 +28,10 @@ def move_error_report():
 def move_current_and_concat_view(config: CleanConfig):
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
+    log.info("Moving current files to destination...")
     pl.move_files_for_sharing(current_folder, destination_folder)
 
+    log.info("Moving concat files to destination...")
     concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
     pl.move_files_for_sharing(concat_folder, destination_folder)
 
@@ -45,6 +48,7 @@ def create_org_session_folder(config: CleanConfig) -> FS:
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
     concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+    log.info("Moving concat folder to session...")
     pl.move_files_for_sharing(concat_folder, session_folder)
 
     return session_folder
@@ -59,14 +63,14 @@ def create_reports(
     session_folder: FS,
     config: CleanConfig,
 ):
-    log.info("Creating Export Directories")
+    log.info("Creating Export Directories...")
     export_folder = workspace_folder().makedirs(
         f"current/{config.dataset}", recreate=True
     )
-    log.info("Aggregating Data Frames")
+    log.info("Aggregating Data Frames...")
     aggregate = DataframeAggregator(session_folder, pipeline_config(config))
     aggregate_data = aggregate.current()
-
+    log.debug(f"Using config: {config}")
     for report in pipeline_config(config).retention_period.keys():
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
@@ -82,6 +86,7 @@ def create_reports(
             la_column=pipeline_config(config).retention_columns["la_column"],
         )
 
-        log.info(f"Exporting report {report}...")
+        log.info(f"Exporting report {report} to report folder...")
         report_data.export(report_folder, f"{config.dataset}_", "csv")
+        log.info(f"Exporting report {report} to shared folder...")
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
