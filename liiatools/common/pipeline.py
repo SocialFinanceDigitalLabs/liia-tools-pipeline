@@ -68,10 +68,14 @@ def create_session_folder(destination_fs: FS, session_names) -> Tuple[FS, str]:
     Create a new session folder in the output filesystem with the standard folders
     """
     session_id = _get_timestamp()
-    session_folder = destination_fs.makedirs(
-        f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
-    )
+    try:
+        session_folder = destination_fs.makedirs(
+            f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
+        )
+    except Exception as err:
+        logger.error(f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}")
     for folder in session_names:
+        logger.info(f"Creating session name folder: {folder}")
         session_folder.makedirs(folder)
     return session_folder, session_id
 

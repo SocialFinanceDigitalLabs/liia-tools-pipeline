@@ -42,12 +42,16 @@ def move_current_and_concat_view(config: CleanConfig):
     }
 )
 def create_org_session_folder(config: CleanConfig) -> FS:
+    log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesOrg
     )
+    log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesOrg.INCOMING_FOLDER)
 
+    log.info("Opening concatenated files...")
     concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+
     log.info("Moving concat folder to session...")
     pl.move_files_for_sharing(concat_folder, session_folder)
 
