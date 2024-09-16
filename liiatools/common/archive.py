@@ -52,7 +52,6 @@ class DataframeArchive:
         """
         Add a new snapshot to the archive.
         """
-        self.delete_snapshot(f"{la_code}/{self.dataset}")
         la_dir = self.fs.makedirs(f"{la_code}/{self.dataset}", recreate=True)
 
         for table_spec in self.config.table_list:
@@ -97,8 +96,7 @@ class DataframeArchive:
         assert len(snap_ids) > 0, "At least one snapshot must be specified"
 
         for snap_id in snap_ids:
-            if self.fs.isdir(snap_id):
-                self.fs.removetree(snap_id)
+            self.fs.removetree(snap_id)
 
     def current(self, la_code: str) -> DataContainer:
         """

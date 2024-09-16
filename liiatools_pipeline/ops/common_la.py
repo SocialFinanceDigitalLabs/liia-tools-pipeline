@@ -75,6 +75,8 @@ def process_files(
     config: CleanConfig,
 ):
     error_report = ErrorContainer()
+    current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
+
     for file_locator in incoming_files:
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
@@ -105,12 +107,7 @@ def process_files(
             )
             continue
 
-        la_code = (
-            config.input_la_code
-            if config.input_la_code is not None
-            else pl.discover_la(file_locator)
-        )
-        if la_code is None:
+        if config.input_la_code is None:
             error_report.append(
                 dict(
                     type="MissingLA",
@@ -126,7 +123,7 @@ def process_files(
         except KeyError:
             continue
 
-        metadata = dict(year=year, schema=schema, la_code=la_code)
+        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
@@ -173,7 +170,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
