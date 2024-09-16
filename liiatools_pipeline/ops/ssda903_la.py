@@ -27,7 +27,7 @@ def create_fix_episodes_session_folder() -> FS:
 
     concat_folder = shared_folder().opendir("concatenated/ssda903")
     pl.move_files_for_sharing(
-        concat_folder, session_folder, required_table_id=["episodes"]
+        concat_folder, session_folder, required_table_id="episodes"
     )
 
     return session_folder
