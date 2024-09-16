@@ -97,7 +97,8 @@ class DataframeArchive:
         assert len(snap_ids) > 0, "At least one snapshot must be specified"
 
         for snap_id in snap_ids:
-            self.fs.removetree(snap_id)
+            if self.fs.isdir(snap_id):
+                self.fs.removetree(snap_id)
 
     def current(self, la_code: str) -> DataContainer:
         """
