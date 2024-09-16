@@ -23,7 +23,7 @@ liia_tools/
 
 ## 2. Create the schemas: use a .yml schema for .csv and .xlsx files, use an .xsd schema for .xml files 
 
-The first .yml schema will be a complete schema for the easliest year of data collection. Afterwards you can create .yml.diff schemas which just contain the differences in a given year and will be applied to the initial .yml schema. \
+The first .yml schema will be a complete schema for the earliest year of data collection. Afterwards you can create .yml.diff schemas which just contain the differences in a given year and will be applied to the initial .yml schema. \
 For .xml files there is no equivalent .xsd.diff so each year will need a complete schema.
 
 * The .yml schema should follow this pattern:
@@ -157,7 +157,7 @@ String
 
 ## 3. Create the pipeline.json file, these follow the same pattern across all pipelines
 
-* The .json schema should follow this pattern:
+* The .json file should contain all the information relevant to determining which files and columns should be processed and how. This includes determining the retention period for the outputs linked to a use case of the platform, determining which of the data controllers in a region have approved each use case, and the rules surrounding processing of each file and each data field in each file. The .json schema should follow this pattern:
 
 ```json
 {
