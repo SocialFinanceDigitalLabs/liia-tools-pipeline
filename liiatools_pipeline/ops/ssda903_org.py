@@ -12,6 +12,7 @@ from liiatools.ssda903_pipeline.sufficiency_transform import (
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
 
+
 # This op should be ported to the external_dataset pipeline as it only needs to run once
 @op
 def output_lookup_tables():
