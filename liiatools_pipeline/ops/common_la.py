@@ -198,6 +198,7 @@ def process_files(
 def move_current_view():
     current_folder = workspace_folder().opendir("current")
     destination_folder = shared_folder().makedirs("current", recreate=True)
+    destination_folder.removetree("/")
     pl.move_files_for_sharing(current_folder, destination_folder)
 
 
@@ -208,7 +209,12 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
     concat_folder = shared_folder().makedirs(
         f"concatenated/{config.dataset}", recreate=True
     )
+    existing_files = concat_folder.listdir("/")
+
     for la_code in authorities.codes:
+        la_files_regex = f"{la_code}_{config.dataset}_"
+        pl.remove_files(la_files_regex, existing_files, concat_folder)
+
         concat_data = current.current(la_code)
 
         if concat_data:
