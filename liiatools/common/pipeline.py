@@ -108,7 +108,7 @@ def move_files_for_sharing(
     source_fs: FS,
     destination_fs: FS,
     continue_on_error: bool = False,
-    required_table_id: str = None,
+    required_table_id: list = None,
 ):
     """
     Moves all files from a source filesystem to the shared folder. Allow movement of only specific files using the
@@ -124,7 +124,7 @@ def move_files_for_sharing(
                     copy_file(source_fs, file_path, destination_fs, dest_path)
                 else:
                     table_id = re.search(r"_([a-zA-Z0-9]*)\.", file_path)
-                    if table_id and table_id.group(1) == required_table_id:
+                    if table_id and table_id.group(1) in required_table_id:
                         dest_path = file_path.split("/")[-1]
                         copy_file(source_fs, file_path, destination_fs, dest_path)
             except Exception as e:
