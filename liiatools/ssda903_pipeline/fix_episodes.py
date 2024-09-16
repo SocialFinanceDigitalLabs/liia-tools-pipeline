@@ -76,11 +76,11 @@ def create_previous_and_next_episode(
 
 def format_datetime(dataframe: pd.DataFrame, date_columns: list) -> pd.DataFrame:
     """
-    Format date columns to date type
+    Format date columns to datetime type
 
     :param dataframe: Dataframe with SSDA903 Episodes data
     :param date_columns: List of columns containing dates
-    :return: Dataframe with date columns showing as datetime.date data type
+    :return: Dataframe with date columns showing as datetime data type
     """
     dataframe[date_columns] = dataframe[date_columns].apply(
         lambda row: pd.to_datetime(row, format="%Y-%m-%d", errors="raise").dt.date
@@ -325,13 +325,13 @@ def apply_stage1_rules(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 def _overlaps_next_episode(row: pd.Series) -> bool:
-    if row["Has_next_episode"] and pd.notna(row["DEC"]):
+    if row["Has_next_episode"]:
         return (row.YEAR < row.YEAR_next) & (row.DEC > row.DECOM_next)
     return False
 
 
 def _has_x1_gap_before_next_episode(row: pd.Series) -> bool:
-    if row["Has_next_episode"] and pd.notna(row["DEC"]):
+    if row["Has_next_episode"]:
         return (
             (row.YEAR < row.YEAR_next) & (row.DEC < row.DECOM_next) & (row.REC == "X1")
         )
