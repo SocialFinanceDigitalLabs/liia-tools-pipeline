@@ -284,4 +284,5 @@ def find_year_from_column(
 def remove_files(regex: str, existing_files: list, folder: FS):
     current_files = re.compile(regex)
     files_to_remove = list(filter(current_files.match, existing_files))
-    [folder.remove(file) for file in files_to_remove]
+    for file in files_to_remove:
+        folder.remove(file)
