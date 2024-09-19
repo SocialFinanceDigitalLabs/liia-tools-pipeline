@@ -40,9 +40,11 @@ log = get_dagster_logger(__name__)
     }
 )
 def create_session_folder(config: CleanConfig) -> Tuple[FS, str, List[FileLocator]]:
+    log.info("Creating Session Folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
+    log.info(f"Session folder id: {session_id}")
     incoming_files = pl.move_files_for_processing(
         open_fs(config.dataset_folder), session_folder
     )
@@ -54,6 +56,7 @@ def create_session_folder(config: CleanConfig) -> Tuple[FS, str, List[FileLocato
     out={"current": Out(DataframeArchive)},
 )
 def open_current(config: CleanConfig) -> DataframeArchive:
+    log.info("Opening Current folder...")
     current_folder = workspace_folder().makedirs("current", recreate=True)
     current = DataframeArchive(current_folder, pipeline_config(config), config.dataset)
     return current
@@ -74,10 +77,12 @@ def process_files(
     session_id: str,
     config: CleanConfig,
 ):
+    log.info("Procesing Files...")
     error_report = ErrorContainer()
     current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
 
     for file_locator in incoming_files:
+        log.info(f"Processing file {file_locator.name}")
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
         if year is None:
