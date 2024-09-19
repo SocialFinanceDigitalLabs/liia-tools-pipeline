@@ -20,7 +20,9 @@ def move_current_and_concat():
     move_current_and_concat_view()
 
 
-@job
+@job (
+    tags={"dagster/max_runtime": 1800}
+)
 def reports():
     log.info("Starting Reports run. Creating session folder...")
     session_folder = create_org_session_folder()

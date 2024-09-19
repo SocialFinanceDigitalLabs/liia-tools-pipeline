@@ -7,7 +7,7 @@ from dagster import (
     schedule,
     RunsFilter,
     DagsterRunStatus,
-    DefaultScheduleStatus,
+    DefaultScheduleStatus
 )
 from fs import open_fs
 from fs.walk import Walker
