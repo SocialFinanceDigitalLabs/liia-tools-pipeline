@@ -17,7 +17,8 @@ RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 FROM python:3.10-slim-buster AS runtime
 
 ENV VIRTUAL_ENV=/code/.venv \
-    PATH="/code/.venv/bin:$PATH"
+    PATH="/code/.venv/bin:$PATH" \
+    PYTHONPATH="/code:${PYTHONPATH}"
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY liiatools /code/liiatools
@@ -34,4 +35,4 @@ EXPOSE 4000
 # CMD allows this to be overridden from run launchers or executors that want
 # to run other commands against your repository
 # CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "/code/liiatools_pipeline/repository.py"]
-CMD ["dagster", "code-server", "start", "--host", "0.0.0.0", "--port", "4000",  "--python-file", "/code/liiatools_pipeline/repository.py"]
+CMD ["dagster", "code-server", "start", "--host", "0.0.0.0", "--port", "4000",  "--python-file", "/code/liiatools_pipeline/repository.py", "-d", "/code/"]

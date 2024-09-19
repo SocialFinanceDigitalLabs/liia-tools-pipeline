@@ -79,6 +79,8 @@ def process_files(
 ):
     log.info("Procesing Files...")
     error_report = ErrorContainer()
+    current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
+
     for file_locator in incoming_files:
         log.info(f"Processing file {file_locator.name}")
         uuid = file_locator.meta["uuid"]
@@ -110,12 +112,7 @@ def process_files(
             )
             continue
 
-        la_code = (
-            config.input_la_code
-            if config.input_la_code is not None
-            else pl.discover_la(file_locator)
-        )
-        if la_code is None:
+        if config.input_la_code is None:
             error_report.append(
                 dict(
                     type="MissingLA",
@@ -131,7 +128,7 @@ def process_files(
         except KeyError:
             continue
 
-        metadata = dict(year=year, schema=schema, la_code=la_code)
+        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
@@ -178,7 +175,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
@@ -203,6 +200,7 @@ def process_files(
 def move_current_view():
     current_folder = workspace_folder().opendir("current")
     destination_folder = shared_folder().makedirs("current", recreate=True)
+    destination_folder.removetree("/")
     pl.move_files_for_sharing(current_folder, destination_folder)
 
 
@@ -213,7 +211,12 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
     concat_folder = shared_folder().makedirs(
         f"concatenated/{config.dataset}", recreate=True
     )
+    existing_files = concat_folder.listdir("/")
+
     for la_code in authorities.codes:
+        la_files_regex = f"{la_code}_{config.dataset}_"
+        pl.remove_files(la_files_regex, existing_files, concat_folder)
+
         concat_data = current.current(la_code)
 
         if concat_data:
