@@ -4,6 +4,7 @@ from fs.base import FS
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesOrg
+from liiatools.common.reference import authorities
 from liiatools.common.transform import prepare_export, apply_retention
 from liiatools_pipeline.ops.common_config import CleanConfig
 
@@ -26,9 +27,18 @@ def move_error_report():
 def move_current_and_concat_view(config: CleanConfig):
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
+
+    existing_files = destination_folder.listdir("/")
+
+    authority_regex = "|".join(authorities.codes)
+    current_files_regex = f"({authority_regex})_\d{{4}}"
+    pl.remove_files(current_files_regex, existing_files, destination_folder)
     pl.move_files_for_sharing(current_folder, destination_folder)
 
     concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+
+    concat_files_regex = f"({authority_regex})_{config.dataset}"
+    pl.remove_files(concat_files_regex, existing_files, destination_folder)
     pl.move_files_for_sharing(concat_folder, destination_folder)
 
 
@@ -76,5 +86,11 @@ def create_reports(
             year_column=pipeline_config(config).retention_columns["year_column"],
             la_column=pipeline_config(config).retention_columns["la_column"],
         )
+
+        existing_report_files = report_folder.listdir("/")
+        pl.remove_files(f"{config.dataset}", existing_report_files, report_folder)
         report_data.export(report_folder, f"{config.dataset}_", "csv")
+
+        existing_shared_files = shared_folder().listdir("/")
+        pl.remove_files(f"{report}", existing_shared_files, shared_folder())
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

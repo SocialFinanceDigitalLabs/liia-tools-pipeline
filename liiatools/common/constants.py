@@ -31,6 +31,7 @@ class SessionNamesOrg(StrEnum):
 
     INCOMING_FOLDER = "incoming"
 
+
 class SessionNamesSufficiency(StrEnum):
     """Enum for sufficiency session folders."""
 

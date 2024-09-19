@@ -279,3 +279,10 @@ def find_year_from_column(
                 return None, financial_year, None, DataType.OLD_DATA
             else:
                 return year, financial_year, quarter, None
+
+
+def remove_files(regex: str, existing_files: list, folder: FS):
+    current_files = re.compile(regex)
+    files_to_remove = list(filter(current_files.match, existing_files))
+    for file in files_to_remove:
+        folder.remove(file)
