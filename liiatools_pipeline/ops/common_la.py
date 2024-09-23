@@ -79,7 +79,10 @@ def process_files(
 ):
     log.info("Procesing Files...")
     error_report = ErrorContainer()
-    current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
+
+    if current.fs.isdir(f"{config.input_la_code}/{config.dataset}"):
+        log.info("Removing existing LA data...")
+        current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
 
     for file_locator in incoming_files:
         log.info(f"Processing file {file_locator.name}")
