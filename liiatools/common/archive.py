@@ -115,7 +115,7 @@ class DataframeArchive:
         Load a snapshot from the archive.
         """
         data = DataContainer()
-        table_id = re.search(r"_([a-zA-Z0-9]*)\.", snap_id)
+        table_id = re.search(r"\d{4}_([a-zA-Z0-9_]*)\.", snap_id)
 
         for table_spec in self.config.table_list:
             if table_id and table_id.group(1) == table_spec.id:
