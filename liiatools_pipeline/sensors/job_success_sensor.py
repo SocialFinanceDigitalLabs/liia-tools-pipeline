@@ -8,11 +8,11 @@ from dagster import (
 )
 from decouple import config as env_config
 
-from liiatools_pipeline.jobs.common_la import clean, move_current, concatenate
+from liiatools_pipeline.jobs.common_la import clean, move_current_la, concatenate
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
-    move_current,
+    move_current_org,
     move_concat,
     reports,
 )
@@ -32,8 +32,8 @@ def find_previous_matching_dataset_run(run_records, dataset):
 
 
 @sensor(
-    job=move_current,
-    description="Runs move_current job once clean job is complete",
+    job=move_current_la,
+    description="Runs move_current_la job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
 def move_current_sensor(context):
@@ -72,7 +72,7 @@ def concatenate_sensor(context):
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
-            job_name=move_current.name,
+            job_name=move_current_la.name,
             statuses=[DagsterRunStatus.SUCCESS],
             tags={"dataset": allowed_datasets},
         ),
@@ -151,8 +151,8 @@ def move_error_reports_sensor(context):
 
 
 @sensor(
-    job=move_current,
-    description="Runs move_current job once reports job is complete",
+    job=move_current_org,
+    description="Runs move_current_org job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
 def move_current_sensor(context):

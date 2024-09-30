@@ -3,7 +3,7 @@ from liiatools.common._fs_serializer import register
 
 from liiatools_pipeline.jobs.common_la import (
     clean,
-    move_current,
+    move_current_la,
     concatenate,
 )
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
@@ -29,7 +29,7 @@ def sync():
     """
     jobs = [
         clean,
-        move_current,
+        move_current_la,
         concatenate,
         ssda903_fix_episodes,
     ]

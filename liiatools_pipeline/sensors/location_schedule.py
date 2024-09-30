@@ -1,5 +1,4 @@
 from hashlib import sha1
-import sys
 
 import fs.errors
 from dagster import (

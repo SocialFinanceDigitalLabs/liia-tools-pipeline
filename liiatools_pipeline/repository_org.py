@@ -3,7 +3,7 @@ from liiatools.common._fs_serializer import register
 
 from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
-    move_current,
+    move_current_org,
     move_concat,
     reports,
 )
@@ -32,7 +32,7 @@ def sync():
     """
     jobs = [
         move_error_reports,
-        move_current,
+        move_current_org,
         move_concat,
         reports,
         external_incoming,
