@@ -27,7 +27,7 @@ def move_error_report():
 
 
 @op()
-def move_current_view():
+def move_current_view_org():
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
     

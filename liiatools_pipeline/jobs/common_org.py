@@ -4,7 +4,7 @@ from liiatools_pipeline.ops.common_org import (
     create_reports,
     create_org_session_folder,
     move_error_report,
-    move_current_view,
+    move_current_view_org,
     move_concat_view,
 )
 
@@ -18,7 +18,7 @@ def move_error_reports():
 
 @job
 def move_current_org():
-    move_current_view()
+    move_current_view_org()
 
 
 @job
