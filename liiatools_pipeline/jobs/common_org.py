@@ -4,7 +4,8 @@ from liiatools_pipeline.ops.common_org import (
     create_reports,
     create_org_session_folder,
     move_error_report,
-    move_current_and_concat_view,
+    move_current_view,
+    move_concat_view,
 )
 
 log = get_dagster_logger()
@@ -16,11 +17,16 @@ def move_error_reports():
 
 
 @job
-def move_current_and_concat():
-    move_current_and_concat_view()
+def move_current():
+    move_current_view()
 
 
-@job (
+@job
+def move_concat():
+    move_concat_view()
+
+
+@job(
     tags={"dagster/max_runtime": 1800}
 )
 def reports():

@@ -12,7 +12,8 @@ from liiatools_pipeline.jobs.common_la import clean, move_current, concatenate
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
-    move_current_and_concat,
+    move_current,
+    move_concat,
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
@@ -150,11 +151,34 @@ def move_error_reports_sensor(context):
 
 
 @sensor(
-    job=move_current_and_concat,
-    description="Runs move_current_and_concat job once reports job is complete",
+    job=move_current,
+    description="Runs move_current job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
-def move_current_and_concat_sensor(context):
+def move_current_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        latest_run_record = run_records[0]
+        yield RunRequest(
+            run_key=latest_run_record.dagster_run.run_id,
+        )
+
+
+@sensor(
+    job=move_concat,
+    description="Runs move_concat job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+)
+def move_concat_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
     run_records = context.instance.get_run_records(
@@ -184,7 +208,7 @@ def move_current_and_concat_sensor(context):
                 run_key=latest_run_id,
                 run_config=RunConfig(
                     ops={
-                        "move_current_and_concat_view": clean_config,
+                        "move_concat_view": clean_config,
                     }
                 ),
             )

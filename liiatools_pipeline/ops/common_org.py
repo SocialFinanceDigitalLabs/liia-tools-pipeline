@@ -17,6 +17,7 @@ from liiatools_pipeline.assets.common import (
 
 log = get_dagster_logger()
 
+
 @op()
 def move_error_report():
     source_folder = incoming_folder().opendir("logs")
@@ -26,7 +27,7 @@ def move_error_report():
 
 
 @op()
-def move_current_and_concat_view(config: CleanConfig):
+def move_current_view():
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
     
@@ -39,11 +40,19 @@ def move_current_and_concat_view(config: CleanConfig):
     log.info("Moving current files to destination...")
     pl.move_files_for_sharing(current_folder, destination_folder)
 
-    log.info("Moving concat files to destination...")
-    concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
 
+@op()
+def move_concat_view(config: CleanConfig):
+    concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+    destination_folder = shared_folder()
+
+    existing_files = destination_folder.listdir("/")
+
+    authority_regex = "|".join(authorities.codes)
     concat_files_regex = f"({authority_regex})_{config.dataset}"
     pl.remove_files(concat_files_regex, existing_files, destination_folder)
+
+    log.info("Moving concat files to destination...")
     pl.move_files_for_sharing(concat_folder, destination_folder)
 
 
