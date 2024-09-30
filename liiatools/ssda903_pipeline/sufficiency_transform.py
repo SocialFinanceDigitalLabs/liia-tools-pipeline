@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import chardet
 from fs.base import FS
+from fs.errors import DirectoryExists
 from typing import Union
 
 logger = logging.getLogger()
@@ -655,7 +656,10 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
 
 def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
     """Creates a dimension table with all Ofsted providers and a fact table with all Ofsted inspections"""
-    fs.makedir("Ofsted", recreate=True)
+    try:
+        fs.makedir("Ofsted")
+    except DirectoryExists:
+        pass
     fs_ofs = fs.opendir("Ofsted")
 
     # Find the number of years' data present in the folder
