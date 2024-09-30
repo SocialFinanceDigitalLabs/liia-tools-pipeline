@@ -3,7 +3,8 @@ from liiatools.common._fs_serializer import register
 
 from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
-    move_current_and_concat,
+    move_current,
+    move_concat,
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
@@ -13,7 +14,8 @@ from liiatools_pipeline.sensors.location_schedule import (
 )
 from liiatools_pipeline.sensors.job_success_sensor import (
     move_error_reports_sensor,
-    move_current_and_concat_sensor,
+    move_current_sensor,
+    move_concat_sensor,
     sufficiency_sensor,
 )
 
@@ -30,7 +32,8 @@ def sync():
     """
     jobs = [
         move_error_reports,
-        move_current_and_concat,
+        move_current,
+        move_concat,
         reports,
         external_incoming,
         ssda903_sufficiency,
@@ -40,7 +43,8 @@ def sync():
     ]
     sensors = [
         move_error_reports_sensor,
-        move_current_and_concat_sensor,
+        move_current_sensor,
+        move_concat_sensor,
         sufficiency_sensor,
     ]
 
