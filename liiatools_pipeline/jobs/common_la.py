@@ -18,7 +18,7 @@ def clean():
 
 @job
 def move_current_la():
-    common_la.move_current_view()
+    common_la.move_current_view_la()
 
 
 @job

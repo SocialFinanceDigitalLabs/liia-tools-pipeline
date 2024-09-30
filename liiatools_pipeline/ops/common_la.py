@@ -200,7 +200,7 @@ def process_files(
 
 
 @op()
-def move_current_view():
+def move_current_view_la():
     current_folder = workspace_folder().opendir("current")
     destination_folder = shared_folder().makedirs("current", recreate=True)
     destination_folder.removetree("/")
