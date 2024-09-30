@@ -17,7 +17,7 @@ def move_error_reports():
 
 
 @job
-def move_current():
+def move_current_org():
     move_current_view()
 
 

@@ -5,6 +5,7 @@ from dagster import get_dagster_logger
 
 log = get_dagster_logger(__name__)
 
+
 @job
 def clean():
     log.info("Creating Session Folder...")
@@ -16,7 +17,7 @@ def clean():
 
 
 @job
-def move_current():
+def move_current_la():
     common_la.move_current_view()
 
 
