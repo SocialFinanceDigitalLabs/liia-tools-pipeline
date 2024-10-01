@@ -36,7 +36,7 @@ def find_previous_matching_dataset_run(run_records, dataset):
     description="Runs move_current_la job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
-def move_current_sensor(context):
+def move_current_la_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
     run_records = context.instance.get_run_records(
@@ -155,7 +155,7 @@ def move_error_reports_sensor(context):
     description="Runs move_current_org job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
-def move_current_sensor(context):
+def move_current_org_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,

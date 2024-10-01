@@ -14,7 +14,7 @@ from liiatools_pipeline.sensors.location_schedule import (
 )
 from liiatools_pipeline.sensors.job_success_sensor import (
     move_error_reports_sensor,
-    move_current_sensor,
+    move_current_org_sensor,
     move_concat_sensor,
     sufficiency_sensor,
 )
@@ -43,7 +43,7 @@ def sync():
     ]
     sensors = [
         move_error_reports_sensor,
-        move_current_sensor,
+        move_current_org_sensor,
         move_concat_sensor,
         sufficiency_sensor,
     ]
