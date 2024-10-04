@@ -11,7 +11,7 @@ from liiatools_pipeline.sensors.location_schedule import (
     clean_schedule,
 )
 from liiatools_pipeline.sensors.job_success_sensor import (
-    move_current_sensor,
+    move_current_la_sensor,
     concatenate_sensor,
     ssda903_fix_episodes_sensor,
 )
@@ -37,7 +37,7 @@ def sync():
         clean_schedule,
     ]
     sensors = [
-        move_current_sensor,
+        move_current_la_sensor,
         concatenate_sensor,
         ssda903_fix_episodes_sensor,
     ]
