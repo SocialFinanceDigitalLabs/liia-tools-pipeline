@@ -38,6 +38,7 @@ def find_previous_matching_dataset_run(run_records, dataset):
 )
 def move_current_la_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Move current la allowed datasets: {allowed_datasets}")
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
@@ -51,11 +52,13 @@ def move_current_la_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for clean job")
         for dataset in allowed_datasets:
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
             )  # Get the most recent dataset run id
+            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             yield RunRequest(
                 run_key=latest_run_id,
                 tags={"dataset": dataset},
@@ -69,6 +72,7 @@ def move_current_la_sensor(context):
 )
 def concatenate_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Concatenate allowed datasets: {allowed_datasets}")
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
@@ -82,11 +86,13 @@ def concatenate_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for move_current_la job")
         for dataset in allowed_datasets:
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
             )  # Get the most recent dataset run id
+            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             concat_config = CleanConfig(
                 dataset=dataset,
             )
@@ -123,6 +129,7 @@ def ssda903_fix_episodes_sensor(context):
         run_records,
         "ssda903",
     )  # Get the most recent ssda903 run id
+    context.log.info(f"Run key: {latest_run_id}")
     if latest_run_id:  # Ensure there is at least one ssda903 run record
         yield RunRequest(run_key=latest_run_id, run_config=RunConfig())
 
@@ -144,7 +151,9 @@ def move_error_reports_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for reports job in move error reports sensor")
         latest_run_record = run_records[0]  # Get the most recent run record
+        context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
         yield RunRequest(
             run_key=latest_run_record.dagster_run.run_id,
         )
@@ -167,7 +176,9 @@ def move_current_org_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for reports job")
         latest_run_record = run_records[0]
+        context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
         yield RunRequest(
             run_key=latest_run_record.dagster_run.run_id,
         )
@@ -180,6 +191,7 @@ def move_current_org_sensor(context):
 )
 def move_concat_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Move concat allowed datasets: {allowed_datasets}")
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
@@ -193,11 +205,13 @@ def move_concat_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for reports job in move concat sensor")
         for dataset in allowed_datasets:
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,
                 dataset,
             )  # Get the most recent dataset run id
+            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             clean_config = CleanConfig(
                 dataset_folder=None,
                 la_folder=None,
@@ -236,6 +250,7 @@ def sufficiency_sensor(context):
         "ssda903",
     )  # Get the most recent ssda903 run id
     if latest_run_id:  # Ensure there is at least one ssda903 run record
+        context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
         )
