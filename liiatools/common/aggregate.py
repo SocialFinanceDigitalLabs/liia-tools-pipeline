@@ -15,9 +15,10 @@ class DataframeAggregator:
     Only tables and columns defined in the pipeline config are aggregated.
     """
 
-    def __init__(self, fs: FS, config: PipelineConfig):
+    def __init__(self, fs: FS, config: PipelineConfig, dataset: str):
         self.fs = fs
         self.config = config
+        self.dataset = dataset
 
     def list_files(self) -> List[str]:
         """
@@ -37,7 +38,7 @@ class DataframeAggregator:
         Load a file from the current directory.
         """
         data = DataContainer()
-        table_id = re.search(r"_([a-zA-Z0-9]*)\.", file)
+        table_id = re.search(fr"{self.dataset}_([a-zA-Z0-9_]*)\.", file)
 
         for table_spec in self.config.table_list:
             if table_id and table_id.group(1) == table_spec.id:

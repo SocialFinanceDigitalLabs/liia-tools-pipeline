@@ -92,7 +92,7 @@ def create_reports(
         f"current/{config.dataset}", recreate=True
     )
     log.info("Aggregating Data Frames...")
-    aggregate = DataframeAggregator(session_folder, pipeline_config(config))
+    aggregate = DataframeAggregator(session_folder, pipeline_config(config), config.dataset)
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
     for report in pipeline_config(config).retention_period.keys():
