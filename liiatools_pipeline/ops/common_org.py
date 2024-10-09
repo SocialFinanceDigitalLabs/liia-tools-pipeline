@@ -117,5 +117,5 @@ def create_reports(
 
         existing_shared_files = shared_folder().listdir("/")
         log.info(f"Exporting report {report} to shared folder...")
-        pl.remove_files(f"{report}", existing_shared_files, shared_folder())
+        pl.remove_files(f"{report}_{config.dataset}", existing_shared_files, shared_folder())
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
