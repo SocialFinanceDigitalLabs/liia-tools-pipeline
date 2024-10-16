@@ -12,7 +12,7 @@ def clean():
     session_folder, session_id, incoming_files = common_la.create_session_folder()
     current = common_la.open_current()
 
-    log.info("Processing files...")
+    log.info(f"Processing files in session {session_id}...")
     common_la.process_files(session_folder, incoming_files, current, session_id)
 
 

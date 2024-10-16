@@ -30,7 +30,7 @@ def move_error_report():
 def move_current_view_org():
     current_folder = incoming_folder().opendir("current")
     destination_folder = shared_folder()
-    
+
     existing_files = destination_folder.listdir("/")
 
     authority_regex = "|".join(authorities.codes)
@@ -43,7 +43,12 @@ def move_current_view_org():
 
 @op()
 def move_concat_view(config: CleanConfig):
-    concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+    log.info(f"Opening dataset folder: concatenated/{config.dataset}")
+    try:
+        concat_folder = incoming_folder().opendir(f"concatenated/{config.dataset}")
+    except Exception as err:
+        log.error(f"Could not open concatenated dir for dataset {config.dataset}")
+
     destination_folder = shared_folder()
 
     existing_files = destination_folder.listdir("/")
@@ -92,7 +97,9 @@ def create_reports(
         f"current/{config.dataset}", recreate=True
     )
     log.info("Aggregating Data Frames...")
-    aggregate = DataframeAggregator(session_folder, pipeline_config(config), config.dataset)
+    aggregate = DataframeAggregator(
+        session_folder, pipeline_config(config), config.dataset
+    )
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
     for report in pipeline_config(config).retention_period.keys():
@@ -117,5 +124,7 @@ def create_reports(
 
         existing_shared_files = shared_folder().listdir("/")
         log.info(f"Exporting report {report} to shared folder...")
-        pl.remove_files(f"{report}_{config.dataset}", existing_shared_files, shared_folder())
+        pl.remove_files(
+            f"{report}_{config.dataset}", existing_shared_files, shared_folder()
+        )
         report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

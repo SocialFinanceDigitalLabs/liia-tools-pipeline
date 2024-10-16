@@ -7,7 +7,7 @@ from dagster import (
     schedule,
     RunsFilter,
     DagsterRunStatus,
-    DefaultScheduleStatus
+    DefaultScheduleStatus,
 )
 from fs import open_fs
 from fs.walk import Walker
@@ -34,9 +34,15 @@ def input_directory_walker(folder_location, context, dataset):
         dir_contents[directory_str] = [
             file.lstrip("/") for file in walker.files(directory)
         ]
-
         if not dir_contents[directory_str]:
-            context.log.info(f"No files in {folder_location} have been found")
+            context.log.info(
+                f"No files in {folder_location}/{directory_str}/{dataset} have been found"
+            )
+        else:
+            file_count = len(dir_contents[directory_str])
+            context.log.info(
+                f"{file_count} files have been found in {folder_location}/{directory_str}/{dataset}"
+            )
 
     return dir_contents
 
@@ -45,15 +51,22 @@ def concat_directory_walker(folder_location, context, dataset):
     walker = Walker()
     try:
         concat_folder = open_fs(f"{folder_location}/concatenated/{dataset}")
-        context.log.info(f"Opening folder location: {folder_location}")
+        context.log.info(
+            f"Opening folder location: {folder_location}/concatenated/{dataset}"
+        )
         context.log.info("Analysing folder contents")
         dir_contents = [file.lstrip("/") for file in walker.files(concat_folder)]
-
     except fs.errors.CreateFailed:
         context.log.info(
             f"Failed to open folder location: {folder_location}/concatenated/{dataset}"
         )
         dir_contents = None
+    except Exception as err:
+        context.log.error(
+            f"Couldn't open and analyse concat folder {folder_location}/concatenated/{dataset}: {err}"
+        )
+        dir_contents = None
+
     context.log.info(f"Contents found: {dir_contents}")
     return dir_contents
 
@@ -122,11 +135,11 @@ def clean_schedule(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
     context.log.info(f"Allowed datasets: {allowed_datasets}")
     for dataset in allowed_datasets:
-        context.log.info("Analysing folder contents")
+        context.log.info(f"Analysing folder contents {folder_location}")
         directory_contents = input_directory_walker(folder_location, context, dataset)
 
         for la_path, files in directory_contents.items():
-            context.log.info("Generating Run Key")
+            context.log.info(f"Generating Run Key for {la_path}, dataset: {dataset}")
             run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
 
             run_records = context.instance.get_run_records(
@@ -158,7 +171,9 @@ def clean_schedule(context):
             )
 
             if previous_matching_run_id is None:
-                context.log.info("Differences found, executing run")
+                context.log.info(
+                    f"Differences found for {la_path}'s dataset {dataset}. Executing run"
+                )
                 yield RunRequest(
                     run_key=run_key,
                     tags={"dataset": dataset},
@@ -171,7 +186,9 @@ def clean_schedule(context):
                     ),
                 )
             else:
-                context.log.info("No new files found, skipping run")
+                context.log.info(
+                    f"No new files found for {la_path}'s dataset {dataset}. Skipping run"
+                )
 
 
 @schedule(
@@ -187,12 +204,14 @@ def reports_schedule(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
     context.log.info(f"Allowed datasets: {allowed_datasets}")
     for dataset in allowed_datasets:
-        context.log.info("Analysing folder contents")
+        context.log.info(f"Analysing folder contents: {folder_location}")
         files = concat_directory_walker(folder_location, context, dataset)
 
-        context.log.info("Generating Run Key")
+        context.log.info(
+            f"Generating Run Key for {folder_location}'s concatenated dataset {dataset}"
+        )
         run_key = generate_run_key(f"{folder_location}/concatenated/{dataset}", files)
-        context.log.info(f"Run Key: {run_key}")
+        context.log.info(f"{folder_location} {dataset}'s Run Key Result: {run_key}")
 
         run_records = context.instance.get_run_records(
             filters=RunsFilter(
@@ -215,7 +234,9 @@ def reports_schedule(context):
             context,
         )
 
-        context.log.info(f"Have we found a previous matching ID? {previous_matching_run_id}")
+        context.log.info(
+            f"Have we found a previous matching ID? {previous_matching_run_id}"
+        )
 
         clean_config = CleanConfig(
             dataset_folder=None,
@@ -226,7 +247,9 @@ def reports_schedule(context):
         context.log.debug(f"Config used: {clean_config}")
 
         if previous_matching_run_id is None:
-            context.log.info("Differences found, executing run")
+            context.log.info(
+                f"Differences found with {clean_config.dataset} in {clean_config.dataset_folder}, executing run"
+            )
             yield RunRequest(
                 run_key=run_key,
                 tags={"dataset": dataset},
@@ -238,4 +261,4 @@ def reports_schedule(context):
                 ),
             )
         else:
-            context.log.info("No new files found, skipping run")
+            context.log.info(f"No new files found with {clean_config}. skipping run")
