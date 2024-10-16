@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile_LA
+          file: ./Dockerfile_Org
           push: true
           tags: ${{ secrets.DOCKERHUB_ORG_URL }}:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
