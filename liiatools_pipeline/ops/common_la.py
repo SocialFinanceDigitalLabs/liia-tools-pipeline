@@ -11,14 +11,6 @@ from liiatools.common.data import FileLocator, ErrorContainer
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
-from liiatools.cin_census_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_cin,
-)
-from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
-from liiatools.ssda903_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_ssda903,
-)
 
 from liiatools_pipeline.assets.common import (
     workspace_folder,
@@ -44,7 +36,7 @@ def create_session_folder(config: CleanConfig) -> Tuple[FS, str, List[FileLocato
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
-    log.info(f"Session folder id: {session_id}")
+    log.debug(f"Session folder id: {session_id}")
     incoming_files = pl.move_files_for_processing(
         open_fs(config.dataset_folder), session_folder
     )
@@ -92,7 +84,7 @@ def process_files(
         log.info(f"Processing file {file_locator.name}")
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
-        log.info(f"Discovered year: {year} from {file_locator.name}")
+        log.debug(f"Discovered year: {year} from {file_locator.name}")
         if year is None:
             error_report.append(
                 dict(
@@ -190,7 +182,7 @@ def process_files(
         error_report.extend(degraded_result.errors)
         current.add(degraded_result.data, config.input_la_code, year)
 
-        log.info(f"Setting properties to {file_locator.name}: UUID: {uuid}")
+        log.debug(f"Setting properties to {file_locator.name}: UUID: {uuid}")
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
 
@@ -201,13 +193,13 @@ def process_files(
         else f"{config.dataset}_{session_id}_error_report.csv"
     )
 
-    log.info(f"Creating logs directory in shared space for LA {config.la_folder}...")
+    log.debug(f"Creating logs directory in shared space for LA {config.la_folder}...")
     destination_logs = shared_folder().makedirs("logs", recreate=True)
     incoming_logs = open_fs(config.la_folder).makedirs("logs", recreate=True)
     log_locations = [session_folder, destination_logs, incoming_logs]
 
     for location in log_locations:
-        log.info(f"Writing {error_report_name} logs to {location}...")
+        log.debug(f"Writing {error_report_name} logs to {location}...")
         with location.open(error_report_name, "w") as FILE:
             error_report.to_dataframe().to_csv(FILE, index=False)
 

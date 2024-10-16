@@ -1,4 +1,4 @@
-from dagster import In, Out, op
+from dagster import In, Out, op, get_dagster_logger
 from fs.base import FS
 import re
 
@@ -16,6 +16,8 @@ from liiatools.ssda903_pipeline.sufficiency_transform import (
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
 
+
+log = get_dagster_logger()
 
 # This op should be ported to the external_dataset pipeline as it only needs to run once
 @op
@@ -58,7 +60,10 @@ def create_dim_fact_tables(
     uasc = re.compile(r"uasc")
     pattern_list = [episodes, header, uasc]
 
-    files = session_folder.listdir("/")
+    try:
+        files = session_folder.listdir("/")
+    except Exception as err:
+        log.error(f"Could not list contents of session folder: {err}")
 
     all_files_present = all(
         any(pattern.search(filename) for filename in files) for pattern in pattern_list
@@ -66,7 +71,9 @@ def create_dim_fact_tables(
 
     # Run the data transformation if all necessary files are present
     if all_files_present:
-
+        log.info(
+            f"All necessary files are present to create dim fact tables. Creating them now..."
+        )
         ext_folder = external_data_folder()
         output_folder = shared_folder()
 
@@ -75,14 +82,22 @@ def create_dim_fact_tables(
 
         # Create dimONSArea table
         # Open external file
-        ONSArea = open_file(ext_folder, "ONS_Area.csv")
+        try:
+            ONSArea = open_file(ext_folder, "ONS_Area.csv")
+        except Exception as err:
+            log.error(f"Unable to open ONS Area file: {err}")
+
         # Transform ONSArea table
         ONSArea = ons_transform(ONSArea)
         dim_tables["dimONSArea"] = ONSArea
 
         # Create dimPostcode table
         # Open external file
-        Postcode = open_file(ext_folder, "ONSPD_reduced_to_postcode_sector.csv")
+        try:
+            Postcode = open_file(ext_folder, "ONSPD_reduced_to_postcode_sector.csv")
+        except Exception as err:
+            log.error(f"Unable to open ONSPD reduced postcode file: {err}")
+
         # Transform Postcode table
         Postcode = postcode_transform(Postcode)
         dim_tables["dimPostcode"] = Postcode
@@ -95,7 +110,14 @@ def create_dim_fact_tables(
 
         # Create dimLookedAfterChild and factEpisode table
         # Open ssda903 files
-        LookedAfterChild = open_file(session_folder, "ssda903_header.csv")
+
+        try:
+            LookedAfterChild = open_file(session_folder, "ssda903_header.csv")
+        except Exception as err:
+            log.error(
+                f"Unable to open ssda903 header file from {session_folder}: {err}"
+            )
+
         UASC = open_file(session_folder, "ssda903_uasc.csv")
         Episode = open_file(session_folder, "ssda903_episodes.csv")
 
@@ -108,4 +130,5 @@ def create_dim_fact_tables(
 
         # Export tables
         dim_tables = DataContainer(dim_tables)
+
         dim_tables.export(output_folder, "", "csv")
