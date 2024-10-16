@@ -151,7 +151,9 @@ def move_error_reports_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        context.log.info(f"Run records found for reports job in move error reports sensor")
+        context.log.info(
+            f"Run records found for reports job in move error reports sensor"
+        )
         latest_run_record = run_records[0]  # Get the most recent run record
         context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
         yield RunRequest(
