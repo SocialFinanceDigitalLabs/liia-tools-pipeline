@@ -289,4 +289,7 @@ def remove_files(regex: str, existing_files: list, folder: FS):
     current_files = re.compile(regex)
     files_to_remove = list(filter(current_files.match, existing_files))
     for file in files_to_remove:
-        folder.remove(file)
+        try:
+            folder.remove(file)
+        except Exception as err:
+            logger.error(f"Failed to remove file {file}: {err}")

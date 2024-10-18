@@ -3,6 +3,7 @@ from liiatools_pipeline.ops import ssda903_org as ssda903
 
 log = get_dagster_logger()
 
+
 @job
 def ssda903_sufficiency():
     log.info("Creating lookup tables...")
