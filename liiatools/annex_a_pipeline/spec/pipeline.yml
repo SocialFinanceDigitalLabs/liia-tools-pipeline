@@ -371,6 +371,10 @@ table_list:
     degrade: first_of_month
   - id: Age of Child (Years)
     type: integer
+  - id: Unaccompanied Asylum Seeking Child (UASC), or formerly UASC if 18 or over (Y/N)
+    type: category
+    exclude:
+      - PAN
   - id: Does the Child have a Disability
     type: category
   - id: Allocated Team
@@ -381,10 +385,22 @@ table_list:
     type: string
     exclude:
     - PAN
+  - id: Allocated Personal Advisor
+    type: string
+    exclude:
+    - PAN
   - id: Eligibility Category
     type: category
+  - id: Latest Pathway Plan Review Date
+    type: date
+    exclude:
+      - PAN
   - id: LA in Touch
     type: category
+  - id: Latest Date of Contact
+    type: date
+    exclude:
+      - PAN
   - id: Type of Accommodation
     type: category
   - id: Suitability of Accommodation
