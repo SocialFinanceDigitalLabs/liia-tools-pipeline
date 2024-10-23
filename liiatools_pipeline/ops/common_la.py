@@ -53,6 +53,7 @@ def open_current(config: CleanConfig) -> DataframeArchive:
         current_folder = workspace_folder().makedirs("current", recreate=True)
     except Exception as err:
         log.error(f"Getting/Creating current folder from workspace failed: {err}")
+        raise
     current = DataframeArchive(current_folder, pipeline_config(config), config.dataset)
     return current
 
@@ -125,9 +126,11 @@ def process_files(
 
         try:
             schema = globals()[f"load_schema_{config.dataset}"](year)
-        except KeyError:
-            log.warning(f"Unable to load schema: {config.dataset} from year {year}")
-            # ISSUE: It will likely be an issue that schema is undefined past this point, right?
+        except KeyError as err:
+            log.warning(f"Schema doesn't exist: {config.dataset} from year {year} error: {err}")
+            continue
+        except Exception as err:
+            log.warning(f"unable to load schema: {config.dataset} from year {year} error: {err}")
             continue
 
         metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
@@ -211,18 +214,21 @@ def move_current_view_la():
         current_folder = workspace_folder().opendir("current")
     except Exception as err:
         log.error(f"Could not open Workspace current folder: {err}")
+        raise
 
     log.info(f"Opening shared current folder...")
     try:
         destination_folder = shared_folder().makedirs("current", recreate=True)
     except Exception as err:
         log.error(f"Could not open current shared workspace folder: {err}")
+        raise
 
     log.info("Removing old files in the shared folder...")
     try:
         destination_folder.removetree("/")
     except Exception as err:
         log.error(f"Could not remove files in shared folder: {err}")
+        raise
 
     log.info("Moving current files from workspace to the shared area...")
     pl.move_files_for_sharing(current_folder, destination_folder)
@@ -239,6 +245,7 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         )
     except Exception as err:
         log.error(f"Could not make concatenated folder in the shared space...")
+        raise
 
     log.info(f"Listing contents of concat folder in shared space...")
     existing_files = concat_folder.listdir("/")
@@ -258,3 +265,4 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
                 log.error(
                     f"Failed to export concat data for {la_code}_{config.dataset}: {err}"
                 )
+                continue
