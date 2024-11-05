@@ -1,12 +1,12 @@
-import logging
+from dagster import get_dagster_logger
 import pandas as pd
 import numpy as np
 import chardet
 from fs.base import FS
-from fs.errors import DirectoryExists
-from typing import Union
+import fs.errors as errors
+from typing import Union, Tuple
 
-logger = logging.getLogger()
+log = get_dagster_logger()
 
 # ALL of the code from here to the creation of factOfstedInspection should be ported to the external data pipeline
 
@@ -654,11 +654,11 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
+def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Creates a dimension table with all Ofsted providers and a fact table with all Ofsted inspections"""
     try:
         fs.makedir("Ofsted")
-    except DirectoryExists:
+    except errors.DirectoryExists:
         pass
     fs_ofs = fs.opendir("Ofsted")
 
@@ -667,38 +667,64 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
     year_list = [f[-6:-4] for f in directory_contents]
     unique_years = set(year_list)
 
+    # Ensure that there is at least one year of data
+    if len(unique_years) == 0:
+        log.error("No Ofsted data present in external data folder")
+        return None, None
+
     # Create OfstedProvider table
     # For each year, create a unique record for each provider and put in dictionary
+    # Each year must have a copy of three files to produce a useful output
+    # If no years meet this standard, table cannot be produced and process is terminated
     provider_df_dict = {}
     for year in unique_years:
         last_year = int(year) - 1
 
         # Open providers_in_year file
         providers_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
-        providers_in_df = open_file(fs_ofs, providers_in_file)
+        try:
+            providers_in_df = open_file(fs_ofs, providers_in_file)
+        except errors.ResourceNotFound:
+            log.info(f"No provider in year file for {year}")
+            providers_in_df = None
 
         # Open closed file
         closed_file = f"Closed_childrens_homes_31Mar{year}.csv"
-        closed_df = open_file(fs_ofs, closed_file)
-
-        # Merge on URN to add closure info to richer providers_in record
-        providers_closed = providers_in_df.merge(closed_df, on="URN", how="outer")
+        try:
+            closed_df = open_file(fs_ofs, closed_file)
+        except errors.ResourceNotFound:
+            log.info(f"No closed provider file for {year}")
+            closed_df = None
 
         # Open providers_places file
         providers_places_file = f"Providers_places_at_31_Aug_20{year}.csv"
-        providers_places = open_file(fs_ofs, providers_places_file)
+        try:
+            providers_places = open_file(fs_ofs, providers_places_file)
+            providers_places = providers_places.rename(
+                columns={"Organisation name": "Organisation which owns the provider"}
+            )
+        except errors.ResourceNotFound:
+            log.info(f"No providers places file for 20{year}")
+            providers_places = None
 
-        # Concatenate providers_places with merged providers_closed df
-        providers_places = providers_places.rename(
-            columns={"Organisation name": "Organisation which owns the provider"}
-        )
-        providers_df = pd.concat([providers_places, providers_closed])
-        providers_df = providers_df.drop_duplicates(subset="URN", keep="first")
+        # If all three files exist for the year, create an output
+        if providers_in_df is not None and closed_df is not None and providers_places is not None:
+            # Merge providers_in and providesr_closed on URN to add closure info to richer providers_in record
+            providers_closed = providers_in_df.merge(closed_df, on="URN", how="outer")
 
-        # Add year to table and output to dictionary
-        providers_df["Year"] = year
-        provider_df_dict[year] = providers_df
+            # Concatenate providers_places with merged providers_closed df
+            providers_df = pd.concat([providers_places, providers_closed])
+            providers_df = providers_df.drop_duplicates(subset="URN", keep="first")
 
+            # Add year to table and output to dictionary if output created
+            providers_df["Year"] = year
+            provider_df_dict[year] = providers_df
+
+    # Check that at least one year has provided an output
+    # If not, terminate process as not enough data to create table
+    if len(provider_df_dict) == 0:
+        log.error("Insufficient Ofsted data to create dimOfstedProvider table")
+        return None, None
     # Across the years in the dictionary, concatenate to single file and drop duplicates
     OfstedProvider = concat_and_drop(provider_df_dict, "Year", "URN")
 
@@ -746,34 +772,55 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
 
     # Create OfstedInspection table
     # For each year, create a unique record for each provider and put in dictionary
+    # Either the provider_at or the provider_in file is sufficient to create a record each year; if both exist, concat to create single file
     inspection_df_dict = {}
     for year in unique_years:
         last_year = int(year) - 1
 
         # Open provider at file
         provider_at_file = f"Provider_level_at_31_Aug_20{year}.csv"
-        provider_at_df = open_file(fs_ofs, provider_at_file)
+        try:
+            provider_at_df = open_file(fs_ofs, provider_at_file)
+            provider_at_df = provider_at_df.rename(
+                columns={"Latest full inspection date": "Inspection date"}
+            )
+        except errors.ResourceNotFound:
+            log.info(f"No provider at file for {year}")
+            provider_at_df = None
 
         # Open providers_in_year file and keep only full inspections
         provider_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
-        provider_in_df = open_file(fs_ofs, provider_in_file)
-        provider_in_df = provider_in_df.loc[
-            provider_in_df["Inspection event type"] == "Full inspection"
-        ]
+        try:
+            provider_in_df = open_file(fs_ofs, provider_in_file)
+            provider_in_df = provider_in_df.loc[
+                provider_in_df["Inspection event type"] == "Full inspection"
+            ]
+        except errors.ResourceNotFound:
+            log.info(f"No provider in file for {year}")
+            provider_in_df = None
 
-        # Concatenate provider_at with provider_in
-        provider_at_df = provider_at_df.rename(
-            columns={"Latest full inspection date": "Inspection date"}
-        )
-        inspections_df = pd.concat([provider_at_df, provider_in_df])
-        inspections_df = inspections_df.drop_duplicates(
-            subset=["URN", "Inspection date"], keep="first"
-        )
+        if provider_at_df is not None and provider_in_df is not None:
+            # Concatenate provider_at with provider_in
+            inspections_df = pd.concat([provider_at_df, provider_in_df])
+            inspections_df = inspections_df.drop_duplicates(
+                subset=["URN", "Inspection date"], keep="first"
+            )
+        elif provider_at_df is not None:
+            inspections_df = provider_at_df
+        elif provider_in_df is not None:
+            inspections_df = provider_in_df
+        else:
+            inspections_df = None
 
-        # Add year to table and output to dictionary
-        inspections_df["Year"] = year
-        inspection_df_dict[year] = inspections_df
+        if inspections_df is not None:
+            # Add year to table and output to dictionary
+            inspections_df["Year"] = year
+            inspection_df_dict[year] = inspections_df
 
+    # If there was insufficient data for a single year, terminate the process
+    if len(inspection_df_dict) == 0:
+        log.error("Insufficient data to create factOfstedInspection table")
+        return None, None
     # Across the years in the dictionary, concatenate to single file and drop duplicates
     factOfstedInspection = concat_and_drop(
         inspection_df_dict, "Year", ["URN", "Inspection date"]
@@ -833,7 +880,7 @@ def ss903_transform(
     Episode: pd.DataFrame,
     Postcode: pd.DataFrame,
     OfstedProvider: pd.DataFrame,
-) -> (pd.DataFrame, pd.DataFrame):
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Takes three ssda903 files (header, episodes and uasc) and creates:
     - a dimension table with one row per child
     - a fact table with one row per episode"""
