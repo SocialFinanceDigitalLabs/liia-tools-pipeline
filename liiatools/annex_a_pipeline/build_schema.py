@@ -50,8 +50,6 @@ def build_schema(schema_path, excel_path, output_schema_path):
                 anchor = column_coding.anchor.value
                 
                 if isinstance(column_coding, dict) and anchor is not None and column_coding.get("category") and tab_name == anchor:
-                    print(tab_name)
-                    print(anchor)
                     # Replace the old categories with the new ones
                     column_coding["category"] = categories
                     updated_count += 1
