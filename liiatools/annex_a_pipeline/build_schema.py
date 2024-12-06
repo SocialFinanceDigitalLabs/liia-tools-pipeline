@@ -56,7 +56,7 @@ def build_schema(schema_path, excel_path, output_schema_path):
                     column_coding["category"] = categories
                     updated_count += 1
 
-        if updated_count < 0:
+        if updated_count == 0:
             print(f"Skipping tab '{tab}' as it does not have a matching item in the schema")
 
     # Save the updated schema back to a YAML file
