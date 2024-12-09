@@ -19,11 +19,13 @@ def build_schema(schema_path, excel_path, output_schema_path):
         df = excel_data.parse(tab)
         # Convert column names to lowercase
         df.columns = df.columns.str.lower()
-
+        
+        # Check if the tab has the required columns
         if 'code' not in df.columns or 'group' not in df.columns:
             print(f"Skipping tab '{tab}' as it does not have required columns")
             continue
-
+        
+        # Group the codes by the group column to ensure 1:many dict structure
         grouped = (
             df.groupby('group')['code']
             .apply(lambda x: list(map(str, x.unique())))
@@ -54,6 +56,7 @@ def build_schema(schema_path, excel_path, output_schema_path):
                     column_coding["category"] = categories
                     updated_count += 1
 
+        # Print a message if no items in the schema have been updated
         if updated_count == 0:
             print(f"Skipping tab '{tab}' as it does not have a matching item in the schema")
 
