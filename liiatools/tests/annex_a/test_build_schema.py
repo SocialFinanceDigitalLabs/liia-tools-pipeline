@@ -29,7 +29,7 @@ def setup_files():
 
     # Create a temporary YAML schema file
     with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.yml') as schema_file:
-        schema = yaml.load(schema_content, 'r')
+        schema = yaml.load(schema_content)
         print(schema['column_map']['annex_a_list']['column_name'])
         for annex_a_list, columns in schema.get("column_map", {}).items():
             for column_name, column_coding in columns.items():
