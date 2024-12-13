@@ -56,10 +56,11 @@ def test_to_category():
 
     column = Column(
         canbeblank=False,
-        category=[{"code": "0", "name": "False"}, {"code": "1", "name": "True"}],
+        category=[{"code": "False", "name": ["F", "0"]}, {"code": "1", "name": "True"}],
     )
-    assert to_category(0, column) == "0"
-    assert to_category("false", column) == "0"
+    assert to_category(0, column) == "False"
+    assert to_category("false", column) == "False"
+    assert to_category("f", column) == "False"
     assert to_category(1.0, column) == "1"
     assert to_category("true", column) == "1"
     assert to_category("", column) == ""
