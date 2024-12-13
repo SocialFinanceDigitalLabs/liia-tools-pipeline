@@ -30,11 +30,12 @@ class Category(BaseModel):
         elif isinstance(self.name, list):
             values.update({name.lower() for name in self.name})
 
-        is_numeric = self.code.isnumeric() or (
-            isinstance(self.name, str) and self.name.isnumeric()
-        ) or (
-            isinstance(self.name, list) and any(
-                name.isnumeric() for name in self.name
+        is_numeric = (
+            self.code.isnumeric()
+            or (isinstance(self.name, str) and self.name.isnumeric())
+            or (
+                isinstance(self.name, list)
+                and any(name.isnumeric() for name in self.name)
             )
         )
 

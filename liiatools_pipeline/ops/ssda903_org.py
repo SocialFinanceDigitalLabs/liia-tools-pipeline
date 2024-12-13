@@ -57,17 +57,16 @@ def create_dim_fact_tables(
     header = re.compile(r"header")
     uasc = re.compile(r"uasc")
     pattern_list = [episodes, header, uasc]
-    
+
     files = session_folder.listdir("/")
-    
+
     all_files_present = all(
-        any(pattern.search(filename) for filename in files)
-        for pattern in pattern_list
+        any(pattern.search(filename) for filename in files) for pattern in pattern_list
     )
 
     # Run the data transformation if all necessary files are present
     if all_files_present:
-    
+
         ext_folder = external_data_folder()
         output_folder = shared_folder()
 

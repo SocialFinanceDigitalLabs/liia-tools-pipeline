@@ -73,7 +73,9 @@ def create_session_folder(destination_fs: FS, session_names) -> Tuple[FS, str]:
             f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
         )
     except Exception as err:
-        logger.error(f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}")
+        logger.error(
+            f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}"
+        )
     for folder in session_names:
         logger.info(f"Creating session name folder: {folder}")
         session_folder.makedirs(folder)

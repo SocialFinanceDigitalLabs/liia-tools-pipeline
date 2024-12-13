@@ -145,7 +145,9 @@ def create_current_view(archive: DataframeArchive, process_folder: FS) -> FS:
 
 def create_reports(current_folder: FS, process_folder: FS):
     export_folder = process_folder.makedirs("export", recreate=True)
-    aggregate = DataframeAggregator(current_folder, load_pipeline_config(), dataset="cin")
+    aggregate = DataframeAggregator(
+        current_folder, load_pipeline_config(), dataset="cin"
+    )
     aggregate_data = aggregate.current()
 
     for report in ["PAN"]:
