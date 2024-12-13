@@ -1,42 +1,37 @@
-import logging
-from dagster import Config
 from typing import List, Tuple
-from dagster import In, Out, op
+
+from dagster import In, Out, get_dagster_logger, op
+from fs import open_fs
 from fs.base import FS
 
+from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
+from liiatools.annex_a_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_annex_a,
+)
+from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
+from liiatools.cin_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_cin,
+)
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
+from liiatools.common.checks import check_year_within_range
 from liiatools.common.constants import SessionNames
-from liiatools.common.data import FileLocator, ErrorContainer
+from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
-from liiatools.common.transform import degrade_data, enrich_data
-from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
-from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_cin
+from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
-from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_ssda903
-from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
-from liiatools.annex_a_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_annex_a
-
-
-from liiatools_pipeline.assets.common import (
-    incoming_folder,
-    workspace_folder,
-    shared_folder,
-    pipeline_config,
-    la_code as input_la_code,
-    dataset,
+from liiatools.ssda903_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_ssda903,
 )
+from liiatools_pipeline.assets.common import (
+    pipeline_config,
+    shared_folder,
+    workspace_folder,
+)
+from liiatools_pipeline.ops.common_config import CleanConfig
 
-from dagster import get_dagster_logger
-log = get_dagster_logger()
-
-logger = logging.getLogger(__name__)
-
-
-class FileConfig(Config):
-    filename: str
-    name: str
+log = get_dagster_logger(__name__)
 
 
 @op(
@@ -46,11 +41,15 @@ class FileConfig(Config):
         "incoming_files": Out(List[FileLocator]),
     }
 )
-def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
+def create_session_folder(config: CleanConfig) -> Tuple[FS, str, List[FileLocator]]:
+    log.info("Creating Session Folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNames
     )
-    incoming_files = pl.move_files_for_processing(incoming_folder(), session_folder)
+    log.info(f"Session folder id: {session_id}")
+    incoming_files = pl.move_files_for_processing(
+        open_fs(config.dataset_folder), session_folder
+    )
 
     return session_folder, session_id, incoming_files
 
@@ -58,9 +57,10 @@ def create_session_folder() -> Tuple[FS, str, List[FileLocator]]:
 @op(
     out={"current": Out(DataframeArchive)},
 )
-def open_current() -> DataframeArchive:
+def open_current(config: CleanConfig) -> DataframeArchive:
+    log.info("Opening Current folder...")
     current_folder = workspace_folder().makedirs("current", recreate=True)
-    current = DataframeArchive(current_folder, pipeline_config(), f"{dataset()}")
+    current = DataframeArchive(current_folder, pipeline_config(config), config.dataset)
     return current
 
 
@@ -77,9 +77,17 @@ def process_files(
     incoming_files: List[FileLocator],
     current: DataframeArchive,
     session_id: str,
+    config: CleanConfig,
 ):
+    log.info("Procesing Files...")
     error_report = ErrorContainer()
+
+    if current.fs.isdir(f"{config.input_la_code}/{config.dataset}"):
+        log.info("Removing existing LA data...")
+        current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
+
     for file_locator in incoming_files:
+        log.info(f"Processing file {file_locator.name}")
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
         if year is None:
@@ -93,12 +101,23 @@ def process_files(
             )
             continue
 
-        la_code = (
-            input_la_code()
-            if input_la_code() is not None
-            else pl.discover_la(file_locator)
-        )
-        if la_code is None:
+        if (
+            check_year_within_range(
+                year, max(pipeline_config(config).retention_period.values())
+            )
+            is False
+        ):
+            error_report.append(
+                dict(
+                    type="RetentionPeriod",
+                    message="This file is not within the year ranges of data retention policy",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+
+        if config.input_la_code is None:
             error_report.append(
                 dict(
                     type="MissingLA",
@@ -110,15 +129,16 @@ def process_files(
             continue
 
         try:
-            schema = globals()[f"load_schema_{dataset()}"](year)
+            schema = globals()[f"load_schema_{config.dataset}"](year)
         except KeyError:
-            logger.info(f"Dataset specified: {dataset()} isn't valid. Defaulting to None")
             continue
 
-        metadata = dict(year=year, schema=schema, la_code=la_code)
+        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{dataset()}"](file_locator, schema)
+            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema
+            )
         except StreamError as e:
             error_report.append(
                 dict(
@@ -130,6 +150,10 @@ def process_files(
             )
             continue
 
+        cleanfile_result.data = prepare_export(
+            cleanfile_result.data, pipeline_config(config), profile="PAN"
+        )
+
         cleanfile_result.data.export(
             session_folder.opendir(SessionNames.CLEANED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -137,7 +161,9 @@ def process_files(
         )
         error_report.extend(cleanfile_result.errors)
 
-        enrich_result = enrich_data(cleanfile_result.data, pipeline_config(), metadata)
+        enrich_result = enrich_data(
+            cleanfile_result.data, pipeline_config(config), metadata
+        )
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -145,43 +171,58 @@ def process_files(
         )
         error_report.extend(enrich_result.errors)
 
-        degraded_result = degrade_data(enrich_result.data, pipeline_config(), metadata)
+        degraded_result = degrade_data(
+            enrich_result.data, pipeline_config(config), metadata
+        )
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
             file_locator.meta["uuid"] + "_",
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
 
     error_report.set_property("session_id", session_id)
     error_report_name = (
-        f"{input_la_code()}_{dataset()}_{session_id}_error_report.csv"
-        if input_la_code() is not None
-        else f"{dataset()}_{session_id}_error_report.csv"
+        f"{config.input_la_code}_{config.dataset}_{session_id}_error_report.csv"
+        if config.input_la_code is not None
+        else f"{config.dataset}_{session_id}_error_report.csv"
     )
-    with session_folder.open(error_report_name, "w") as FILE:
-        error_report.to_dataframe().to_csv(FILE, index=False)
+
+    destination_logs = shared_folder().makedirs("logs", recreate=True)
+    incoming_logs = open_fs(config.la_folder).makedirs("logs", recreate=True)
+    log_locations = [session_folder, destination_logs, incoming_logs]
+
+    for location in log_locations:
+        with location.open(error_report_name, "w") as FILE:
+            error_report.to_dataframe().to_csv(FILE, index=False)
 
 
 @op()
-def move_current_view():
+def move_current_view_la():
     current_folder = workspace_folder().opendir("current")
     destination_folder = shared_folder().makedirs("current", recreate=True)
+    destination_folder.removetree("/")
     pl.move_files_for_sharing(current_folder, destination_folder)
 
 
 @op(
     ins={"current": In(DataframeArchive)},
 )
-def create_concatenated_view(current: DataframeArchive):
-    concat_folder = shared_folder().makedirs("concatenated", recreate=True)
+def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
+    concat_folder = shared_folder().makedirs(
+        f"concatenated/{config.dataset}", recreate=True
+    )
+    existing_files = concat_folder.listdir("/")
+
     for la_code in authorities.codes:
+        la_files_regex = f"{la_code}_{config.dataset}_"
+        pl.remove_files(la_files_regex, existing_files, concat_folder)
+
         concat_data = current.current(la_code)
 
         if concat_data:
-            concat_data.export(concat_folder, f"{la_code}_{dataset()}_", "csv")
-
+            concat_data.export(concat_folder, f"{la_code}_{config.dataset}_", "csv")

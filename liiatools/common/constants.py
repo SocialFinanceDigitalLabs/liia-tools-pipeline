@@ -20,7 +20,19 @@ class SessionNames(StrEnum):
     DEGRADED_FOLDER = "degraded"
 
 
+class SessionNamesFixEpisodes(StrEnum):
+    """Enum for fix episodes session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+
 class SessionNamesOrg(StrEnum):
     """Enum for org session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+
+class SessionNamesSufficiency(StrEnum):
+    """Enum for sufficiency session folders."""
 
     INCOMING_FOLDER = "incoming"

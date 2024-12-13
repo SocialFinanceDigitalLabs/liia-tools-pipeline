@@ -1,10 +1,13 @@
 import unittest
+from datetime import datetime
 
 from liiatools.common.checks import (
-    check_year,
+    Term,
     check_la,
+    check_la_signature,
     check_term,
-    Term
+    check_year,
+    check_year_within_range,
 )
 
 
@@ -35,8 +38,9 @@ class TestCheckYear(unittest.TestCase):
 
 
 def test_check_la():
-    assert check_la("822_2023_header.csv") == "822"
-    assert check_la("935_2023_episodes.csv") == "935"
+    assert check_la("Fons-a821f-Cambridgeshire-873") == "873"
+    assert check_la("Fons-04cd3-Thurrock-883") == "883"
+    assert check_la("Fons-0fg93-Hackney-HAC") == "HAC"
 
 
 class TestCheckLA(unittest.TestCase):
@@ -47,6 +51,26 @@ class TestCheckLA(unittest.TestCase):
     def test_check_la_2(self):
         with self.assertRaises(ValueError):
             check_la("SSDA903_2020_episodes.csv")
+
+
+def test_check_year_within_range():
+    assert check_year_within_range(2016, 6, 6, datetime(2023, 5, 31)) is False
+    assert check_year_within_range(2023, 6, 6, datetime(2023, 5, 31)) is True
+    assert check_year_within_range(2024, 6, 6, datetime(2023, 5, 31)) is False
+    assert check_year_within_range(2024, 6, 6, datetime(2023, 6, 1)) is True
+    assert check_year_within_range(2013, 10, 2, datetime(2023, 1, 31)) is True
+
+
+def test_check_la_signature():
+    pipeline_config = {
+        "BAR": {"PAN": "Yes", "SUFFICIENCY": "Yes"},
+        "BEX": {"PAN": "Yes", "SUFFICIENCY": "No"},
+    }
+
+    assert check_la_signature(pipeline_config, "PAN") == ["BAR", "BEX"]
+    assert check_la_signature(pipeline_config, "SUFFICIENCY") == ["BAR"]
+    assert check_la_signature(pipeline_config, None) == []
+    assert check_la_signature(pipeline_config, "") == []
 
 
 def test_check_term():

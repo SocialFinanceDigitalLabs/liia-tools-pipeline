@@ -13,9 +13,7 @@ from liiatools.cin_census_pipeline import stream_record
 from . import stream_filters as filters
 
 
-def task_cleanfile(
-    src_file: FileLocator, schema: (XMLSchema, Path)
-) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path)) -> ProcessResult:
     """
     Clean input cin census xml files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem

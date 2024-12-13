@@ -1,9 +1,9 @@
+import logging
 from functools import lru_cache
 from pathlib import Path
-import yaml
-import logging
-import xmlschema
 
+import xmlschema
+import yaml
 from pydantic_yaml import parse_yaml_file_as
 
 from liiatools.common.data import PipelineConfig
@@ -15,14 +15,16 @@ SCHEMA_DIR = Path(__file__).parent
 
 @lru_cache
 def load_pipeline_config():
-    with open(SCHEMA_DIR / "pipeline.yml", "rt") as FILE:
+    with open(SCHEMA_DIR / "pipeline.json", "rt") as FILE:
         return parse_yaml_file_as(PipelineConfig, FILE)
 
 
 @lru_cache
 def load_schema(year: int) -> (xmlschema.XMLSchema, Path):
-    return (xmlschema.XMLSchema(SCHEMA_DIR / f"CIN_schema_{year:04d}.xsd"),
-            Path(SCHEMA_DIR, f"CIN_schema_{year:04d}.xsd"))
+    return (
+        xmlschema.XMLSchema(SCHEMA_DIR / f"CIN_schema_{year:04d}.xsd"),
+        Path(SCHEMA_DIR, f"CIN_schema_{year:04d}.xsd"),
+    )
 
 
 @lru_cache

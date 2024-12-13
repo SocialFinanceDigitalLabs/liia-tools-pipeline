@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9"]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v2
@@ -37,11 +37,17 @@ jobs:
         poetry install
 
     - name: Test with pytest
+      env:
+        CLEAN_SCHEDULE: "* * * * *"
+        REPORTS_SCHEDULE: "* * * * *"
       run: |
         poetry run pytest
 
     - name: Coverage report
       # We run pytest again but excluding the end-to-end tests to generate the coverage report
+      env:
+        CLEAN_SCHEDULE: "* * * * *"
+        REPORTS_SCHEDULE: "* * * * *"
       run: |
         SKIP_E2E=True poetry run coverage run -m pytest
         poetry run coverage report

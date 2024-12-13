@@ -3,13 +3,13 @@ from fs import open_fs
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator
 from liiatools.common.pipeline import (
+    Term,
     create_session_folder,
+    discover_la,
+    discover_term,
     discover_year,
     move_files_for_processing,
     restore_session_folder,
-    discover_la,
-    discover_term,
-    Term,
 )
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 
@@ -113,7 +113,7 @@ def test_discover_year_dir_and_file_year():
 def test_discover_la():
     samples_fs = open_fs(DIR_903.as_posix())
     locator = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/822_2020_episodes.csv"
+        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020_episodes_822"
     )
     assert discover_la(locator) == "822"
 

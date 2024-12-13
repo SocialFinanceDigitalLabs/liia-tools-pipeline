@@ -145,14 +145,13 @@ def create_current_view(archive: DataframeArchive, process_folder: FS) -> FS:
 
 def create_reports(current_folder: FS, process_folder: FS):
     export_folder = process_folder.makedirs("export", recreate=True)
-    aggregate = DataframeAggregator(current_folder, load_pipeline_config())
+    aggregate = DataframeAggregator(current_folder, load_pipeline_config(), dataset="cin")
     aggregate_data = aggregate.current()
 
     for report in ["PAN"]:
         report_folder = export_folder.makedirs(report, recreate=True)
         report = prepare_export(aggregate_data, load_pipeline_config())
-        report.data.export(report_folder, "cin_census_", "csv")
-
+        report.export(report_folder, "cin_census_", "csv")
 
     # TODO: fix issue with handling non-datetimes
     # Run report analysis

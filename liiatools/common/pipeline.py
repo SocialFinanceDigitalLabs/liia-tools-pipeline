@@ -1,20 +1,21 @@
 import hashlib
 import logging
+import re
 import uuid
 from datetime import datetime
+from enum import Enum
 from os.path import basename, dirname
 from typing import List, Tuple
-from enum import Enum
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import yaml
 from fs.base import FS
 from fs.info import Info
 from fs.move import copy_file
 
+from liiatools.common.checks import Term, check_la, check_term, check_year
 from liiatools.common.constants import ProcessNames, SessionNames
-from liiatools.common.checks import check_year, check_la, check_term, Term
 
 from .data import FileLocator
 
@@ -67,10 +68,16 @@ def create_session_folder(destination_fs: FS, session_names) -> Tuple[FS, str]:
     Create a new session folder in the output filesystem with the standard folders
     """
     session_id = _get_timestamp()
-    session_folder = destination_fs.makedirs(
-        f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
-    )
+    try:
+        session_folder = destination_fs.makedirs(
+            f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
+        )
+    except Exception as err:
+        logger.error(
+            f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}"
+        )
     for folder in session_names:
+        logger.info(f"Creating session name folder: {folder}")
         session_folder.makedirs(folder)
     return session_folder, session_id
 
@@ -104,15 +111,46 @@ def move_files_for_processing(
 
 
 def move_files_for_sharing(
-    source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+    source_fs: FS,
+    destination_fs: FS,
+    continue_on_error: bool = False,
+    required_table_id: list = None,
 ):
     """
-    Moves all files from a source filesystem to the shared folder.
+    Moves all files from a source filesystem to the shared folder. Allow movement of only specific files using the
+    required_table_id parameter.
     """
     source_file_list = source_fs.walk.info(namespaces=["details"])
 
     for file_path, file_info in source_file_list:
         if file_info.is_file:
+            try:
+                if required_table_id is None:
+                    dest_path = file_path.split("/")[-1]
+                    copy_file(source_fs, file_path, destination_fs, dest_path)
+                else:
+                    table_id = re.search(r"_([a-zA-Z0-9]*)\.", file_path)
+                    if table_id and table_id.group(1) in required_table_id:
+                        dest_path = file_path.split("/")[-1]
+                        copy_file(source_fs, file_path, destination_fs, dest_path)
+            except Exception as e:
+                logger.error(f"Error moving file {file_path} to destination folder")
+                if continue_on_error:
+                    pass
+                else:
+                    raise e
+
+
+def move_error_report(
+    source_fs: FS, destination_fs: FS, continue_on_error: bool = False
+):
+    """
+    Move the error report from a source filesystem to a destination filesystem
+    """
+    source_file_list = source_fs.walk.info(namespaces=["details"])
+
+    for file_path, file_info in source_file_list:
+        if file_info.is_file and file_path.endswith("_error_report.csv"):
             try:
                 dest_path = file_path.split("/")[-1]
                 copy_file(source_fs, file_path, destination_fs, dest_path)
@@ -268,3 +306,10 @@ def find_year_from_column(
                 return None, financial_year, None, DataType.OLD_DATA
             else:
                 return year, financial_year, quarter, None
+
+
+def remove_files(regex: str, existing_files: list, folder: FS):
+    current_files = re.compile(regex)
+    files_to_remove = list(filter(current_files.match, existing_files))
+    for file in files_to_remove:
+        folder.remove(file)

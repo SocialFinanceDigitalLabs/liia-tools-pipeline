@@ -1,37 +1,34 @@
+import unittest
 import xml.etree.ElementTree as ET
 from io import BytesIO
 from typing import Iterable
+
 from fs import open_fs
-
-
 from sfdata_stream_parser.events import (
-    StartElement,
     EndElement,
-    TextNode,
     ParseEvent,
     StartContainer,
+    StartElement,
+    TextNode,
 )
 
+from liiatools.annex_a_pipeline.spec.samples import DIR as DIR_AA
+from liiatools.cin_census_pipeline.spec import load_schema
+from liiatools.cin_census_pipeline.spec.samples import CIN_2022
 from liiatools.common.data import FileLocator
-from liiatools.common.stream_filters import tablib_parse
-from liiatools.common.stream_parse import dom_parse
-from liiatools.common.spec.__data_schema import (
-    Numeric,
-    Category,
-)
+from liiatools.common.spec.__data_schema import Category, Numeric
 from liiatools.common.stream_filters import (
-    strip_text,
-    add_context,
-    add_schema,
-    validate_elements,
     _create_category_spec,
     _create_numeric_spec,
     _create_regex_spec,
+    add_context,
+    add_schema,
+    strip_text,
+    tablib_parse,
+    validate_elements,
 )
-from liiatools.annex_a_pipeline.spec.samples import DIR as DIR_AA
+from liiatools.common.stream_parse import dom_parse
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
-from liiatools.cin_census_pipeline.spec.samples import CIN_2022
-from liiatools.cin_census_pipeline.spec import load_schema
 
 
 def test_parse_tabular_csv():
@@ -146,111 +143,118 @@ def test_validate_all_valid():
     for event in stream:
         assert not hasattr(event, "errors")
 
+
 # TODO update to work with CIN rather than CSWW
-# def test_validate_missing_required_field():
-#     with CIN_2022.open("rb") as f:
-#         root = ET.parse(f).getroot()
-#
-#     parent = root.find(".//CSWWWorker")
-#     el = parent.find("AgencyWorker")
-#     parent.remove(el)
-#
-#     stream = _xml_to_stream(root)
-#
-#     errors = []
-#     for event in stream:
-#         if hasattr(event, "errors"):
-#             errors.append(event.errors)
-#
-#     assert list(errors[0])[0] == {
-#         "type": "ValidationError",
-#         "message": "Invalid node",
-#         "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
-#     }
-#
-#
-# def test_validate_reordered_required_field():
-#     with CIN_2022.open("rb") as f:
-#         root = ET.parse(f).getroot()
-#
-#     el_parent = root.find(".//AgencyWorker/..")
-#     el_child_id = el_parent.find("AgencyWorker")
-#     el_parent.remove(el_child_id)
-#     el_parent.append(el_child_id)
-#
-#     stream = _xml_to_stream(root)
-#
-#     errors = []
-#     for event in stream:
-#         if hasattr(event, "errors"):
-#             errors.append(event.errors)
-#
-#     assert list(errors[0])[0] == {
-#         "type": "ValidationError",
-#         "message": "Invalid node",
-#         "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
-#     }
-#
-#
-# def test_validate_unexpected_node():
-#     with CIN_2022.open("rb") as f:
-#         root = ET.parse(f).getroot()
-#
-#     parent = root.find(".//CSWWWorker")
-#     ET.SubElement(parent, "Unknown_Node")
-#
-#     stream = _xml_to_stream(root)
-#
-#     errors = []
-#     for event in stream:
-#         if hasattr(event, "errors"):
-#             errors.append(event.errors)
-#
-#     assert list(errors[0])[0] == {
-#         "type": "ValidationError",
-#         "message": "Invalid node",
-#         "exception": "Unexpected node 'Unknown_Node'",
-#     }
-#
-#
-# def test_create_category_spec():
-#     schema_path = load_schema_path(2022)
-#     field = "agencyworkertype"
-#     category_spec = _create_category_spec(field, schema_path)
-#
-#     assert category_spec == [
-#         Category(
-#             code="0",
-#             name="Not an Agency Worker",
-#             cell_regex=None,
-#             model_config={"extra": "forbid"},
-#         ),
-#         Category(
-#             code="1",
-#             name="Agency Worker",
-#             cell_regex=None,
-#             model_config={"extra": "forbid"},
-#         ),
-#     ]
-#
-#
-# def test_create_numeric_spec():
-#     schema_path = load_schema_path(2022)
-#     field = "twodecimalplaces"
-#     numeric_spec = _create_numeric_spec(field, schema_path)
-#
-#     assert numeric_spec == Numeric(
-#         type="float",
-#         min_value=None,
-#         max_value=None,
-#         decimal_places=2,
-#         model_config={"extra": "forbid"},
-#     )
-#
-#
-# def test_create_regex_spec():
-#     schema_path = load_schema_path(2022)
-#     field = "swetype"
-#     regex_spec = _create_regex_spec(field, schema_path)
-#
-#     assert regex_spec == r"[A-Za-z]{2}\d{10}"
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_validate_missing_required_field():
+    with CIN_2022.open("rb") as f:
+        root = ET.parse(f).getroot()
+
+    parent = root.find(".//CSWWWorker")
+    el = parent.find("AgencyWorker")
+    parent.remove(el)
+
+    stream = _xml_to_stream(root)
+
+    errors = []
+    for event in stream:
+        if hasattr(event, "errors"):
+            errors.append(event.errors)
+
+    assert list(errors[0])[0] == {
+        "type": "ValidationError",
+        "message": "Invalid node",
+        "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
+    }
+
+
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_validate_reordered_required_field():
+    with CIN_2022.open("rb") as f:
+        root = ET.parse(f).getroot()
+
+    el_parent = root.find(".//AgencyWorker/..")
+    el_child_id = el_parent.find("AgencyWorker")
+    el_parent.remove(el_child_id)
+    el_parent.append(el_child_id)
+
+    stream = _xml_to_stream(root)
+
+    errors = []
+    for event in stream:
+        if hasattr(event, "errors"):
+            errors.append(event.errors)
+
+    assert list(errors[0])[0] == {
+        "type": "ValidationError",
+        "message": "Invalid node",
+        "exception": "Missing required field: 'AgencyWorker' which occurs in the node starting on line: 20",
+    }
+
+
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_validate_unexpected_node():
+    with CIN_2022.open("rb") as f:
+        root = ET.parse(f).getroot()
+
+    parent = root.find(".//CSWWWorker")
+    ET.SubElement(parent, "Unknown_Node")
+
+    stream = _xml_to_stream(root)
+
+    errors = []
+    for event in stream:
+        if hasattr(event, "errors"):
+            errors.append(event.errors)
+
+    assert list(errors[0])[0] == {
+        "type": "ValidationError",
+        "message": "Invalid node",
+        "exception": "Unexpected node 'Unknown_Node'",
+    }
+
+
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_create_category_spec():
+    schema, schema_path = load_schema(2022)
+    field = "agencyworkertype"
+    category_spec = _create_category_spec(field, schema_path)
+
+    assert category_spec == [
+        Category(
+            code="0",
+            name="Not an Agency Worker",
+            cell_regex=None,
+            model_config={"extra": "forbid"},
+        ),
+        Category(
+            code="1",
+            name="Agency Worker",
+            cell_regex=None,
+            model_config={"extra": "forbid"},
+        ),
+    ]
+
+
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_create_numeric_spec():
+    schema, schema_path = load_schema(2022)
+    field = "twodecimalplaces"
+    numeric_spec = _create_numeric_spec(field, schema_path)
+
+    assert numeric_spec == Numeric(
+        type="float",
+        min_value=None,
+        max_value=None,
+        decimal_places=2,
+        model_config={"extra": "forbid"},
+    )
+
+
+@unittest.skip("update to work with CIN rather than CSWW")
+def test_create_regex_spec():
+    schema, schema_path = load_schema(2022)
+    field = "swetype"
+    regex_spec = _create_regex_spec(field, schema_path)
+
+    assert regex_spec == r"[A-Za-z]{2}\d{10}"

@@ -231,7 +231,7 @@ class TestRecord(unittest.TestCase):
         data = dataset_holder.value
         self.assertEqual(len(data), 1)
         self.assertEqual(
-            data["CIN"],
+            data["cin"],
             [
                 {
                     "LAchildID": "DfEX0000001",
