@@ -7,7 +7,7 @@ from dagster import (
     schedule,
     RunsFilter,
     DagsterRunStatus,
-    DefaultScheduleStatus
+    DefaultScheduleStatus,
 )
 from fs import open_fs
 from fs.walk import Walker
@@ -215,7 +215,9 @@ def reports_schedule(context):
             context,
         )
 
-        context.log.info(f"Have we found a previous matching ID? {previous_matching_run_id}")
+        context.log.info(
+            f"Have we found a previous matching ID? {previous_matching_run_id}"
+        )
 
         clean_config = CleanConfig(
             dataset_folder=None,

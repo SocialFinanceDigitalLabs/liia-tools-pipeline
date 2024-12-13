@@ -1,5 +1,5 @@
-from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 import re
+from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -14,7 +14,7 @@ class Category(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     code: str
-    name: str = None
+    name: str | list = None
     cell_regex: Any
 
     __values: str = Field("")
@@ -24,10 +24,20 @@ class Category(BaseModel):
 
     def __contains__(self, item):
         values = {self.code.lower()}
-        if self.name:
-            values.add(self.name.lower())
 
-        is_numeric = self.code.isnumeric() or (self.name and self.name.isnumeric())
+        if isinstance(self.name, str):
+            values.add(self.name.lower())
+        elif isinstance(self.name, list):
+            values.update({name.lower() for name in self.name})
+
+        is_numeric = (
+            self.code.isnumeric()
+            or (isinstance(self.name, str) and self.name.isnumeric())
+            or (
+                isinstance(self.name, list)
+                and any(name.isnumeric() for name in self.name)
+            )
+        )
 
         if item in values:
             return True
@@ -125,7 +135,7 @@ class Column(BaseModel):
 
         return re.compile(pattern, flags)
 
-    def match_category(self, value: str) -> Optional[Category]:
+    def match_category(self, value: str) -> Optional[str]:
         assert self.category, "Column is not a category"
 
         value = value.strip().lower()
