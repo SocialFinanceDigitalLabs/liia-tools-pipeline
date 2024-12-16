@@ -78,9 +78,7 @@ def check_month(filename):
     :raises ValueError: If no month is found
     """
     match = re.search(
-        r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec",
-        filename,
-        re.IGNORECASE
+        r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec", filename, re.IGNORECASE
     )
     if match:
         return match.group(0).lower()

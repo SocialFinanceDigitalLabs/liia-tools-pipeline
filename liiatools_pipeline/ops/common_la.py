@@ -144,7 +144,9 @@ def process_files(
             except KeyError:
                 continue
 
-            metadata = dict(year=year, month=month, schema=schema, la_code=config.input_la_code)
+            metadata = dict(
+                year=year, month=month, schema=schema, la_code=config.input_la_code
+            )
 
         else:
             schema = globals()[f"load_schema_{config.dataset}"](year)

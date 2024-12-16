@@ -112,23 +112,27 @@ def test_discover_year_dir_and_file_year():
 def test_discover_month():
     samples_fs = open_fs(DIR_903.as_posix())
     locator_file = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020/SSDA903_2020_jan_episodes.csv"
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020/SSDA903_2020_jan_episodes.csv",
     )
     assert discover_month(locator_file) == 1
 
     locator_dir = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020_feb/SSDA903_2020_episodes.csv"
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_episodes.csv",
     )
     assert discover_month(locator_dir) == 2
 
     locator_dir_and_file = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020_feb/SSDA903_2020_jan_episodes.csv"
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_jan_episodes.csv",
     )
     assert discover_month(locator_dir) == 2
 
-    locator_no_month = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv"
-    )
+    locator_no_month = FileLocator(samples_fs, "SSDA903_2020_episodes.csv")
     assert discover_month(locator_no_month) is None
 
 
