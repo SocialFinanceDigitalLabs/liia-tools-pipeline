@@ -229,7 +229,7 @@ def discover_year(file_locator: FileLocator) -> int:
         pass
 
 
-def discover_month(file_locator: FileLocator) -> int:
+def discover_month(file_locator: FileLocator) -> str:
     """
     Try to discover the month for a file.
 
@@ -240,31 +240,13 @@ def discover_month(file_locator: FileLocator) -> int:
     file_dir = dirname(file_locator.name)
     file_name = basename(file_locator.name)
 
-    # Check month doesn't currently return an int
-    def _check_month(s: str) -> int:
-        month_map = {
-            "jan": 1,
-            "feb": 2,
-            "mar": 3,
-            "apr": 4,
-            "may": 5,
-            "jun": 6,
-            "jul": 7,
-            "aug": 8,
-            "sep": 9,
-            "oct": 10,
-            "nov": 11,
-            "dec": 12,
-        }
-        return month_map[check_month(s)]
-
     try:
-        return _check_month(file_dir)
+        return check_month(file_dir)
     except ValueError:
         pass
 
     try:
-        return _check_month(file_name)
+        return check_month(file_name)
     except ValueError:
         pass
 

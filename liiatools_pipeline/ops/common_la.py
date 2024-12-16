@@ -126,6 +126,7 @@ def process_files(
             )
             continue
 
+        month = None
         if config.dataset == "annex_a":
             month = pl.discover_month(file_locator)
             if month is None:
@@ -143,14 +144,12 @@ def process_files(
                 schema = globals()[f"load_schema_{config.dataset}"]
             except KeyError:
                 continue
-
-            metadata = dict(
-                year=year, month=month, schema=schema, la_code=config.input_la_code
-            )
-
         else:
             schema = globals()[f"load_schema_{config.dataset}"](year)
-            metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
+
+        metadata = dict(
+            year=year, month=month, schema=schema, la_code=config.input_la_code
+        )
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
@@ -197,7 +196,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, config.input_la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year, month)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)

@@ -48,7 +48,7 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int):
+    def add(self, data: DataContainer, la_code: str, year: int, month: str):
         """
         Add a new snapshot to the archive.
         """
@@ -56,20 +56,28 @@ class DataframeArchive:
 
         for table_spec in self.config.table_list:
             if table_spec.id in data:
-                self._add_table(la_dir, la_code, year, table_spec, data[table_spec.id])
+                self._add_table(
+                    la_dir, la_code, year, month, table_spec, data[table_spec.id]
+                )
 
     def _add_table(
         self,
         la_dir: FS,
         la_code: str,
         year: int,
+        month: str,
         table_spec: TableConfig,
         df: pd.DataFrame,
     ):
         """
         Add a table to the archive.
         """
-        with la_dir.open(f"{la_code}_{year}_{table_spec.id}.csv", "w") as f:
+        path = (
+            f"{la_code}_{year}_{table_spec.id}.csv"
+            if month is None
+            else f"{la_code}_{year}_{month}_{table_spec.id}.csv"
+        )
+        with la_dir.open(path, "w") as f:
             df = _normalise_table(df, table_spec)
             df.to_csv(f, index=False)
 
