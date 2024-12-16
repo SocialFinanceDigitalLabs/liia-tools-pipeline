@@ -21,7 +21,7 @@ def load_pipeline_config():
     Load the pipeline config file
     :return: Parsed pipeline config file
     """
-    with open(SCHEMA_DIR / "pipeline.yml", "rt") as FILE:
+    with open(SCHEMA_DIR / "pipeline.json", "rt") as FILE:
         return parse_yaml_file_as(PipelineConfig, FILE)
 
 
