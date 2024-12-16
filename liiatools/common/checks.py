@@ -64,6 +64,30 @@ def check_year(filename):
     raise ValueError
 
 
+def check_month(filename):
+    """
+    Check a filename to see if it contains a month, if it does, return that month
+    Expected month formats within string:
+        jan
+        january
+        feb
+        february
+
+    :param filename: Filename that probably contains a month
+    :return: Month within the string
+    :raises ValueError: If no month is found
+    """
+    match = re.search(
+        r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec",
+        filename,
+        re.IGNORECASE
+    )
+    if match:
+        return match.group(0).lower()
+
+    raise ValueError
+
+
 def check_la(directory):
     """
     Check a directory to see if it contains the three-digit code associated with an LA, if it does, return that code

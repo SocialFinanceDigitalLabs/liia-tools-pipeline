@@ -37,6 +37,10 @@ def add_year(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) ->
     return metadata["year"]
 
 
+def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    return metadata["month"]
+
+
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
@@ -64,6 +68,7 @@ enrich_functions = {
     "la_code": add_la_code,
     "la_name": add_la_name,
     "year": add_year,
+    "month": add_month,
     "integer": to_integer,
     "school_year": add_school_year,
 }

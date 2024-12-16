@@ -126,12 +126,29 @@ def process_files(
             )
             continue
 
-        try:
-            schema = globals()[f"load_schema_{config.dataset}"](year)
-        except KeyError:
-            continue
+        if config.dataset == "annex_a":
+            month = pl.discover_month(file_locator)
+            if month is None:
+                error_report.append(
+                    dict(
+                        type="MissingMonth",
+                        message="Could not find a year in the filename or path",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
+                continue
 
-        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
+            try:
+                schema = globals()[f"load_schema_{config.dataset}"]
+            except KeyError:
+                continue
+
+            metadata = dict(year=year, month=month, schema=schema, la_code=config.input_la_code)
+
+        else:
+            schema = globals()[f"load_schema_{config.dataset}"](year)
+            metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](

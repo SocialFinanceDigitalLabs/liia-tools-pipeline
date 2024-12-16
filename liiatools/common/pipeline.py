@@ -15,7 +15,7 @@ from fs.info import Info
 from fs.move import copy_file
 
 from liiatools.common.constants import ProcessNames, SessionNames
-from liiatools.common.checks import check_year, check_la
+from liiatools.common.checks import check_year, check_la, check_month
 
 from .data import FileLocator
 
@@ -225,6 +225,46 @@ def discover_year(file_locator: FileLocator) -> int:
 
     try:
         return _check_year(file_name)
+    except ValueError:
+        pass
+
+
+def discover_month(file_locator: FileLocator) -> int:
+    """
+    Try to discover the month for a file.
+
+    This function will try to find a month in the path, and if that fails, it will try to find a month in the full filename.
+
+    If the month is found, it will be added to the file metadata.
+    """
+    file_dir = dirname(file_locator.name)
+    file_name = basename(file_locator.name)
+
+    # Check month doesn't currently return an int
+    def _check_month(s: str) -> int:
+        month_map = {
+            "jan": 1,
+            "feb": 2,
+            "mar": 3,
+            "apr": 4,
+            "may": 5,
+            "jun": 6,
+            "jul": 7,
+            "aug": 8,
+            "sep": 9,
+            "oct": 10,
+            "nov": 11,
+            "dec": 12,
+        }
+        return month_map[check_month(s)]
+
+    try:
+        return _check_month(file_dir)
+    except ValueError:
+        pass
+
+    try:
+        return _check_month(file_name)
     except ValueError:
         pass
 
