@@ -48,7 +48,7 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int, month: str):
+    def add(self, data: DataContainer, la_code: str, year: int, month: str | None):
         """
         Add a new snapshot to the archive.
         """
