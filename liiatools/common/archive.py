@@ -98,14 +98,14 @@ class DataframeArchive:
         for snap_id in snap_ids:
             self.fs.removetree(snap_id)
 
-    def current(self, la_code: str) -> DataContainer:
+    def current(self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E") -> DataContainer:
         """
         Get the current session as a datacontainer.
         """
         try:
             directories = self.list_snapshots()
             snap_ids = directories[la_code]
-            return self.combine_snapshots(snap_ids)
+            return self.combine_snapshots(snap_ids, deduplicate_mode)
 
         except KeyError:
             return
@@ -127,7 +127,7 @@ class DataframeArchive:
         return data
 
     def combine_snapshots(
-        self, snap_ids: Iterable[str], deduplicate_mode: Literal["E", "A", "N"] = "E"
+        self, snap_ids: Iterable[str], deduplicate_mode: Literal["E", "A", "N"]
     ) -> DataContainer:
         """
         Combine a list of snapshots into a single dataframe.
