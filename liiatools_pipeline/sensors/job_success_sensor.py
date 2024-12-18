@@ -17,6 +17,7 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
+from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 
@@ -252,6 +253,34 @@ def sufficiency_sensor(context):
         "ssda903",
     )  # Get the most recent ssda903 run id
     if latest_run_id:  # Ensure there is at least one ssda903 run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+@sensor(
+    job=deduplicate_annex_a,
+    description="Runs deduplicate_annex_a job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+)
+def deduplicate_annex_a_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "annex_a"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    latest_run_id = find_previous_matching_dataset_run(
+        run_records,
+        "annex_a",
+    )  # Get the most recent annex_a run id
+    if latest_run_id:  # Ensure there is at least one annex_a run record
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
