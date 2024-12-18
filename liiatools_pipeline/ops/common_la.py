@@ -129,7 +129,7 @@ def process_files(
             continue
 
         try:
-            schema = globals()[f"load_schema_{config.dataset}"](year)
+            schema = globals()[f"load_schema_{config.dataset}"]()
         except KeyError:
             continue
 
