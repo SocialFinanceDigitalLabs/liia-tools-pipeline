@@ -505,6 +505,7 @@
                 "unique_key": true,
                 "enrich": ["integer", "add_la_suffix"]
                 },
+                { "id": "Family identifier", "type": "string" },
                 { "id": "Gender", "type": "category" },
                 { "id": "Ethnicity", "type": "category" },
                 {
@@ -530,12 +531,6 @@
             "id": "List 11",
             "retain": ["PAN"],
             "columns": [
-                {
-                "id": "Child Unique ID",
-                "type": "string",
-                "unique_key": true,
-                "enrich": ["integer", "add_la_suffix"]
-                },
                 { "id": "Individual adopter identifier", "type": "string", "unique_key": true },
                 { "id": "Family identifier", "type": "string" },
                 { "id": "Gender", "type": "category" },
