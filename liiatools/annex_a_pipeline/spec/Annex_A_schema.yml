@@ -3849,26 +3849,26 @@ column_map:
               -   /.*referral.*source.*/i
         Referral NFA?:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   '0'
                     -   0 - No
                     -   FA
                     -   Further action
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   U
                     -   b. No
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   '1'
                     -   1 - Yes
                     -   NFA
                     -   No further action
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   a. Yes
               -   code: zzNotRecorded
                   name:
@@ -3902,13 +3902,13 @@ column_map:
         Age of Child (Years): *age
         Does the Child have a Disability: &disability
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   '0'
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   NO DISABILITY
                     -   NONE
               -   code: Unknown
@@ -3919,7 +3919,7 @@ column_map:
                     -   Not obtained
                     -   REFU
                     -   Refused
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   '1'
@@ -3955,8 +3955,8 @@ column_map:
                     -   PERSONAL CARE
                     -   VIS
                     -   VISION
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
               -   code: zzNotRecorded
                   name:
                     -   '-'
@@ -3976,14 +3976,14 @@ column_map:
         Continuous Assessment Start Date: *date-not-blank
         Child Seen During Continuous Assessment:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
                     -   Child not seen
                     -   Child not seen alone
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not seen
                     -   Not seen alone
                     -   Unborn
@@ -3992,7 +3992,7 @@ column_map:
                   name:
                     -   c) Unknown
                     -   Unknown
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
@@ -4000,8 +4000,8 @@ column_map:
                     -   Child seen alone
                     -   Seen
                     -   Seen alone
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4021,19 +4021,19 @@ column_map:
         Continuous Assessment Date of Authorisation: *date-blank
         "Was the child assessed as requiring LA children's social care support?":
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4066,19 +4066,19 @@ column_map:
         Strategy discussion initiating Section 47 Enquiry Start Date: *date-not-blank
         Was an Initial Child Protection Conference deemed unnecessary?:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4099,23 +4099,23 @@ column_map:
         Date of Initial Child Protection Conference: *date-blank
         Did the Initial Child Protection Conference Result in a Child Protection Plan:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Unknown
                   name:
                     -   c) Unknown
                     -   Unknown
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4928,7 +4928,7 @@ column_map:
                     -   N0 NEED CODE 'NOT STATED'
                     -   N0:Need code not Stated
                     -   N0-Not stated
-                    -   No
+                    -   'No'
                     -   No need code recorded
                     -   Not Recorded
                     -   Not specified
@@ -5598,14 +5598,14 @@ column_map:
         Date of the Last Statutory Visit: *date-blank
         Was the Child Seen Alone?:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
                     -   Child not seen
                     -   Child not seen alone
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not seen
                     -   Not seen alone
                     -   'False'
@@ -5614,7 +5614,7 @@ column_map:
                     -   c) Unknown
                     -   Unknown
                     -   No Visit - new in last month
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
@@ -5622,8 +5622,8 @@ column_map:
                     -   Child seen alone
                     -   Seen
                     -   Seen alone
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Yes-See care notes for details
                     -   'True'
               -   code: zzNotRecorded
@@ -5647,19 +5647,19 @@ column_map:
         Child Protection Plan End Date: *date-blank
         Subject to Emergency Protection Order or Protected Under Police Powers in Last Six Months (Y/N):
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -5691,24 +5691,24 @@ column_map:
         Age of Child (Years): *age
         "Unaccompanied Asylum Seeking Child (UASC) within the Last 12 Months (Y/N)": &uasc
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
                     -   CLA
-                    -   N
+                    -   'N'
                     -   'N '
-                    -   No
+                    -   'No'
                     -   Non-UASC
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
                     -   Non-CLA
                     -   UASC
-                    -   Y
+                    -   'Y'
                     -   'Y '
-                    -   Yes
+                    -   'Yes'
               -   code: zzNotRecorded
                   name:
                     -   '-'
@@ -5732,19 +5732,19 @@ column_map:
         "Child's Category of Need": *primary-need
         Is this a second or subsequent period of being a Looked After Child within the last 12 months (Y/N):
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -8719,8 +8719,8 @@ column_map:
               -   code: a) In
                   name:
                     -   a) In
-                    -   Yes
-                    -   Y
+                    -   'Yes'
+                    -   'Y'
                     -   In
                     -   In borough
                     -   In LA
@@ -8729,8 +8729,8 @@ column_map:
               -   code: b) Out
                   name:
                     -   b) Out
-                    -   No
-                    -   N
+                    -   'No'
+                    -   'N'
                     -   Out
                     -   Out of borough
                     -   Out of LA
@@ -10064,20 +10064,20 @@ column_map:
                   in the last 12 months.*/i
         Was the child offered a Return Interview after their last missing episode (Y/N)?: &return-interview-groupings
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   b) No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not Offered (Missing Again)
                     -   Not Offered (Other)
                     -   Not Offered (Unable to make contact)
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   a) Yes
                     -   '1'
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Offered and Accepted
                     -   Offered and Accepted (CYP not present/refused on arrival)
                     -   Offered and Declined (by YP)
@@ -10192,8 +10192,8 @@ column_map:
                     -   1 - Yes
                     -   1 - Yes, resident in the UK
                     -   1 Yes, resident in the UK
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Yes, resident in the UK
               -   code: b) Not in touch
                   name:
@@ -10210,8 +10210,8 @@ column_map:
                     -   2 - No, resident in the UK
                     -   2 No, resident in the UK
                     -   3 - Young Person Refuses contact
-                    -   N
-                    -   NO
+                    -   'N'
+                    -   'NO'
                     -   No, resident in the UK
                     -   NREQ
                     -   REFU
@@ -10689,7 +10689,7 @@ column_map:
                     -   Other accommodation [Y]
                     -   Residing with friends
                     -   With Friends
-                    -   Y
+                    -   'Y'
                     -   Y - Not suitable
                     -   Y - Other accommodation
                     -   Y - Other Accommodation (state in notes)
@@ -10741,9 +10741,9 @@ column_map:
                     -   Accommodation is considered to be suitable
                     -   Suitable
                     -   'True'
-                    -   Y
+                    -   'Y'
                     -   'Y '
-                    -   Yes
+                    -   'Yes'
               -   code: b) Not suitable
                   name:
                     -   b) Unsuitable
@@ -10760,8 +10760,8 @@ column_map:
                     -   Accommodation is considered unsuitable
                     -   Accommodation is considered unsuitable [2]
                     -   'False'
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not suitable
                     -   Unsuitable
                     -   'False'
@@ -10972,19 +10972,19 @@ column_map:
         Disability: *disability
         Is the (prospective) adopter fostering for adoption?:
             category:
-              -   code: No
+              -   code: 'No'
                   name:
                     -   '0'
-                    -   No
-                    -   N
+                    -   'No'
+                    -   'N'
                     -   0 = No
                     -   0 No
                     -   0 - No
-              -   code: Yes
+              -   code: 'Yes'
                   name:
                     -   '1'
-                    -   Yes
-                    -   Y
+                    -   'Yes'
+                    -   'Y'
                     -   1 = Yes
                     -   1 Yes
                     -   1 - Yes
