@@ -1,5 +1,5 @@
 column_map:
-    List 1:
+    list_1:
         Child Unique ID: &child-id
             string: "alphanumeric"
             header_regex:
@@ -3817,7 +3817,7 @@ column_map:
             header_regex:
               -   /.*contact.*source.*/i
 
-    List 2:
+    list_2:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -3833,7 +3833,7 @@ column_map:
             string: "alphanumeric"
             canbeblank: false
 
-    List 3:
+    list_3:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -3894,7 +3894,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 4:
+    list_4:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -4056,7 +4056,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 5:
+    list_5:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -4138,7 +4138,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 6:
+    list_6:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -5411,7 +5411,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 7:
+    list_7:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -5683,7 +5683,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 8:
+    list_8:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -10108,7 +10108,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 9:
+    list_9:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -10873,7 +10873,7 @@ column_map:
                     -   /.*parenting.*/i
             canbeblank: true
 
-    List 10:
+    list_10:
         Child Unique ID: *child-id
         Family identifier: *blank
         Gender: *gender
@@ -10964,7 +10964,7 @@ column_map:
             canbeblank: true
         Date the child was placed for fostering in FFA or concurrent planning placement: *date-blank
 
-    List 11:
+    list_11:
         Individual adopter identifier: *not-blank
         Family identifier: *blank
         Gender: *gender
