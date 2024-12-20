@@ -2,10 +2,7 @@ import logging
 
 from sfdata_stream_parser import events
 from sfdata_stream_parser.checks import type_check
-from sfdata_stream_parser.filters.generic import (
-    pass_event,
-    streamfilter,
-)
+from sfdata_stream_parser.filters.generic import pass_event, streamfilter
 
 from liiatools.common.spec.__data_schema import Column, DataSchema
 

@@ -1,33 +1,25 @@
 import logging
-import xmlschema
-import tablib
-import pandas as pd
-import numpy as np
 import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
-from typing import Iterable, Union, Any, Dict, List
 from pathlib import Path
-from tablib import import_book, import_set, UnsupportedFormat
+from typing import Any, Dict, Iterable, List, Union
 
-from sfdata_stream_parser import events, collectors
+import numpy as np
+import pandas as pd
+import tablib
+import xmlschema
+from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
-from sfdata_stream_parser.filters.generic import (
-    generator_with_value,
-    pass_event,
-    streamfilter,
-)
+from sfdata_stream_parser.filters.generic import (generator_with_value,
+                                                  pass_event, streamfilter)
+from tablib import UnsupportedFormat, import_book, import_set
 
+from liiatools.common.converters import (to_category, to_date, to_numeric,
+                                         to_postcode, to_regex)
 from liiatools.common.data import FileLocator
-from liiatools.common.stream_errors import StreamError, EventErrors
-from liiatools.common.converters import (
-    to_date,
-    to_numeric,
-    to_postcode,
-    to_regex,
-    to_category,
-)
+from liiatools.common.stream_errors import EventErrors, StreamError
 
-from .spec.__data_schema import Column, DataSchema, Numeric, Category
+from .spec.__data_schema import Category, Column, DataSchema, Numeric
 
 logger = logging.getLogger(__name__)
 

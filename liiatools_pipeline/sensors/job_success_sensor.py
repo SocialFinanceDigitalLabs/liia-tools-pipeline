@@ -1,21 +1,12 @@
-from dagster import (
-    RunRequest,
-    RunsFilter,
-    DagsterRunStatus,
-    sensor,
-    DefaultSensorStatus,
-    RunConfig,
-)
+from dagster import (DagsterRunStatus, DefaultSensorStatus, RunConfig,
+                     RunRequest, RunsFilter, sensor)
 from decouple import config as env_config
 
-from liiatools_pipeline.jobs.common_la import clean, move_current_la, concatenate
+from liiatools_pipeline.jobs.common_la import (clean, concatenate,
+                                               move_current_la)
+from liiatools_pipeline.jobs.common_org import (move_concat, move_current_org,
+                                                move_error_reports, reports)
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
-from liiatools_pipeline.jobs.common_org import (
-    move_error_reports,
-    move_current_org,
-    move_concat,
-    reports,
-)
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
 

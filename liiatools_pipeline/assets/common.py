@@ -4,15 +4,12 @@ from dagster import asset
 from decouple import config as env_config
 from fs import open_fs
 
-from liiatools.annex_a_pipeline.spec import (
-    load_pipeline_config as load_pipeline_config_annex_a,
-)
-from liiatools.cin_census_pipeline.spec import (
-    load_pipeline_config as load_pipeline_config_cin,
-)
-from liiatools.ssda903_pipeline.spec import (
-    load_pipeline_config as load_pipeline_config_ssda903,
-)
+from liiatools.annex_a_pipeline.spec import \
+    load_pipeline_config as load_pipeline_config_annex_a
+from liiatools.cin_census_pipeline.spec import \
+    load_pipeline_config as load_pipeline_config_cin
+from liiatools.ssda903_pipeline.spec import \
+    load_pipeline_config as load_pipeline_config_ssda903
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 logger = logging.getLogger(__name__)

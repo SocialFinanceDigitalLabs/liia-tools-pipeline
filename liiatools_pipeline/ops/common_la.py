@@ -129,7 +129,11 @@ def process_files(
             continue
 
         try:
-            schema = globals()[f"load_schema_{config.dataset}"]()
+            schema = (
+                globals()[f"load_schema_{config.dataset}"]()
+                if config.dataset == "annex_a"
+                else globals()[f"load_schema_{config.dataset}"](year)
+            )
         except KeyError:
             continue
 

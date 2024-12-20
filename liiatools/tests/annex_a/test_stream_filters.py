@@ -1,22 +1,23 @@
 from sfdata_stream_parser.events import Cell
 
-from liiatools.annex_a_pipeline.stream_filters import convert_column_header_to_match
-from liiatools.common.spec.__data_schema import DataSchema, Column
+from liiatools.annex_a_pipeline.stream_filters import \
+    convert_column_header_to_match
+from liiatools.common.spec.__data_schema import Column, DataSchema
 
 
 def test_convert_column_header_to_match():
     schema = DataSchema(
         column_map={
-            "List 1": {
+            "list_1": {
                 "Child Unique ID": Column(header_regex=["/.*child.*id.*/i"]),
                 "Gender": Column(),
             }
         }
     )
     stream = [
-        Cell(table_name="List 1", header="Child Unique ID"),
-        Cell(table_name="List 1", header="Child ID"),
-        Cell(table_name="List 1", header="Gender"),
+        Cell(table_name="list_1", header="Child Unique ID"),
+        Cell(table_name="list_1", header="Child ID"),
+        Cell(table_name="list_1", header="Gender"),
     ]
     stream = list(convert_column_header_to_match(stream, schema=schema))
 

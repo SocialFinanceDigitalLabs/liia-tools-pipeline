@@ -1,12 +1,10 @@
-from dagster import job, get_dagster_logger
+from dagster import get_dagster_logger, job
 
-from liiatools_pipeline.ops.common_org import (
-    create_reports,
-    create_org_session_folder,
-    move_error_report,
-    move_current_view_org,
-    move_concat_view,
-)
+from liiatools_pipeline.ops.common_org import (create_org_session_folder,
+                                               create_reports,
+                                               move_concat_view,
+                                               move_current_view_org,
+                                               move_error_report)
 
 log = get_dagster_logger()
 
