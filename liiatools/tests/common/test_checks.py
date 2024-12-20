@@ -1,10 +1,13 @@
 import unittest
 from datetime import datetime
+
 from liiatools.common.checks import (
-    check_year,
+    Term,
     check_la,
-    check_year_within_range,
     check_la_signature,
+    check_term,
+    check_year,
+    check_year_within_range,
 )
 
 
@@ -68,3 +71,19 @@ def test_check_la_signature():
     assert check_la_signature(pipeline_config, "SUFFICIENCY") == ["BAR"]
     assert check_la_signature(pipeline_config, None) == []
     assert check_la_signature(pipeline_config, "") == []
+
+
+def test_check_term():
+    assert check_term(r"Oct_15/2015_16/addresses.csv") == Term.OCT.value
+    assert check_term(r"jan_16/2015_16/addresses.csv") == Term.JAN.value
+    assert check_term(r"MAY_16/2015_16/addresses.csv") == Term.MAY.value
+
+
+class TestCheckTerm(unittest.TestCase):
+    def test_check_term(self):
+        with self.assertRaises(ValueError):
+            check_term(r"Nov_15/2015_16/addresses.csv")
+
+    def test_check_term_2(self):
+        with self.assertRaises(ValueError):
+            check_term(r"/2015_16/addresses.csv")

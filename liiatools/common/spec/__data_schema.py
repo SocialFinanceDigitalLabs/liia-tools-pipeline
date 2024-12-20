@@ -1,5 +1,5 @@
-from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 import re
+from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -76,6 +76,7 @@ class Column(BaseModel):
     string: Literal["alphanumeric", "postcode", "regex"] = None
     numeric: Numeric = None
     date: str = None
+    time: str = None
 
     dictionary: Dict = None
     category: List[Category] = None
@@ -99,6 +100,8 @@ class Column(BaseModel):
             return "date"
         elif self.category:
             return "category"
+        elif self.time:
+            return "time"
         else:
             raise ValueError("Unknown data type")
 
