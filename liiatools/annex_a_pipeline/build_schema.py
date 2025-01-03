@@ -1,14 +1,34 @@
+import unicodedata
+
 import pandas as pd
 from ruamel.yaml import YAML
+from ruamel.yaml.scalarstring import SingleQuotedScalarString
 
 yaml = YAML()
 yaml.preserve_quotes = True
 yaml.indent(mapping=4, sequence=6, offset=2)
 
 
-def build_schema(schema_path, excel_path, output_schema_path):   
+def normalize_text(value):
+    """
+    Normalizes special characters into standard ones.
+    """
+    return unicodedata.normalize("NFKC", value) if isinstance(value, str) else value
+
+
+def ensure_quoted(value):
+    """
+    Ensures the value is a string and wraps it in single quotes if necessary.
+    """
+    value = normalize_text(str(value))  # Ensure it's a string
+    if value.lower() in {"yes", "no", "true", "false", "y", "n"}:
+        return SingleQuotedScalarString(value)  # Force single quotes
+    return value
+
+
+def build_schema(schema_path, excel_path, output_schema_path):
     # Load the YAML schema
-    with open(schema_path, 'r') as file:
+    with open(schema_path, "r") as file:
         schema = yaml.load(file)
 
     # Load the Excel file with codes
@@ -19,15 +39,15 @@ def build_schema(schema_path, excel_path, output_schema_path):
         df = excel_data.parse(tab)
         # Convert column names to lowercase
         df.columns = df.columns.str.lower()
-        
+
         # Check if the tab has the required columns
-        if 'code' not in df.columns or 'group' not in df.columns:
+        if "code" not in df.columns or "group" not in df.columns:
             print(f"Skipping tab '{tab}' as it does not have required columns")
             continue
-        
+
         # Group the codes by the group column to ensure 1:many dict structure
         grouped = (
-            df.groupby('group')['code']
+            df.groupby("group")["code"]
             .apply(lambda x: list(map(str, x.unique())))
             .reset_index()
         )
@@ -35,8 +55,10 @@ def build_schema(schema_path, excel_path, output_schema_path):
         # Prepare category entries for the schema
         categories = [
             {
-                "code": str(row['group']),
-                "name": row['code'] 
+                "code": str(row["group"]),
+                "name": [ensure_quoted(code) for code in row["code"]]
+                if isinstance(row["code"], list)
+                else ensure_quoted(row["code"]),
             }
             for _, row in grouped.iterrows()
         ]
@@ -46,20 +68,26 @@ def build_schema(schema_path, excel_path, output_schema_path):
 
         # Check if the tab matches a column name in the schema and only update category under that column
         for annex_a_list, columns in schema.get("column_map", {}).items():
-            
             for column_name, column_coding in columns.items():
-                tab_name = tab.replace(' ', '-').lower()
+                tab_name = tab.replace(" ", "-").lower()
                 anchor = column_coding.anchor.value
-                
-                if isinstance(column_coding, dict) and anchor is not None and column_coding.get("category") and tab_name == anchor:
+
+                if (
+                    isinstance(column_coding, dict)
+                    and anchor is not None
+                    and column_coding.get("category")
+                    and tab_name == anchor
+                ):
                     # Replace the old categories with the new ones
                     column_coding["category"] = categories
                     updated_count += 1
 
         # Print a message if no items in the schema have been updated
         if updated_count == 0:
-            print(f"Skipping tab '{tab}' as it does not have a matching item in the schema")
+            print(
+                f"Skipping tab '{tab}' as it does not have a matching item in the schema"
+            )
 
     # Save the updated schema back to a YAML file
-    with open(output_schema_path, 'w') as file:
+    with open(output_schema_path, "w", encoding="utf-8") as file:
         yaml.dump(schema, file)
