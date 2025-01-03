@@ -1,5 +1,5 @@
 column_map:
-    List 1:
+    list_1:
         Child Unique ID: &child-id
             string: "alphanumeric"
             header_regex:
@@ -532,10 +532,10 @@ column_map:
                     -   WIRT:White Irish Traveller
                     -   WOTH:Any Other White
                     -   WOTH:White Other
-                    -   WOTH� White Other
+                    -   WOTH  White Other
                     -   WBRI -White British
-                    -   WOTH � White Other
-                    -   WIRI � White Irish
+                    -   WOTH – White Other
+                    -   WIRI – White Irish
                     -   Gypsy
                     -   White - Other
                     -   Albanian
@@ -908,10 +908,10 @@ column_map:
                     -   MWAS:White & Asian
                     -   MWBA:White & Black African
                     -   MWBC:White & Black Caribbean
-                    -   MOTH � Any other mixed background
-                    -   MWBC � White and Black Caribbean
-                    -   MWBA � White and Black African
-                    -   MWAS � White and Asian
+                    -   MOTH – Any other mixed background
+                    -   MWBC – White and Black Caribbean
+                    -   MWBA – White and Black African
+                    -   MWAS – White and Asian
                     -   White & Pakistani
                     -   Black and Any Other Ethnic Group
                     -   White and Any Other Asian Background
@@ -1126,7 +1126,7 @@ column_map:
                     -   Asian or Asian British
                     -   Asian or Asian British - British Asian
                     -   Asian or Asian British - Caribbean Asian
-                    -   Asian or Asian British � Caribbean Asian
+                    -   Asian or Asian British – Caribbean Asian
                     -   Asian or Asian British - East African Asian
                     -   Asian or Asian British - Kashmiri
                     -   Asian or Asian British - Mixed Asian
@@ -1202,7 +1202,7 @@ column_map:
                     -   AIND:Indian
                     -   AOTH:Other Asian
                     -   APKN:Pakistani
-                    -   AOTH � Any other Asian background
+                    -   AOTH – Any other Asian background
                     -   Afghan
                     -   Kashmiri Pakistani
                     -   Asian - African Asian
@@ -1241,7 +1241,7 @@ column_map:
                     -   'BCRB Black Caribbean '
                     -   BCRB Black or Black British - Carribean
                     -   BCRB Caribbean
-                    -   BCRB� - Black / Black British - Caribbean
+                    -   BCRB  - Black / Black British - Caribbean
                     -   'BCRB: Black: Black Caribbean'
                     -   'BCRB: Caribbean'
                     -   BCRB-Caribbean
@@ -1496,10 +1496,10 @@ column_map:
                     -   BAFR:Black African
                     -   BCRB:Black Caribbean
                     -   BOTH:Other Black
-                    -   BAFR� Black African
-                    -   'BAFR � Black African '
-                    -   BOTH � Any other Black background
-                    -   BCRB � Black Caribbean
+                    -   BAFR  Black African
+                    -   'BAFR – Black African '
+                    -   BOTH – Any other Black background
+                    -   BCRB – Black Caribbean
                     -   Bac - Antigua and Barbuda
                     -   Bac - Bahamas
                     -   Bac - Dominica
@@ -1787,7 +1787,7 @@ column_map:
                     -   Information not yet obtained
                     -   Information Not Yet Obtained
                     -   Information Not Yet Obtained [NOBT]
-                    -   N
+                    -   'N'
                     -   N.E4
                     -   'N.N2 : Not Stated'
                     -   N.N2 Not stated > Not stated
@@ -1882,8 +1882,8 @@ column_map:
                     -   E3 - Not disclosed
                     -   E4 - Not Known
                     -   NOBT:Not Obtained
-                    -   REFU � Refused
-                    -   NOBT � Information not yet obtained
+                    -   REFU – Refused
+                    -   NOBT – Information not yet obtained
                     -   t) NOBT
                     -   '- Did not wish to reply'
                     -   Unborn
@@ -1938,11 +1938,11 @@ column_map:
                     -   (CS) Individual - Family member/relative/carer
                     -   (CS) Individual - Other (e.g. Strangers, MPs)
                     -   (CS) Individual - Self
-                    -   �INDIVIDUAL� � acquaintance (including neighbours and child
+                    -   ‘INDIVIDUAL’ – acquaintance (including neighbours and child
                         minders).
-                    -   �INDIVIDUAL� � family member, relative or carer.
-                    -   �INDIVIDUAL� � other (including strangers or MPs).
-                    -   �INDIVIDUAL� � self.
+                    -   ‘INDIVIDUAL’ – family member, relative or carer.
+                    -   ‘INDIVIDUAL’ – other (including strangers or MPs).
+                    -   ‘INDIVIDUAL’ – self.
                     -   1A
                     -   1A - Family member/relative/carer
                     -   1A - Individual - Family member/relative/carer
@@ -2038,7 +2038,7 @@ column_map:
                     -   Individual - Acquaintance (including neighbour/child-minder)
                     -   Individual - Acquaintance (including neighbours and child
                         minders)
-                    -   Individual � Acquaintance (including neighbours and child
+                    -   Individual – Acquaintance (including neighbours and child
                         minders)
                     -   Individual - Acquaintance (including neighbours and childminders)
                     -   Individual - Acquaintance (neighbour /childminder)
@@ -2049,11 +2049,11 @@ column_map:
                     -   Individual - Aquaintance (inc. neighbour/c/minder
                     -   Individual - Family member / relative / carer
                     -   Individual - Family member, relative or carer
-                    -   INDIVIDUAL � family member, relative or carer
+                    -   INDIVIDUAL – family member, relative or carer
                     -   Individual - Family Member,relative,carer
                     -   Individual - Family member/relative/carer
                     -   Individual - Family Member/Relative/Carer
-                    -   Individual � Family member/relative/carer
+                    -   Individual – Family member/relative/carer
                     -   Individual - Family/relative/carer
                     -   Individual - Member of the public
                     -   Individual - Neighbour/Friend
@@ -2063,19 +2063,19 @@ column_map:
                     -   Individual - Other (inc Strangers/MPs)
                     -   Individual - Other (inc. strangers, MPs)
                     -   Individual - Other (including strangers or MPs)
-                    -   INDIVIDUAL � other (including strangers or MPs)
+                    -   INDIVIDUAL – other (including strangers or MPs)
                     -   'Individual - Other (including strangers, Member of Public,
                         MPs) '
                     -   Individual - Other (including strangers, MPs)
-                    -   Individual � Other (including strangers, MPs)
+                    -   Individual – Other (including strangers, MPs)
                     -   Individual - Other (including strangers/ MPs)
                     -   Individual - Other (stranger, MP etc)
                     -   Individual - Other eg. members of public / politicians
                     -   Individual - Other eg. strangers / MPs
                     -   Individual - Other, including strangers or MPs
                     -   Individual - Self
-                    -   Individual � Self
-                    -   INDIVIDUAL �Family member/relative/carer
+                    -   Individual – Self
+                    -   INDIVIDUAL  Family member/relative/carer
                     -   Individual (Self)
                     -   INDIVIDUAL Acquaintance (including neighbours and child minders)
                     -   INDIVIDUAL Other (including strangers, MPs)
@@ -2123,7 +2123,7 @@ column_map:
                     -   PEM
                     -   Previous Employee
                     -   Private Foster Carer
-                    -   Public � Neighbour / Friend / Member of the public
+                    -   Public – Neighbour / Friend / Member of the public
                     -   Relative
                     -   Relative / House Member
                     -   Relative/ Partner
@@ -2172,7 +2172,7 @@ column_map:
               -   code: b) Schools
                   name:
                     -   'e) 2A: Schools'
-                    -   �SCHOOLS�.
+                    -   ‘SCHOOLS’.
                     -   2A
                     -   2A - Schools
                     -   2A Schools
@@ -2188,7 +2188,7 @@ column_map:
                     -   Education - Nursery Provider
                     -   Education - Out of Borough Schools
                     -   Education - School
-                    -   Education � Schools
+                    -   Education – Schools
                     -   Education (Schools)
                     -   Education / School
                     -   Education Services - School/PRU
@@ -2248,7 +2248,7 @@ column_map:
                     -   (CS) Education - Other Services
                     -   (CS) Education - Pre-School, Nursery, Childminders
                     -   (CS) Education - Schools
-                    -   �EDUCATION SERVICES�.
+                    -   ‘EDUCATION SERVICES’.
                     -   2B
                     -   2B - Education services
                     -   2B - Education Services
@@ -2336,12 +2336,12 @@ column_map:
                     -   (CS) Health Services - Health Visitor
                     -   (CS) Health Services - Other (e.g. hospice)
                     -   (CS) Health Services - School Nurse
-                    -   �HEALTH SERVICES� � A&E (emergency department).
-                    -   �HEALTH SERVICES� � GP.
-                    -   �HEALTH SERVICES� � health visitor.
-                    -   �HEALTH SERVICES� � other (eg hospice).
-                    -   �HEALTH SERVICES� � other primary health services.
-                    -   �HEALTH SERVICES� � school nurse.
+                    -   ‘HEALTH SERVICES’ – A&E (emergency department).
+                    -   ‘HEALTH SERVICES’ – GP.
+                    -   ‘HEALTH SERVICES’ – health visitor.
+                    -   ‘HEALTH SERVICES’ – other (eg hospice).
+                    -   ‘HEALTH SERVICES’ – other primary health services.
+                    -   ‘HEALTH SERVICES’ – school nurse.
                     -   3A
                     -   3A - GP
                     -   3A - Health services - GP
@@ -2350,44 +2350,44 @@ column_map:
                     -   '3a: Health services - GP'
                     -   3B
                     -   3B - Health services - Health Visitor
-                    -   3B - Health services � Health Visitor
+                    -   3B - Health services – Health Visitor
                     -   3B - Health visitor
                     -   3B Health services - Health Visitor
                     -   '3B: HEALTH SERVICES - health visitor'
-                    -   '3b: Health services � Health Visitor'
+                    -   '3b: Health services – Health Visitor'
                     -   "3b: Health services \x96 Health Visitor"
                     -   3C
                     -   3C - Health services - School Nurse
-                    -   3C - Health services � School Nurse
+                    -   3C - Health services – School Nurse
                     -   3C - School Nurse
                     -   3C Health services - School Nurse
                     -   '3C: HEALTH SERVICES - school nurse'
-                    -   '3c: Health services � School Nurse'
+                    -   '3c: Health services – School Nurse'
                     -   "3c: Health services \x96 School Nurse"
                     -   3D
                     -   3D - Health services - Other primary health services
-                    -   3D - Health services � Other primary health services
+                    -   3D - Health services – Other primary health services
                     -   3D - Health Services (Primary)
                     -   3D - Other primary health services
                     -   3D Health services - Other primary health services
-                    -   '3d: Health services � Other primary health'
+                    -   '3d: Health services – Other primary health'
                     -   '3D: HEALTH SERVICES - other primary health services'
                     -   "3d: Health services \x96 Other primary health"
                     -   3E
                     -   3E - A&E (Emergency Department)
                     -   3E - Health services - A&E (Emergency Department)
-                    -   3E - Health services � A&E (Emergency Department)
+                    -   3E - Health services – A&E (Emergency Department)
                     -   3E - Health Services (A&E)
                     -   3E Health services - A&E (Emergency Department)
-                    -   '3e: Health services � A&E'
+                    -   '3e: Health services – A&E'
                     -   '3E: HEALTH SERVICES - A&E (emergency department)'
                     -   "3e: Health services \x96 A&E"
                     -   3F
                     -   3F - Health services - Other (e.g. hospice)
-                    -   3F - Health services � Other (e.g. hospice)
+                    -   3F - Health services – Other (e.g. hospice)
                     -   3F - Other health services (e.g. hospice)
                     -   3F Health services - Other (e.g. hospice)
-                    -   '3f: Health services � Other'
+                    -   '3f: Health services – Other'
                     -   '3F: HEALTH SERVICES - other (for example hospice)'
                     -   "3f: Health services \x96 Other"
                     -   A & E (Emergency Dept)
@@ -2476,13 +2476,13 @@ column_map:
                     -   HEALTH - Community Midwife
                     -   Health - Community Nurse
                     -   Health - Community Services
-                    -   Health � Consultant Psychiatrist / Community Psychiatric Nurse
+                    -   Health – Consultant Psychiatrist / Community Psychiatric Nurse
                     -   Health - Dentist
                     -   Health - FNP
                     -   Health - GP
                     -   HEALTH - GP
                     -   Health - GP Surgery
-                    -   Health � GP/Practice Nurse
+                    -   Health – GP/Practice Nurse
                     -   Health - Health Visitor
                     -   HEALTH - Health Visitor
                     -   Health - Health Visitor/School Nurse
@@ -2512,7 +2512,7 @@ column_map:
                     -   Health - Sexual Health Community
                     -   Health - Specialist Nurse
                     -   Health - Substance Misuse
-                    -   Health � Substance Misuse
+                    -   Health – Substance Misuse
                     -   Health  Visitor
                     -   Health (Other)
                     -   Health Authority
@@ -2521,19 +2521,19 @@ column_map:
                     -   Health Service
                     -   HEALTH SERVICES
                     -   Health services  - A & E
-                    -   Health Services  � GP
-                    -   Health Services  � Other (eg hospice)
+                    -   Health Services  – GP
+                    -   Health Services  – Other (eg hospice)
                     -   Health Services  - Other primary health services
-                    -   Health Services  � School Nurse
+                    -   Health Services  – School Nurse
                     -   Health Services - A & E Dept
                     -   Health services - A and E (Emergency Department)
-                    -   Health services � a School Nurse
+                    -   Health services – a School Nurse
                     -   Health services - A&E
                     -   Health Services - A&E (emergency department)
                     -   Health services - A&E (emergency department)
                     -   Health Services - A&E (Emergency Department)
                     -   Health services - A&E (Emergency Department)
-                    -   Health services � A&E (Emergency Department)
+                    -   Health services – A&E (Emergency Department)
                     -   Health Services - A&E Dept
                     -   Health services - Adult mental health
                     -   Health Services - Adult Mental Health (Including social work)
@@ -2544,12 +2544,12 @@ column_map:
                     -   Health services - Drug and alcohol teams
                     -   Health services - GP
                     -   Health Services - GP
-                    -   Health services � GP
+                    -   Health services – GP
                     -   Health services - GP Surgery
                     -   Health services - health visiting
                     -   Health services - Health Visitor
                     -   Health Services - Health Visitor
-                    -   Health services � Health Visitor
+                    -   Health services – Health Visitor
                     -   Health Services - Hospital
                     -   Health services - Hospital (non emergency)
                     -   Health Services - Hospital Ward
@@ -2565,9 +2565,9 @@ column_map:
                     -   Health Services  -Other (e.g. Hospice)
                     -   Health services - Other (e.g. hospice)
                     -   Health Services - Other (e.g. Hospice)
-                    -   Health Services � Other (e.g. hospice).
+                    -   Health Services – Other (e.g. hospice).
                     -   Health Services - Other (eg Hospice)
-                    -   HEALTH SERVICES � other (eg hospice)
+                    -   HEALTH SERVICES – other (eg hospice)
                     -   'Health Services - Other (eg: Hospice)'
                     -   Health Services - Other e.g. hospice
                     -   Health services - Other eg. hospice
@@ -2576,15 +2576,15 @@ column_map:
                     -   Health Services - Other Primary Health Serv
                     -   Health services - Other primary health services
                     -   Health Services - Other primary health services
-                    -   Health Services � Other primary health services
+                    -   Health Services – Other primary health services
                     -   'Health Services - Other primary health services (eg: Hospital
                         or Clinic)'
                     -   'Health services - Other primary health services (eg: Hospital,
                         Clinic)'
-                    -   Health services � Other, a primary health service
-                    -   Health services � Other, e.g. hospice
+                    -   Health services – Other, a primary health service
+                    -   Health services – Other, e.g. hospice
                     -   Health services - School Nurse
-                    -   HEALTH SERVICES � school nurse
+                    -   HEALTH SERVICES – school nurse
                     -   Health services - school nursing
                     -   HEALTH SERVICES A&E (Emergency Department)
                     -   Health Services- A&E(Emergency Department)
@@ -2596,7 +2596,7 @@ column_map:
                     -   HEALTH SERVICES Other primary health services
                     -   Health Services- Other primary health services
                     -   Health Services- School Nurse
-                    -   HEALTH SERVICES� Health Visitor
+                    -   HEALTH SERVICES  Health Visitor
                     -   Health Visitor
                     -   Health Visitor/Nurse
                     -   Health Worker
@@ -2774,7 +2774,7 @@ column_map:
                     -   Health services Midwife
                     -   Health - Children's Ward or Children's Outpatient Department
                     -   Health - Allied Professional e.g. specialist nurse
-                    -   HEALTH SERVICES � other (for example hospice)
+                    -   HEALTH SERVICES – other (for example hospice)
                     -   Health - Family Nurse Practitioner
                     -   Health - Acute services
                     -   Health - Adults Ward
@@ -2790,8 +2790,8 @@ column_map:
                     -   '4'
                     -   '4'
                     -   (CS) Housing (LA housing or housing association)
-                    -   '�4 '
-                    -   �HOUSING� - (local authority housing or housing association).
+                    -   '‘4 '
+                    -   ‘HOUSING’ - (local authority housing or housing association).
                     -   1B Individual - Acquaintance (including neighbours and child
                         minders)
                     -   4 - Housing
@@ -2915,31 +2915,31 @@ column_map:
                     -   (CS) EHKS 5-19yrs Service
                     -   (CS) Parent Support Advisors
                     -   (CS) U19 Substance Misuse Service
-                    -   �LA SERVICES� � external eg from another local authorities
+                    -   ‘LA SERVICES’ – external eg from another local authorities
                         adults social care services.
-                    -   �LA SERVICES� � other internal (department other than social
+                    -   ‘LA SERVICES’ – other internal (department other than social
                         care in local authorities, eg youth offending (excluding housing)).
-                    -   �LA SERVICES� � social care eg adults social care services.
+                    -   ‘LA SERVICES’ – social care eg adults social care services.
                     -   5A
                     -   5A - LA services - Social care e.g. adults social care
-                    -   5A - LA services � Social care e.g. adults social care
+                    -   5A - LA services – Social care e.g. adults social care
                     -   5A - LA Services (Internal)
                     -   5A - Social care e.g. adult social care
                     -   5A LA services - Social care e.g. adults social care
-                    -   '5a: LA services � Social Care'
+                    -   '5a: LA services – Social Care'
                     -   '5A: LA SERVICES - social care for example adults social care
                         services'
                     -   "5a: LA services \x96 Social Care"
                     -   5B
                     -   5B - LA services - Other internal (department other than social
                         care in LA e.g. youth offending (excluding housing))
-                    -   5B - LA services � Other internal (department other than social
+                    -   5B - LA services – Other internal (department other than social
                         care in LA e.g. youth offending (excluding housing))
                     -   5B - Other internal - department other than social care in
                         LA e.g. youth offending, excluding housing
                     -   5B LA services - Other internal (department other than social
                         care in LA e.g. youth offending (excluding housing))
-                    -   '5b: LA services � Other internal'
+                    -   '5b: LA services – Other internal'
                     -   '5B: LA SERVICES - other internal (department other than social
                         care in local authorities, for example youth offending (excluding
                         housing))'
@@ -2948,12 +2948,12 @@ column_map:
                     -   5C - External e.g. from another LAs adult social care
                     -   5C - LA services - External e.g. from another LAs adult social
                         care
-                    -   5C - LA services � External e.g. from another LAs adult social
+                    -   5C - LA services – External e.g. from another LAs adult social
                         care
                     -   5C - LA Services (Other LA)
                     -   5C LA service - External e.g. from another LAs adult social
                         care
-                    -   '5c: LA services � External'
+                    -   '5c: LA services – External'
                     -   '5C: LA SERVICES - external for example from another local
                         authorities adults social care services'
                     -   "5c: LA services \x96 External"
@@ -2974,8 +2974,7 @@ column_map:
                     -   CAFCASS referral
                     -   CEOP
                     -   Children Families and Wellbeing Service (CFW)
-                    -   Children Families and Wellbeing Service (CFW) 
-                        ����������������������������������������������������������������������������������������������i)
+                    -   Children Families and Wellbeing Service (CFW)                                                                                               i)
                         LA services
                     -   Children With Disabilities IES
                     -   Children with Disabilities Team
@@ -3055,9 +3054,9 @@ column_map:
                     -   LA Services - Early Help
                     -   LA services - EDT or adults social care
                     -   LA services - External
-                    -   LA SERVICES � external
+                    -   LA SERVICES – external
                     -   LA Services -- External (e.g OLA)
-                    -   LA Services � External (e.g OLA)
+                    -   LA Services – External (e.g OLA)
                     -   'LA Services - External (eg: from another LA)'
                     -   LA Services - External e.g. from another LA
                     -   LA services - External e.g. from another LAs
@@ -3065,7 +3064,7 @@ column_map:
                         social care department
                     -   LA services - External e.g. from another LAS adult social
                         care
-                    -   LA services � External e.g. from another LAs adult social
+                    -   LA services – External e.g. from another LAs adult social
                         care
                     -   LA services - External e.g. from another LAs adults social
                         care
@@ -3073,29 +3072,29 @@ column_map:
                         social care services
                     -   LA Services - External e.g. from other LA adult SC
                     -   LA services - External eg from another LAs adult social care
-                    -   LA Services � External eg from another LAs adults social care
-                    -   LA SERVICES � external eg from another local authorities adults
+                    -   LA Services – External eg from another LAs adults social care
+                    -   LA SERVICES – external eg from another local authorities adults
                         social care services
                     -   LA services - Family solutions
                     -   LA Services - Legal
                     -   LA Services - MAT
                     -   LA Services - Neighbourhoods
-                    -   LA services � NSC social care e.g. adults social care
+                    -   LA services – NSC social care e.g. adults social care
                     -   LA services - Other internal
                     -   LA services - Other internal (department other than social
                         care in LA e.g. youth offending (excluding housing)
                     -   LA services - Other internal (department other than social
                         care in LA eg youth offending (excluding housing)
-                    -   LA Services � Other internal (department other than social
+                    -   LA Services – Other internal (department other than social
                         care in LA, eg youth offending (excluding housing))
                     -   'LA Services - Other Internal (department other than social
                         care in LA, eg: youth offending (excludes housing))'
-                    -   LA SERVICES � other internal (department other than social
+                    -   LA SERVICES – other internal (department other than social
                         care in local authorities, eg youth offending (excluding housing))
                     -   LA SERVICES - other internal (department other than social
                         care in local authorities, eg youth offending (excluding housing)).
                     -   LA Services - Other Internal (NOT HSC or Housing)
-                    -   LA services � Other internal (NSC department other than social
+                    -   LA services – Other internal (NSC department other than social
                         care e.g. youth offending (excluding housing))
                     -   LA services - Other internal department eg. FPZ, youth offending,
                         RAA
@@ -3110,14 +3109,14 @@ column_map:
                     -   LA services - Social care
                     -   LA Services - Social Care (e.g. Adults)
                     -   LA Services -- Social Care (e.g. Adults)
-                    -   LA Services � Social Care (e.g. Adults)
+                    -   LA Services – Social Care (e.g. Adults)
                     -   'LA Services - Social Care (eg: Adults Social Care Services)'
                     -   LA services - Social care e.g. adults social care
                     -   LA Services - Social care e.g. adults social care services
                     -   LA services - Social care eg adult social care
-                    -   LA Services � Social care eg adults social care
+                    -   LA Services – Social care eg adults social care
                     -   LA SERVICES - social care eg adults social care services
-                    -   LA SERVICES � social care eg adults social care services
+                    -   LA SERVICES – social care eg adults social care services
                     -   LA services - Social care eg. adults social care
                     -   LA Services - Social Care, e.g. Adults Social Care
                     -   LA Services - Waltham Forest Direct
@@ -3125,9 +3124,9 @@ column_map:
                         YOS)
                     -   LA Services- Social care e.g. adults social care
                     -   LA SERVICES Social care eg adults social care
-                    -   LA Services� - Other internal (e.g. YOT)
-                    -   LA SERVICES� External eg from another LAs adults social care
-                    -   LA SERVICES� Other internal (department other than social
+                    -   LA Services  - Other internal (e.g. YOT)
+                    -   LA SERVICES  External eg from another LAs adults social care
+                    -   LA SERVICES  Other internal (department other than social
                         care in LA, eg youth offending (excluding housing))
                     -   'LA SERVICES: other internal e.g. YOT'
                     -   'LA SERVICES: social care e.g. Adults'
@@ -3264,7 +3263,7 @@ column_map:
                     -   Other Internal Services [5B]
                     -   External Services [5C]
                     -   5A - KCC Social Care - Adults
-                    -   5A - KCC Social Care - Specialist Children�s Services
+                    -   5A - KCC Social Care - Specialist Children’s Services
                     -   5B - Early Help (Including Children's Centres, Youth Hubs,
                         PIAS, Youth Justice)
                     -   5B - Other KCC
@@ -3277,11 +3276,11 @@ column_map:
                     -   Children's Social Care
                     -   Family Matters
                     -   FSU
-                    -   LA SERVICES � other internal (dept other than social care
+                    -   LA SERVICES – other internal (dept other than social care
                         in local authorities, for example youth offending (excl housing))
-                    -   LA SERVICES � external for example from another local authorities
+                    -   LA SERVICES – external for example from another local authorities
                         adults social care services
-                    -   LA SERVICES � social care for example adults social care services
+                    -   LA SERVICES – social care for example adults social care services
                     -   LA Services - YOS
                     -   LA Services - Contact Centre
                     -   LA services - Other internal (department other than social
@@ -3293,11 +3292,11 @@ column_map:
                     -   Step Down
                     -   Early Years
                     -   Other Social Care Department
-                    -   5D - �LA SERVICES� � early help
-                    -   5D - LA Services � early help
-                    -   LA Services � External (from another LA's services eg Social
+                    -   5D - ‘LA SERVICES’ – early help
+                    -   5D - LA Services – early help
+                    -   LA Services – External (from another LA's services eg Social
                         Care or Early Help)
-                    -   LA Services � Other internal (NOT Social Care, Early Help,
+                    -   LA Services – Other internal (NOT Social Care, Early Help,
                         HSC or Housing)
                     -   19) LBH - Early Help
                     -   LA services - External from another LA e.g. social care or
@@ -3306,7 +3305,7 @@ column_map:
                         care or early help
                     -   LA services - Other internal services, not including social
                         care or early help
-                    -   LA services - External, from another local authority�s services,
+                    -   LA services - External, from another local authority’s services,
                         for example social care or early help
                     -   Adult's Services (Probation Court Check)
               -   code: g) Police
@@ -3315,8 +3314,8 @@ column_map:
                     -   '6'
                     -   '6'
                     -   (CS) Police
-                    -   �6 �
-                    -   �POLICE�.
+                    -   '‘6  '
+                    -   ‘POLICE’.
                     -   6 - Police
                     -   6 Police
                     -   '6: Police'
@@ -3339,7 +3338,7 @@ column_map:
                     -   Police - Other
                     -   POLICE - Police
                     -   Police - PPD
-                    -   Police � Thames Valley
+                    -   Police – Thames Valley
                     -   Police - YOT
                     -   Police (JDST)
                     -   Police (JDST) *Existing Case*
@@ -3377,15 +3376,15 @@ column_map:
                     -   '7'
                     -   (CS) Other legal agency - Courts, CAFCASS, Prison
                     -   (CS) Probation
-                    -   �7 �
-                    -   �OTHER LEGAL AGENCY� � including courts, probation, immigration,
+                    -   '‘7  '
+                    -   ‘OTHER LEGAL AGENCY’ – including courts, probation, immigration,
                         CAFCASS or prison.
                     -   7 - Other Legal Agency
                     -   7 - Other legal agency - including courts, probation, immigration,
                         CAFCASS, prison
                     -   7 - Other legal agency - Including courts, probation, immigration,
                         CAFCASS, prison
-                    -   7 - Other legal agency � Including courts, probation, immigration,
+                    -   7 - Other legal agency – Including courts, probation, immigration,
                         CAFCASS, prison
                     -   7 Other legal agency - Including courts, probation, immigration,
                         CAFCASS, prison
@@ -3438,7 +3437,7 @@ column_map:
                     -   Legal (internal)
                     -   Legal / Solicitor
                     -   Legal Agency - (Courts, Probation, Immigration, CAFCASS, Prison)
-                    -   Legal agency � Including courts, probation, immigration, CAFCASS,
+                    -   Legal agency – Including courts, probation, immigration, CAFCASS,
                         prison
                     -   Legal Agency ( Probation, Court, Prison)
                     -   Legal Agency (Court/Prob/Immig/Prison/CAFCASS)
@@ -3463,7 +3462,7 @@ column_map:
                     -   Other Legal Agency - Immigration
                     -   Other Legal Agency - Including courts, probation, immigration,
                         CAFCASS or prison
-                    -   OTHER LEGAL AGENCY � including courts, probation, immigration,
+                    -   OTHER LEGAL AGENCY – including courts, probation, immigration,
                         CAFCASS or prison
                     -   OTHER LEGAL AGENCY - including courts, probation, immigration,
                         CAFCASS or prison.
@@ -3473,7 +3472,7 @@ column_map:
                         CAFCASS, prison
                     -   Other Legal Agency - including courts, probation, immigration,
                         CAFCASS, prison
-                    -   Other- Legal Agency � including courts, probation, immigration,
+                    -   Other- Legal Agency – including courts, probation, immigration,
                         CAFCASS, prison
                     -   Other Legal Agency - Prison
                     -   Other Legal Agency - Probation
@@ -3483,7 +3482,7 @@ column_map:
                         cafcass, prison
                     -   Other Legal Agency- including courts, probation, immigration,
                         CAFCASS, prison
-                    -   OTHER LEGAL AGENCY� including courts, probation, immigration,
+                    -   OTHER LEGAL AGENCY  including courts, probation, immigration,
                         CAFCASS, prison
                     -   Prison
                     -   Prison Service
@@ -3512,20 +3511,20 @@ column_map:
                     -   '8'
                     -   '8'
                     -   (CS) Other - Inc vol orgs and independent agencies
-                    -   �8 �
-                    -   �OTHER� � including children�s centres, independent agency
+                    -   '‘8  '
+                    -   ‘OTHER’ – including children’s centres, independent agency
                         providers or voluntary organisations.
                     -   8 - Other
-                    -   8 - Other � Including children�s centres, independent agency
+                    -   8 - Other – Including children’s centres, independent agency
                         providers, voluntary organisations
                     -   8 - Other - including children's centre, independent agency
                         providers, voluntary organisations
                     -   8 - Other - Including children's centres, independent agency
                         providers, voluntary organisations
-                    -   8 Other - Including childrenâ€™s centres, independent
+                    -   8 Other - Including childrenÃ¢â‚¬â„¢s centres, independent
                         agency providers, voluntary organisations
                     -   '8: Other'
-                    -   '8: OTHER - including children�s centres, independent agency
+                    -   '8: OTHER - including children’s centres, independent agency
                         providers or voluntary organisations'
                     -   Advocate
                     -   Agency
@@ -3617,13 +3616,13 @@ column_map:
                         org
                     -   Other - Including children centres, independent agency providers,
                         voluntary organisations, benefits agency
-                    -   OTHER � including childrens centres, independent agency providers
+                    -   OTHER – including childrens centres, independent agency providers
                         or voluntary organisations
                     -   OTHER - including children's centres, independent agency providers
                         or voluntary organisations.
                     -   Other - including children's centres, independent agency providers,
                         voluntary organisations
-                    -   Other � including children's centres, independent agency providers,
+                    -   Other – including children's centres, independent agency providers,
                         voluntary organisations
                     -   Other - including children's centres, independent agency,
                         providers, voluntary organisations
@@ -3689,7 +3688,7 @@ column_map:
                     -   Safe Centre
                     -   Service Provider
                     -   SERVPROV - Other - Service Provider to this Person
-                    -   Source Other � Including children's centres, independent agency
+                    -   Source Other – Including children's centres, independent agency
                         providers, voluntary organisations
                     -   Substance Misuse Professional
                     -   Talkshop
@@ -3743,7 +3742,7 @@ column_map:
                     -   Open Door
                     -   Caritas
                     -   Web
-                    -   OTHER � including children�s centres, independent agency providers
+                    -   OTHER – including children’s centres, independent agency providers
                         or voluntary organisations
                     -   Government department (e.g. DBS, Home Office, National Crime
                         Agency)
@@ -3756,8 +3755,8 @@ column_map:
                     -   't) 9: Anonymous'
                     -   '9'
                     -   '9'
-                    -   �9 �
-                    -   �ANONYMOUS�.
+                    -   '‘9  '
+                    -   ‘ANONYMOUS’.
                     -   9 - Anonymous
                     -   '9: Anonymous'
                     -   ANON
@@ -3776,8 +3775,8 @@ column_map:
                     -   '10'
                     -   (CS) Anonymous
                     -   (CS) Unknown
-                    -   �10 �
-                    -   �UNKNOWN�.
+                    -   '‘10  '
+                    -   ‘UNKNOWN’.
                     -   10 - Unknown
                     -   10 Unknown
                     -   Anonymous/Not known
@@ -3817,7 +3816,7 @@ column_map:
             header_regex:
               -   /.*contact.*source.*/i
 
-    List 2:
+    list_2:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -3833,7 +3832,7 @@ column_map:
             string: "alphanumeric"
             canbeblank: false
 
-    List 3:
+    list_3:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -3856,8 +3855,8 @@ column_map:
                     -   0 - No
                     -   FA
                     -   Further action
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   U
                     -   b. No
               -   code: Yes
@@ -3867,8 +3866,8 @@ column_map:
                     -   1 - Yes
                     -   NFA
                     -   No further action
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   a. Yes
               -   code: zzNotRecorded
                   name:
@@ -3894,7 +3893,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 4:
+    list_4:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -3907,8 +3906,8 @@ column_map:
                     -   b) No
                     -   '0'
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   NO DISABILITY
                     -   NONE
               -   code: Unknown
@@ -3955,8 +3954,8 @@ column_map:
                     -   PERSONAL CARE
                     -   VIS
                     -   VISION
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
               -   code: zzNotRecorded
                   name:
                     -   '-'
@@ -3982,8 +3981,8 @@ column_map:
                     -   0 - No
                     -   Child not seen
                     -   Child not seen alone
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not seen
                     -   Not seen alone
                     -   Unborn
@@ -4000,8 +3999,8 @@ column_map:
                     -   Child seen alone
                     -   Seen
                     -   Seen alone
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4025,15 +4024,15 @@ column_map:
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Yes
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4056,7 +4055,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 5:
+    list_5:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -4070,15 +4069,15 @@ column_map:
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Yes
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4103,8 +4102,8 @@ column_map:
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Unknown
                   name:
@@ -4114,8 +4113,8 @@ column_map:
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -4138,7 +4137,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 6:
+    list_6:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -4282,7 +4281,7 @@ column_map:
                     -   1j Modern Slavery
               -   code: b) Child's disability
                   name:
-                    -   N2 - Child�s disability
+                    -   N2 - Child’s disability
                     -   2a Physical Disability
                     -   2b Sensory Disability
                     -   2c Learning Disability
@@ -4293,9 +4292,9 @@ column_map:
                     -   C/F CHILD'S DISABILITY
                     -   Child N2 Disability
                     -   Child with Disability
-                    -   Child�s disability
+                    -   Child’s disability
                     -   Children and their families whose main need for services arises
-                        out of the child�s disabilities, illness or intrinsic condition
+                        out of the child’s disabilities, illness or intrinsic condition
                     -   Children and their families whose main need for services arises
                         out of the child's disabilities, illness or intrinsic condition
                     -   Child's disability
@@ -4353,8 +4352,8 @@ column_map:
                     -   Mental Health Support 18-64
                     -   'Mental Health Support 18-64: Mental Health support'
                     -   N2
-                    -   N2  [Child�s disability]
-                    -   N2 - Child�s Disability
+                    -   N2  [Child’s disability]
+                    -   N2 - Child’s Disability
                     -   N2 - Childs Disability
                     -   N2 - Child's disability
                     -   N2 - Child's Disability/Illness
@@ -4514,7 +4513,7 @@ column_map:
                     -   Child N4 Family in acute stress
                     -   Children whose needs arise from living in a family going through
                         a temporary crisis such that parenting capacity is diminished
-                        and some of the children�s needs are not being adequately
+                        and some of the children’s needs are not being adequately
                         met
                     -   Children whose needs arise from living in a family going through
                         a temporary crisis such that parenting capacity is diminished
@@ -4677,7 +4676,7 @@ column_map:
                     -   C/F UNACCEPTABLE BEHAVIOUR
                     -   Child N6 Socially unacceptable behaviour
                     -   Children and families whose need for services arises primarily
-                        out of their children�s behaviour impacting detrimentally
+                        out of their children’s behaviour impacting detrimentally
                         on the community
                     -   Children and families whose need for services arises primarily
                         out of their children's behaviour impacting detrimentally
@@ -4928,7 +4927,7 @@ column_map:
                     -   N0 NEED CODE 'NOT STATED'
                     -   N0:Need code not Stated
                     -   N0-Not stated
-                    -   No
+                    -   'No'
                     -   No need code recorded
                     -   Not Recorded
                     -   Not specified
@@ -5325,7 +5324,7 @@ column_map:
                     -   Case closed at first C&F Assessment (no step down to Early
                         Help)
                     -   Step Down to Early Help Team following C&F Assessment
-                    -   RC9 � Case closed after assessment, referred to early help
+                    -   RC9 – Case closed after assessment, referred to early help
                     -   RC8a - Closed after Initial/Single Assessment, NFA
                     -   RC9 - Closed after assessment, referred to early help
               -   code: i) Not Stated
@@ -5411,7 +5410,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 7:
+    list_7:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -5604,8 +5603,8 @@ column_map:
                     -   0 - No
                     -   Child not seen
                     -   Child not seen alone
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not seen
                     -   Not seen alone
                     -   'False'
@@ -5622,8 +5621,8 @@ column_map:
                     -   Child seen alone
                     -   Seen
                     -   Seen alone
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Yes-See care notes for details
                     -   'True'
               -   code: zzNotRecorded
@@ -5651,15 +5650,15 @@ column_map:
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Yes
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -5683,7 +5682,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 8:
+    list_8:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -5696,9 +5695,9 @@ column_map:
                     -   b) No
                     -   0 - No
                     -   CLA
-                    -   N
+                    -   'N'
                     -   'N '
-                    -   No
+                    -   'No'
                     -   Non-UASC
               -   code: Yes
                   name:
@@ -5706,9 +5705,9 @@ column_map:
                     -   1 - Yes
                     -   Non-CLA
                     -   UASC
-                    -   Y
+                    -   'Y'
                     -   'Y '
-                    -   Yes
+                    -   'Yes'
               -   code: zzNotRecorded
                   name:
                     -   '-'
@@ -5736,15 +5735,15 @@ column_map:
                   name:
                     -   b) No
                     -   0 - No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   'False'
               -   code: Yes
                   name:
                     -   a) Yes
                     -   1 - Yes
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   'True'
               -   code: zzNotRecorded
                   name:
@@ -5873,7 +5872,7 @@ column_map:
                     -   Accommodated under Section 20 (single)
                     -   CLA - Single Period of Accommodation Under Section 20
                     -   CLA - V2 - Single period of accommodation under Section 20
-                    -   CLA - V2 - Single period of accommodation under Section�20
+                    -   CLA - V2 - Single period of accommodation under Section 20
                     -   Code 'V2' is not mapped
                     -   Person over 18 accommodated under Section 20(5)
                     -   S20 - Accom - Single Period
@@ -6230,7 +6229,7 @@ column_map:
                     -   Adopted - Consent dispensed with
                     -   Adopted - consent dispensed with (E12)
                     -   Adopted - consent dispensed with by court
-                    -   Adopted � consent dispensed with by court
+                    -   Adopted – consent dispensed with by court
                     -   ADOPTED (UNOPPOSED)
                     -   ADOPTED CONSENT DISPENSED WITH
                     -   Adopted, consent dispensed with
@@ -6243,7 +6242,7 @@ column_map:
                     -   E11  Adopted  application unopposed
                     -   E11 - Adopted - application unopposed
                     -   E11 - Adopted - Application Unopposed
-                    -   E11 - Adopted � application unopposed
+                    -   E11 - Adopted – application unopposed
                     -   E11 - Adopted - application unopposed (adoption order granted
                         by court on date episode ceased)
                     -   E11 - Adopted - IWC application, unopposed
@@ -6271,7 +6270,7 @@ column_map:
                     -   'E12 : Adopted, consent dispensed with by court'
                     -   E12 Adopted  consent dispensed with
                     -   E12 Adopted - consent dispensed with
-                    -   E12 Adopted � consent dispensed with by court
+                    -   E12 Adopted – consent dispensed with by court
                     -   'E12: Adopted - consent dispensed with'
                     -   E12-Adoption, consent dispensed with
                     -   SE11 - Adopted - application unopposed
@@ -6586,11 +6585,11 @@ column_map:
                     -   E13 - Left care to live with parents, relatives, or other
                         person with no parental responsibility
                     -   E13 - Left care to live with parents, relatives, or other
-                        person with no parental responsibility � this code should
+                        person with no parental responsibility – this code should
                         be used if the child left care to live with parents, relatives
                         or another person, but this person did not have parental responsibility
                     -   E13 - Left care to live with parents, relatives, or other
-                        person with no parental responsibility � this code should
+                        person with no parental responsibility – this code should
                         be used if the child left care to live with parents, relatives
                         or another person, but this person did not have parental responsibility.
                     -   E13 - Left care to live with parents, relatives, or other
@@ -6610,10 +6609,10 @@ column_map:
                     -   'E13: Left care to live with parent, relatives or other person
                         with NO parental responsibility'
                     -   E13:Left care to live with parents, relatives, or other person
-                        with no parental responsibility � this code should be used
+                        with no parental responsibility – this code should be used
                         if the child left care to live with parents, relatives or
                         another person, but this person did not have parental responsibility.
-                    -   E20 - Staying put � Young person remains living with former
+                    -   E20 - Staying put – Young person remains living with former
                         carers at age 18
                     -   E4A Return home with parents/rels/other with PR - part of
                         care planning process
@@ -6624,7 +6623,7 @@ column_map:
                     -   Left care to live with parents, relatives, or other person
                         with no parental responsibility
                     -   Left care to live with parents, relatives, or other person
-                        with no parental responsibility � this code should be used
+                        with no parental responsibility – this code should be used
                         if the child left care to live with parents, relatives or
                         another person, but this person did not have parental responsibility
                     -   Left care to live with parents, relatives, or other person
@@ -6655,16 +6654,16 @@ column_map:
                         (Staying Put)
                     -   E13 - Left care to live with parent(s), relative(s) or other
                         person(s) with NO parental responsibility
-                    -   Aged 18 (or over) and remained with current carers �(inc Staying
+                    -   Aged 18 (or over) and remained with current carers  (inc Staying
                         Put Arrangements)
                     -   Left care to live with parents, relatives, or other person
-                        with no parental responsibility � this code should be used
+                        with no parental responsibility – this code should be used
                         if the child left care to live with parents, relatives or
                         another person, but this person did not have parental responsibility.  parents,
                         relatives or other person with no parental responsibility
                     -   E17 Aged 18 (or over) and remained with current carers (inc
                         under staying put arrangements)
-                    -   E17 � Aged 18 (or over) and remained with current carers (inc
+                    -   E17 – Aged 18 (or over) and remained with current carers (inc
                         under staying put arrangements)
                     -   UnPlanned to parent/other parent resp
                     -   'v) E17: Aged 18 (or over) and remained with current carers
@@ -6751,7 +6750,7 @@ column_map:
                         who were a relative or friend
                     -   E45 - special guardianship made to former foster carer(s),
                         who were a relative or friend
-                    -   E45 � special guardianship made to former foster carer(s),
+                    -   E45 – special guardianship made to former foster carer(s),
                         who were a relative or friend
                     -   E45 - Special Guardianship made to former foster carers(s),
                         who were a relative or friend
@@ -6770,7 +6769,7 @@ column_map:
                         foster carer(s), who were a relative or friend
                     -   E47 - special guardianship made to carer(s) other than former
                         foster carer(s), who were a relative or friend
-                    -   E47 � special guardianship made to carer(s) other than former
+                    -   E47 – special guardianship made to carer(s) other than former
                         foster carer(s), who were a relative or friend
                     -   E47 - Special Guardianship Order made to carers, other than
                         former foster carers, who were a relative or a friend
@@ -7134,7 +7133,7 @@ column_map:
                     -   E15 - Age disputed, age assessment child is aged 18 or over
                     -   E15 - Age disputed, age assessment determined child is aged
                         18 or over
-                    -   E15 � Unaccompanied Asylum Seeker assessed as 18 years or
+                    -   E15 – Unaccompanied Asylum Seeker assessed as 18 years or
                         more
                     -   'E15 : Age assessment determined child is aged 18 or over
                         and E5, E6 and E7 do not apply e.g. an unaccompanied asylum
@@ -7189,7 +7188,7 @@ column_map:
                     -   E8 - Period of being looked after ceased for any other reason
                     -   E8 - Period Of LA Ceased For Any Other Reason
                     -   E8 - Staying Put
-                    -   E8 -� any other reason
+                    -   E8 -  any other reason
                     -   'E8 : Period of being looked after ceased for any other reason'
                     -   E8 Care Ends  Looked After ceases for any other reason
                     -   E8 Care Ends - Looked After ceases for any other reason
@@ -7258,9 +7257,9 @@ column_map:
             category:
               -   code: a) Foster Placement
                   name:
-                    -   Foster placement with other foster carer � not long term or
+                    -   Foster placement with other foster carer – not long term or
                         FFA/concurrent planning
-                    -   Foster placement with other foster carer � long term fostering
+                    -   Foster placement with other foster carer – long term fostering
                     -   Foster Carer to Adopter
               -   code: a) Foster placement
                   name:
@@ -7325,7 +7324,7 @@ column_map:
                     -   Foster placement with other foster carer who is also an approved
                         adopter - FFA/concurrent planning
                     -   Foster placement with other foster carer who is also an approved
-                        adopter � FFA/concurrent planning
+                        adopter – FFA/concurrent planning
                     -   Foster placement with relative or friend
                     -   Foster placement with relative or friend - long term fostering
                     -   Foster placement with relative or friend - long term fostering
@@ -7358,7 +7357,7 @@ column_map:
                     -   FOSTER PLACEMENT WITH RELATIVE/FRIEND OUTSIDE LBL
                     -   Foster placements
                     -   Fostering placement with relative or friend who is also an
-                        approved adopter � FFA/concurrent planning
+                        approved adopter – FFA/concurrent planning
                     -   Fostering placement with relative or friend who is not long-term
                         or FFA/concurrent planning
                     -   FP inside LA - other foster carer by LA
@@ -7679,10 +7678,10 @@ column_map:
                         an approved adopter (Foster to adopt placement)
                     -   Reg 38
                     -   Reg 24 Carer
-                    -   Foster placement with relative or friend � long term fostering
+                    -   Foster placement with relative or friend – long term fostering
                     -   F5 - Placement with other foster carer, provided by LA (carer
                         lives outside LA boundary)
-                    -   U6 - Foster placement with other foster carer(s) � not long
+                    -   U6 - Foster placement with other foster carer(s) – not long
                         term or fostering for adoption /concurrent planning
                     -   U3 - Fostering placement with relative(s) or friend(s) who
                         is/are not long-term or fostering for adoption /concurrent
@@ -7770,7 +7769,7 @@ column_map:
                     -   A5 - Placed for Adoption
                     -   A5 - Placed for Adoption - placement order current FC
                     -   A5 - Placed for adoption S21 cur foster carer (A5)
-                    -   A5 - Placed for adoption with current foster carer� - with
+                    -   A5 - Placed for adoption with current foster carer  - with
                         placement order - parental consent dispensed with
                     -   A5 - Placed for Adoption With Placement Order (current Foster
                         Carer)
@@ -8090,7 +8089,7 @@ column_map:
                         accomodation)
                     -   H5 - Residential accommodation (NOT subject to Children's
                         homes regulations)
-                    -   H5 - Residential accommodation not subject to Children�s Homes
+                    -   H5 - Residential accommodation not subject to Children’s Homes
                         Regulations
                     -   H5 - Residential accommodation not subject to Children's Homes
                         Regulations
@@ -8125,7 +8124,7 @@ column_map:
                     -   Homes and hostels not subject to Children's Homes regulations
                     -   Pl in hostels & other supportive resids
                     -   Residential accommodation not Reg Children's Home
-                    -   Residential accommodation not subject to Children�s Homes
+                    -   Residential accommodation not subject to Children’s Homes
                         Regulations
                     -   Residential accommodation not subject to 'Children's homes
                         regulations'
@@ -8138,17 +8137,17 @@ column_map:
                     -   Semi-independent living accommodation not subject to children's
                         homes regulations
                     -   H5 - Semi-independent living accommodation not subject to
-                        Children�s Homes Regulations
+                        Children’s Homes Regulations
                     -   H5 Residential accomm not subject to CH Regs
-                    -   5 - Semi-independent living accommodation not subject to Children�s
+                    -   5 - Semi-independent living accommodation not subject to Children’s
                         Homes Regulations
                     -   H5 - Semi-independant living accommodation not subject to
                         children's homes regulations
                     -   H5 - Semi independent living accommodation (not subject to
                         children's home regulations)
-              -   code: g) Secure Children�s Homes
+              -   code: g) Secure Children’s Homes
                   name:
-                    -   'o) K1: Secure Children�s Homes'
+                    -   'o) K1: Secure Children’s Homes'
                     -   ' Secure unit'
                     -   H1
                     -   H1 - SECURE UNIT IN LA
@@ -8160,7 +8159,7 @@ column_map:
                     -   K1  [Secure Unit]
                     -   K1 - Residential Placement
                     -   K1 - Secure Accommodation (Unit)
-                    -   K1 - Secure Children�s Homes
+                    -   K1 - Secure Children’s Homes
                     -   K1 - Secure Children's Homes
                     -   K1 - Secure Unit
                     -   K1 - Secure unit
@@ -8172,17 +8171,17 @@ column_map:
                     -   K1 Secure unit
                     -   K1:Secure Unit
                     -   K1OUT - Secure Unit (outside LA)
-                    -   Secure Children�s Homes
+                    -   Secure Children’s Homes
                     -   Secure unit
                     -   Secure Unit - Criminal (outside LA boundary)
-                    -   'K1: Secure Children�s Homes'
+                    -   'K1: Secure Children’s Homes'
                     -   "o) K1: Secure Children's Homes"
-              -   code: h) Children�s Homes
+              -   code: h) Children’s Homes
                   name:
-                    -   'p) K2: Children�s Homes'
+                    -   'p) K2: Children’s Homes'
                     -   K2 Homes and Hostels
                     -   " Homes and hostels subject to Children's Homes Regulations"
-                    -   Children�s Homes
+                    -   Children’s Homes
                     -   Childrens Homes
                     -   Children's Homes
                     -   H3
@@ -8207,7 +8206,7 @@ column_map:
                     -   K2 - All Residental Schools, except where dual-registered
                         as a school and children's
                     -   K2 - Any children's home (except secure)
-                    -   K2 - Children�s Homes
+                    -   K2 - Children’s Homes
                     -   K2 - Children's Home
                     -   K2 - Children's Home subject to Children's Homes regulations
                     -   K2 - Childrens Homes
@@ -8234,12 +8233,12 @@ column_map:
                     -   K2-Homes and Hostels
                     -   K2OUT - Homes and Hostels (outside LA)
                     -   K2 Children's Homes
-                    -   'K2: Children�s Homes'
+                    -   'K2: Children’s Homes'
                     -   K2 - Children's Homes subject to CHR
                     -   K2 - Children's Homes (not subject to Children's Homes Regulations)
                     -   "p) K2: Children's Homes"
-                    -   K2 Children�s Homes subject to Children�s Homes Regulations
-                    -   K2 - Children�s Homes subject to Children�s Homes Regulations
+                    -   K2 Children’s Homes subject to Children’s Homes Regulations
+                    -   K2 - Children’s Homes subject to Children’s Homes Regulations
                     -   K2 - Children's Homes (Subject to Children's Homes Regulations)
               -   code: i) Residential Care Home
                   name:
@@ -8375,7 +8374,7 @@ column_map:
                     -   'u) S1: Residential school'
                     -   All residential schools (unless home)
                     -   All Residential schools, except where dual-registered as a
-                        school and Children�s Home.
+                        school and Children’s Home.
                     -   All Residential schools, except where dual-registered as a
                         school and children's home
                     -   All Residential schools, except where dual-registered as a
@@ -8422,7 +8421,7 @@ column_map:
                     -   S1 - All Residential schools (except where dual registered
                         as a school and children's home)
                     -   S1 - All residential schools, except where dual-registered
-                        as a school and children�s home
+                        as a school and children’s home
               -   code: n) Other placements
                   name:
                     -   'v) Z1: Other placements'
@@ -8590,7 +8589,7 @@ column_map:
                     -   PR1 - Own provision
                     -   PR1 - Own provision (by the Local Authority)
                     -   PR1 - Own provision by LA
-                    -   PR1 - Own provision by�LA
+                    -   PR1 - Own provision by LA
                     -   PR1 - OWN PROVISION LOCAL AUTHORITY
                     -   PR1  Provision by Calderdale
                     -   PR1 - Provision by Calderdale
@@ -8719,8 +8718,8 @@ column_map:
               -   code: a) In
                   name:
                     -   a) In
-                    -   Yes
-                    -   Y
+                    -   'Yes'
+                    -   'Y'
                     -   In
                     -   In borough
                     -   In LA
@@ -8729,8 +8728,8 @@ column_map:
               -   code: b) Out
                   name:
                     -   b) Out
-                    -   No
-                    -   N
+                    -   'No'
+                    -   'N'
                     -   Out
                     -   Out of borough
                     -   Out of LA
@@ -9411,7 +9410,7 @@ column_map:
                     -   Liverpool City Council
               -   code: London
                   name:
-                    -   �Lewisham
+                    -   ' Lewisham'
               -   code: London Borough of Hounslow
                   name:
                     -   London Borough of Hounslow
@@ -10067,8 +10066,8 @@ column_map:
               -   code: No
                   name:
                     -   b) No
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not Offered (Missing Again)
                     -   Not Offered (Other)
                     -   Not Offered (Unable to make contact)
@@ -10076,8 +10075,8 @@ column_map:
                   name:
                     -   a) Yes
                     -   '1'
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Offered and Accepted
                     -   Offered and Accepted (CYP not present/refused on arrival)
                     -   Offered and Declined (by YP)
@@ -10108,7 +10107,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
 
-    List 9:
+    list_9:
         Child Unique ID: *child-id
         Gender: *gender
         Ethnicity: *ethnicity
@@ -10192,8 +10191,8 @@ column_map:
                     -   1 - Yes
                     -   1 - Yes, resident in the UK
                     -   1 Yes, resident in the UK
-                    -   Y
-                    -   Yes
+                    -   'Y'
+                    -   'Yes'
                     -   Yes, resident in the UK
               -   code: b) Not in touch
                   name:
@@ -10210,8 +10209,8 @@ column_map:
                     -   2 - No, resident in the UK
                     -   2 No, resident in the UK
                     -   3 - Young Person Refuses contact
-                    -   N
-                    -   NO
+                    -   'N'
+                    -   'NO'
                     -   No, resident in the UK
                     -   NREQ
                     -   REFU
@@ -10301,7 +10300,7 @@ column_map:
                     -   B - With parents or relatives/ Connected Person
                     -   'With parent(s) or relative(s) '
                     -   Friends & Family
-                    -   B � With parents
+                    -   B – With parents
                     -   (B) 16+ With Parents or Relatives
               -   code: b) Community home
                   name:
@@ -10411,7 +10410,7 @@ column_map:
                     -   Supported lodgings (accommodation where adults in the host
                         family provide support)
                     -   Supported lodgings (accommodation, usually in a family home,
-                        where adults in the �host family� provide formal advice and
+                        where adults in the “host family” provide formal advice and
                         support).
                     -   Supported lodgings [E]
                     -   (E) Supported lodgings
@@ -10656,7 +10655,7 @@ column_map:
                         their remaining with this former foster family for the future.
                         This code should not be used for 17 year old care leavers.
                         If the foster carer is also a relative this code should be
-                        used rather than �B - with parents or relatives�.
+                        used rather than ‘B - with parents or relatives’.
                     -   With former foster carers (plan involves remaining with this
                         former foster family)
                     -   With former foster carers [Z]
@@ -10689,7 +10688,7 @@ column_map:
                     -   Other accommodation [Y]
                     -   Residing with friends
                     -   With Friends
-                    -   Y
+                    -   'Y'
                     -   Y - Not suitable
                     -   Y - Other accommodation
                     -   Y - Other Accommodation (state in notes)
@@ -10741,9 +10740,9 @@ column_map:
                     -   Accommodation is considered to be suitable
                     -   Suitable
                     -   'True'
-                    -   Y
+                    -   'Y'
                     -   'Y '
-                    -   Yes
+                    -   'Yes'
               -   code: b) Not suitable
                   name:
                     -   b) Unsuitable
@@ -10760,8 +10759,8 @@ column_map:
                     -   Accommodation is considered unsuitable
                     -   Accommodation is considered unsuitable [2]
                     -   'False'
-                    -   N
-                    -   No
+                    -   'N'
+                    -   'No'
                     -   Not suitable
                     -   Unsuitable
                     -   'False'
@@ -10873,7 +10872,7 @@ column_map:
                     -   /.*parenting.*/i
             canbeblank: true
 
-    List 10:
+    list_10:
         Child Unique ID: *child-id
         Family identifier: *blank
         Gender: *gender
@@ -10890,23 +10889,23 @@ column_map:
         Date of Decision that Child Should No Longer be Placed for Adoption: *date-blank
         Reason Why Child No Longer Placed for Adoption: &reason-adoption-desiscion-chang
             category:
-              -   code: a) Child�s needs changed
+              -   code: a) Child’s needs changed
                   name:
-                    -   RD1 - The child�s needs changed subsequent to the decision
-                    -   (RD1) The child�s needs changed subsequent to the decision
+                    -   RD1 - The child’s needs changed subsequent to the decision
+                    -   (RD1) The child’s needs changed subsequent to the decision
                     -   care order made change of plan returned to Dad
                     -   Child's needs changed subsequent to decision
                     -   Child's needs Changed Subsequent to Decision
                     -   Child's needs changed subsequent to the decision
                     -   Court overturned the original decision
                     -   RD1
-                    -   RD1 The child�s needs changed subsequent to the decision
+                    -   RD1 The child’s needs changed subsequent to the decision
                     -   RD1 The child's needs changed subsequent to the decision
-                    -   'RD1: The child�s needs changed subsequent to the decision'
-                    -   The child�s needs changed subsequent to the decision
-                    -   The child�s needs changed subsequent to the decision (RD1)
+                    -   'RD1: The child’s needs changed subsequent to the decision'
+                    -   The child’s needs changed subsequent to the decision
+                    -   The child’s needs changed subsequent to the decision (RD1)
                     -   The child's needs changed subsequent to the decision
-                    -   RD1 Child’s Needs Changed Subsequent to the Decision
+                    -   RD1 Childâ€TMs Needs Changed Subsequent to the Decision
               -   code: b) Court did not make a PO
                   name:
                     -   RD2 - The Court did not make a placement order
@@ -10964,7 +10963,7 @@ column_map:
             canbeblank: true
         Date the child was placed for fostering in FFA or concurrent planning placement: *date-blank
 
-    List 11:
+    list_11:
         Individual adopter identifier: *not-blank
         Family identifier: *blank
         Gender: *gender
@@ -10975,16 +10974,16 @@ column_map:
               -   code: No
                   name:
                     -   '0'
-                    -   No
-                    -   N
+                    -   'No'
+                    -   'N'
                     -   0 = No
                     -   0 No
                     -   0 - No
               -   code: Yes
                   name:
                     -   '1'
-                    -   Yes
-                    -   Y
+                    -   'Yes'
+                    -   'Y'
                     -   1 = Yes
                     -   1 Yes
                     -   1 - Yes
