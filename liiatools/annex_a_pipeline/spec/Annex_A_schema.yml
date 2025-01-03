@@ -3847,7 +3847,7 @@ column_map:
             <<: *contact-referral-source
             header_regex:
               -   /.*referral.*source.*/i
-        Referral NFA?:
+        Referral NFA?: &referral-nfa
             category:
               -   code: No
                   name:
@@ -3974,7 +3974,7 @@ column_map:
                     -   Data not captured in MOSAIC
             canbeblank: false
         Continuous Assessment Start Date: *date-not-blank
-        Child Seen During Continuous Assessment:
+        Child Seen During Continuous Assessment: &assessment-child-seen
             category:
               -   code: No
                   name:
@@ -4019,7 +4019,7 @@ column_map:
                     -   Data not captured on mosaic
                     -   Data not captured in MOSAIC
         Continuous Assessment Date of Authorisation: *date-blank
-        "Was the child assessed as requiring LA children's social care support?":
+        "Was the child assessed as requiring LA children's social care support?": &child-assessed-being-in-need
             category:
               -   code: No
                   name:
@@ -4064,7 +4064,7 @@ column_map:
         Age of Child (Years): *age
         Does the Child have a Disability: *disability
         Strategy discussion initiating Section 47 Enquiry Start Date: *date-not-blank
-        Was an Initial Child Protection Conference deemed unnecessary?:
+        Was an Initial Child Protection Conference deemed unnecessary?: &icpc-deemed-unnecessary
             category:
               -   code: No
                   name:
@@ -4097,7 +4097,7 @@ column_map:
                     -   Data not captured in MOSAIC
             canbeblank: true
         Date of Initial Child Protection Conference: *date-blank
-        Did the Initial Child Protection Conference Result in a Child Protection Plan:
+        Did the Initial Child Protection Conference Result in a Child Protection Plan: &icpc-result-in-cpp
             category:
               -   code: No
                   name:
@@ -4972,7 +4972,7 @@ column_map:
             canbeblank: false
         Date Child Was Last Seen: *date-blank
         CIN Closure Date: *date-blank
-        Reason for Closure:
+        Reason for Closure: &reason-for-closure
             category:
               -   code: a) Adopted
                   name:
@@ -5347,7 +5347,7 @@ column_map:
                     -   Data not captured on mosaic
                     -   Data not captured in MOSAIC
             canbeblank: true
-        Case Status:
+        Case Status: &case-status
             category:
               -   code: a) Looked after child
                   name:
@@ -5596,7 +5596,7 @@ column_map:
             canbeblank: false
         Latest Category of Abuse: *cpp-abuse-categories
         Date of the Last Statutory Visit: *date-blank
-        Was the Child Seen Alone?:
+        Was the Child Seen Alone?: &cpp-child-seen-alone
             category:
               -   code: No
                   name:
@@ -5645,7 +5645,7 @@ column_map:
             canbeblank: true
         Date of latest review conference: *date-blank
         Child Protection Plan End Date: *date-blank
-        Subject to Emergency Protection Order or Protected Under Police Powers in Last Six Months (Y/N):
+        Subject to Emergency Protection Order or Protected Under Police Powers in Last Six Months (Y/N): &cp-subject-of-epo-ppo
             category:
               -   code: No
                   name:
@@ -5730,7 +5730,7 @@ column_map:
         Does the Child have a Disability: *disability
         Date Started to be Looked After: *date-not-blank
         "Child's Category of Need": *primary-need
-        Is this a second or subsequent period of being a Looked After Child within the last 12 months (Y/N):
+        Is this a second or subsequent period of being a Looked After Child within the last 12 months (Y/N): &cla-second-subsequent-episode
             category:
               -   code: No
                   name:
@@ -5765,7 +5765,7 @@ column_map:
             header_regex:
               -   /.*second or subsequent .* of being a Looked After Child.*/i
         Start date of current legal status: *date-not-blank
-        "Child's Legal Status":
+        "Child's Legal Status": &cla-legal-status
             category:
               -   code: 'J1: Remanded to LA or youth detention'
                   name:
@@ -6113,7 +6113,7 @@ column_map:
             canbeblank: false
         Date of Latest Statutory Review: *date-blank
         Date of Last Social Work Visit: *date-blank
-        What is the permanence plan for this child?:
+        What is the permanence plan for this child?: &cla-permenance-plan
             category:
               -   code: a) Return to family
                   name:
@@ -6213,7 +6213,7 @@ column_map:
         Date of Last Dental Check: *date-blank
         Number of Placements in the Last 12 months: *integer-not-blank
         Date Ceased to be Looked After: *date-blank
-        Reason Ceased to be Looked After:
+        Reason Ceased to be Looked After: &reason-cla-episode-ceased
             category:
               -   code: a) Adopted
                   name:
@@ -7254,7 +7254,7 @@ column_map:
                     -   Data not captured in MOSAIC
             canbeblank: true
         Start Date of Most Recent Placement: *date-not-blank
-        Placement Type:
+        Placement Type: &cla-placement-types
             category:
               -   code: a) Foster Placement
                   name:
@@ -8574,7 +8574,7 @@ column_map:
                     -   Data not captured on mosaic
                     -   Data not captured in MOSAIC
             canbeblank: false
-        Placement Provider:
+        Placement Provider: &cla-provider-types
             category:
               -   code: a) Own LA
                   name:
@@ -8714,7 +8714,7 @@ column_map:
         URN of Placement: &blank
             string: "alphanumeric"
             canbeblank: true
-        Placement Location:
+        Placement Location: &placement-location
             category:
               -   code: a) In
                   name:
@@ -8752,7 +8752,7 @@ column_map:
                     -   Data not captured on mosaic
                     -   Data not captured in MOSAIC
             canbeblank: false
-        LA of Placement:
+        LA of Placement: &cla-placement-la
             category:
               -   code: ' - '
                   name:
@@ -10119,7 +10119,7 @@ column_map:
         Allocated Team: *not-blank
         Allocated Worker: *not-blank
         Allocated Personal Advisor: *not-blank
-        Eligibility Category:
+        Eligibility Category: &careleaver-eligibility-criteria
             category:
               -   code: a) Relevant
                   name:
@@ -10182,7 +10182,7 @@ column_map:
                     -   Data not captured in MOSAIC
             canbeblank: false
         Latest Pathway Plan Review Date: *date-blank
-        LA in Touch:
+        LA in Touch: &careleaver-in-touch
             category:
               -   code: a) In touch
                   name:
@@ -10275,7 +10275,7 @@ column_map:
                     -   Data not captured in MOSAIC
             canbeblank: false
         Latest Date of Contact: *date-blank
-        Type of Accommodation:
+        Type of Accommodation: &careleaver-accomodation
             category:
               -   code: a) With parents or relatives
                   name:
@@ -10725,7 +10725,7 @@ column_map:
                     -   Data not captured on mosaic
                     -   Data not captured in MOSAIC
             canbeblank: true
-        Suitability of Accommodation:
+        Suitability of Accommodation: &cl-accomm-suitability
             category:
               -   code: a) Suitable
                   name:
@@ -10888,7 +10888,7 @@ column_map:
         Date Placed for Adoption: *date-blank
         Date of Adoption Order: *date-blank
         Date of Decision that Child Should No Longer be Placed for Adoption: *date-blank
-        Reason Why Child No Longer Placed for Adoption:
+        Reason Why Child No Longer Placed for Adoption: &reason-adoption-desiscion-chang
             category:
               -   code: a) Child�s needs changed
                   name:
@@ -10970,7 +10970,7 @@ column_map:
         Gender: *gender
         Ethnicity: *ethnicity
         Disability: *disability
-        Is the (prospective) adopter fostering for adoption?:
+        Is the (prospective) adopter fostering for adoption?: &adopter-fostering-for-adoption
             category:
               -   code: No
                   name:
@@ -11020,7 +11020,7 @@ column_map:
             canbeblank: true
         Date of Adoption Order: *date-blank
         Date of leaving adoption process: *date-blank
-        Reason for leaving adoption process:
+        Reason for leaving adoption process: &reason-adopter-left-process
             category:
               -   code: a) Withdrew
                   name:
