@@ -71,6 +71,7 @@ def build_schema(schema_path, excel_path, output_schema_path):
             for column_name, column_coding in columns.items():
                 tab_name = tab.replace(" ", "-").lower()
                 anchor = column_coding.anchor.value
+                column_coding.anchor.always_dump = True
 
                 if (
                     isinstance(column_coding, dict)
