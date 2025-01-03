@@ -8,19 +8,32 @@ yaml = YAML()
 yaml.preserve_quotes = True
 yaml.indent(mapping=4, sequence=6, offset=2)
 
+# Define a mapping of problematic characters to safe alternatives
+CHARACTER_MAP = {
+    "‘": "'",  # Left single quotation mark to straight single quote
+    "’": "'",  # Right single quotation mark to straight single quote
+    "“": '"',  # Left double quotation mark to straight double quote
+    "”": '"',  # Right double quotation mark to straight double quote
+    "–": "-",  # En dash to hyphen
+    "—": "-",  # Em dash to hyphen
+}
 
-def normalize_text(value):
+
+def replace_special_characters(value):
     """
-    Normalizes special characters into standard ones.
+    Replaces special characters using CHARACTER_MAP.
     """
-    return unicodedata.normalize("NFKC", value) if isinstance(value, str) else value
+    if isinstance(value, str):
+        for special, replacement in CHARACTER_MAP.items():
+            value = value.replace(special, replacement)
+    return value
 
 
 def ensure_quoted(value):
     """
     Ensures the value is a string and wraps it in single quotes if necessary.
     """
-    value = normalize_text(str(value))  # Ensure it's a string
+    value = replace_special_characters(str(value))  # Ensure it's a string
     if value.lower() in {"yes", "no", "true", "false", "y", "n"}:
         return SingleQuotedScalarString(value)  # Force single quotes
     return value
