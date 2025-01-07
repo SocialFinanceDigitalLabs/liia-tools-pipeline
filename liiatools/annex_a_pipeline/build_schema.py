@@ -33,7 +33,7 @@ def ensure_quoted(value):
     """
     Ensures the value is a string and wraps it in single quotes if necessary.
     """
-    value = replace_special_characters(str(value))  # Ensure it's a string
+    # value = replace_special_characters(str(value))  # Ensure it's a string
     if value.lower() in {"yes", "no", "true", "false", "y", "n"}:
         return SingleQuotedScalarString(value)  # Force single quotes
     return value
@@ -74,6 +74,8 @@ def build_schema(schema_path, excel_path, output_schema_path):
                 else ensure_quoted(row["code"]),
             }
             for _, row in grouped.iterrows()
+            if row["group"]
+            != "zzNotRecorded"  # Exclude rows with group "zzNotRecorded"
         ]
 
         # Start a count to know if any items in the schema have been updated
