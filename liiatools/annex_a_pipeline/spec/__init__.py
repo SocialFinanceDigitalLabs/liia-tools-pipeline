@@ -2,8 +2,11 @@ import logging
 from functools import lru_cache
 from pathlib import Path
 
-import yaml
 from pydantic_yaml import parse_yaml_file_as
+from ruamel.yaml import YAML
+
+yaml = YAML()
+yaml.preserve_quotes = True
 
 from liiatools.common.data import PipelineConfig
 from liiatools.common.spec.__data_schema import DataSchema
@@ -37,7 +40,8 @@ def load_schema() -> DataSchema:
     if not schema_path:
         raise ValueError(f"No schema files found")
 
-    full_schema = yaml.safe_load(schema_path.read_text())
+    with open(schema_path, "r", encoding="utf-8") as file:
+        full_schema = yaml.load(file)
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)
