@@ -118,14 +118,14 @@ column_map:
                     -   WBRI - British
                     -   WBRI - White - British
                     -   WBRI - White British
-                    -   'WBRI - White British '
+                    -   WBRI - White British
                     -   WBRI - White British (101)
                     -   'WBRI - White: British'
                     -   WBRI - White-British
                     -   WBRI White - British
                     -   WBRI White - White British
                     -   WBRI White British
-                    -   'WBRI White British '
+                    -   WBRI White British
                     -   'WBRI: White British'
                     -   'WBRI: White: White - British'
                     -   WBRI-White - British
@@ -137,7 +137,7 @@ column_map:
                     -   WHB - WBRI - British
                     -   White  British
                     -   White - British
-                    -   'White - British               '
+                    -   White - British
                     -   White - British [WBRI]
                     -   White - English
                     -   White - Other British
@@ -187,7 +187,7 @@ column_map:
                     -   WIRI
                     -   WIRI  [White Irish]
                     -   WIRI - Irish
-                    -   'WIRI - Irish '
+                    -   WIRI - Irish
                     -   WIRI - White - Irish
                     -   WIRI - White Irish
                     -   'WIRI - White: Irish'
@@ -196,7 +196,7 @@ column_map:
                     -   WIRI White - Irish
                     -   WIRI White - White Irish
                     -   WIRI White Irish
-                    -   'WIRI White Irish '
+                    -   WIRI White Irish
                     -   'WIRI: White Irish'
                     -   'WIRI: White: White - Irish'
                     -   (A.A14)Traveller of Irish Heritage
@@ -206,7 +206,7 @@ column_map:
                     -   A4 - White - Traveller of Irish Heritage
                     -   A4 White - Gypsy or Irish Traveller
                     -   A4.4 Traveller of Irish Heritage
-                    -   'Gypsy or Irish Traveller      '
+                    -   Gypsy or Irish Traveller
                     -   Gypsy Traveller
                     -   Traveller of Irish Heritage
                     -   Traveller of Irish Heritage [WIRT]
@@ -223,7 +223,7 @@ column_map:
                     -   WHT - Traveller - Irish Heritage
                     -   WIRT
                     -   WIRT  [Traveller of Irish Heritage]
-                    -   'WIRT - Traveller - Irish Heritage '
+                    -   WIRT - Traveller - Irish Heritage
                     -   WIRT - Traveller of Irish Heritage
                     -   WIRT - Traveller or Irish Heritage
                     -   'WIRT - Traveller: Irish Heritage'
@@ -308,7 +308,7 @@ column_map:
                     -   ALBANIAN
                     -   Any Other White
                     -   Any Other White Background
-                    -   'Any Other White Background    '
+                    -   Any Other White Background
                     -   Any Other White Background [WOTH]
                     -   Bulgarian
                     -   GREEK
@@ -334,8 +334,8 @@ column_map:
                     -   WEEU
                     -   WEEU - White Eastern Euro'n
                     -   WEEU - White Eastern European
-                    -   'WEEU - White Eastern European '
-                    -   'WEEU White Eastern European '
+                    -   WEEU - White Eastern European
+                    -   WEEU White Eastern European
                     -   WEUR
                     -   WGRC
                     -   WGRE
@@ -398,7 +398,7 @@ column_map:
                     -   White / Other white European, European unspecified, European
                         mixed
                     -   White / Polish
-                    -   'White / Russian '
+                    -   White / Russian
                     -   White / Turkish
                     -   White > Any other ethnic group
                     -   White > Any other White background
@@ -440,7 +440,7 @@ column_map:
                     -   WOTH - Any Oth White b'ground
                     -   WOTH - Any other White backgro
                     -   WOTH - Any other White background
-                    -   'WOTH - Any other White background '
+                    -   WOTH - Any other White background
                     -   WOTH - Any other White background(106
                     -   WOTH - White - Any other
                     -   WOTH - White - Any Other White Background
@@ -454,15 +454,15 @@ column_map:
                     -   'WOTH: White: Any Other White Background'
                     -   WOTH-Any other White background
                     -   WOTW
-                    -   'WOTW White other '
+                    -   WOTW White other
                     -   WPOR
                     -   WSER
                     -   WTUC
                     -   WTUK
-                    -   'WTUK Turkish '
+                    -   WTUK Turkish
                     -   WTUR
                     -   WWEU
-                    -   'WWEU White Western European '
+                    -   WWEU White Western European
                     -   A5
                     -   A5 - Gypsy / Roma
                     -   A5 - Gypsy/Roma
@@ -494,7 +494,7 @@ column_map:
                     -   WROM - Gyspy/Roma
                     -   WROM - White - Gypsy / Roma
                     -   WROM Gypsy/Roma
-                    -   'WROM Gypsy/Roma '
+                    -   WROM Gypsy/Roma
                     -   'WROM: Gypsy Roma'
                     -   'WROM: Gypsy Romany'
                     -   'WROM: White: Gypsy / Roma'
@@ -592,17 +592,17 @@ column_map:
                     -   MWBC - White and Black Caribbean
                     -   MWBC - White and black Carribean
                     -   MWBC - White/Black Carribbean
-                    -   'MWBC - White/Black Carribbean '
+                    -   MWBC - White/Black Carribbean
                     -   MWBC - White/Black Carribbean (110)
                     -   MWBC Mixed - White and Black Caribbean
                     -   MWBC Mixed white & black Caribbean
                     -   MWBC White and Black Caribbean
-                    -   'MWBC White and Black Caribbean '
+                    -   MWBC White and Black Caribbean
                     -   'MWBC: Mixed: White and Black Caribbean'
                     -   'MWBC: White and Black Caribbean'
                     -   MWBC-White & Black Caribbean
                     -   WBCAR - White and Black Caribbean
-                    -   'White &  Black Caribbean      '
+                    -   White &  Black Caribbean
                     -   White & Black Caribb
                     -   White & Black Caribbean
                     -   White and Black Caribbean
@@ -617,7 +617,7 @@ column_map:
                     -   B2 - Mixed - White and Black African
                     -   B2 - Mixed -White and Black African
                     -   B2 - White and Black African
-                    -   'B2 - White and Black African '
+                    -   B2 - White and Black African
                     -   B2 Mixed - White + Black African
                     -   B2 White and Black African
                     -   'B2: B2 - Mixed -White and Black African'
@@ -652,19 +652,19 @@ column_map:
                     -   MWBA - Mixed-White/Black African
                     -   MWBA - White and Black African
                     -   MWBA - White/Black African
-                    -   'MWBA - White/Black African '
+                    -   MWBA - White/Black African
                     -   MWBA Mixed - White and Black African
                     -   MWBA Mixed white & black African
                     -   MWBA White and Black African
-                    -   'MWBA White and Black African '
+                    -   MWBA White and Black African
                     -   'MWBA: Mixed: White and Black African'
                     -   'MWBA: White and Black African'
                     -   MWBA-White & Black African
                     -   WBAFR - White and Black African
                     -   White & Black African
-                    -   'White & Black African         '
+                    -   White & Black African
                     -   White and Black African
-                    -   'White and Black African '
+                    -   White and Black African
                     -   White and Black African (Mixed Race)
                     -   White and Black African [MWBA]
                     -   (B.B17) White and Asian
@@ -714,18 +714,18 @@ column_map:
                     -   MWAS - Mixed-White And Asian
                     -   MWAS - White and Asian
                     -   MWAS - White/Asian
-                    -   'MWAS - White/Asian '
+                    -   MWAS - White/Asian
                     -   MWAS - White/Asian (112)
                     -   MWAS Mixed - White and Asian
                     -   MWAS Mixed white & Asian
                     -   MWAS White and Asian
-                    -   'MWAS White and Asian '
+                    -   MWAS White and Asian
                     -   'MWAS: Mixed: White and Asian'
                     -   'MWAS: White and Asian'
                     -   MWAS-White & Asian
                     -   WHASIAN - White and Asian
                     -   White & Asian
-                    -   'White & Asian                 '
+                    -   White & Asian
                     -   White and Asian
                     -   White and Asian (Mixed Race)
                     -   (A.A30) Any Other Mixed Background
@@ -749,7 +749,7 @@ column_map:
                     -   Any Other Dual Heritage Background
                     -   Any Other Mixed
                     -   Any Other Mixed Background
-                    -   'Any Other Mixed Background    '
+                    -   Any Other Mixed Background
                     -   Any Other Mixed Background [MOTH]
                     -   Any Other Mixed Heritage
                     -   Any Other Mixed/Multiple Ethnic Background
@@ -814,7 +814,7 @@ column_map:
                     -   Mixed - other (B4)
                     -   Mixed - Other mixed, mixed unspecified
                     -   Mixed / Black and White
-                    -   'Mixed / Black and White '
+                    -   Mixed / Black and White
                     -   Mixed / multiple
                     -   Mixed / multiple (Asian and Chinese)
                     -   Mixed / multiple (Black and Asian)
@@ -851,7 +851,7 @@ column_map:
                     -   MOTH  [Any other Mixed background]
                     -   MOTH - Any Oth Mixed b'ground
                     -   MOTH - Any Other Mixed / Multiple Eth
-                    -   'MOTH - Any other Mixed backgroun '
+                    -   MOTH - Any other Mixed backgroun
                     -   MOTH - Any other Mixed backgroun (113
                     -   MOTH - Any other mixed background
                     -   MOTH - Mixed - Any other background
@@ -860,7 +860,7 @@ column_map:
                     -   'MOTH - Mixed: Any other mixed background'
                     -   MOTH - Mixed-Other
                     -   MOTH Any Other Mixed Background
-                    -   'MOTH Any other mixed background '
+                    -   MOTH Any other mixed background
                     -   MOTH Mixed - Any other Mixed background
                     -   MOTH Mixed white & other
                     -   MOTH Other mixed background
@@ -925,10 +925,10 @@ column_map:
                     -   AIND - Asian or Asian-British Indian
                     -   AIND - Asian/Brit.Asian-Indian
                     -   AIND - Indian
-                    -   'AIND - Indian '
+                    -   AIND - Indian
                     -   AIND Asian or Asian British - Indian
                     -   AIND Indian
-                    -   'AIND Indian '
+                    -   AIND Indian
                     -   'AIND: Indian'
                     -   Asian - Indian
                     -   Asian / Asian British - Indian
@@ -972,10 +972,10 @@ column_map:
                     -   APKN - Asian or Asian-British Pakistani
                     -   APKN - Asian/Brit.Asian-Pakistani
                     -   APKN - Pakistani
-                    -   'APKN - Pakistani '
+                    -   APKN - Pakistani
                     -   APKN Asian or Asian British - Pakistani
                     -   APKN Pakistani
-                    -   'APKN Pakistani '
+                    -   APKN Pakistani
                     -   'APKN: Asian: Pakistani'
                     -   'APKN: Pakistani'
                     -   APKN-Pakistani
@@ -1006,7 +1006,7 @@ column_map:
                     -   'C2: C2 - Asian or Asian British - Pakistani'
                     -   PAKISTAN - Pakistani
                     -   Pakistani
-                    -   'Pakistani                     '
+                    -   Pakistani
                     -   Pakistani [APKN]
                     -   PAKISTANI OR BRITISH PAKISTANI
                     -   (C.C3) Bangladeshi
@@ -1021,10 +1021,10 @@ column_map:
                     -   ABAN - Asian or Asian-British Bangladeshi
                     -   ABAN - Asian/Brit.Asian-Bangladeshi
                     -   ABAN - Bangladeshi
-                    -   'ABAN - Bangladeshi '
+                    -   ABAN - Bangladeshi
                     -   ABAN Asian or Asian British - Bangladeshi
                     -   ABAN Bangladeshi
-                    -   'ABAN Bangladeshi '
+                    -   ABAN Bangladeshi
                     -   'ABAN: Asian: Bangladeshi'
                     -   'ABAN: Bangladeshi'
                     -   ABAN-Bangladeshi
@@ -1072,8 +1072,8 @@ column_map:
                     -   ANEP
                     -   Any Other Asian
                     -   Any Other Asian Background
-                    -   'Any Other Asian Background '
-                    -   'Any Other Asian Background    '
+                    -   Any Other Asian Background
+                    -   Any Other Asian Background
                     -   Any Other Asian Background [AOTH]
                     -   Any Other Asian Heritage
                     -   AOTA
@@ -1086,7 +1086,7 @@ column_map:
                     -   AOTH - Asian or Asian-British Other
                     -   AOTH - Asian/Brit.Asian-Other
                     -   AOTH Any Other Asian Background
-                    -   'AOTH Any other Asian background '
+                    -   AOTH Any other Asian background
                     -   AOTH Asian or Asian British - Any other Asian background
                     -   AOTH Other Asian Background
                     -   'AOTH: Any other Asian background'
@@ -1195,7 +1195,7 @@ column_map:
                     -   Asian Sinhalese
                     -   Asian Sri Lanken Tamil
                     -   Kashmiri Other
-                    -   'ABAN '
+                    -   ABAN
                     -   Asian/Asian British - any other Asian bg
                     -   Any other Asian background
               -   code: c) Unknown
@@ -1217,13 +1217,13 @@ column_map:
                     -   BCRB  [Caribbean]
                     -   BCRB - Black / Black British - Caribbean
                     -   BCRB - Black Caribbean
-                    -   'BCRB - Black Caribbean '
+                    -   BCRB - Black Caribbean
                     -   BCRB - Black or Black British - Caribbean
                     -   BCRB - Black or Black-British Caribbean
                     -   BCRB - Black/Black Brit-Caribbean
                     -   BCRB - Caribbean
                     -   BCRB Black Caribbean
-                    -   'BCRB Black Caribbean '
+                    -   BCRB Black Caribbean
                     -   BCRB Black or Black British - Carribean
                     -   BCRB Caribbean
                     -   BCRB  - Black / Black British - Caribbean
@@ -1274,7 +1274,7 @@ column_map:
                     -   BAFR
                     -   BAFR  [African]
                     -   BAFR - African
-                    -   'BAFR - African '
+                    -   BAFR - African
                     -   BAFR - African (131)
                     -   BAFR - Black - African
                     -   BAFR - Black / Black British - African
@@ -1291,10 +1291,10 @@ column_map:
                     -   BAFR-African
                     -   BANN
                     -   BAOF
-                    -   'BAOF Black African other '
+                    -   BAOF Black African other
                     -   BCON
                     -   BGHA
-                    -   'BGHA Black Ghanaian '
+                    -   BGHA Black Ghanaian
                     -   Black  - Somali
                     -   Black - African
                     -   Black - African [BAFR]
@@ -1343,10 +1343,10 @@ column_map:
                     -   BLACKAFR - Black - African
                     -   BLF - BAFR - African
                     -   BNGN
-                    -   'BNGN Black Nigerian '
-                    -   'BOTH - Any Other Black or African or '
+                    -   BNGN Black Nigerian
+                    -   BOTH - Any Other Black or African or
                     -   BSLN
-                    -   'BSOM Black Somali '
+                    -   BSOM Black Somali
                     -   BSUD
                     -   D.D2)Black - African
                     -   D2
@@ -1366,7 +1366,7 @@ column_map:
                     -   A4.16 Any Other Black Background
                     -   Any Other Black
                     -   Any Other Black Background
-                    -   'Any Other Black Background    '
+                    -   Any Other Black Background
                     -   Any Other Black Background [BOTH]
                     -   Any Other Black Heritage
                     -   B - Any other Black background
@@ -1398,11 +1398,11 @@ column_map:
                     -   Black or Black British - Somali
                     -   Black or Black British - West Indian
                     -   Black or Black British / African and Caribbean
-                    -   'Black or Black British / African and Caribbean '
+                    -   Black or Black British / African and Caribbean
                     -   Black or Black British / Black British
                     -   Black or Black British / Mixed Black
                     -   Black or Black British / Other Black, Black unspecified
-                    -   'Black or Black British / Other Black, Black unspecified '
+                    -   Black or Black British / Other Black, Black unspecified
                     -   Black or Black British > Any other Black background
                     -   Black or Black British African and Caribbean
                     -   Black or Black British Black British
@@ -1428,7 +1428,7 @@ column_map:
                     -   BOTH - Black or Black-British Other
                     -   BOTH - Black/Black Brit-Other
                     -   BOTH Any Other Black Background
-                    -   'BOTH Any other black background '
+                    -   BOTH Any other black background
                     -   BOTH Black or Black British - Any other Black background
                     -   BOTH Other Black Background
                     -   'BOTH: Any other Black background'
@@ -1482,7 +1482,7 @@ column_map:
                     -   BCRB:Black Caribbean
                     -   BOTH:Other Black
                     -   BAFR  Black African
-                    -   'BAFR – Black African '
+                    -   BAFR – Black African
                     -   BOTH – Any other Black background
                     -   BCRB – Black Caribbean
                     -   Bac - Antigua and Barbuda
@@ -1532,11 +1532,11 @@ column_map:
                     -   CHNE
                     -   CHNE  [Chinese]
                     -   CHNE - Chinese
-                    -   'CHNE - Chinese '
+                    -   CHNE - Chinese
                     -   CHNE - Chinese (140)
                     -   CHNE - Other Eth. Grp-Chinese
                     -   CHNE Chinese
-                    -   'CHNE Chinese '
+                    -   CHNE Chinese
                     -   CHNE Other Ethnic Group - Chinese
                     -   'CHNE: Chinese'
                     -   CHNE-Chinese
@@ -1562,7 +1562,7 @@ column_map:
                     -   A4.18 Any Other Ethnic Group
                     -   Any other ethnic background
                     -   Any Other Ethnic Group
-                    -   'Any other ethnic group '
+                    -   Any other ethnic group
                     -   Any Other Ethnic Group [OOTH]
                     -   Any Other Ethnic Groups
                     -   Arab
@@ -1614,19 +1614,19 @@ column_map:
                     -   OKOR
                     -   OKRD
                     -   OLAM
-                    -   'OLAM Latin/South/Central American '
+                    -   OLAM Latin/South/Central American
                     -   OLEB
                     -   OLIB
                     -   OMAL
                     -   OMRC
                     -   OOEG
                     -   OOEG - Other Ethnic Group
-                    -   'OOEG Any other ethnic group '
+                    -   OOEG Any other ethnic group
                     -   OOTH
                     -   OOTH  [Any other ethnic group]
                     -   OOTH - Any other ethnic background
                     -   OOTH - Any other ethnic group
-                    -   'OOTH - Any Other Ethnic Group '
+                    -   OOTH - Any Other Ethnic Group
                     -   OOTH - Any Other Ethnic Group (150)
                     -   OOTH - Arab
                     -   OOTH - E2 - Any other Ethnic Group
@@ -1727,8 +1727,8 @@ column_map:
                     -   s) REFU
                     -   s) NOBT
                     -   '0'
-                    -   ' - Not Stated'
-                    -   ' Not Recorded'
+                    -   '- Not Stated'
+                    -   Not Recorded
                     -   '- Unknown'
                     -   '#MULTIVALUE'
                     -   (N)
@@ -1767,7 +1767,7 @@ column_map:
                     -   F1 Not Stated
                     -   F2 - Not Stated
                     -   Information not obtained
-                    -   'Information Not Obtained      '
+                    -   Information Not Obtained
                     -   Information not yet available
                     -   Information not yet obtained
                     -   Information Not Yet Obtained
@@ -1790,14 +1790,14 @@ column_map:
                     -   NOBT - Info not obtained
                     -   NOBT - Info not yet obtained
                     -   NOBT - Information not obtained
-                    -   'NOBT - Information not obtained '
+                    -   NOBT - Information not obtained
                     -   NOBT - Information not obtained (199)
                     -   NOBT - Information not yet obtained
                     -   NOBT - Not Stated
                     -   NOBT - Unspecified - Information Not Yet Obtained
                     -   NOBT Information Not Yet Available
                     -   NOBT Information not yet obtained
-                    -   'NOBT Information not yet obtained '
+                    -   NOBT Information not yet obtained
                     -   'NOBT: Information Not Yet Obtained'
                     -   NOBT-Information not yet obtained
                     -   NOT - NOBT - Info not obtained
@@ -1832,10 +1832,10 @@ column_map:
                     -   REFU - Refused
                     -   REFU - Refused to provide
                     -   REFU Refused
-                    -   'REFU Refused '
+                    -   REFU Refused
                     -   'REFU: Refused'
                     -   Refused
-                    -   'Refused                       '
+                    -   Refused
                     -   REFUSED - Refused
                     -   Refused (E3)
                     -   Refused Information
@@ -1859,7 +1859,7 @@ column_map:
                     -   Would not say
                     -   X - Information not yet obtained
                     -   XXXX
-                    -   'XXXX - '
+                    -   XXXX -
                     -   XXXX - Unknown
                     -   ZZ - Obsolete DO NOT USE
                     -   Not Declared
@@ -1904,7 +1904,7 @@ column_map:
                     -   'b) 1B: Individual'
                     -   'c) 1C: Individual'
                     -   'd) 1D: Individual'
-                    -   ' Parent / Carer'
+                    -   Parent / Carer
                     -   (CS) Individual - Family member/relative/carer
                     -   (CS) Individual - Other (e.g. Strangers, MPs)
                     -   (CS) Individual - Self
@@ -2034,8 +2034,8 @@ column_map:
                     -   Individual - Other (inc. strangers, MPs)
                     -   Individual - Other (including strangers or MPs)
                     -   INDIVIDUAL – other (including strangers or MPs)
-                    -   'Individual - Other (including strangers, Member of Public,
-                        MPs) '
+                    -   Individual - Other (including strangers, Member of Public,
+                        MPs)
                     -   Individual - Other (including strangers, MPs)
                     -   Individual – Other (including strangers, MPs)
                     -   Individual - Other (including strangers/ MPs)
@@ -2121,10 +2121,10 @@ column_map:
                     -   '1B: Individual'
                     -   '1C: Individual'
                     -   '1D: Individual'
-                    -   '1A - Individual - Family member/relative/carer '
-                    -   '1B - Individual - Acquaintance (including neighbours and
-                        child minders) '
-                    -   '1C - Individual - Self '
+                    -   1A - Individual - Family member/relative/carer
+                    -   1B - Individual - Acquaintance (including neighbours and child
+                        minders)
+                    -   1C - Individual - Self
                     -   60) Individual - Family Member / Relative / Foster Carer
                     -   61) Individual - Neighbour / Friend / Child Minder
                     -   62) Individual - Self
@@ -2195,7 +2195,7 @@ column_map:
                     -   '2A: Schools'
                     -   Education - Knowsley Nursery Provision.
                     -   Education - Knowsley Post 16
-                    -   '2A - Schools '
+                    -   2A - Schools
                     -   30) Education - School
                     -   31) Education - 6th Form Colleges
                     -   Education - Schools
@@ -2269,7 +2269,7 @@ column_map:
                     -   Education Support Services (not school based)
                     -   '2B: Education services'
                     -   Education - Knowsley Education Services
-                    -   '2B - Education Services '
+                    -   2B - Education Services
                     -   32) Education - Education Welfare
                     -   39) Education - Other
                     -   Education [2B]
@@ -2283,10 +2283,10 @@ column_map:
                     -   Med - CAMHS
                     -   Med - General Practitioner
                     -   Med - Walk in Centre
-                    -   '3B - Health services - Health Visitor '
-                    -   '3C - Health services - School Nurse '
-                    -   '3D - Health services - Other primary health services '
-                    -   '3F - Health services - Other (e.g. hospice) '
+                    -   3B - Health services - Health Visitor
+                    -   3C - Health services - School Nurse
+                    -   3D - Health services - Other primary health services
+                    -   3F - Health services - Other (e.g. hospice)
                     -   Nurse Practitioner
                     -   Consultant Community Paediatrician
                     -   Family Nurse
@@ -2362,7 +2362,7 @@ column_map:
                     -   "3f: Health services \x96 Other"
                     -   A & E (Emergency Dept)
                     -   A and E
-                    -   'A and E '
+                    -   A and E
                     -   A and E/Medical Assessment Unit
                     -   A&E (Emergency Department)
                     -   AANDE - Health - Accident and Emergency Department
@@ -2760,7 +2760,7 @@ column_map:
                     -   '4'
                     -   '4'
                     -   (CS) Housing (LA housing or housing association)
-                    -   '‘4 '
+                    -   ‘4
                     -   ‘HOUSING’ - (local authority housing or housing association).
                     -   1B Individual - Acquaintance (including neighbours and child
                         minders)
@@ -2824,7 +2824,7 @@ column_map:
                     -   Housing - Association
                     -   Housing - Council
                     -   LA Housing Dept / Housing Association
-                    -   '4 - Housing (LA housing or housing association) '
+                    -   4 - Housing (LA housing or housing association)
                     -   10) Housing (e.g. Housing Dept, Hounslow Homes Or Housing
                         Association)
                     -   Housing or Housing Association [4]
@@ -3104,7 +3104,7 @@ column_map:
                     -   LADEPTS  [Other Depts Own / Other LA]
                     -   LADO
                     -   Lbh - Other
-                    -   'Legal Services '
+                    -   Legal Services
                     -   Local Authority - Other Dept
                     -   Local Authority - Other LA
                     -   Local Authority (Other)
@@ -3217,11 +3217,11 @@ column_map:
                     -   Local Authority Services - Early Help
                     -   Local Authority Services - WBC YOT
                     -   KMBC - CSC Social Worker
-                    -   '5A - LA services - Social care e.g. adults social care '
-                    -   '5B - LA services - Other internal (department other than
-                        social care in LA e.g. youth offending (excluding housing)) '
-                    -   '5C - LA services - External e.g. from another LAs adult social
-                        care '
+                    -   5A - LA services - Social care e.g. adults social care
+                    -   5B - LA services - Other internal (department other than social
+                        care in LA e.g. youth offending (excluding housing))
+                    -   5C - LA services - External e.g. from another LAs adult social
+                        care
                     -   20) Lbh Social Care (e.g. Edt, Adult's Social Care)
                     -   70) Legal Agency - Court
                     -   '71) Legal Agency - Court: Cafcass'
@@ -3285,7 +3285,7 @@ column_map:
                     -   '6'
                     -   '6'
                     -   (CS) Police
-                    -   ‘6  
+                    -   ‘6
                     -   ‘POLICE’.
                     -   6 - Police
                     -   6 Police
@@ -3300,7 +3300,7 @@ column_map:
                     -   POL
                     -   POL - Police
                     -   Police
-                    -   'Police '
+                    -   Police
                     -   Police - CAIT
                     -   Police - CAIU
                     -   Police - Courts
@@ -3327,7 +3327,7 @@ column_map:
                     -   Probation Service
                     -   Youth Offending Service (YOS)
                     -   Child Exploitation & Online Protection Centre
-                    -   '6 - Police '
+                    -   6 - Police
                     -   01) Police
                     -   02) Police - 78 Notification
                     -   Police [6]
@@ -3347,7 +3347,7 @@ column_map:
                     -   '7'
                     -   (CS) Other legal agency - Courts, CAFCASS, Prison
                     -   (CS) Probation
-                    -   ‘7  
+                    -   ‘7
                     -   ‘OTHER LEGAL AGENCY’ – including courts, probation, immigration,
                         CAFCASS or prison.
                     -   7 - Other Legal Agency
@@ -3420,7 +3420,7 @@ column_map:
                     -   Other legal agency
                     -   Other Legal Agency - CAFCASS
                     -   Other Legal Agency - Courts
-                    -   'Other legal agency - courts '
+                    -   Other legal agency - courts
                     -   Other legal agency - e.g. courts / probation / immigration
                         / CAFCASS / prison.
                     -   Other legal agency - e.g. courts / probation / immigration
@@ -3471,8 +3471,8 @@ column_map:
                     -   Immigration Authority
                     -   Probation/Prison
                     -   Court/Legal
-                    -   '7 - Other legal agency - Including courts, probation, immigration,
-                        CAFCASS, prison '
+                    -   7 - Other legal agency - Including courts, probation, immigration,
+                        CAFCASS, prison
                     -   Other legal agency including courts, probation, immigration,
                         cafcass, prison [7]
                     -   Care quality commission
@@ -3482,7 +3482,7 @@ column_map:
                     -   '8'
                     -   '8'
                     -   (CS) Other - Inc vol orgs and independent agencies
-                    -   ‘8  
+                    -   ‘8
                     -   ‘OTHER’ – including children’s centres, independent agency
                         providers or voluntary organisations.
                     -   8 - Other
@@ -3694,8 +3694,8 @@ column_map:
                     -   Commissioned Service
                     -   Voluntary/3rd Sector
                     -   Change Grow Live
-                    -   "8 - Other - Including children's centres, independent agency
-                        providers, voluntary organisations "
+                    -   8 - Other - Including children's centres, independent agency
+                        providers, voluntary organisations
                     -   Taxi Driver
                     -   Northumberland Fire and Rescue Services
                     -   21) Lbh Other Internal Dept (excluding Social Care And Housing
@@ -3726,7 +3726,7 @@ column_map:
                     -   't) 9: Anonymous'
                     -   '9'
                     -   '9'
-                    -   ‘9  
+                    -   ‘9
                     -   ‘ANONYMOUS’.
                     -   9 - Anonymous
                     -   '9: Anonymous'
@@ -3736,7 +3736,7 @@ column_map:
                     -   Anonymous/Not known
                     -   UNK - Anonymous
                     -   V.Adult - Anon
-                    -   '9 - Anonymous '
+                    -   9 - Anonymous
                     -   91) Anonymous
                     -   Anonymous [9]
               -   code: k) Unknown
@@ -3746,7 +3746,7 @@ column_map:
                     -   '10'
                     -   (CS) Anonymous
                     -   (CS) Unknown
-                    -   ‘10  
+                    -   ‘10
                     -   ‘UNKNOWN’.
                     -   10 - Unknown
                     -   10 Unknown
@@ -3760,7 +3760,7 @@ column_map:
                     -   UNK - Unknown
                     -   Unknown
                     -   UNKNOWN
-                    -   'Unknown '
+                    -   Unknown
                     -   UNKNOWN - Unknown (Name Not Given/Withheld)
                     -   Unknown / Anonymous
                     -   Unkown
@@ -4032,7 +4032,7 @@ column_map:
                     -   Abuse or Neglect
                     -   Abuse or neglect
                     -   ABUSE OR NEGLECT
-                    -   'Abuse or Neglect - '
+                    -   Abuse or Neglect -
                     -   Abuse or Neglect - Emotional Abuse
                     -   Abuse or Neglect - Neglect
                     -   Abuse or Neglect - Neglect & Emotional Abuse
@@ -4183,7 +4183,7 @@ column_map:
                     -   DIS_PHYS
                     -   DIS_SENS
                     -   Disability
-                    -   'Disability - '
+                    -   Disability -
                     -   Disability - Emotional/Behavioural Difficulties
                     -   Disability - Learning Disability
                     -   Disability - Mental Health conditions
@@ -4337,7 +4337,7 @@ column_map:
                     -   Parental disability or illness
                     -   Parental Illness / Disability
                     -   Parental illness or disability
-                    -   'Parental Illness or Disability - '
+                    -   Parental Illness or Disability -
                     -   Parental Illness or Disability - Acutely ill parents
                     -   Parental Illness or Disability - Alcoholic parents
                     -   Parental Illness or Disability - Being cared for by mentally
@@ -4391,7 +4391,7 @@ column_map:
                     -   Due To Family In Acute Stress
                     -   Family in acute stress
                     -   FAMILY IN ACUTE STRESS
-                    -   'Family in Acute Stress - '
+                    -   Family in Acute Stress -
                     -   Family in Acute Stress - Health Development Concerns (inc
                         Temporary Disability
                     -   Family in Acute Stress - Problems Relating to Homelessness
@@ -4465,7 +4465,7 @@ column_map:
                     -   Control Issues
                     -   Due To Family Dysfunction
                     -   Family dysfunction
-                    -   'Family Dysfunction - '
+                    -   Family Dysfunction -
                     -   Family Dysfunction - Childs poor attachment to carer
                     -   Family Dysfunction - Domestic Violence
                     -   Family Dysfunction - Erratic relationship between carers
@@ -4583,7 +4583,7 @@ column_map:
                     -   'N6SE : Substance Abuse (child)'
                     -   N6-Social unacceptable behaviour
                     -   Socially unacceptable behaviour
-                    -   'Socially Unacceptable Behaviour - '
+                    -   Socially Unacceptable Behaviour -
                     -   Socially Unacceptable Behaviour - Disorderly Behaviour
                     -   Socially Unacceptable Behaviour - Offending
                     -   Socially Unacceptable Behaviour - Substance Abuse
@@ -4613,7 +4613,7 @@ column_map:
                     -   INC_HLES
                     -   Low income
                     -   LOW INCOME
-                    -   'Low Income - '
+                    -   Low Income -
                     -   Low Income - Asylum Seeking Families
                     -   Low Income - Non Habitually Resident Status
                     -   Low income [N7]
@@ -4632,7 +4632,7 @@ column_map:
                     -   N7:Low income
                     -   N7a - 16/17 Homeless/housing issue
                     -   N7a - No Recourse To Public Funds
-                    -   'N7-Low income '
+                    -   N7-Low income
                     -   'N7SB : Non-habitually resident status'
                     -   'N7SD : Other financial difficulties'
                     -   7b Non Habitual Resident
@@ -4649,7 +4649,7 @@ column_map:
                     -   ABP_PFST
                     -   Absent parenting
                     -   ABSENT PARENTING
-                    -   'Absent Parenting - '
+                    -   Absent Parenting -
                     -   Absent Parenting - Abandoned (including Home Alone)
                     -   Absent Parenting - Other Parental Absence
                     -   Absent Parenting - Parents Died
@@ -4709,7 +4709,7 @@ column_map:
                     -   C/F NOT CHILD IN NEED
                     -   Cases other than Child in Need
                     -   Cases other than Children in Need
-                    -   'Cases other than Children in Need - '
+                    -   Cases other than Children in Need -
                     -   Cases other than Children in Need - Non-Agency Adoptions
                     -   Cases other than Children in Need - Requests for Court Reports
                     -   Cases other than Children in Need - Support After Adoption
@@ -4755,7 +4755,7 @@ column_map:
                     -   N9 - Other - Children
                     -   'N9 : Cases other than Children in Need'
                     -   N9 Cases other than Children in Need
-                    -   'N9 Cases other than children in need eg stepparent adoption '
+                    -   N9 Cases other than children in need eg stepparent adoption
                     -   N9 OTHER
                     -   N9.COUR2
                     -   N9.STEP
@@ -5208,7 +5208,7 @@ column_map:
                     -   CIN
                     -   CiN
                     -   CiN Plan
-                    -   ' Child in need plan'
+                    -   Child in need plan
                     -   Child in Need
               -   code: d) Open assessment
                   name:
@@ -5244,7 +5244,7 @@ column_map:
               -   code: a) Neglect
                   name:
                     -   a) Neglect
-                    -   ' Neglect  '
+                    -   Neglect
                     -   Likelihood of Neglect
                     -   NEG
                     -   Neglect
@@ -5256,8 +5256,8 @@ column_map:
               -   code: b) Physical Abuse
                   name:
                     -   b) Physical abuse
-                    -   '   Physical'
-                    -   '  Physical '
+                    -   Physical
+                    -   Physical
                     -   Likelihood of Physical
                     -   NYNN
                     -   PA
@@ -5270,8 +5270,8 @@ column_map:
               -   code: c) Sexual Abuse
                   name:
                     -   c) Sexual abuse
-                    -   '   Sexual'
-                    -   '  Sexual '
+                    -   Sexual
+                    -   Sexual
                     -   Likelihood of Sexual
                     -   NNYN
                     -   SAB
@@ -5284,7 +5284,7 @@ column_map:
                     -   EMO
                     -   Emotion
                     -   Emotional
-                    -   'Emotional   '
+                    -   Emotional
                     -   Emotional abuse
                     -   EMOTIONAL ABUSE
                     -   Emotional abuse only
@@ -5293,17 +5293,17 @@ column_map:
               -   code: e) Multiple
                   name:
                     -   e) Multiple/not recommended
-                    -   '  Physical Sexual'
-                    -   ' Neglect  Physical'
-                    -   ' Neglect  Sexual'
-                    -   ' Neglect Physical '
-                    -   ' Neglect Sexual '
-                    -   ' Neglect Sexual Physical'
+                    -   Physical Sexual
+                    -   Neglect  Physical
+                    -   Neglect  Sexual
+                    -   Neglect Physical
+                    -   Neglect Sexual
+                    -   Neglect Sexual Physical
                     -   Emotional   Physical
                     -   Emotional   Sexual
-                    -   'Emotional  Physical '
+                    -   Emotional  Physical
                     -   Emotional  Physical Sexual
-                    -   'Emotional  Sexual '
+                    -   Emotional  Sexual
                     -   Emotional  Sexual Physical
                     -   Emotional abuse, Neglect
                     -   Emotional abuse, Physical abuse
@@ -5312,11 +5312,11 @@ column_map:
                     -   Emotional abuse; Physical abuse
                     -   Emotional abuse; Physical abuse; Neglect
                     -   Emotional abuse; Sexual abuse
-                    -   'Emotional Neglect  '
+                    -   Emotional Neglect
                     -   Emotional Neglect  Physical
                     -   Emotional Neglect  Sexual
-                    -   'Emotional Neglect Physical '
-                    -   'Emotional Neglect Sexual '
+                    -   Emotional Neglect Physical
+                    -   Emotional Neglect Sexual
                     -   Emotional, Neglect
                     -   Emotional, Neglect, Physical
                     -   Emotional, Neglect, Sexual
@@ -5467,7 +5467,7 @@ column_map:
                     -   0 - No
                     -   CLA
                     -   'N'
-                    -   'N '
+                    -   'N'
                     -   'No'
                     -   Non-UASC
               -   code: Yes
@@ -5477,7 +5477,7 @@ column_map:
                     -   Non-CLA
                     -   UASC
                     -   'Y'
-                    -   'Y '
+                    -   'Y'
                     -   'Yes'
             canbeblank: false
             header_regex:
@@ -5778,9 +5778,9 @@ column_map:
                     -   Placed in local authority accommodation under PACE, including
                         secure accommodation. However this would not necessarily be
                         accommodation where the child would be detained.
-                    -   'Placed in local authority accommodation under PACE, including
+                    -   Placed in local authority accommodation under PACE, including
                         secure accommodation. However this would not necessarily be
-                        accommodation where the child would be detained. '
+                        accommodation where the child would be detained.
                     -   REMANDED LA ACCOM LASPOA 2012
                     -   Remanded to LA accommodation S20
                     -   Remanded to Local Authority Accommodation or to Youth Dentention
@@ -5992,7 +5992,7 @@ column_map:
                     -   'c) E2: Died'
                     -   Child died
                     -   Died
-                    -   'DIED                          '
+                    -   DIED
                     -   E2
                     -   E2 - Died
                     -   E2-Death
@@ -6001,8 +6001,8 @@ column_map:
               -   code: c) Care taken by another LA
                   name:
                     -   'd) E3: Care taken by another LA'
-                    -   ' Care taken over by another LA in the UK'
-                    -   'CARE TAKEN OVER BY ANOTHER LA '
+                    -   Care taken over by another LA in the UK
+                    -   CARE TAKEN OVER BY ANOTHER LA
                     -   Care taken over by another LA in the UK
                     -   Care taken over by another LA in the UK [E3]
                     -   Care taken over by another LA in UK
@@ -6079,9 +6079,9 @@ column_map:
                     -   E4A - Returned home (Planned Move) to live with parents, relatives,
                         or other person with PR (not under a residence order or special
                         guardianship order)
-                    -   'E4a - Returned home to live with parents, relatives or person
+                    -   E4a - Returned home to live with parents, relatives or person
                         with PR part of Care Planning Process(not under a Residence
-                        Order '
+                        Order
                     -   E4A - Returned home to live with parents, relativesor other
                         person with parental responsibility as part of the care planning
                         process (not under a Special Guardianship order Residence
@@ -6172,8 +6172,8 @@ column_map:
                         the current care planning process (not under a RO or SGO)
                     -   E4B:Return home. Not Part of Care Planning Process - not RO
                         or SGO
-                    -   'E4B:Returned to parents (NOT PART OF CARE PLAN), relatives
-                        or other person with '
+                    -   E4B:Returned to parents (NOT PART OF CARE PLAN), relatives
+                        or other person with
                     -   Planned ret home - parent/other with parental resp
                     -   Return home to live with parents, relatives or other person
                         with parental responsibility as part of the care planning
@@ -6269,8 +6269,8 @@ column_map:
                         of planning'
                     -   'E4B: Returned home to live with parents or relatives - not
                         part of planning'
-                    -   'E4B Return home with parents/rels/other with PR - NOT part
-                        of care planning process '
+                    -   E4B Return home with parents/rels/other with PR - NOT part
+                        of care planning process
                     -   E4A - With parent, relative or other person with PR, planned
                     -   E4B - With parent, relative or other person with PR, unplanned
                     -   E4B - Return home to live with parents, relatives, or other
@@ -6346,7 +6346,7 @@ column_map:
                         no parental responsibility.
                     -   Left care to live with parents,relatives or other person with
                         no parental responsibility. [E13]
-                    -   'LIVING WITH PERSON WITHOUT PR '
+                    -   LIVING WITH PERSON WITHOUT PR
                     -   E13 Left care to live with parents, relatives, or other person
                         with no parental responsibility
                     -   'E13: Parents, relatives or other with no parental responsibility'
@@ -6452,7 +6452,7 @@ column_map:
                         foster carers
                     -   E44 Special Guardianship Order (not w. former foster carers)
                     -   E45
-                    -   'E45 - '
+                    -   E45 -
                     -   E45 - SG former foster carer(s) who were relative/friend
                     -   E45 - Spec. Guardnship order made to former Family & Friends
                         carer
@@ -6469,11 +6469,11 @@ column_map:
                     -   E45 - Special Guardianship Order made to former foster carers,
                         who were a relative or friend
                     -   E46
-                    -   'E46 - '
+                    -   E46 -
                     -   E46 - SG former foster carer(s) not relative/friend
                     -   E46 - Special guardianship made to former foster carer(s),
                         other than relatives or friends
-                    -   'E47 - '
+                    -   E47 -
                     -   E47 - SG relative/friend not former foster carer(s)
                     -   E47 - Special guardianship made to carer(s) other than former
                         foster carer(s), who were a relative or friend
@@ -6569,13 +6569,13 @@ column_map:
                   name:
                     -   'm) E5: Moved into independent living - supported'
                     -   'n) E6: Moved into independent living - no support'
-                    -   ' Moved into independant living arrangement and no longer
-                        looked after : accommodation providing no formalised advice/support
+                    -   'Moved into independant living arrangement and no longer looked
+                        after : accommodation providing no formalised advice/support
                         arrangements (e.g. B&B, bedsit, own flat, living with friends)'
-                    -   ' Moved into independant living arrangement and no longer
-                        looked after : supportive accommodation providing formalised
-                        advice/support arrangements (e.g. most hostels, YMCAs, foyers,
-                        and care leaver projects)'
+                    -   'Moved into independant living arrangement and no longer looked
+                        after : supportive accommodation providing formalised advice/support
+                        arrangements (e.g. most hostels, YMCAs, foyers, and care leaver
+                        projects)'
                     -   E5
                     -   E5 - Indep Living, with Support Staff
                     -   E5 - Independent arrangement providing formalised support
@@ -6651,7 +6651,7 @@ column_map:
                     -   E6 Care Ends - Into independent and non-supportive accom
                     -   E6:Moved Into Independent Living & No Longer In Care No Support
                     -   E6-Independent living with no support
-                    -   'INDEPENDENT ACCOMMODATION     '
+                    -   INDEPENDENT ACCOMMODATION
                     -   Independent living - not looked after - unsupported accom
                     -   Independent living (supported accommodation)
                     -   Independent living (unsupported)
@@ -6662,7 +6662,7 @@ column_map:
                         after : supportive accommodation providing formalised advice/support
                         arrangements (e.g. most hostels, YMCAs, foyers, and care leaver
                         projects)'
-                    -   'Moved into independent living (with no formalised support) '
+                    -   Moved into independent living (with no formalised support)
                     -   Moved into independent living (with supportive accommodation)
                     -   'Moved into independent living arrangement and no longer looked
                         after : accommodation providing no formalised advice/support
@@ -6707,7 +6707,7 @@ column_map:
                   name:
                     -   'o) E7: Transferred to residential care funded by adult social
                         services'
-                    -   ' Transferred to care of adult social services'
+                    -   Transferred to care of adult social services
                     -   E7
                     -   E7 - Transfer Residential-Fund by Adult Serv
                     -   E7 - Transferr to Care of Adult SSD
@@ -6723,12 +6723,12 @@ column_map:
                     -   E8-Transferred to care of adult services
                     -   SE7 - Transferred to care of adult social services
                     -   Transferred to adult social services
-                    -   'TRANSFERRED TO ADULT SS       '
+                    -   TRANSFERRED TO ADULT SS
                     -   Transferred to care of adult social services
                     -   Transferred to care of Adults Division
                     -   Transferred to residential care funded  by adult social services
                     -   Transferred to residential care funded by Adult Social Services
-                    -   'Transferred to residential care funded by adult social services '
+                    -   Transferred to residential care funded by adult social services
                     -   Transferred to residential care funded by Adult Social Services
                         [E7]
                     -   'E7: Transferred to residential care funded by adult social
@@ -6743,7 +6743,7 @@ column_map:
               -   code: j) Sentenced to custody
                   name:
                     -   'p) E9: Sentenced to custody'
-                    -   ' Sentenced to custody'
+                    -   Sentenced to custody
                     -   E9
                     -   E9 - Sentanced to custody
                     -   E9 - Sentenced to custody
@@ -6751,7 +6751,7 @@ column_map:
                     -   E9 Sentenced to custody
                     -   E9-Sentenced to custody
                     -   Sentenced to custody
-                    -   'SENTENCED TO CUSTODY          '
+                    -   SENTENCED TO CUSTODY
                     -   Sentenced to custody [E9]
                     -   Sentenced to custody (E9)
                     -   'E9: Sentenced to custody'
@@ -6851,7 +6851,7 @@ column_map:
                     -   E15:Age assessment determined child aged 18 or over (UASC)
                     -   SE15 - Assessed as over 18 - age disputed
                     -   UASC AGE ASSESSED AS OVER 18
-                    -   'UASC AGE ASSESSED AS OVER 18  '
+                    -   UASC AGE ASSESSED AS OVER 18
                     -   'E15: Age assessment determined child was 18 or over'
                     -   E15 Age assessment determined child is aged 18 or over and
                         E5, E6 and E7 do not apply
@@ -6872,7 +6872,7 @@ column_map:
                     -   E16 - Moved abroad-use this code if the child left care because
                         they moved to another country, including when a child is deporte
                     -   Moved abroad
-                    -   'MOVED ABROAD                  '
+                    -   MOVED ABROAD
                     -   Moved abroad - use this code if the child left care because
                         they moved to another country, including when a child is deported
                     -   SE16 - Child moved abroad
@@ -6882,14 +6882,14 @@ column_map:
               -   code: n) Care ceased for any other reason
                   name:
                     -   't) E8: Care ceased for any other reason'
-                    -   ' Period of being looked after ceased for any other reason'
+                    -   Period of being looked after ceased for any other reason
                     -   ANY OTHER REASON
                     -   Any other reason
                     -   Care ceased for any other reason
                     -   Case closed after assessment, no further action
                     -   E17 - Staying Put
                     -   E8
-                    -   'E8 - Any other reason '
+                    -   E8 - Any other reason
                     -   E8 - Care ceased for any other reason
                     -   E8 - Care ceased for other reasons
                     -   E8 - CLA ceased for any other reason
@@ -6965,9 +6965,9 @@ column_map:
                     -   'f) U6: Foster placement - not FFA'
                     -   '09'
                     -   '36'
-                    -   ' Foster Placement with relative or friend'
-                    -   ' Placement with other foster carer - Notts LA, other LA,
-                        or independent carer'
+                    -   Foster Placement with relative or friend
+                    -   Placement with other foster carer - Notts LA, other LA, or
+                        independent carer
                     -   (Do Not Use from 1/4/08) Placement with other foster carer,
                         provided by LA (carer lives inside LA boundary)
                     -   05 - Other Foster Placements:LA Area
@@ -7133,9 +7133,9 @@ column_map:
                     -   U1 Foster placement with relative or friend - long term fostering
                     -   U1 Foster placement with relative or friend- long term
                     -   U1 Foster placement with relative or friend- long term fostering
-                    -   'U1 Foster placement with relative or friend long term fostering '
-                    -   'U1 Foster placement with relative or friend- long term fostering '
-                    -   'U1 Relative or friend - long term fostering '
+                    -   U1 Foster placement with relative or friend long term fostering
+                    -   U1 Foster placement with relative or friend- long term fostering
+                    -   U1 Relative or friend - long term fostering
                     -   'U1: Foster Placement with relative or friend - long term
                         fostering'
                     -   U1:Foster with relative or friend-long term fostering
@@ -7200,7 +7200,7 @@ column_map:
                         or FFA
                     -   U3 Foster placement with relative or friend- not long term
                         or FFA
-                    -   'U3 Relative or friend - not long term or FFA '
+                    -   U3 Relative or friend - not long term or FFA
                     -   'U3: Foster Placement with relative or friend - not long term
                         or FFA'
                     -   U3:Foster with relative or friend-not long term or FFA
@@ -7267,7 +7267,7 @@ column_map:
                         LA boundary
                     -   'U5 : U5 Placement with other foster carer who is also an
                         approved adopter- FFA'
-                    -   'U5 Foster Carer who is also an approved adopter- FFA '
+                    -   U5 Foster Carer who is also an approved adopter- FFA
                     -   U5 Placement with other foster carer - Foster for Adoption
                         (FfA)
                     -   U5 Placement with other foster carer who is also an approved
@@ -7281,7 +7281,7 @@ column_map:
                     -   U5:Placement with other foster carer who is also an approved
                         adopter-FFA
                     -   U6
-                    -   'U6 - '
+                    -   U6 -
                     -   'U6  [Foster place other foster: not long term nor FFA]'
                     -   U6 - Foster Placement
                     -   U6 - Foster placement with other foster carer - not long term
@@ -7290,8 +7290,8 @@ column_map:
                         or FFA or concurrent planning(U6)
                     -   U6 - Foster Placement with other foster carer - not long term
                         or FFA/concurrent planning
-                    -   'U6 - Foster Placement with other foster carer - not long
-                        term or FFA/concurrent planning '
+                    -   U6 - Foster Placement with other foster carer - not long term
+                        or FFA/concurrent planning
                     -   U6 - Foster placement with other foster carer- not long term
                         or FFA/concurrent planning
                     -   U6 - Other foster carer- not appr adopt/LTerm fostering
@@ -7321,7 +7321,7 @@ column_map:
                     -   U6 - Staying Put, provided by LA, inside LA boundary
                     -   'U6 : U6 Placement with other foster carer - not long term
                         or FFA'
-                    -   'U6 Foster Carer - not long term or FFA '
+                    -   U6 Foster Carer - not long term or FFA
                     -   U6 Foster placement with other foster carer - Not long term
                         or FFA/concurrent planning
                     -   U6 Placement with other foster carer  not long term or FFA
@@ -7471,12 +7471,12 @@ column_map:
                         of the 2002 Act) with current foster carer
                     -   A5 - Placed for adoption with placement order (under section
                         21 of the 2002 Act) with current foster carer
-                    -   'A5 - Placed for adoption with placement order (under section
-                        21 of the 2002 Act) with current foster carer '
+                    -   A5 - Placed for adoption with placement order (under section
+                        21 of the 2002 Act) with current foster carer
                     -   A5 - Placed for adoption with placement order (under section
                         21 of the 2002 Act) with currrent foster carer
-                    -   'A5 - Placed for adoption with placement order with current
-                        foster carer '
+                    -   A5 - Placed for adoption with placement order with current
+                        foster carer
                     -   'A5 : A5 Placed for adoption with placement order (under section
                         21 of the 2002 Act) with current foster carer'
                     -   A5 Adoption Sect. 21 with placment order with current foster
@@ -7484,12 +7484,12 @@ column_map:
                         21
                     -   A5 IN - Placed for Adoption with Placement Order with current
                         Foster Carer (in LA)
-                    -   'A5 Placed for adoption '
+                    -   A5 Placed for adoption
                     -   A5 Placed for adoption w. plcmt ord w. current foster carer
                     -   A5 Placed for adoption with placement order (under section
                         21 of the 2002 Act) with current foster carer
-                    -   'A5 Placed for adoption with placement order (under section
-                        21 of the 2002 Act) with current foster carer '
+                    -   A5 Placed for adoption with placement order (under section
+                        21 of the 2002 Act) with current foster carer
                     -   A5 Placed for adoption with Placement Order with current foster
                         carer (under Section 21 of the 2002 Act)
                     -   A5 Placed for adoption with placemt order with f/c
@@ -7514,12 +7514,12 @@ column_map:
                         21 of the 2002 Act)
                     -   A6 - Placed for adoption with placement order (under section
                         21 of the 2002 Act) not with current foster carer
-                    -   'A6 - Placed for adoption with placement order (under section
-                        21 of the 2002 Act) not with current foster carer '
+                    -   A6 - Placed for adoption with placement order (under section
+                        21 of the 2002 Act) not with current foster carer
                     -   A6 - Placed for adoption with placement order (under section
                         21 of the 2002 Act) not with currrent foster carer
-                    -   'A6 - Placed for adoption with placement order not with current
-                        foster carer '
+                    -   A6 - Placed for adoption with placement order not with current
+                        foster carer
                     -   A6 - Placed for adoption with placement order not with current
                         foster carer (under Section 21 of the Adoption and Children
                         Act 2002) or with a freeing order where parental/guardian
@@ -7533,7 +7533,7 @@ column_map:
                         secti
                     -   A6 IN - Placed for Adoption with Placement Order not with
                         current Foster Carer (in LA)
-                    -   'A6 Placed for adoption '
+                    -   A6 Placed for adoption
                     -   A6 Placed for adoption w. plcmt ord not w. current foster
                         carer
                     -   A6 Placed for Adoption with Placement Order (2002 Act S21)
@@ -7542,8 +7542,8 @@ column_map:
                         (Jersey) Law 1961 Act) not with current foster carer
                     -   A6 Placed for adoption with placement order (under section
                         21 of the 2002 Act) not with current foster carer
-                    -   'A6 Placed for adoption with placement order (under section
-                        21 of the 2002 Act) not with current foster carer '
+                    -   A6 Placed for adoption with placement order (under section
+                        21 of the 2002 Act) not with current foster carer
                     -   A6 -Placed for adoption with placement order not with current
                         foster carer
                     -   A6 Placed for adoption with Placement Order not with current
@@ -7660,7 +7660,7 @@ column_map:
                         authority (in LA)
                     -   P1 Placed with own parents or other person with parental responsibility
                     -   P1 Placed with own parents/pers with parental resp
-                    -   'P1 Placed With Parent Regulations '
+                    -   P1 Placed With Parent Regulations
                     -   P1 Placed with parents / others with parental responsibility
                     -   P1 Placed with Parents or other person with parental responsibility
                     -   P1 Placed with Parents/Other with Parental Resp.
@@ -7767,8 +7767,8 @@ column_map:
               -   code: f) Residential accommodation
                   name:
                     -   'n) H5: Residential accommodation'
-                    -   " Residential accommodation not subject to 'Children's homes
-                        regulations'"
+                    -   Residential accommodation not subject to 'Children's homes
+                        regulations'
                     -   H5
                     -   H5  [Hostels/accom-not subject to Children's Home Regs]
                     -   H5 - Hostels Support Res Settings (not child homes Regs
@@ -7824,7 +7824,7 @@ column_map:
                         regulations'
                     -   Residential accommodation not subject to 'Children's homes
                         regulations' [H5]
-                    -   'Secure units, homes and hostels '
+                    -   Secure units, homes and hostels
                     -   VOL HOSTEL/SEMI INDEPENDENCE WITH FORMAL SUPPORT
                     -   Residential settings not subject to Childrens Home Regs.
                     -   'H5: Residential accommodation'
@@ -7842,7 +7842,7 @@ column_map:
               -   code: g) Secure Children’s Homes
                   name:
                     -   'o) K1: Secure Children’s Homes'
-                    -   ' Secure unit'
+                    -   Secure unit
                     -   H1
                     -   H1 - SECURE UNIT IN LA
                     -   H1 - Secure Unit Inside LA Boundary
@@ -7860,7 +7860,7 @@ column_map:
                     -   K1 - SECURE UNIT
                     -   K1 - Secure Unit outside LA boundary
                     -   'K1 : K1 Secure unit'
-                    -   'K1 Secure Accommodation '
+                    -   K1 Secure Accommodation
                     -   K1 Secure Unit
                     -   K1 Secure unit
                     -   K1:Secure Unit
@@ -7874,7 +7874,7 @@ column_map:
                   name:
                     -   'p) K2: Children’s Homes'
                     -   K2 Homes and Hostels
-                    -   " Homes and hostels subject to Children's Homes Regulations"
+                    -   Homes and hostels subject to Children's Homes Regulations
                     -   Children’s Homes
                     -   Childrens Homes
                     -   Children's Homes
@@ -7937,7 +7937,7 @@ column_map:
               -   code: i) Residential Care Home
                   name:
                     -   'q) R1: Residential Care Home'
-                    -   ' Residential care home'
+                    -   Residential care home
                     -   R1
                     -   R1 - Residential care home
                     -   R1 - Residential Care Home
@@ -7962,9 +7962,9 @@ column_map:
               -   code: j) NHS/Health Trust
                   name:
                     -   'r) R2: NHS/Health Trust'
-                    -   ' NHS/Health Trust or other establishment providing medical
-                        or nursing care'
-                    -   'NHS Trust providing medical/nursing care '
+                    -   NHS/Health Trust or other establishment providing medical
+                        or nursing care
+                    -   NHS Trust providing medical/nursing care
                     -   NHS/Health Trust or other establishment
                     -   NHS/Health Trust or other establishment providing medical
                         or nursing care
@@ -7992,8 +7992,8 @@ column_map:
                         medical or nursing care (in LA)
                     -   R2 NHS/Health Trust or other establishment providing medical
                         or nursing care
-                    -   'R2 NHS/Health Trust or other Establishment Providing Medical
-                        or Nursing Care '
+                    -   R2 NHS/Health Trust or other Establishment Providing Medical
+                        or Nursing Care
                     -   R2 NHS/Health Trust or other Medical/Nursng
                     -   R2:Other Res Setting:-NHS/health Trust Estab Medical Or Nursing
                     -   R2OUT - NHS/Health Trust or other establishment providing
@@ -8003,7 +8003,7 @@ column_map:
               -   code: k) Family Centre or Mother and Baby Unit
                   name:
                     -   's) R3: Family Centre or Mother and Baby Unit'
-                    -   ' Family centre or mother and baby unit'
+                    -   Family centre or mother and baby unit
                     -   Family centre / mother and baby unit
                     -   Family centre or mother and baby unit
                     -   Family Centre or Mother and Baby Unit
@@ -8032,7 +8032,7 @@ column_map:
               -   code: l) Young Offender Institution
                   name:
                     -   't) R5: Young Offender Institution'
-                    -   ' Young Offender Institution or prison'
+                    -   Young Offender Institution or prison
                     -   Other residential settings
                     -   R5
                     -   R5  [Young Offenders Institution or Prison]
@@ -8058,7 +8058,7 @@ column_map:
                     -   Young Offender Institution or prison
                     -   Young Offender Institution or prison [R5]
                     -   Young offenders institution or prison
-                    -   'Youth Treatment Centres '
+                    -   Youth Treatment Centres
                     -   YTC
                     -   'R5: Young Offender Institution'
                     -   R5 - Young Offender Institution (YOI) or prison
@@ -8119,8 +8119,8 @@ column_map:
               -   code: n) Other placements
                   name:
                     -   'v) Z1: Other placements'
-                    -   ' Other placements (must be listed on a schedule sent to DH
-                        with annual submission)'
+                    -   Other placements (must be listed on a schedule sent to DH
+                        with annual submission)
                     -   F1 - Placement with relative or friend (in boundary)
                     -   F2 - Placement with other carer (by council - within boundary)
                     -   F3 - Placement with other carer (through agency - within boundary)
@@ -8161,7 +8161,7 @@ column_map:
                         DfE with annual submission)
                     -   Z1 - Other placements (must be listed on a schedule sent to
                         DH with annual submission)
-                    -   "Z1 - Other placements [Section 38/6]\n"
+                    -   Z1 - Other placements [Section 38/6]
                     -   Z1 - Whereabouts Unknown
                     -   'Z1 : Z1 Other placements (must be listed on a schedule sent
                         to DfE with annual submission)'
@@ -8477,7 +8477,7 @@ column_map:
                     -   '890'
                     -   Blackpool
                     -   E06000009
-                    -   'Blackpool Local Authority '
+                    -   Blackpool Local Authority
               -   code: Bolton
                   name:
                     -   '350'
@@ -8503,7 +8503,7 @@ column_map:
                     -   Bradford
                     -   BRADFORD DISTRICT
                     -   E08000032
-                    -   'Bradford '
+                    -   Bradford
                     -   Bradford LA
                     -   Bradford MBC
                     -   Bradford MDC
@@ -8681,7 +8681,7 @@ column_map:
                     -   DEVON COUNTY
                     -   E10000008
                     -   Devon CC
-                    -   'Devon County Council '
+                    -   Devon County Council
                     -   Torbay (B)
               -   code: Doncaster
                   name:
@@ -8999,7 +8999,7 @@ column_map:
               -   code: 'Lancashire '
                   name:
                     -   Lancashire County Council
-                    -   'West Lancashire '
+                    -   West Lancashire
               -   code: Leeds
                   name:
                     -   '383'
@@ -9057,7 +9057,7 @@ column_map:
                     -   Liverpool City Council
               -   code: London
                   name:
-                    -    Lewisham
+                    -   Lewisham
               -   code: London Borough of Hounslow
                   name:
                     -   London Borough of Hounslow
@@ -9104,7 +9104,7 @@ column_map:
                     -   E06000042
                     -   Milton Keynes
                     -   Milton Keynes Council
-                    -   'Milton Keynes Council '
+                    -   Milton Keynes Council
                     -   Milton Keynes (B)
               -   code: NI
                   name:
@@ -9146,7 +9146,7 @@ column_map:
                     -   King's Lynn and West Norfolk District (B)
               -   code: 'Norfolk '
                   name:
-                    -   'Norfolk '
+                    -   Norfolk
               -   code: North Ayrshire
                   name:
                     -   North Ayrshire
@@ -9201,7 +9201,7 @@ column_map:
                     -   West Northamptonshire
                     -   Daventry
                     -   Northamptonshire County Council
-                    -   'Northamptonshire County Council '
+                    -   Northamptonshire County Council
                     -   Corby District (B)
                     -   East Northamptonshire District
                     -   Kettering District (B)
@@ -9347,7 +9347,7 @@ column_map:
                     -   EAST DUNBARTONSHIRE
                     -   South Lanarkshir
                     -   West Lothian
-                    -   'Scottish Borders Council '
+                    -   Scottish Borders Council
                     -   Aberdeen City Council
                     -   South Lanarkshire
                     -   Midlothian Council
@@ -9684,7 +9684,7 @@ column_map:
                     -   '816'
                     -   E06000014
                     -   York
-                    -   'City of York Local Authority '
+                    -   City of York Local Authority
               -   code: lancashire
                   name:
                     -   Fylde
@@ -9759,7 +9759,7 @@ column_map:
                     -   Care Leaver - PA to 25
                     -   Former Relevant
                     -   Former Relevant'
-                    -   'Former Relevant '
+                    -   Former Relevant
                     -   former relevant 18-20
                     -   former relevant 21-24
                     -   FR
@@ -9770,7 +9770,7 @@ column_map:
                     -   Q
                     -   Qualifying
                     -   Qualifying'
-                    -   'Qualifying '
+                    -   Qualifying
                     -   Qualifying care leaver
                     -   Qualifying (Former Relevant)
               -   code: d) Eligible
@@ -9778,7 +9778,7 @@ column_map:
                     -   d) Eligible child
                     -   E
                     -   Eligible
-                    -   'Eligible '
+                    -   Eligible
                     -   Other - eligible
                     -   Other (Eligible)
               -   code: e) Other
@@ -9830,7 +9830,7 @@ column_map:
               -   code: c) Not recorded
                   name:
                     -   No care leaver details on record (child still in care)
-                    -   'No Contact Recorded '
+                    -   No Contact Recorded
                     -   Not Recorded
                     -   nan
                     -   Unknown
@@ -9885,14 +9885,14 @@ column_map:
                     -   Care Leaver-'Accommodation' / With parents or relatives
                     -   PARENTS OR RELATIVES
                     -   Placed with own parents or other person with parental responsibility
-                    -   'With parents of relatives '
+                    -   With parents of relatives
                     -   With parents or relatives
                     -   With Parents Or Relatives
                     -   With parents or relatives [B]
                     -   With Parents/Relatives
                     -   (B) With parents or relatives
                     -   B - With parents or relatives/ Connected Person
-                    -   'With parent(s) or relative(s) '
+                    -   With parent(s) or relative(s)
                     -   Friends & Family
                     -   B – With parents
                     -   (B) 16+ With Parents or Relatives
@@ -9926,7 +9926,7 @@ column_map:
                     -   Code 'C2' is not mapped
                     -   Community home [C]
                     -   Community Home or other form of residential care
-                    -   'Community Home or other form of residential care '
+                    -   Community Home or other form of residential care
                     -   Community home or other form of residential care such as an
                         NHS establishment
                     -   Community home or other form of Residential care such as NHS
@@ -10041,7 +10041,7 @@ column_map:
                     -   K1
                     -   Lodgings - No Formal Support
                     -   Ordinary lodgings
-                    -   'Ordinary lodgings '
+                    -   Ordinary lodgings
                     -   Ordinary Lodgings (without formal support)
                     -   Ordinary lodgings without formal support
                     -   Ordinary lodgings, without formal support
@@ -10083,7 +10083,7 @@ column_map:
                     -   No Fixed abode/Homeless
                     -   No fixed abode/homeless [S]
                     -   S
-                    -   'S - '
+                    -   S -
                     -   S - No fixed abode / homeless
                     -   S - No Fixed Abode/ Homeless
                     -   S No fixed abode / homeless
@@ -10103,7 +10103,7 @@ column_map:
                     -   Foyers +
                     -   FOYERS AND SIMILAR
                     -   Foyers and similar supported accommodation
-                    -   'Foyers and similar supported accommodation '
+                    -   Foyers and similar supported accommodation
                     -   Foyers and similar supported accommodation (with education,
                         training or employment)
                     -   Foyers and similar supported accommodation which combines
@@ -10184,7 +10184,7 @@ column_map:
                     -   'W: Bed and breakfast'
                     -   Bed and breakfast
                     -   Bed And Breakfast
-                    -   'Bed and breakfast '
+                    -   Bed and breakfast
                     -   W
                     -   W - Bed and Breakfast
                     -   W - Bed and breakfast
@@ -10202,7 +10202,7 @@ column_map:
                     -   Custody
                     -   In custody
                     -   In Custody
-                    -   'In custody '
+                    -   In custody
                     -   In custody [X]
                     -   X
                     -   X - In Custody
@@ -10240,7 +10240,7 @@ column_map:
                     -   With Former Fost Carer under Staying Put Arrangmts
                     -   With former foster carer
                     -   With former foster carers
-                    -   'With former foster carers '
+                    -   With former foster carers
                     -   With Former Foster Carers - continuing turning 18
                     -   With former foster carers - where the young person has been
                         fostered and on turning 18 continues to remain with the same
@@ -10254,7 +10254,7 @@ column_map:
                         former foster family)
                     -   With former foster carers [Z]
                     -   Z
-                    -   'Z - '
+                    -   Z -
                     -   Z - Staying Put
                     -   Z - Staying Put (With former foster carers)
                     -   Z - With former foster carer(s)
@@ -10316,7 +10316,7 @@ column_map:
                     -   Suitable
                     -   'True'
                     -   'Y'
-                    -   'Y '
+                    -   'Y'
                     -   'Yes'
               -   code: b) Not suitable
                   name:
@@ -10339,11 +10339,11 @@ column_map:
                     -   Not suitable
                     -   Unsuitable
                     -   'False'
-                    -   'Accommodation is not considered suitable '
+                    -   Accommodation is not considered suitable
               -   code: c) Not in touch or not recorded
                   name:
                     -   '0'
-                    -   ' - '
+                    -   '-'
                     -   Not Recorded
                     -   nan
                     -   Unknown
