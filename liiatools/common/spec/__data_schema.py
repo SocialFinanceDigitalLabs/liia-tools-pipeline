@@ -76,7 +76,6 @@ class Column(BaseModel):
     string: Literal["alphanumeric", "postcode", "regex"] = None
     numeric: Numeric = None
     date: str = None
-    time: str = None
 
     dictionary: Dict = None
     category: List[Category] = None
@@ -100,8 +99,6 @@ class Column(BaseModel):
             return "date"
         elif self.category:
             return "category"
-        elif self.time:
-            return "time"
         else:
             raise ValueError("Unknown data type")
 
@@ -135,7 +132,7 @@ class Column(BaseModel):
 
         return re.compile(pattern, flags)
 
-    def match_category(self, value: str) -> Optional[str]:
+    def match_category(self, value: str) -> Optional[Category]:
         assert self.category, "Column is not a category"
 
         value = value.strip().lower()

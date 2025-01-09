@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from enum import Enum
 
 from liiatools.common.reference import authorities
 
@@ -81,33 +80,6 @@ def check_la(directory):
         match = re.search(f"{pattern}$", directory)
         if match:
             return match.group(0)
-
-    raise ValueError
-
-
-class Term(Enum):
-    OCT = "Autumn"
-    JAN = "Spring"
-    MAY = "Summer"
-
-
-def check_term(filename):
-    """
-    Check a filename to see if it contains the term information: Autumn/Spring/Summer, if it does, return that term
-    Expected filename formats:
-        October_2023_addressesonroll.csv
-        January_2023_addressesoffroll.csv
-    :param filename: Filename that contains a term
-    :return: A tern within the string
-    :raises ValueError: If no term is found
-    """
-    match = re.search(
-        f"{Term.OCT.name}|{Term.JAN.name}|{Term.MAY.name}",
-        filename,
-        re.IGNORECASE,
-    )
-    if match:
-        return Term[match.group(0).upper()].value
 
     raise ValueError
 

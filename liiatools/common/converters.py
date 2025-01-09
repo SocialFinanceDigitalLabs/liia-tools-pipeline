@@ -5,7 +5,7 @@ value as the correct type / with correct format if it is.
 """
 import logging
 import re
-from datetime import date, datetime, time
+from datetime import date, datetime
 
 from .spec.__data_schema import Column
 
@@ -43,8 +43,8 @@ def to_category(value: str, column: Column):
     the config file should contain a dictionary for each category for this function to loop through
     return blank if no categories found
 
-    :param value: Some string to convert into a category value
-    :param column: A Column class containing different category:value pairs
+    :param string: Some string to convert into a category value
+    :param categories: A list of dictionaries containing different category:value pairs
     :return: Either a category value, "error" or blank string
     """
     match = column.match_category(str(value).strip())
@@ -185,23 +185,3 @@ def to_regex(value: str, pattern: str):
         return match.string
     except Exception as e:
         raise ValueError(f"Invalid value: {value}") from e
-
-
-@allow_blank
-def to_time(value, timeformat="%Y-%b-%d %H:%M:%S"):
-    """
-    Confirm any strings that should be times to time
-
-    :param value: A value to convert to a time
-    :param timeformat: A format for the time to be read correctly, default to %Y-%b-%d %H:%M:%S
-    :return: The specified time, converted to a time
-    """
-    try:
-        if isinstance(value, datetime):
-            return value.time()
-        if isinstance(value, time):
-            return value
-        elif isinstance(value, str):
-            return datetime.strptime(value, timeformat).time()
-    except Exception as e:
-        raise ValueError(f"Invalid time: {value}") from e
