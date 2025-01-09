@@ -1,5 +1,5 @@
-from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 import re
+from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -132,7 +132,7 @@ class Column(BaseModel):
 
         return re.compile(pattern, flags)
 
-    def match_category(self, value: str) -> Optional[str]:
+    def match_category(self, value: str) -> Optional[Category]:
         assert self.category, "Column is not a category"
 
         value = value.strip().lower()

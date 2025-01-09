@@ -1,21 +1,21 @@
 import hashlib
 import logging
-import uuid
 import re
+import uuid
 from datetime import datetime
+from enum import Enum
 from os.path import basename, dirname
 from typing import List, Tuple
-from enum import Enum
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import yaml
 from fs.base import FS
 from fs.info import Info
 from fs.move import copy_file
 
+from liiatools.common.checks import check_la, check_year
 from liiatools.common.constants import ProcessNames, SessionNames
-from liiatools.common.checks import check_year, check_la
 
 from .data import FileLocator
 

@@ -1,29 +1,22 @@
 import logging
 from typing import List, Tuple
+
 from fs.base import FS
 
+from liiatools.cin_census_pipeline.reports import reports
+from liiatools.cin_census_pipeline.spec import (load_pipeline_config,
+                                                load_schema)
+from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
 from liiatools.common import pipeline as pl
-from liiatools.common.archive import DataframeArchive
 from liiatools.common.aggregate import DataframeAggregator
+from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import ProcessNames, SessionNames
-from liiatools.common.data import (
-    DataContainer,
-    ErrorContainer,
-    FileLocator,
-    PipelineConfig,
-    ProcessResult,
-)
+from liiatools.common.data import (DataContainer, ErrorContainer, FileLocator,
+                                   PipelineConfig, ProcessResult)
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
-from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-
-from liiatools.cin_census_pipeline.spec import (
-    load_pipeline_config,
-    load_schema,
-)
-from liiatools.cin_census_pipeline.stream_pipeline import task_cleanfile
-from liiatools.cin_census_pipeline.reports import reports
-
+from liiatools.common.transform import (degrade_data, enrich_data,
+                                        prepare_export)
 
 logger = logging.getLogger()
 

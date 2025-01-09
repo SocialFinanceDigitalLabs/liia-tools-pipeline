@@ -1,14 +1,13 @@
 from pathlib import Path
-from xmlschema import XMLSchema
 
 from sfdata_stream_parser.filters import generic
-
-from liiatools.common.data import FileLocator, ProcessResult, DataContainer
-from liiatools.common import stream_filters as stream_functions
-from liiatools.common.stream_parse import dom_parse
-from liiatools.common.stream_pipeline import to_dataframe_xml
+from xmlschema import XMLSchema
 
 from liiatools.cin_census_pipeline import stream_record
+from liiatools.common import stream_filters as stream_functions
+from liiatools.common.data import DataContainer, FileLocator, ProcessResult
+from liiatools.common.stream_parse import dom_parse
+from liiatools.common.stream_pipeline import to_dataframe_xml
 
 from . import stream_filters as filters
 

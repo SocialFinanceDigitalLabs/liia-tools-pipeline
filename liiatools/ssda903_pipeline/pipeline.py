@@ -1,19 +1,16 @@
 import logging
-
 from typing import List, Tuple
+
 from fs.base import FS
 
 from liiatools.common import pipeline as pl
-from liiatools.common.archive import DataframeArchive
 from liiatools.common.aggregate import DataframeAggregator
+from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
-from liiatools.common.data import (
-    ErrorContainer,
-    FileLocator,
-)
+from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
-from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-
+from liiatools.common.transform import (degrade_data, enrich_data,
+                                        prepare_export)
 from liiatools.ssda903_pipeline.spec import load_pipeline_config, load_schema
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
 
@@ -144,5 +141,7 @@ def create_reports(current_folder: FS, process_folder: FS):
 
     for report in ["PAN", "SUFFICIENCY"]:
         report_folder = export_folder.makedirs(report, recreate=True)
-        report = prepare_export(aggregate_data, load_pipeline_config())
-        report.export(report_folder, "ssda903_", "csv")
+        report_data = prepare_export(
+            aggregate_data, load_pipeline_config(), profile=report
+        )
+        report_data.export(report_folder, "ssda903_", "csv")

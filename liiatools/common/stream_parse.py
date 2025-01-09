@@ -1,10 +1,6 @@
-from sfdata_stream_parser.events import (
-    StartElement,
-    EndElement,
-    TextNode,
-    CommentNode,
-    ProcessingInstructionNode,
-)
+from sfdata_stream_parser.events import (CommentNode, EndElement,
+                                         ProcessingInstructionNode,
+                                         StartElement, TextNode)
 
 from liiatools.common.stream_errors import StreamError
 

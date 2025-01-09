@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Iterable, Literal, Dict
+from typing import Dict, Iterable, Literal
 
 import pandas as pd
 from fs.base import FS

@@ -1,13 +1,10 @@
 from collections import namedtuple
 
 from sfdata_stream_parser.events import TextNode
-from liiatools.common.spec.__data_schema import (
-    Column,
-    Numeric,
-    Category,
-)
+
 from liiatools.cin_census_pipeline.spec import load_schema
 from liiatools.cin_census_pipeline.stream_filters import add_column_spec
+from liiatools.common.spec.__data_schema import Category, Column, Numeric
 
 
 def test_add_column_spec():

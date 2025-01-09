@@ -1,19 +1,16 @@
 import unittest
 from datetime import date
 
-from sfdata_stream_parser.events import StartElement, EndElement, TextNode
+from sfdata_stream_parser.events import EndElement, StartElement, TextNode
 
-from liiatools.cin_census_pipeline.stream_record import (
-    CINEvent,
-    HeaderEvent,
-    cin_collector,
-    child_collector,
-    message_collector,
-    _maybe_list,
-    cin_event,
-    event_to_records,
-    export_table,
-)
+from liiatools.cin_census_pipeline.stream_record import (CINEvent, HeaderEvent,
+                                                         _maybe_list,
+                                                         child_collector,
+                                                         cin_collector,
+                                                         cin_event,
+                                                         event_to_records,
+                                                         export_table,
+                                                         message_collector)
 
 
 def test_maybe_list():

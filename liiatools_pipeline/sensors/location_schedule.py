@@ -1,22 +1,16 @@
 from hashlib import sha1
 
 import fs.errors
-from dagster import (
-    RunRequest,
-    RunConfig,
-    schedule,
-    RunsFilter,
-    DagsterRunStatus,
-    DefaultScheduleStatus,
-)
+from dagster import (DagsterRunStatus, DefaultScheduleStatus, RunConfig,
+                     RunRequest, RunsFilter, schedule)
+from decouple import config as env_config
 from fs import open_fs
 from fs.walk import Walker
-from decouple import config as env_config
 
+from liiatools.common.checks import check_la
 from liiatools_pipeline.jobs.common_la import clean
 from liiatools_pipeline.jobs.common_org import reports
 from liiatools_pipeline.ops.common_config import CleanConfig
-from liiatools.common.checks import check_la
 
 
 def input_directory_walker(folder_location, context, dataset):

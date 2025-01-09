@@ -1,17 +1,12 @@
 import logging
-from typing import Callable, Dict
 from datetime import datetime
+from typing import Callable, Dict
+
 import pandas as pd
 
-from liiatools.common.data import (
-    DataContainer,
-    ErrorContainer,
-    Metadata,
-    PipelineConfig,
-    ProcessResult,
-    TableConfig,
-)
 from liiatools.common.checks import check_la_signature
+from liiatools.common.data import (DataContainer, ErrorContainer, Metadata,
+                                   PipelineConfig, ProcessResult, TableConfig)
 
 from ._transform_functions import degrade_functions, enrich_functions
 

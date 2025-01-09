@@ -3,11 +3,8 @@ from typing import Dict
 
 import pandas as pd
 
+from liiatools.common.converters import to_nth_of_month, to_short_postcode
 from liiatools.common.reference import authorities
-from liiatools.common.converters import (
-    to_nth_of_month,
-    to_short_postcode,
-)
 
 from .data import ColumnConfig, Metadata
 

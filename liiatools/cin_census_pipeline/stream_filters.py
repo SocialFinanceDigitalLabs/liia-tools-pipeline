@@ -6,11 +6,9 @@ from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import pass_event, streamfilter
 
 from liiatools.common.spec.__data_schema import Column, Numeric
-from liiatools.common.stream_filters import (
-    _create_category_spec,
-    _create_regex_spec,
-    _create_numeric_spec,
-)
+from liiatools.common.stream_filters import (_create_category_spec,
+                                             _create_numeric_spec,
+                                             _create_regex_spec)
 
 logger = logging.getLogger(__name__)
 

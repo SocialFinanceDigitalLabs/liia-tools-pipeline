@@ -1,10 +1,11 @@
 import unittest
 from datetime import datetime
+
 from liiatools.common.checks import (
-    check_year,
     check_la,
-    check_year_within_range,
     check_la_signature,
+    check_year,
+    check_year_within_range,
 )
 
 
