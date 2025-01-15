@@ -25,4 +25,6 @@ def convert_column_header_to_match(event, schema: DataSchema):
                     parse = Column().parse_regex(regex)
                     if parse.match(event.header) is not None:
                         return event.from_event(event, header=column)
+            elif column.lower().strip() == event.header.lower().strip():
+                return event.from_event(event, header=column)
     return event
