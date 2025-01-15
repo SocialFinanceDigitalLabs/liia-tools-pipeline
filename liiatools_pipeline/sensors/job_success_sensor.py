@@ -213,10 +213,12 @@ def move_concat_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        context.log.info(f"Run records found for reports job in move concat sensor")
         if "annex_a" in allowed_datasets:
             allowed_datasets.remove("annex_a")
             context.log.info(f"Annex A removed from reports job for move concat sensor")
+        # Check if there are run records for the reports job after removing annex_a
+        if run_records:
+            context.log.info(f"Run records found for reports job in move concat sensor")
         for dataset in allowed_datasets:
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,

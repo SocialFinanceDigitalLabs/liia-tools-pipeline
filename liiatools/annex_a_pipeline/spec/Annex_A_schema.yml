@@ -3,7 +3,7 @@ column_map:
         Child Unique ID: &child-id
             string: "alphanumeric"
             header_regex:
-              -   /.*child.*id.*/i
+              -   /.*\bchild(?:id|identifier)?\b.*\b(?:id|identifier)?\b.*/i
             canbeblank: false
         Gender: &gender
             category:
