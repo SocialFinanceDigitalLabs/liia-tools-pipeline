@@ -31,10 +31,6 @@ from .spec.__data_schema import Category, Column, DataSchema, Numeric
 
 logger = logging.getLogger(__name__)
 
-from dagster import get_dagster_logger
-
-log = get_dagster_logger(__name__)
-
 
 def _import_set_workaround(data):
     """
