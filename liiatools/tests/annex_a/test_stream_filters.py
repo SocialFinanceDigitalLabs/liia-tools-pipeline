@@ -1,7 +1,6 @@
 from sfdata_stream_parser.events import Cell
 
-from liiatools.annex_a_pipeline.stream_filters import \
-    convert_column_header_to_match
+from liiatools.annex_a_pipeline.stream_filters import convert_column_header_to_match
 from liiatools.common.spec.__data_schema import Column, DataSchema
 
 
@@ -9,7 +8,11 @@ def test_convert_column_header_to_match():
     schema = DataSchema(
         column_map={
             "list_1": {
-                "Child Unique ID": Column(header_regex=["/.*child.*id.*/i"]),
+                "Child Unique ID": Column(
+                    header_regex=[
+                        "/\bchild\b.*\b(id|identifier)\b|\b(id|identifier)\b.*\bchild\b/i"
+                    ]
+                ),
                 "Gender": Column(),
             }
         }
