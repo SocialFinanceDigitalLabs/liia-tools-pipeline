@@ -10,18 +10,30 @@ import tablib
 import xmlschema
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
-from sfdata_stream_parser.filters.generic import (generator_with_value,
-                                                  pass_event, streamfilter)
+from sfdata_stream_parser.filters.generic import (
+    generator_with_value,
+    pass_event,
+    streamfilter,
+)
 from tablib import UnsupportedFormat, import_book, import_set
 
-from liiatools.common.converters import (to_category, to_date, to_numeric,
-                                         to_postcode, to_regex)
+from liiatools.common.converters import (
+    to_category,
+    to_date,
+    to_numeric,
+    to_postcode,
+    to_regex,
+)
 from liiatools.common.data import FileLocator
 from liiatools.common.stream_errors import EventErrors, StreamError
 
 from .spec.__data_schema import Category, Column, DataSchema, Numeric
 
 logger = logging.getLogger(__name__)
+
+from dagster import get_dagster_logger
+
+log = get_dagster_logger(__name__)
 
 
 def _import_set_workaround(data):
@@ -75,7 +87,7 @@ def tablib_parse(source: FileLocator):
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
     yield events.StartContainer(**params)
-    yield events.StartTable(headers=dataset.headers)
+    yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
@@ -191,10 +203,17 @@ def add_table_name(event, schema: DataSchema):
             event, table_name=table_name, table_spec=schema.column_map[table_name]
         )
     else:
+        sheetname = getattr(event, "sheetname", None)
+        message = (
+            "Failed to identify table based on headers"
+            if sheetname is None
+            else f"Failed to identify table based on headers, sheet name: {sheetname}"
+        )
+
         return EventErrors.add_to_event(
             event,
             type="UnidentifiedTable",
-            message=f"Failed to identify table based on headers",
+            message=message,
         )
 
 
