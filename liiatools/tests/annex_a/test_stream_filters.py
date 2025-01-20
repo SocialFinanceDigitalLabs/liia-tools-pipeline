@@ -10,7 +10,7 @@ def test_convert_column_header_to_match():
             "list_1": {
                 "Child Unique ID": Column(
                     header_regex=[
-                        "/\bchild\b.*\b(id|identifier)\b|\b(id|identifier)\b.*\bchild\b/i"
+                        r"/\bchild\b.*\b(id|identifier)\b|\b(id|identifier)\b.*\bchild\b/i"
                     ]
                 ),
                 "Gender": Column(),
