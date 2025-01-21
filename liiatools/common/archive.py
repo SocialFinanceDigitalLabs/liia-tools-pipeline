@@ -123,10 +123,13 @@ class DataframeArchive:
         Load a snapshot from the archive.
         """
         data = DataContainer()
-        table_id = re.search(r"\d{4}_([a-zA-Z0-9_]*)\.", snap_id)
+        table_id = re.search(
+            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*_*([a-zA-Z0-9_]*)\.",
+            snap_id,
+        )
 
         for table_spec in self.config.table_list:
-            if table_id and table_id.group(1) == table_spec.id:
+            if table_id and table_id.group(2) == table_spec.id:
                 with self.fs.open(snap_id, "r") as f:
                     df = pd.read_csv(f)
                     df = _normalise_table(df, table_spec)
