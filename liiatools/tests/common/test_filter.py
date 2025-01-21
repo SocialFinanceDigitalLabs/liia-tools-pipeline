@@ -5,7 +5,6 @@ from sfdata_stream_parser.filters import generic
 
 from liiatools.common import stream_filters
 from liiatools.common.spec.__data_schema import Column
-
 from liiatools.ssda903_pipeline.spec import load_schema as s903_schema
 
 

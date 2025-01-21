@@ -6,13 +6,8 @@ from fs import open_fs
 
 from liiatools.common.reference import authorities
 
-from .pipeline import (
-    create_session_folder,
-    open_archive,
-    process_files,
-    create_current_view,
-    create_reports,
-)
+from .pipeline import (create_current_view, create_reports,
+                       create_session_folder, open_archive, process_files)
 
 log = logging.getLogger()
 click_log.basic_config(log)

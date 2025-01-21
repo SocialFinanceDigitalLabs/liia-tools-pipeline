@@ -1,17 +1,14 @@
 import re
+
 import pandas as pd
-from dagster import In, Out, op, get_dagster_logger
+from dagster import In, Out, get_dagster_logger, op
 from fs.base import FS
 
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesFixEpisodes
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.fix_episodes import stage_1, stage_2
-
-from liiatools_pipeline.assets.common import (
-    workspace_folder,
-    shared_folder,
-)
+from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 
 log = get_dagster_logger()
 

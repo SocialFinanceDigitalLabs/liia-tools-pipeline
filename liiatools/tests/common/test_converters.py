@@ -1,16 +1,11 @@
-import pytest
 import datetime
 
-from liiatools.common.converters import (
-    allow_blank,
-    to_category,
-    to_postcode,
-    to_short_postcode,
-    to_numeric,
-    to_date,
-    to_nth_of_month,
-    to_regex,
-)
+import pytest
+
+from liiatools.common.converters import (allow_blank, to_category, to_date,
+                                         to_nth_of_month, to_numeric,
+                                         to_postcode, to_regex,
+                                         to_short_postcode)
 from liiatools.common.spec.__data_schema import Column
 
 
