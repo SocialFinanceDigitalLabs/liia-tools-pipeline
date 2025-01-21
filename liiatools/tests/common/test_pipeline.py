@@ -2,13 +2,10 @@ from fs import open_fs
 
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator
-from liiatools.common.pipeline import (
-    create_session_folder,
-    discover_year,
-    move_files_for_processing,
-    restore_session_folder,
-    discover_la,
-)
+from liiatools.common.pipeline import (create_session_folder, discover_la,
+                                       discover_year,
+                                       move_files_for_processing,
+                                       restore_session_folder)
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 
 

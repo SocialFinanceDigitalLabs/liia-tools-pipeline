@@ -1,6 +1,7 @@
-from fs import open_fs
-import xml.etree.ElementTree as ET
 import os
+import xml.etree.ElementTree as ET
+
+from fs import open_fs
 
 from liiatools.cin_census_pipeline.spec import load_schema
 from liiatools.cin_census_pipeline.spec.samples import CIN_2022
