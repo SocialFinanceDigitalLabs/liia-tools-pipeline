@@ -1,9 +1,9 @@
-import pickle
-import uuid
-from pathlib import Path
 import os
+import pickle
 import shutil
 import unittest
+import uuid
+from pathlib import Path
 
 import pytest
 from fs import open_fs

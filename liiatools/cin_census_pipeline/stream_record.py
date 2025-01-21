@@ -1,11 +1,12 @@
-from more_itertools import peekable
 from typing import Iterator
 
-from sfdata_stream_parser.collectors import xml_collector
+from more_itertools import peekable
 from sfdata_stream_parser import events
+from sfdata_stream_parser.collectors import xml_collector
 from sfdata_stream_parser.filters.generic import generator_with_value
 
-from liiatools.common.stream_record import text_collector, HeaderEvent, _reduce_dict
+from liiatools.common.stream_record import (HeaderEvent, _reduce_dict,
+                                            text_collector)
 
 
 class CINEvent(events.ParseEvent):

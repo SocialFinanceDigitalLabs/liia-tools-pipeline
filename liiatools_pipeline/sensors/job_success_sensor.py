@@ -1,21 +1,21 @@
 from dagster import (
-    RunRequest,
-    RunsFilter,
     DagsterRunStatus,
-    sensor,
     DefaultSensorStatus,
     RunConfig,
+    RunRequest,
+    RunsFilter,
+    sensor,
 )
 from decouple import config as env_config
 
-from liiatools_pipeline.jobs.common_la import clean, move_current_la, concatenate
-from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
+from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
-    move_error_reports,
-    move_current_org,
     move_concat,
+    move_current_org,
+    move_error_reports,
     reports,
 )
+from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
 
@@ -181,9 +181,15 @@ def move_current_org_sensor(context):
         context.log.info(f"Run records found for reports job")
         latest_run_record = run_records[0]
         context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
-        yield RunRequest(
-            run_key=latest_run_record.dagster_run.run_id,
-        )
+
+        if latest_run_record.dagster_run.tags.get("dataset") == "annex_a":
+            context.log.info(
+                f"Annex A removed from reports job for move current org sensor"
+            )
+        else:
+            yield RunRequest(
+                run_key=latest_run_record.dagster_run.run_id,
+            )
 
 
 @sensor(
@@ -207,7 +213,12 @@ def move_concat_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        context.log.info(f"Run records found for reports job in move concat sensor")
+        if "annex_a" in allowed_datasets:
+            allowed_datasets.remove("annex_a")
+            context.log.info(f"Annex A removed from reports job for move concat sensor")
+        # Check if there are run records for the reports job after removing annex_a
+        if run_records:
+            context.log.info(f"Run records found for reports job in move concat sensor")
         for dataset in allowed_datasets:
             latest_run_id = find_previous_matching_dataset_run(
                 run_records,

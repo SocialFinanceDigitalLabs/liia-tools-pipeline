@@ -1,24 +1,14 @@
 import pandas as pd
 
 from liiatools.ssda903_pipeline.fix_episodes import (
-    create_previous_and_next_episode,
-    add_latest_year_and_source_for_la,
-    _is_the_same,
-    _is_next_episode_duplicate,
-    _is_previous_episode_duplicate,
-    _is_previous_episode_submitted_later,
-    _stage1_rule_to_apply,
-    add_stage1_rule_identifier_columns,
-    _update_dec_stage1,
-    _update_rec_stage1,
-    _update_reason_place_change_stage1,
-    _update_episode_source_stage1,
-    _overlaps_next_episode,
-    _has_x1_gap_before_next_episode,
-    _stage2_rule_to_apply,
-    _update_dec_stage2,
-    _update_episode_source_stage2,
-)
+    _has_x1_gap_before_next_episode, _is_next_episode_duplicate,
+    _is_previous_episode_duplicate, _is_previous_episode_submitted_later,
+    _is_the_same, _overlaps_next_episode, _stage1_rule_to_apply,
+    _stage2_rule_to_apply, _update_dec_stage1, _update_dec_stage2,
+    _update_episode_source_stage1, _update_episode_source_stage2,
+    _update_reason_place_change_stage1, _update_rec_stage1,
+    add_latest_year_and_source_for_la, add_stage1_rule_identifier_columns,
+    create_previous_and_next_episode)
 
 
 def test_create_previous_and_next_episode():

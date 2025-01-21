@@ -1,10 +1,11 @@
 import logging
-import pandas as pd
-import numpy as np
+from typing import Union
+
 import chardet
+import numpy as np
+import pandas as pd
 from fs.base import FS
 from fs.errors import DirectoryExists
-from typing import Union
 
 logger = logging.getLogger()
 

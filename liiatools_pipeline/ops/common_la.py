@@ -1,33 +1,35 @@
 from typing import List, Tuple
-from dagster import In, Out, op
-from fs.base import FS
-from fs import open_fs
 
-from liiatools.common import pipeline as pl
-from liiatools.common.archive import DataframeArchive
-from liiatools.common.checks import check_year_within_range
-from liiatools.common.constants import SessionNames
-from liiatools.common.data import FileLocator, ErrorContainer
-from liiatools.common.reference import authorities
-from liiatools.common.stream_errors import StreamError
-from liiatools.common.transform import degrade_data, enrich_data, prepare_export
+from dagster import In, Out, get_dagster_logger, op
+from fs import open_fs
+from fs.base import FS
+
+from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
+from liiatools.annex_a_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_annex_a,
+)
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_cin,
 )
+from liiatools.common import pipeline as pl
+from liiatools.common.archive import DataframeArchive
+from liiatools.common.checks import check_year_within_range
+from liiatools.common.constants import SessionNames
+from liiatools.common.data import ErrorContainer, FileLocator
+from liiatools.common.reference import authorities
+from liiatools.common.stream_errors import StreamError
+from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
-
 from liiatools_pipeline.assets.common import (
-    workspace_folder,
-    shared_folder,
     pipeline_config,
+    shared_folder,
+    workspace_folder,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
-
-from dagster import get_dagster_logger
 
 log = get_dagster_logger(__name__)
 
@@ -127,7 +129,11 @@ def process_files(
             continue
 
         try:
-            schema = globals()[f"load_schema_{config.dataset}"](year)
+            schema = (
+                globals()[f"load_schema_{config.dataset}"]()
+                if config.dataset == "annex_a"
+                else globals()[f"load_schema_{config.dataset}"](year)
+            )
         except KeyError:
             continue
 
