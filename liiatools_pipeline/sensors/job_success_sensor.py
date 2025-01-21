@@ -293,6 +293,18 @@ def deduplicate_annex_a_sensor(context):
     )  # Get the most recent annex_a run id
     if latest_run_id:  # Ensure there is at least one annex_a run record
         context.log.info(f"Run key: {latest_run_id}")
+        clean_config = CleanConfig(
+            dataset_folder=None,
+            la_folder=None,
+            input_la_code=None,
+            dataset="annex_a",
+        )
         yield RunRequest(
             run_key=latest_run_id,
+            run_config=RunConfig(
+                ops={
+                    "create_deduplicate_session_folder": clean_config,
+                    "deduplicate_pan": clean_config,
+                }
+            ),
         )
