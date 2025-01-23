@@ -26,12 +26,12 @@ class DataframeAggregator:
         """
         return sorted(self.fs.listdir("/"))
 
-    def current(self) -> DataContainer:
+    def current(self, deduplicate: bool = False) -> DataContainer:
         """
         Get the current session as a datacontainer.
         """
         files = self.list_files()
-        return self.combine_files(files)
+        return self.combine_files(files, deduplicate)
 
     def load_file(self, file) -> DataContainer:
         """
@@ -52,6 +52,7 @@ class DataframeAggregator:
     def combine_files(
         self,
         files: Iterable[str],
+        deduplicate: bool
     ) -> DataContainer:
         """
         Combine a list of files into a single dataframe.
@@ -64,7 +65,33 @@ class DataframeAggregator:
                 self.load_file(file),
             )
 
+        if deduplicate:
+            combined = self.deduplicate(combined)
+
         return combined
+
+    def deduplicate(self, data: DataContainer) -> DataContainer:
+        """
+        Deduplicate the dataframes in the container.
+
+        If a dataframe has a 'sort' configuration, then the dataframe is sorted by the specified columns before deduplication.
+        """
+        for table_spec in self.config.table_list:
+            if table_spec.id in data:
+                sort_keys = table_spec.sort_keys
+
+                df = data[table_spec.id]
+                if sort_keys:
+                    df = df.sort_values(by=sort_keys, ascending=True)
+                df = df.drop_duplicates(
+                    subset=[c.id for c in table_spec.columns if c.unique_key]
+                    if [c.id for c in table_spec.columns if c.unique_key]
+                    else None,
+                    keep="last",
+                )
+                data[table_spec.id] = df
+
+        return data
 
     def _combine_files(self, *sources: DataContainer) -> DataContainer:
         """

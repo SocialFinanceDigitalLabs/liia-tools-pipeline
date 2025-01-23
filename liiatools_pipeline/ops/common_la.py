@@ -229,7 +229,10 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         la_files_regex = f"{la_code}_{config.dataset}_"
         pl.remove_files(la_files_regex, existing_files, concat_folder)
 
-        concat_data = current.current(la_code)
+        if config.dataset == "annex_a":
+            concat_data = current.current(la_code, deduplicate_mode="N")
+        else:
+            concat_data = current.current(la_code)
 
         if concat_data:
             concat_data.export(concat_folder, f"{la_code}_{config.dataset}_", "csv")
