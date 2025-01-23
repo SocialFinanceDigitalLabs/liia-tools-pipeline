@@ -131,6 +131,20 @@ def process_files(
             )
             continue
 
+        month = None
+        if config.dataset == "annex_a":
+            month = pl.discover_month(file_locator)
+            if month is None:
+                error_report.append(
+                    dict(
+                        type="MissingMonth",
+                        message="Could not find a month in the filename or path",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
+                continue
+
         try:
             schema = (
                 globals()[f"load_schema_{config.dataset}"]()
@@ -140,7 +154,9 @@ def process_files(
         except KeyError:
             continue
 
-        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
+        metadata = dict(
+            year=year, month=month, schema=schema, la_code=config.input_la_code
+        )
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
@@ -187,7 +203,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, config.input_la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year, month)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)

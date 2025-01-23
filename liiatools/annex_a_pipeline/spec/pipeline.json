@@ -189,6 +189,12 @@
           "enrich": "la_name"
         },
         {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
+        },
+        {
           "id": "Year",
           "type": "integer",
           "enrich": "year",
@@ -248,6 +254,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -325,6 +337,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -405,6 +423,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -495,6 +519,12 @@
           "enrich": "la_name"
         },
         {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
+        },
+        {
           "id": "Year",
           "type": "integer",
           "enrich": "year",
@@ -581,6 +611,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -681,6 +717,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -859,6 +901,12 @@
           "enrich": "la_name"
         },
         {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
+        },
+        {
           "id": "Year",
           "type": "integer",
           "enrich": "year",
@@ -970,6 +1018,12 @@
           "enrich": "la_name"
         },
         {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
+        },
+        {
           "id": "Year",
           "type": "integer",
           "enrich": "year",
@@ -1055,6 +1109,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",
@@ -1149,6 +1209,12 @@
           "id": "LA",
           "type": "string",
           "enrich": "la_name"
+        },
+        {
+          "id": "Month",
+          "type": "integer",
+          "enrich": "month",
+          "sort": 1
         },
         {
           "id": "Year",

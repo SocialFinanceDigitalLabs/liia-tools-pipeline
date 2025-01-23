@@ -110,7 +110,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        archive.add(degraded_result.data, la_code, year)
+        archive.add(degraded_result.data, la_code, year, month=None)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)

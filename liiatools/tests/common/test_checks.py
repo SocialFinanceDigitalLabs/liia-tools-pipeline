@@ -4,6 +4,7 @@ from datetime import datetime
 from liiatools.common.checks import (
     check_la,
     check_la_signature,
+    check_month,
     check_year,
     check_year_within_range,
 )
@@ -33,6 +34,23 @@ class TestCheckYear(unittest.TestCase):
     def test_check_year_2(self):
         with self.assertRaises(ValueError):
             check_year("1811.csv")
+
+
+def test_check_month():
+    assert check_month("annex_a_jan_2024") == "jan"
+    assert check_month("annex_a_FEB_2022") == "feb"
+    assert check_month("annex_a_Mar_2021") == "mar"
+    assert check_month("annex_a_april_2030") == "apr"
+
+
+class TestCheckMonth(unittest.TestCase):
+    def test_check_month(self):
+        with self.assertRaises(ValueError):
+            check_month("file_no_month.csv")
+
+    def test_check_month_2(self):
+        with self.assertRaises(ValueError):
+            check_month("file_apeel_2012.csv")
 
 
 def test_check_la():

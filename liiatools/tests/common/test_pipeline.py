@@ -3,6 +3,7 @@ from fs import open_fs
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator
 from liiatools.common.pipeline import (create_session_folder, discover_la,
+                                       discover_month,
                                        discover_year,
                                        move_files_for_processing,
                                        restore_session_folder)
@@ -103,6 +104,33 @@ def test_discover_year_dir_and_file_year():
         original_path="/2021/SSDA903_2022-23_episodes.csv",
     )
     assert discover_year(locator) == 2021
+
+
+def test_discover_month():
+    samples_fs = open_fs(DIR_903.as_posix())
+    locator_file = FileLocator(
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020/SSDA903_2020_jan_episodes.csv",
+    )
+    assert discover_month(locator_file) == "jan"
+
+    locator_dir = FileLocator(
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_episodes.csv",
+    )
+    assert discover_month(locator_dir) == "feb"
+
+    locator_dir_and_file = FileLocator(
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_jan_episodes.csv",
+    )
+    assert discover_month(locator_dir) == "feb"
+
+    locator_no_month = FileLocator(samples_fs, "SSDA903_2020_episodes.csv")
+    assert discover_month(locator_no_month) is None
 
 
 def test_discover_la():
