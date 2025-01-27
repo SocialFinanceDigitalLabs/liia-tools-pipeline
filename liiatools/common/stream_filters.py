@@ -186,7 +186,7 @@ def add_table_name(event, schema: DataSchema):
     if not headers:
         table_name = None
     else:
-        if all(header == "" for header in headers):
+        if all(header in ("", None) for header in headers):
             return EventErrors.add_to_event(
                 event,
                 type="BlankHeaders",
