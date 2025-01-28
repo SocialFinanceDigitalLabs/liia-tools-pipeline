@@ -251,7 +251,7 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         if config.dataset == "annex_a":
             log.info(f"Concatenating annex a data for {la_code}")
             concat_data = current.current(la_code, deduplicate_mode="N")
-            log.info(f"Data concatenated: {concat_data}")
+            log.info(f"Data concatenated")
         else:
             concat_data = current.current(la_code)
 
