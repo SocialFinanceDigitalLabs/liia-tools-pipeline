@@ -89,6 +89,7 @@ class DataframeArchive:
         List the snapshots in the archive.
         """
         directories = sorted(self.fs.listdir("/"))
+        log.info(f"first look at directories: {directories}")
         la_snapshots = {}
 
         for directory in directories:
@@ -113,6 +114,7 @@ class DataframeArchive:
         """
         Get the current session as a datacontainer.
         """
+        log.info("current method called")
         try:
             directories = self.list_snapshots()
             log.info(f"Directories: {directories}")
