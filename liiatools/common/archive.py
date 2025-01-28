@@ -88,8 +88,13 @@ class DataframeArchive:
         """
         List the snapshots in the archive.
         """
-        directories = sorted(self.fs.listdir("/"))
-        log.info(f"first look at directories: {directories}")
+        log.info("list snapshots method called")
+        try:
+            directories = sorted(self.fs.listdir("/"))
+            log.info(f"first look at directories: {directories}")
+        except Exception as e:
+            log.info(f"loading directories error: {e}")
+            return {}
         la_snapshots = {}
 
         for directory in directories:
