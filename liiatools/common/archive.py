@@ -86,12 +86,10 @@ class DataframeArchive:
         """
         List the snapshots in the archive.
         """
-        log.info("list snapshots method called")
         try:
             directories = sorted(self.fs.listdir("/"))
-            log.info(f"first look at directories: {directories}")
-        except Exception as e:
-            log.info(f"loading directories error: {e}")
+        except fs.errors.ResourceNotFound:
+            log.error(f"Resource not found error when listing snapshots")
             return {}
         la_snapshots = {}
 
@@ -117,22 +115,16 @@ class DataframeArchive:
         for snap_id in snap_ids:
             self.fs.removetree(snap_id)
 
-    def current(
-        self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E"
-    ) -> DataContainer:
+    def current(self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E") -> DataContainer:
         """
         Get the current session as a datacontainer.
         """
-        log.info("current method called")
         try:
             directories = self.list_snapshots()
-            log.info(f"Directories: {directories}")
             snap_ids = directories[la_code]
-            log.info(f"Snap IDs: {snap_ids}")
             return self.combine_snapshots(snap_ids, deduplicate_mode)
 
         except KeyError:
-            log.info("KeyError raised")
             return
 
     def load_snapshot(self, snap_id) -> DataContainer:
@@ -150,11 +142,8 @@ class DataframeArchive:
                 log.info(f"table id match: {table_spec.id}")
                 with self.fs.open(snap_id, "r") as f:
                     df = pd.read_csv(f)
-                    log.info("csv read into pandas")
                     df = _normalise_table(df, table_spec)
-                    log.info("dataframe has been normalised")
                     data[table_spec.id] = df
-                    log.info("data saved to DataContainer")
 
         return data
 
@@ -171,7 +160,6 @@ class DataframeArchive:
 
         """
         assert deduplicate_mode in ["E", "A", "N"]
-        log.info(f"assert deduplicate mode correct: {deduplicate_mode}")
 
         combined = DataContainer()
         for snap_id in snap_ids:
@@ -222,9 +210,7 @@ class DataframeArchive:
             all_sources = []
             for source in sources:
                 if table_id in source:
-                    log.info(f"table id in source: {table_id}")
                     all_sources.append(source[table_id])
-                    log.info("source appended to all_sources")
 
             if len(all_sources) == 0:
                 continue
