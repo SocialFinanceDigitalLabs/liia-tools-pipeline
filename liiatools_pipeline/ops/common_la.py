@@ -240,7 +240,6 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         f"concatenated/{config.dataset}", recreate=True
     )
     existing_files = concat_folder.listdir("/")
-    log.info(f"Existing files: {existing_files}")
 
     for la_code in authorities.codes:
         la_files_regex = f"{la_code}_{config.dataset}_"
@@ -249,9 +248,7 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         log.info(f"Successfully removed files")
 
         if config.dataset == "annex_a":
-            log.info(f"Concatenating annex a data for {la_code}")
             concat_data = current.current(la_code, deduplicate_mode="N")
-            log.info(f"Data concatenated")
         else:
             concat_data = current.current(la_code)
 
