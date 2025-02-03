@@ -183,14 +183,9 @@ def move_current_org_sensor(context):
         latest_run_record = run_records[0]
         context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
 
-        if latest_run_record.dagster_run.tags.get("dataset") == "annex_a":
-            context.log.info(
-                f"Annex A removed from reports job for move current org sensor"
-            )
-        else:
-            yield RunRequest(
-                run_key=latest_run_record.dagster_run.run_id,
-            )
+        yield RunRequest(
+            run_key=latest_run_record.dagster_run.run_id,
+        )
 
 
 @sensor(
