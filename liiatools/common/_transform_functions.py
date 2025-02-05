@@ -2,11 +2,14 @@ import hashlib
 from typing import Dict
 
 import pandas as pd
+from dagster import get_dagster_logger
 
 from liiatools.common.converters import to_nth_of_month, to_short_postcode
 from liiatools.common.reference import authorities
 
 from .data import ColumnConfig, Metadata
+
+log = get_dagster_logger(__name__)
 
 
 def _get_first(metadata: Dict, *keys, default=None):
@@ -35,6 +38,7 @@ def add_year(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) ->
 
 
 def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    log.info(f"Metadata {metadata}")
     month_map = {
         "jan": 1,
         "feb": 2,
