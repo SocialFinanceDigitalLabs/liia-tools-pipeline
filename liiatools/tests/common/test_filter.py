@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytest
 from sfdata_stream_parser import events
 from sfdata_stream_parser.filters import generic
 
@@ -15,12 +16,12 @@ def test_collect_row():
         events.StartContainer(),
         events.StartTable(),
         events.StartRow(),
-        events.Cell(header="CHILD", cell=123, column_spec=spec_int),
-        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=0),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=0),
         events.EndRow(),
         events.StartRow(),
-        events.Cell(header="CHILD", cell=123, column_spec=spec_int),
-        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=1),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=1),
         events.Cell(header="OTHER", cell="other"),
         events.EndRow(),
         events.EndTable(),
@@ -31,6 +32,64 @@ def test_collect_row():
 
     assert rows[0].row_values == {"CHILD": 123, "DOB": "01/01/2019"}
     assert rows[1].row_values == {"CHILD": 123, "DOB": "01/01/2019"}
+
+
+def test_remove_row():
+    spec_int = Column(numeric={"type": "integer"})
+    spec_str = Column(string="alphanumeric")
+    spec_bool = Column(category=[{"code": False}, {"code": True}])
+    stream = [
+        events.StartContainer(),
+        events.StartTable(),
+        events.StartRow(table_name="ad1"),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=0),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=0),
+        events.Cell(header="OTHER", cell=True, column_spec=spec_bool, r_ix=0),
+        events.EndRow(),
+        events.StartRow(table_name="ad1"),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=1),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=1),
+        events.Cell(header="OTHER", cell=False, column_spec=spec_bool, r_ix=1),
+        events.EndRow(),
+        events.EndTable(),
+        events.EndContainer(),
+    ]
+    stream = stream_filters.collect_cell_values_for_row(
+        stream, remove_rows=True, table_name="ad1", header="OTHER", value=True
+    )
+    rows = [event for event in stream if isinstance(event, events.StartRow)]
+
+    assert rows[0].row_values == {"CHILD": 123, "DOB": "01/01/2019", "OTHER": True}
+    assert rows[1].row_values is None
+
+
+def test_remove_row_assertion_error():
+    spec_int = Column(numeric={"type": "integer"})
+    spec_str = Column(string="alphanumeric")
+    spec_bool = Column(category=[{"code": False}, {"code": True}])
+    stream = [
+        events.StartContainer(),
+        events.StartTable(),
+        events.StartRow(table_name="ad1"),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=0),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=0),
+        events.Cell(header="OTHER", cell=True, column_spec=spec_bool, r_ix=0),
+        events.EndRow(),
+        events.StartRow(table_name="ad1"),
+        events.Cell(header="CHILD", cell=123, column_spec=spec_int, r_ix=1),
+        events.Cell(header="DOB", cell="01/01/2019", column_spec=spec_str, r_ix=1),
+        events.Cell(header="OTHER", cell=False, column_spec=spec_bool, r_ix=1),
+        events.EndRow(),
+        events.EndTable(),
+        events.EndContainer(),
+    ]
+
+    with pytest.raises(
+        AssertionError,
+        match="If remove_rows is True, table_name, header and value must be set",
+    ):
+        stream = stream_filters.collect_cell_values_for_row(stream, remove_rows=True)
+        list(stream)
 
 
 def test_collect_tables():
