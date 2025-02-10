@@ -1,12 +1,19 @@
 from sfdata_stream_parser.filters import generic
 
 from liiatools.common import stream_filters as stream_functions
-from liiatools.common.data import DataContainer, FileLocator, ProcessResult
+from liiatools.common.data import DataContainer, FileLocator, ProcessResult, PipelineConfig
 from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
 
-def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: DataSchema, pipeline_config: PipelineConfig) -> ProcessResult:
+    """
+    Clean input ssda903 csv files according to schema and output clean data and errors
+    :param src_file: The pointer to a file in a virtual filesystem
+    :param schema: The data schema in a DataSchema class
+    :param pipeline_config: The pipeline configuration in a PipelineConfig class
+    :return: A class containing a DataContainer and ErrorContainer
+    """
     # Open & Parse file
     stream = stream_functions.tablib_parse(src_file)
 
@@ -20,7 +27,7 @@ def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
     stream = stream_functions.conform_cell_types(stream)
 
     # Create dataset
-    stream = stream_functions.collect_cell_values_for_row(stream)
+    stream = stream_functions.collect_cell_values_for_row(stream, **pipeline_config.remove_rows)
     dataset_holder, stream = stream_functions.collect_tables(stream)
     error_holder, stream = stream_functions.collect_errors(stream)
 

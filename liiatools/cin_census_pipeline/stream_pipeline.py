@@ -5,18 +5,19 @@ from xmlschema import XMLSchema
 
 from liiatools.cin_census_pipeline import stream_record
 from liiatools.common import stream_filters as stream_functions
-from liiatools.common.data import DataContainer, FileLocator, ProcessResult
+from liiatools.common.data import DataContainer, FileLocator, ProcessResult, PipelineConfig
 from liiatools.common.stream_parse import dom_parse
 from liiatools.common.stream_pipeline import to_dataframe_xml
 
 from . import stream_filters as filters
 
 
-def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path)) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), pipeline_config: PipelineConfig) -> ProcessResult:
     """
     Clean input cin census xml files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema, and Path to the data schema
+    :param pipeline_config: The pipeline configuration in a PipelineConfig class
     :return: A class containing a DataContainer and ErrorContainer
     """
     schema, schema_path = schema
