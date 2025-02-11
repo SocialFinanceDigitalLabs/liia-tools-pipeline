@@ -1,11 +1,7 @@
 import re
 from datetime import datetime
 
-from dagster import get_dagster_logger
-
 from liiatools.common.reference import authorities
-
-log = get_dagster_logger(__name__)
 
 
 def check_year(filename):
@@ -81,15 +77,12 @@ def check_month(filename):
     :return: Month within the string
     :raises ValueError: If no month is found
     """
-    log.info(f"Checking month for {filename}")
     match = re.search(
         r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec", filename, re.IGNORECASE
     )
     if match:
-        log.info(f"Match is {match}")
         return match.group(0).lower()
 
-    log.info(f"Match has not occured {match}")
     raise ValueError
 
 
