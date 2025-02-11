@@ -8,13 +8,13 @@
   },
   "la_signed": {
     "Bolton": {
-      "PAN": "No"
+      "PAN": "Yes"
     },
     "Bury": {
-      "PAN": "No"
+      "PAN": "Yes"
     },
     "Manchester": {
-      "PAN": "No"
+      "PAN": "Yes"
     },
     "Oldham": {
       "PAN": "No"
@@ -40,7 +40,7 @@
     },
   "table_list": [
     {
-      "id": "pnw",
+      "id": "pnw_census",
       "retain": [
       "PAN"
       ],

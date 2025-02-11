@@ -34,7 +34,7 @@ def load_schema() -> DataSchema:
     Load the data schema file
     :return: The data schema in a DataSchema class
     """
-    schema_path = Path(SCHEMA_DIR, "pnw_schema.yml")
+    schema_path = Path(SCHEMA_DIR, "pnw_census_schema.yml")
 
     # If we have no schema files, raise an error
     if not schema_path:

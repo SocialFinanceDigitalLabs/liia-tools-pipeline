@@ -6,7 +6,7 @@ from liiatools.common import stream_filters as stream_functions
 from liiatools.common.data import DataContainer, FileLocator, ProcessResult
 from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
-from liiatools.pnw_pipeline import stream_filters
+from liiatools.pnw_census_pipeline import stream_filters
 
 logger = logging.getLogger(__name__)
 

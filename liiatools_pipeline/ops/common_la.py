@@ -20,8 +20,10 @@ from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-from liiatools.pnw_pipeline.spec import load_schema as load_schema_pnw
-from liiatools.pnw_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_pnw
+from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_census
+from liiatools.pnw_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_pnw_census,
+)
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
@@ -134,7 +136,7 @@ def process_files(
             continue
 
         month = None
-        if config.dataset == "annex_a" or config.dataset == "pnw":
+        if config.dataset in ["annex_a", "pnw_census"]:
             month = pl.discover_month(file_locator)
             if month is None:
                 error_report.append(
@@ -150,7 +152,7 @@ def process_files(
         try:
             schema = (
                 globals()[f"load_schema_{config.dataset}"]()
-                if config.dataset == "annex_a" or config.dataset == "pnw"
+                if config.dataset in ["annex_a", "pnw_census"]
                 else globals()[f"load_schema_{config.dataset}"](year)
             )
         except KeyError:
