@@ -680,4 +680,6 @@ def convert_column_header_to_match(event, schema: DataSchema):
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
+            else:
+                logger.debug('No match found for header "%s"', event.header)
     return event
