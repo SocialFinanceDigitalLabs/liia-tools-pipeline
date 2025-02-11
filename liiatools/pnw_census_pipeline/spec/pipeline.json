@@ -4,17 +4,17 @@
     "la_column": "LA"
   },
   "retention_period": {
-    "PAN": 2 
+    "PAN": 7 
   },
   "la_signed": {
     "Bolton": {
-      "PAN": "Yes"
+      "PAN": "No"
     },
     "Bury": {
-      "PAN": "Yes"
+      "PAN": "No"
     },
     "Manchester": {
-      "PAN": "Yes"
+      "PAN": "No"
     },
     "Oldham": {
       "PAN": "No"
@@ -77,7 +77,6 @@
         {
           "id": "Placement start date",
           "type": "date",
-          "unique_key": true,
           "sort": 0
         },
         {
