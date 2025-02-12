@@ -21,10 +21,6 @@ from .data import FileLocator
 
 logger = logging.getLogger(__name__)
 
-from dagster import get_dagster_logger
-
-log = get_dagster_logger(__name__)
-
 
 def _get_timestamp():
     return datetime.utcnow().strftime("%Y%m%dT%H%M%S.%f")
@@ -243,18 +239,15 @@ def discover_month(file_locator: FileLocator) -> str:
     """
     file_dir = dirname(file_locator.name)
     file_name = basename(file_locator.name)
-    log.info(f"File directory {file_dir}")
-    log.info(f"File name {file_name}")
+
     try:
         return check_month(file_dir)
     except ValueError:
-        log.info(f"Month not found in file directory {file_dir}")
         pass
 
     try:
         return check_month(file_name)
     except ValueError:
-        log.info(f"Month not found in file name {file_name}")
         pass
 
 

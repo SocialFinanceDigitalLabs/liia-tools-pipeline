@@ -1,5 +1,5 @@
 column_map:
-    pnw:
+    pnw_census:
       'Looked after child?':
         header_regex: 
           - /.*looked after.*/i
@@ -7,6 +7,7 @@ column_map:
           - code: "Yes"
             name: 
               - "Y"
+              - "1"
         canbeblank: false
       Placing Authority:
         category:
@@ -36,14 +37,12 @@ column_map:
             name: 
               - "M"
               - "male"
-              - "Male"
           - code: "Female (including trans female)"
             name: 
               - "F"
               - "F1"
               - "female"
-              - "Fenale"
-              - "Female"            
+              - "Fenale"           
           - code: "Non-binary"
           - code: "Other"
         canbeblank: False
@@ -122,74 +121,28 @@ column_map:
       Host Authority:
         category:
           - code: Barking and Dagenham
-            name:
-            - Barking and Dagenham
           - code: Barnet
-            name:
-            - Barnet
           - code: Barnsley
-            name:
-            - Barnsley
           - code: Bath and North East Somerset
-            name:
-            - Bath and North East Somerset
           - code: Bedford
-            name:
-            - Bedford
           - code: Bexley
-            name:
-            - Bexley
           - code: Birmingham
-            name:
-            - Birmingham
           - code: Blackburn with Darwen
-            name:
-            - Blackburn with Darwen
           - code: Blackpool
-            name:
-            - Blackpool
           - code: Blaenau Gwent
-            name:
-            - Blaenau Gwent
           - code: Bolton
-            name:
-            - Bolton
           - code: Bournemouth, Christchurch and Poole
-            name:
-            - Bournemouth, Christchurch and Poole
           - code: Bracknell Forest
-            name:
-            - Bracknell Forest
           - code: Bradford
-            name:
-            - Bradford
           - code: Brent
-            name:
-            - Brent
           - code: Bridgend
-            name:
-            - Bridgend
           - code: Brighton and Hove
-            name:
-            - Brighton and Hove
           - code: Bristol, City of
-            name:
-            - Bristol, City of
           - code: Bromley
-            name:
-            - Bromley
           - code: Buckinghamshire
-            name:
-            - Buckinghamshire
           - code: Bury
-            name:
-            - Bury
           - code: Caerphilly
-            name:
-            - Caerphilly
           - code: Calderdale
-            name:
-            - Calderdale
           - code: Cambridgeshire
             name:
             - Cambridge
@@ -198,44 +151,18 @@ column_map:
             - Huntingdonshire
             - South Cambridgeshire
           - code: Camden
-            name:
-            - Camden
           - code: Cardiff
-            name:
-            - Cardiff
           - code: Carmarthenshire
-            name:
-            - Carmarthenshire
           - code: Central Bedfordshire
-            name:
-            - Central Bedfordshire
           - code: Ceredigion
-            name:
-            - Ceredigion
           - code: Cheshire East
-            name:
-            - Cheshire East
           - code: Cheshire West and Chester
-            name:
-            - Cheshire West and Chester
           - code: City of London
-            name:
-            - City of London
           - code: Conwy
-            name:
-            - Conwy
           - code: Cornwall
-            name:
-            - Cornwall
           - code: County Durham
-            name:
-            - County Durham
           - code: Coventry
-            name:
-            - Coventry
           - code: Croydon
-            name:
-            - Croydon
           - code: Cumbria
             name:
             - Allerdale
@@ -245,14 +172,8 @@ column_map:
             - Eden
             - South Lakeland
           - code: Darlington
-            name:
-            - Darlington
           - code: Denbighshire
-            name:
-            - Denbighshire
           - code: Derby
-            name:
-            - Derby
           - code: Derbyshire
             name:
             - Amber Valley
@@ -274,20 +195,10 @@ column_map:
             - Torridge
             - West Devon
           - code: Doncaster
-            name:
-            - Doncaster
           - code: Dorset
-            name:
-            - Dorset
           - code: Dudley
-            name:
-            - Dudley
           - code: Ealing
-            name:
-            - Ealing
           - code: East Riding of Yorkshire
-            name:
-            - East Riding of Yorkshire
           - code: East Sussex
             name:
             - Eastbourne
@@ -296,8 +207,6 @@ column_map:
             - Rother
             - Wealden
           - code: Enfield
-            name:
-            - Enfield
           - code: Essex
             name:
             - Maldon
@@ -313,11 +222,7 @@ column_map:
             - Epping Forest
             - Harlow
           - code: Flintshire
-            name:
-            - Flintshire
           - code: Gateshead
-            name:
-            - Gateshead
           - code: Gloucestershire
             name:
             - Cheltenham
@@ -327,20 +232,10 @@ column_map:
             - Stroud
             - Tewkesbury
           - code: Greenwich
-            name:
-            - Greenwich
           - code: Gwynedd
-            name:
-            - Gwynedd
           - code: Hackney
-            name:
-            - Hackney
           - code: Halton
-            name:
-            - Halton
           - code: Hammersmith and Fulham
-            name:
-            - Hammersmith and Fulham
           - code: Hampshire
             name:
             - Basingstoke and Deane
@@ -355,20 +250,10 @@ column_map:
             - Test Valley
             - Winchester
           - code: Haringey
-            name:
-            - Haringey
           - code: Harrow
-            name:
-            - Harrow
           - code: Hartlepool
-            name:
-            - Hartlepool
           - code: Havering
-            name:
-            - Havering
           - code: Herefordshire, County of
-            name:
-            - Herefordshire, County of
           - code: Hertfordshire
             name:
             - Broxbourne
@@ -382,26 +267,12 @@ column_map:
             - East Hertfordshire
             - Stevenage
           - code: Hillingdon
-            name:
-            - Hillingdon
           - code: Hounslow
-            name:
-            - Hounslow
           - code: Isle of Anglesey
-            name:
-            - Isle of Anglesey
           - code: Isle of Wight
-            name:
-            - Isle of Wight
           - code: Isles of Scilly
-            name:
-            - Isles of Scilly
           - code: Islington
-            name:
-            - Islington
           - code: Kensington and Chelsea
-            name:
-            - Kensington and Chelsea
           - code: Kent
             name:
             - Ashford
@@ -417,20 +288,10 @@ column_map:
             - Tonbridge and Malling
             - Tunbridge Wells
           - code: Kingston upon Hull, City of
-            name:
-            - Kingston upon Hull, City of
           - code: Kingston upon Thames
-            name:
-            - Kingston upon Thames
           - code: Kirklees
-            name:
-            - Kirklees
           - code: Knowsley
-            name:
-            - Knowsley
           - code: Lambeth
-            name:
-            - Lambeth
           - code: Lancashire
             name:
             - Burnley
@@ -461,8 +322,6 @@ column_map:
             - North West Leicestershire
             - Oadby and Wigston
           - code: Lewisham
-            name:
-            - Lewisham
           - code: Lincolnshire
             name:
             - Boston
@@ -473,44 +332,18 @@ column_map:
             - South Kesteven
             - West Lindsey
           - code: Liverpool
-            name:
-            - Liverpool
           - code: Luton
-            name:
-            - Luton
           - code: Manchester
-            name:
-            - Manchester
           - code: Medway
-            name:
-            - Medway
           - code: Merthyr Tydfil
-            name:
-            - Merthyr Tydfil
           - code: Merton
-            name:
-            - Merton
           - code: Middlesbrough
-            name:
-            - Middlesbrough
           - code: Milton Keynes
-            name:
-            - Milton Keynes
           - code: Monmouthshire
-            name:
-            - Monmouthshire
           - code: Neath Port Talbot
-            name:
-            - Neath Port Talbot
           - code: Newcastle upon Tyne
-            name:
-            - Newcastle upon Tyne
           - code: Newham
-            name:
-            - Newham
           - code: Newport
-            name:
-            - Newport
           - code: Norfolk
             name:
             - Breckland
@@ -521,20 +354,10 @@ column_map:
             - Norwich
             - South Norfolk
           - code: North East Lincolnshire
-            name:
-            - North East Lincolnshire
           - code: North Lincolnshire
-            name:
-            - North Lincolnshire
           - code: North Northamptonshire
-            name:
-            - North Northamptonshire
           - code: North Somerset
-            name:
-            - North Somerset
           - code: North Tyneside
-            name:
-            - North Tyneside
           - code: North Yorkshire
             name:
             - Craven
@@ -545,11 +368,7 @@ column_map:
             - Scarborough
             - Selby
           - code: Northumberland
-            name:
-            - Northumberland
           - code: Nottingham
-            name:
-            - Nottingham
           - code: Nottinghamshire
             name:
             - Ashfield
@@ -560,8 +379,6 @@ column_map:
             - Newark and Sherwood
             - Rushcliffe
           - code: Oldham
-            name:
-            - Oldham
           - code: Oxfordshire
             name:
             - Cherwell
@@ -570,65 +387,25 @@ column_map:
             - Vale of White Horse
             - West Oxfordshire
           - code: Pembrokeshire
-            name:
-            - Pembrokeshire
           - code: Peterborough
-            name:
-            - Peterborough
           - code: Plymouth
-            name:
-            - Plymouth
           - code: Portsmouth
-            name:
-            - Portsmouth
           - code: Powys
-            name:
-            - Powys
           - code: Reading
-            name:
-            - Reading
           - code: Redbridge
-            name:
-            - Redbridge
           - code: Redcar and Cleveland
-            name:
-            - Redcar and Cleveland
           - code: Rhondda Cynon Taf
-            name:
-            - Rhondda Cynon Taf
           - code: Richmond upon Thames
-            name:
-            - Richmond upon Thames
           - code: Rochdale
-            name:
-            - Rochdale
           - code: Rotherham
-            name:
-            - Rotherham
           - code: Rutland
-            name:
-            - Rutland
           - code: Salford
-            name:
-            - Salford
           - code: Sandwell
-            name:
-            - Sandwell
           - code: Sefton
-            name:
-            - Sefton
           - code: Sheffield
-            name:
-            - Sheffield
           - code: Shropshire
-            name:
-            - Shropshire
           - code: Slough
-            name:
-            - Slough
           - code: Solihull
-            name:
-            - Solihull
           - code: Somerset
             name:
             - Mendip
@@ -636,23 +413,11 @@ column_map:
             - South Somerset
             - Somerset West and Taunton
           - code: South Gloucestershire
-            name:
-            - South Gloucestershire
           - code: South Tyneside
-            name:
-            - South Tyneside
           - code: Southampton
-            name:
-            - Southampton
           - code: Southend-on-Sea
-            name:
-            - Southend-on-Sea
           - code: Southwark
-            name:
-            - Southwark
           - code: St. Helens
-            name:
-            - St. Helens
           - code: Staffordshire
             name:
             - Cannock Chase
@@ -664,14 +429,8 @@ column_map:
             - Staffordshire Moorlands
             - Tamworth
           - code: Stockport
-            name:
-            - Stockport
           - code: Stockton-on-Tees
-            name:
-            - Stockton-on-Tees
           - code: Stoke-on-Trent
-            name:
-            - Stoke-on-Trent
           - code: Suffolk
             name:
             - Babergh
@@ -680,8 +439,6 @@ column_map:
             - East Suffolk
             - West Suffolk
           - code: Sunderland
-            name:
-            - Sunderland
           - code: Surrey
             name:
             - Surrey
@@ -697,53 +454,21 @@ column_map:
             - Waverley
             - Woking
           - code: Sutton
-            name:
-            - Sutton
           - code: Swansea
-            name:
-            - Swansea
           - code: Swindon
-            name:
-            - Swindon
           - code: Tameside
-            name:
-            - Tameside
           - code: Telford and Wrekin
-            name:
-            - Telford and Wrekin
           - code: Thurrock
-            name:
-            - Thurrock
           - code: Torbay
-            name:
-            - Torbay
           - code: Torfaen
-            name:
-            - Torfaen
           - code: Tower Hamlets
-            name:
-            - Tower Hamlets
           - code: Trafford
-            name:
-            - Trafford
           - code: Vale of Glamorgan
-            name:
-            - Vale of Glamorgan
           - code: Wakefield
-            name:
-            - Wakefield
           - code: Walsall
-            name:
-            - Walsall
           - code: Waltham Forest
-            name:
-            - Waltham Forest
           - code: Wandsworth
-            name:
-            - Wandsworth
           - code: Warrington
-            name:
-            - Warrington
           - code: Warwickshire
             name:
             - Warwickshire
@@ -753,11 +478,7 @@ column_map:
             - Stratford-on-Avon
             - Warwick
           - code: West Berkshire
-            name:
-            - West Berkshire
           - code: West Northamptonshire
-            name:
-            - West Northamptonshire
           - code: West Sussex
             name:
             - West Sussex
@@ -769,26 +490,12 @@ column_map:
             - Mid Sussex
             - Worthing
           - code: Westminster
-            name:
-            - Westminster
           - code: Wigan
-            name:
-            - Wigan
           - code: Wiltshire
-            name:
-            - Wiltshire
           - code: Windsor and Maidenhead
-            name:
-            - Windsor and Maidenhead
           - code: Wirral
-            name:
-            - Wirral
           - code: Wokingham
-            name:
-            - Wokingham
           - code: Wolverhampton
-            name:
-            - Wolverhampton
           - code: Worcestershire
             name:
             - Worcestershire
@@ -799,11 +506,7 @@ column_map:
             - Wychavon
             - Wyre Forest
           - code: Wrexham
-            name:
-            - Wrexham
           - code: York
-            name:
-            - York
         canbeblank: False
         header_regex:
           - /.*host authority.*/i
@@ -891,6 +594,7 @@ column_map:
         numeric:
           type: "float"
           min_value: 0
+          decimal_places: 2
         canbeblank: False
         header_regex:
           - /.*weekly cost.*/i
@@ -898,6 +602,7 @@ column_map:
         numeric:
           type: "float"
           min_value: 0
+          decimal_places: 2
         canbeblank: False
         header_regex:
           - /.*social care.*/i
@@ -905,6 +610,7 @@ column_map:
         numeric:
           type: "float"
           min_value: 0
+          decimal_places: 2
         canbeblank: False
         header_regex:
           - /.*education.*/i
@@ -912,6 +618,7 @@ column_map:
         numeric:
           type: "float"
           min_value: 0
+          decimal_places: 2
         canbeblank: False
         header_regex:
           - /.*health.*/i

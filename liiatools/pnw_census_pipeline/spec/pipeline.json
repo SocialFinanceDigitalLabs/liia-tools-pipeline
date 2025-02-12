@@ -4,7 +4,7 @@
     "la_column": "LA"
   },
   "retention_period": {
-    "PAN": 2 
+    "PAN": 7 
   },
   "la_signed": {
     "Bolton": {
@@ -40,7 +40,7 @@
     },
   "table_list": [
     {
-      "id": "pnw",
+      "id": "pnw_census",
       "retain": [
       "PAN"
       ],
@@ -77,7 +77,6 @@
         {
           "id": "Placement start date",
           "type": "date",
-          "unique_key": true,
           "sort": 0
         },
         {
