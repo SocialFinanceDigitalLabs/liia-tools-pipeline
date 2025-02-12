@@ -380,9 +380,10 @@ def collect_cell_values_for_row(
             values[cell.header] = cell.cell
             r_ix = cell.r_ix
 
-    if remove_rows and table_name == start_row.table_name:
-        if values[header] != value:
-            values = None
+    if remove_rows and hasattr(start_row, "table_name"):
+        if table_name == start_row.table_name:
+            if values[header] != value:
+                values = None
 
     # Yield events
     yield start_row.from_event(start_row, row_values=values, r_ix=r_ix)
