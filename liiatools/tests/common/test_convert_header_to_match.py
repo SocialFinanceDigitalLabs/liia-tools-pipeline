@@ -1,7 +1,7 @@
 from sfdata_stream_parser.events import Cell
 
-from liiatools.annex_a_pipeline.stream_filters import convert_column_header_to_match
 from liiatools.common.spec.__data_schema import Column, DataSchema
+from liiatools.common.stream_filters import convert_column_header_to_match
 
 
 def test_convert_column_header_to_match():

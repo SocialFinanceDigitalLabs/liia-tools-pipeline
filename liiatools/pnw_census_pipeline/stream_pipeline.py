@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
     """
-    Clean input Annex A xlsx files according to schema and output clean data and errors
+    Clean input PNW Census csv files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema in a DataSchema class
     :return: A class containing a DataContainer and ErrorContainer
