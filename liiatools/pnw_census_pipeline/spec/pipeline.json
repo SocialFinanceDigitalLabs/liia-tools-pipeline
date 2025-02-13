@@ -1,4 +1,10 @@
 {
+  "remove_rows": {
+    "remove_rows": true,
+    "table_name": "pnw_census",
+    "header": "Looked after child?",
+    "value": "Yes"
+  },
   "retention_columns": {
     "year_column": "Year",
     "la_column": "LA"
