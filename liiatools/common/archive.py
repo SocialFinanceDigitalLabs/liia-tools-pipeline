@@ -1,16 +1,13 @@
-import logging
 import re
 from typing import Dict, Iterable, Literal
 
-import pandas as pd
 import fs.errors
+import pandas as pd
+from dagster import get_dagster_logger
 from fs.base import FS
 
 from liiatools.common.data import DataContainer, PipelineConfig, TableConfig
 
-logger = logging.getLogger(__name__)
-
-from dagster import get_dagster_logger
 log = get_dagster_logger(__name__)
 
 
@@ -97,11 +94,15 @@ class DataframeArchive:
         la_snapshots = {}
 
         for directory in directories:
-            snapshots = self.fs.listdir(f"/{directory}/{self.dataset}")
-            for snap in snapshots:
-                la_snapshots.setdefault(directory, []).append(
-                    f"{directory}/{self.dataset}/{snap}"
-                )
+            try:
+                snapshots = self.fs.listdir(f"/{directory}/{self.dataset}")
+                for snap in snapshots:
+                    la_snapshots.setdefault(directory, []).append(
+                        f"{directory}/{self.dataset}/{snap}"
+                    )
+            except fs.errors.ResourceNotFound:
+                log.error(f"Resource not found error: /{directory}/{self.dataset}")
+                continue
 
         return la_snapshots
 

@@ -3,6 +3,7 @@ from typing import List, Tuple
 from dagster import In, Out, get_dagster_logger, op
 from fs import open_fs
 from fs.base import FS
+import fs.errors
 
 from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
 from liiatools.annex_a_pipeline.stream_pipeline import (
@@ -20,6 +21,10 @@ from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
+from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_census
+from liiatools.pnw_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_pnw_census,
+)
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
@@ -30,6 +35,7 @@ from liiatools_pipeline.assets.common import (
     workspace_folder,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger(__name__)
 
@@ -132,7 +138,7 @@ def process_files(
             continue
 
         month = None
-        if config.dataset == "annex_a":
+        if config.dataset in ["annex_a", "pnw_census"]:
             month = pl.discover_month(file_locator)
             if month is None:
                 error_report.append(
@@ -148,7 +154,7 @@ def process_files(
         try:
             schema = (
                 globals()[f"load_schema_{config.dataset}"]()
-                if config.dataset == "annex_a"
+                if config.dataset in ["annex_a", "pnw_census"]
                 else globals()[f"load_schema_{config.dataset}"](year)
             )
         except KeyError:
@@ -226,10 +232,15 @@ def process_files(
 
 @op()
 def move_current_view_la():
-    current_folder = workspace_folder().opendir("current")
-    destination_folder = shared_folder().makedirs("current", recreate=True)
-    destination_folder.removetree("/")
-    pl.move_files_for_sharing(current_folder, destination_folder)
+    current_folder = opendir_location(workspace_folder(), "current")
+    if current_folder is not None:
+        destination_folder = shared_folder().makedirs("current", recreate=True)
+        destination_folder.removetree("/")
+        pl.move_files_for_sharing(current_folder, destination_folder)
+    else:
+        raise fs.errors.ResourceNotFound(
+            f"Current folder not found in {workspace_folder()}"
+        )
 
 
 @op(

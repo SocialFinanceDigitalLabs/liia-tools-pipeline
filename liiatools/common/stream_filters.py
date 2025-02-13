@@ -688,3 +688,26 @@ def _create_regex_spec(field: str, file: Path) -> str | None:
         regex_spec = p.get("value")
 
     return regex_spec
+
+
+@streamfilter(check=type_check(events.Cell), fail_function=pass_event)
+def convert_column_header_to_match(event, schema: DataSchema):
+    """
+    Converts the column header to the correct column header it was matched with e.g. Age -> Age of Child (Years)
+    :param event: A filtered list of event objects of type Cell
+    :param schema: The data schema in a DataSchema class
+    :return: An updated list of event objects
+    """
+    if hasattr(event, "table_name") and hasattr(event, "header"):
+        column_config = schema.table.get(event.table_name)
+        for column in column_config:
+            if column_config[column].header_regex is not None:
+                for regex in column_config[column].header_regex:
+                    parse = Column().parse_regex(regex)
+                    if parse.match(event.header) is not None:
+                        return event.from_event(event, header=column)
+            elif column.lower().strip() == event.header.lower().strip():
+                return event.from_event(event, header=column)
+            else:
+                logger.debug('No match found for header "%s"', event.header)
+    return event
