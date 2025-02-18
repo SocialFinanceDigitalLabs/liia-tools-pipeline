@@ -166,7 +166,7 @@ def process_files(
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema, pipeline_config(config)
+                file_locator, schema
             )
         except StreamError as e:
             error_report.append(
