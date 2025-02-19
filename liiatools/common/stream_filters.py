@@ -334,18 +334,9 @@ def conform_cell_types(event, preserve_value=False):
 @collectors.collector(
     check=collectors.block_check(events.StartRow), receive_stream=True
 )
-def collect_cell_values_for_row(
-    row, remove_rows=False, table_name=None, header=None, value=None
-):
+def collect_cell_values_for_row(row):
     """
     Collects the cell values for each row and set these as `column_spec` on the StartRow event.
-
-    Params:
-        * `row` - An events.StartRow event to process
-        * `remove_rows` - If True, rows where the header does not match the value will be removed
-        * `table_name` - The table to match
-        * `header` - The header to match
-        * `value` - The value to match
 
     Requires:
         * `table_spec` on Cell events to identify this column as part of the table
@@ -359,11 +350,6 @@ def collect_cell_values_for_row(
         * All the events
 
     """
-    if remove_rows:
-        assert (
-            table_name is not None and header is not None and value is not None
-        ), "If remove_rows is True, table_name, header and value must be set"
-
     # Read the row
     row = list(row)
 
@@ -373,20 +359,13 @@ def collect_cell_values_for_row(
 
     # Where we have identified the column, set values on the start row
     values = {}
-    r_ix = None
     for cell in row:
         schema: Column = getattr(cell, "column_spec", None)
         if schema:
             values[cell.header] = cell.cell
-            r_ix = cell.r_ix
-
-    if remove_rows and hasattr(start_row, "table_name"):
-        if table_name == start_row.table_name:
-            if values[header] != value:
-                values = None
 
     # Yield events
-    yield start_row.from_event(start_row, row_values=values, r_ix=r_ix)
+    yield start_row.from_event(start_row, row_values=values)
     yield from row
     yield end_row
 
@@ -417,14 +396,7 @@ def collect_tables(stream):
     for event in stream:
         if isinstance(event, events.StartRow) and hasattr(event, "table_name"):
             table_data = dataset.setdefault(event.table_name, [])
-            if event.row_values is not None:
-                table_data.append(event.row_values)
-            else:
-                yield EventErrors.add_to_event(
-                    event,
-                    type="InvalidMandatoryField",
-                    message=f"Row {event.r_ix} removed due to invalid mandatory field",
-                )
+            table_data.append(event.row_values)
 
         yield event
 

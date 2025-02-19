@@ -5,8 +5,14 @@ from typing import Callable, Dict
 import pandas as pd
 
 from liiatools.common.checks import check_la_signature
-from liiatools.common.data import (DataContainer, ErrorContainer, Metadata,
-                                   PipelineConfig, ProcessResult, TableConfig)
+from liiatools.common.data import (
+    DataContainer,
+    ErrorContainer,
+    Metadata,
+    PipelineConfig,
+    ProcessResult,
+    TableConfig,
+)
 
 from ._transform_functions import degrade_functions, enrich_functions
 
@@ -70,6 +76,23 @@ def data_transforms(
                 _transform(
                     data[table_config.id], table_config, metadata, property, functions
                 )
+                remove_row_mask = (
+                    ~data[table_config.id].isin(["remove_row"]).any(axis=1)
+                )
+                remove_row_indices = (
+                    data[table_config.id].index[~remove_row_mask].tolist()
+                )
+                data[table_config.id] = data[table_config.id][remove_row_mask]
+
+                for row in remove_row_indices:
+                    errors.append(
+                        dict(
+                            type="InvalidMandatoryField",
+                            message=f"Row {row} removed due to invalid mandatory field",
+                            table_name=table_config.id,
+                            r_ix=row,
+                        )
+                    )
     except Exception as e:
         # As this step is crucial for ensure privacy, if we have any errors we should fail and return no data for this dataset.
         logger.exception(f"Error in {property} transform")

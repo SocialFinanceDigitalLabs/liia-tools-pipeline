@@ -1,10 +1,4 @@
 {
-  "remove_rows": {
-    "remove_rows": true,
-    "table_name": "pnw_census",
-    "header": "Looked after child?",
-    "value": "Yes"
-  },
   "retention_columns": {
     "year_column": "Year",
     "la_column": "LA"
@@ -53,7 +47,8 @@
       "columns": [
         {
           "id": "Looked after child?",
-          "type": "category"
+          "type": "category",
+          "degrade":  "remove_row"
         },
         {
           "id": "Placing Authority",
