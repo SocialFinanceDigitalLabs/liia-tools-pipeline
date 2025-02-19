@@ -114,8 +114,16 @@ def hash_column_sha256(
     return digest.hexdigest()
 
 
+def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    if not row[column_config.id]:
+        return "remove_row"
+    else:
+        return row[column_config.id]
+
+
 degrade_functions = {
     "first_of_month": degrade_to_first_of_month,
     "short_postcode": degrade_to_short_postcode,
     "hash_sha256": hash_column_sha256,
+    "remove_row": remove_row,
 }

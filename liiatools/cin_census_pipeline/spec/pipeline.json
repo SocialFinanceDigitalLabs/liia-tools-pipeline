@@ -1,7 +1,4 @@
 {
-  "remove_rows": {
-    "remove_rows": false
-  },
   "retention_columns": {
     "year_column": "Year",
     "la_column": "LA"
