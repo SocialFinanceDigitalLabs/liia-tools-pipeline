@@ -211,6 +211,8 @@ def process_files(
         error_report.extend(degraded_result.errors)
         current.add(degraded_result.data, config.input_la_code, year, month)
 
+        error_report.extend(current.deduplicate(cleanfile_result.data).errors)
+
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
 
