@@ -198,10 +198,9 @@ class DataframeArchive:
                 if sort_keys:
                     df = df.sort_values(by=sort_keys, ascending=True)
 
+                subset = [c.id for c in table_spec.columns if c.unique_key]
                 duplicate_mask = df.duplicated(
-                    subset=[c.id for c in table_spec.columns if c.unique_key]
-                    if [c.id for c in table_spec.columns if c.unique_key]
-                    else None,
+                    subset=subset if subset else None,
                     keep="last",
                 )
 
@@ -215,6 +214,7 @@ class DataframeArchive:
                             type="DuplicateError",
                             message=f"Row {row} removed as it was a duplicate",
                             r_ix=row,
+                            table_name=table_spec.id,
                         )
                     )
                 data[table_spec.id] = df
