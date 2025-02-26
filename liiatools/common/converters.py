@@ -4,6 +4,7 @@ All the functions follow a similar format. They take a value, check that it is i
 value as the correct type / with correct format if it is.
 """
 import logging
+import math
 import re
 from datetime import date, datetime
 
@@ -107,7 +108,9 @@ def _check_range(value, min_value=None, max_value=None):
 
 
 @allow_blank
-def to_numeric(value, _type, min_value=None, max_value=None, decimal_places=None):
+def to_numeric(
+    value, _type, min_value=None, max_value=None, decimal_places=None, age=False
+):
     """
     Convert any strings that should be numeric values based on the config into numeric values.
 
@@ -116,8 +119,32 @@ def to_numeric(value, _type, min_value=None, max_value=None, decimal_places=None
     :param min_value: Minimum value allowed
     :param max_value: Maximum value allowed
     :param decimal_places: The number of decimal places to apply
+    :param age: Specifies whether the value needs age specific conversion
     :return: Either a numeric value or a blank string
     """
+    if age == True:
+        # Handle certain instances of strings to convert to age in years
+        try:
+            # Special case: Handle "<1" as 0 years
+            if value == "<1":
+                value = str(0)
+            if re.search(r"[^\w\s.]", value):
+                raise ValueError(f"Invalid characters in age: {value}")
+            # Check if string can be split to letters and numbers
+            match = re.search(r"^(\d+(?:\.\d+)?)\s*([a-zA-Z]*)$", value)
+            if match:
+                # Split the string to letters and numbers
+                age = float(match.group(1))
+                unit = match.group(2).lower() if match.group(2) else None
+                # If months, convert to years
+                if unit and "m" in unit:
+                    age = age // 12
+                value = age
+            # Round down to nearest whole number
+            value = math.floor(value)
+        except Exception as e:
+            raise ValueError(f"Invalid age: {value}") from e
+
     try:
         value = float(value)
         if _type == "float":

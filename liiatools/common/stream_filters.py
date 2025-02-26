@@ -305,6 +305,7 @@ def conform_cell_types(event, preserve_value=False):
             column_spec.numeric.min_value,
             column_spec.numeric.max_value,
             column_spec.numeric.decimal_places,
+            column_spec.numeric.age,
         )
     elif column_spec.type == "postcode":
         converter = to_postcode
