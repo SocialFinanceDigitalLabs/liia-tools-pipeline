@@ -6,7 +6,13 @@ import pandas as pd
 from dagster import get_dagster_logger
 from fs.base import FS
 
-from liiatools.common.data import DataContainer, PipelineConfig, TableConfig
+from liiatools.common.data import (
+    DataContainer,
+    ErrorContainer,
+    PipelineConfig,
+    ProcessResult,
+    TableConfig,
+)
 
 log = get_dagster_logger(__name__)
 
@@ -115,7 +121,9 @@ class DataframeArchive:
         for snap_id in snap_ids:
             self.fs.removetree(snap_id)
 
-    def current(self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E") -> DataContainer:
+    def current(
+        self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E"
+    ) -> DataContainer:
         """
         Get the current session as a datacontainer.
         """
@@ -170,16 +178,18 @@ class DataframeArchive:
             )
 
         if deduplicate_mode == "A":
-            combined = self.deduplicate(combined)
+            combined = self.deduplicate(combined).data
 
         return combined
 
-    def deduplicate(self, data: DataContainer) -> DataContainer:
+    def deduplicate(self, data: DataContainer) -> ProcessResult:
         """
         Deduplicate the dataframes in the container.
 
         If a dataframe has a 'sort' configuration, then the dataframe is sorted by the specified columns before deduplication.
         """
+        errors = ErrorContainer()
+
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 sort_keys = table_spec.sort_keys
@@ -187,15 +197,29 @@ class DataframeArchive:
                 df = data[table_spec.id]
                 if sort_keys:
                     df = df.sort_values(by=sort_keys, ascending=True)
-                df = df.drop_duplicates(
-                    subset=[c.id for c in table_spec.columns if c.unique_key]
-                    if [c.id for c in table_spec.columns if c.unique_key]
-                    else None,
+
+                subset = [c.id for c in table_spec.columns if c.unique_key]
+                duplicate_mask = df.duplicated(
+                    subset=subset if subset else None,
                     keep="last",
                 )
+
+                duplicate_rows = df.index[duplicate_mask].tolist()
+
+                df = df[~duplicate_mask]
+
+                for row in duplicate_rows:
+                    errors.append(
+                        dict(
+                            type="DuplicateError",
+                            message=f"Row {row} removed as it was a duplicate",
+                            r_ix=row,
+                            table_name=table_spec.id,
+                        )
+                    )
                 data[table_spec.id] = df
 
-        return data
+        return ProcessResult(data=data, errors=errors)
 
     def _combine_snapshots(
         self, *sources: DataContainer, deduplicate: bool = True
@@ -220,6 +244,6 @@ class DataframeArchive:
                 data[table_id] = pd.concat(all_sources, ignore_index=True)
 
         if deduplicate:
-            data = self.deduplicate(data)
+            data = self.deduplicate(data).data
 
         return data
