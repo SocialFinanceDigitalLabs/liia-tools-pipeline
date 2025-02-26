@@ -2,10 +2,16 @@ import datetime
 
 import pytest
 
-from liiatools.common.converters import (allow_blank, to_category, to_date,
-                                         to_nth_of_month, to_numeric,
-                                         to_postcode, to_regex,
-                                         to_short_postcode)
+from liiatools.common.converters import (
+    allow_blank,
+    to_category,
+    to_date,
+    to_nth_of_month,
+    to_numeric,
+    to_postcode,
+    to_regex,
+    to_short_postcode,
+)
 from liiatools.common.spec.__data_schema import Column
 
 
@@ -145,10 +151,18 @@ def test_to_numeric():
     assert to_numeric(0.2, "float", min_value=0) == 0.2
     assert to_numeric(0.1234, "float", decimal_places=3) == 0.123
 
+    assert to_numeric("1", "integer", age=True) == 1
+    assert to_numeric("<1", "integer", age=True) == 0
+    assert to_numeric("8.5yrs", "integer", age=True) == 8
+    assert to_numeric("18m", "integer", age=True) == 1
+    assert to_numeric("6 months", "integer", age=True) == 0
+
     with pytest.raises(ValueError):
         to_numeric("date", "integer")
         to_numeric(1.5, "float", min_value=0, max_value=1)
         to_numeric(1.5, "float", min_value=2)
+        to_numeric("5 to 10", "integer", age=True)
+        to_numeric("18+", "integer", age=True)
 
 
 def test_to_date():
