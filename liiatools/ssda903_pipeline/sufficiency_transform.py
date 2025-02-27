@@ -1,11 +1,12 @@
 import logging
 from typing import Union
 
-import chardet
 import numpy as np
 import pandas as pd
 from fs.base import FS
 from fs.errors import DirectoryExists
+
+from liiatools.common.pipeline import open_file
 
 logger = logging.getLogger()
 
@@ -514,38 +515,6 @@ def dict_to_dfs() -> dict:
     for table_name, table_data in dim_tables.items():
         dim_dfs[table_name] = pd.DataFrame(table_data)
     return dim_dfs
-
-
-def open_file(fs: FS, file: str) -> pd.DataFrame:
-    """
-    Opens a file within a pyfilesystem
-    """
-    # Check file encoding
-    encoding = check_encoding(fs, file)
-    # Open the CSV file using the FS URL
-    with fs.open(file, "rb") as f:
-        # Read the file content into a pandas DataFrame
-        df = pd.read_csv(f, encoding=encoding)
-    df = drop_blank_columns(df)
-    return df
-
-
-def check_encoding(fs: FS, file_path: str) -> str:
-    """
-    Check encoding of a file
-    """
-    file = fs.open(file_path, "rb")
-
-    bytes_data = file.read()  # Read as bytes
-    result = chardet.detect(bytes_data)  # Detect encoding on bytes
-    return result["encoding"]
-
-
-def drop_blank_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Removes columns with no names in a pandas DataFrame"""
-    unnamed_columns = [col for col in df.columns if "Unnamed" in col]
-    df = df.drop(columns=unnamed_columns)
-    return df
 
 
 def ons_transform(df: pd.DataFrame) -> pd.DataFrame:

@@ -7,6 +7,7 @@ from enum import Enum
 from os.path import basename, dirname
 from typing import List, Tuple
 
+import chardet
 import numpy as np
 import pandas as pd
 import yaml
@@ -314,3 +315,35 @@ def remove_files(regex: str, existing_files: list, folder: FS):
     files_to_remove = list(filter(current_files.match, existing_files))
     for file in files_to_remove:
         folder.remove(file)
+
+
+def open_file(fs: FS, file: str) -> pd.DataFrame:
+    """
+    Opens a file within a pyfilesystem
+    """
+    # Check file encoding
+    encoding = check_encoding(fs, file)
+    # Open the CSV file using the FS URL
+    with fs.open(file, "rb") as f:
+        # Read the file content into a pandas DataFrame
+        df = pd.read_csv(f, encoding=encoding)
+    df = drop_blank_columns(df)
+    return df
+
+
+def check_encoding(fs: FS, file_path: str) -> str:
+    """
+    Check encoding of a file
+    """
+    file = fs.open(file_path, "rb")
+
+    bytes_data = file.read()  # Read as bytes
+    result = chardet.detect(bytes_data)  # Detect encoding on bytes
+    return result["encoding"]
+
+
+def drop_blank_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Removes columns with no names in a pandas DataFrame"""
+    unnamed_columns = [col for col in df.columns if "Unnamed" in col]
+    df = df.drop(columns=unnamed_columns)
+    return df
