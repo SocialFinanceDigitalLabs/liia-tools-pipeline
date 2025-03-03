@@ -122,20 +122,21 @@ def to_numeric(
     :param age: Specifies whether the value needs age specific conversion
     :return: Either a numeric value or a blank string
     """
-    if age == True:
+    if age:
         # Handle certain instances of strings to convert to age in years
         try:
+            value = str(value).strip().lower()
             # Special case: Handle "<1" as 0 years
             if value == "<1":
                 value = str(0)
-            if re.search(r"[^\w\s.]", value):
+            if re.search(r"[^a-zA-Z0-9\s.]", value):
                 raise ValueError(f"Invalid characters in age: {value}")
             # Check if string can be split to letters and numbers
             match = re.search(r"^(\d+(?:\.\d+)?)\s*([a-zA-Z]*)$", value)
             if match:
                 # Split the string to letters and numbers
                 age = float(match.group(1))
-                unit = match.group(2).lower() if match.group(2) else None
+                unit = match.group(2) if match.group(2) else None
                 # If months, convert to years
                 if unit and "m" in unit:
                     age = age // 12
