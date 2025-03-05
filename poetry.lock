@@ -2051,6 +2051,21 @@ openapi = ["openapi-core (>=0.18.0,<0.19.0)", "ruamel-yaml"]
 test = ["hatch", "ipykernel", "openapi-core (>=0.18.0,<0.19.0)", "openapi-spec-validator (>=0.6.0,<0.8.0)", "pytest (>=7.0,<8)", "pytest-console-scripts", "pytest-cov", "pytest-jupyter[server] (>=0.6.2)", "pytest-timeout", "requests-mock", "ruamel-yaml", "sphinxcontrib-spelling", "strict-rfc3339", "werkzeug"]
 
 [[package]]
+name = "liia-tools-pipeline-config"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.10, <3.11"
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"
+reference = "HEAD"
+resolved_reference = "f51cc894ed577f8aa46976a86191dc52bfc849ce"
+
+[[package]]
 name = "lxml"
 version = "4.9.4"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -5221,4 +5236,4 @@ s3 = ["fs-s3fs"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10, <3.11"
-content-hash = "f58e3aeea361edaff21ae9f57323c7d2c2c9ee67955917ed6ae30609a04e7dc2"
+content-hash = "600ae3a5fdf101e8712610a2dcf30608226e591dc28a6fcd7306a0788af13a98"
