@@ -36,7 +36,9 @@ def load_pipeline_config():
     except ModuleNotFoundError:
         logger.info(f"Configuration region '{region_config}' not found.")
     except FileNotFoundError:
-        logger.info(f"Configuration file 'pnw_census_pipeline.json' not found in '{region_config}'.")
+        logger.info(
+            f"Configuration file 'pnw_census_pipeline.json' not found in '{region_config}'."
+        )
 
 
 @lru_cache

@@ -21,13 +21,15 @@ region_config = env_config("REGION_CONFIG", cast=str)
 def load_pipeline_config():
     try:
         with importlib.resources.open_text(
-                f"{region_config}_pipeline_config", "cin_census_pipeline.json"
+            f"{region_config}_pipeline_config", "cin_census_pipeline.json"
         ) as f:
             return parse_yaml_file_as(PipelineConfig, f)
     except ModuleNotFoundError:
         logger.info(f"Configuration region '{region_config}' not found.")
     except FileNotFoundError:
-        logger.info(f"Configuration file 'cin_census_pipeline.json' not found in '{region_config}'.")
+        logger.info(
+            f"Configuration file 'cin_census_pipeline.json' not found in '{region_config}'."
+        )
 
 
 @lru_cache

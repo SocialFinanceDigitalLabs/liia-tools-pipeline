@@ -19,7 +19,9 @@ class LACodeLookup:
         except ModuleNotFoundError:
             logger.info(f"Configuration region '{region_config}' not found.")
         except FileNotFoundError:
-            logger.info(f"Configuration file '_authorities.yml' not found in '{region_config}'.")
+            logger.info(
+                f"Configuration file '_authorities.yml' not found in '{region_config}'."
+            )
 
         assert (
             "data_codes" in self.__mappings
