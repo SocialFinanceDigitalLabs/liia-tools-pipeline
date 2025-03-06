@@ -1,14 +1,27 @@
-from pathlib import Path
-
+import importlib.resources
+import logging
 import yaml
 
-LA_CODE_FILE = Path(__file__).parent / "_authorities.yml"
+from decouple import config as env_config
+
+logger = logging.getLogger(__name__)
+
+region_config = env_config("REGION_CONFIG", cast=str)
 
 
 class LACodeLookup:
     def __init__(self):
-        with open(LA_CODE_FILE, "rt") as FILE:
-            self.__mappings = yaml.safe_load(FILE)
+        try:
+            with importlib.resources.open_text(
+                f"{region_config}_pipeline_config", "_authorities.yml"
+            ) as FILE:
+                self.__mappings = yaml.safe_load(FILE)
+        except ModuleNotFoundError:
+            logger.info(f"Configuration region '{region_config}' not found.")
+        except FileNotFoundError:
+            logger.info(
+                f"Configuration file '_authorities.yml' not found in '{region_config}'."
+            )
 
         assert (
             "data_codes" in self.__mappings
