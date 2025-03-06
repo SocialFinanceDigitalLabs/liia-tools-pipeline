@@ -36,3 +36,9 @@ class SessionNamesSufficiency(StrEnum):
     """Enum for sufficiency session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+
+class SessionNamesPNWCensusJoins(StrEnum):
+    """Enum for sufficiency session folders."""
+
+    INCOMING_FOLDER = "incoming"
