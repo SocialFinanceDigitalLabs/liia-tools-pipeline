@@ -38,7 +38,7 @@ class SessionNamesSufficiency(StrEnum):
     INCOMING_FOLDER = "incoming"
 
 
-class SessionNamesPNWCensusSSDA903(StrEnum):
+class SessionNamesPNWCensusJoins(StrEnum):
     """Enum for sufficiency session folders."""
 
     INCOMING_FOLDER = "incoming"

@@ -6,7 +6,7 @@ log = get_dagster_logger()
 
 
 @job
-def pnw_census_ssda903_join():
-    log.info("Joining SSDA903 with PNW Census...")
+def pnw_census_joins():
+    log.info("Joining additional datasets with PNW Census...")
     session_folder = pnw_census.create_join_session_folder()
-    pnw_census.join_pnw_census_ssda903(session_folder)
+    pnw_census.joins_pnw_census(session_folder)

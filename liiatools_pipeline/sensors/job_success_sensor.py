@@ -16,7 +16,7 @@ from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
     reports,
 )
-from liiatools_pipeline.jobs.pnw_census_org import pnw_census_ssda903_join
+from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
@@ -307,11 +307,11 @@ def deduplicate_annex_a_sensor(context):
 
 
 @sensor(
-    job=pnw_census_ssda903_join,
+    job=pnw_census_joins,
     description="Runs pnw_census_ssda903_join job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
 )
-def pnw_census_ssda903_join_sensor(context):
+def pnw_census_joins_sensor(context):
     run_records_ssda903 = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
