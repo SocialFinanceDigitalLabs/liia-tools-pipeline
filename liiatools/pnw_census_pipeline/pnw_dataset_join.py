@@ -4,6 +4,45 @@ from dagster import get_dagster_logger
 
 log = get_dagster_logger(__name__)
 
+def _filter_to_open_in_last_12m(
+        df: pd.DataFrame,
+        episode_start: str,
+        snapshot_date: str,
+        episode_end: str
+    ) -> pd.DataFrame:
+    '''
+    Filters dataframe to episodes that are open within 12 months before the snapshot date
+    '''
+    df = df[
+        # Opened before or on the snapshot date
+        (df[episode_start] <= df[snapshot_date]) &
+        # And
+        (
+            # Closed no earlier than 12 months prior to the shapshot
+            (df[episode_end] >= (df[snapshot_date] - pd.DateOffset(months=12))) |
+            # Or are still open
+            (df[episode_end].isna())
+        )
+    ]
+
+    return df
+
+def _filter_to_open_on_snapshot_date(
+        df: pd.DataFrame,
+        episode_end: str,
+        snapshot_date: str
+    ) -> pd.DataFrame:
+    '''
+    Filters dataframe to episodes that are open on the snapshot date
+    They will already have been confirmed to be open before the snapshot date
+    '''
+    df = df[
+        (df[episode_end].isna()) |
+        (df[episode_end] >= df[snapshot_date])
+    ]
+
+    return df
+
 def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.DataFrame:
     '''
     Merges data from 903 episodes dataframe onto pnw census dataframe
@@ -21,29 +60,13 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
     )
 
     # Filter to episodes open within 12 months before the snapshot date
-    episodes_merged = episodes_merged[
-        # Opened before or on the snapshot date
-        (episodes_merged["DECOM"] <= episodes_merged["snapshot_date"]) &
-        # And
-        (
-            # Closed no earlier than 12 months prior to the shapshot
-            (episodes_merged["DEC"] >= (episodes_merged["snapshot_date"] - pd.DateOffset(months=12))) |
-            # Or are still open
-            (episodes_merged["DEC"].isna())
-        )
-    ]
-
+    episodes_merged = _filter_to_open_in_last_12m(episodes_merged, "DECOM", "snapshot_date", "DEC")
+    
     # Count episodes per child
     episodes_merged["# placements in last 12 months"] = episodes_merged.groupby("CHILD")["CHILD"].transform("count")
 
-    # Keep only the most recent episode per child
-    episodes_merged = episodes_merged.loc[episodes_merged.groupby("CHILD")["DECOM"].idxmax()]
-
     # Filter to only keep episodes open on day of snapshot
-    episodes_merged = episodes_merged[
-        (episodes_merged["DEC"].isna()) |
-        (episodes_merged["DEC"] >= episodes_merged["snapshot_date"])
-    ]
+    episodes_merged = _filter_to_open_on_snapshot_date(episodes_merged, "DEC", "snapshot_date")
 
     # Merge back with pnw_census
     pnw_census_merged = pnw_census.merge(
@@ -52,7 +75,8 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
             "PLACE",
             "PLACE_PROVIDER",
             "HOME_POST",
-            "PL_POST"
+            "PL_POST",
+            "# placements in last 12 months"
         ]],
         left_on="Identifier",
         right_on="CHILD",
@@ -62,8 +86,8 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
     # Row number in pnw_census should not have changed
     try:
         assert len(pnw_census)==len(pnw_census_merged)
-    except AssertionError as e:
-        log.error(f"Join with 903 episodes results in too many rows: {e}")
+    except AssertionError:
+        log.error(f"Join with 903 episodes results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["CHILD"].nunique()
@@ -98,8 +122,8 @@ def join_header_data(header: pd.DataFrame, pnw_census:pd.DataFrame) -> pd.DataFr
     # Row number in pnw_census should not have changed
     try:
         assert len(pnw_census)==len(pnw_census_merged)
-    except AssertionError as e:
-        log.error(f"Join with 903 header results in too many rows: {e}")
+    except AssertionError:
+        log.error(f"Join with 903 header results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["CHILD"].nunique()
@@ -131,19 +155,15 @@ def join_uasc_data(uasc: pd.DataFrame, pnw_census:pd.DataFrame) -> pd.DataFrame:
     # Row number in pnw_census should not have changed
     try:
         assert len(pnw_census)==len(pnw_census_merged)
-    except AssertionError as e:
-        log.error(f"Join with 903 uasc results in too many rows: {e}")
+    except AssertionError:
+        log.error(f"Join with 903 uasc results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["CHILD"].nunique()
     log.info(f"{joins} joins made from 903 uasc file")
 
     # Create new column for when snapshot date is less than or equal to DUC
-    pnw_census_merged["UASC 903"] = np.where(
-        pnw_census_merged["DUC"].notna() &
-        (pnw_census_merged["snapshot_date"] <= pnw_census_merged["DUC"]),
-        1, 0
-    )
+    pnw_census_merged["UASC 903"] = np.where(pnw_census_merged["snapshot_date"] <= pnw_census_merged["DUC"], 1, 0)
 
     pnw_census_merged = pnw_census_merged.drop(columns=["CHILD", "DUC"])
 
@@ -196,8 +216,8 @@ def join_oc2_data(oc2: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.DataFrame:
     # Row number in pnw_census should not have changed
     try:
         assert len(pnw_census)==len(pnw_census_merged)
-    except AssertionError as e:
-        log.error(f"Join with 903 oc2 results in too many rows: {e}")
+    except AssertionError:
+        log.error(f"Join with 903 oc2 results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["CHILD"].nunique()
@@ -232,47 +252,28 @@ def join_missing_data(missing: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Dat
     )
 
     # Filter to episodes open within 12 months before the snapshot date
-    missing_merged = missing_merged[
-        # Opened before or on the snapshot date
-        (missing_merged["MIS_START"] <= missing_merged["snapshot_date"]) &
-        # And
-        (
-            # Closed no earlier than 12 months prior to the shapshot
-            (missing_merged["MIS_END"] >= (missing_merged["snapshot_date"] - pd.DateOffset(months=12))) |
-            # Or are still open
-            (missing_merged["MIS_END"].isna())
-        )
-    ]
+    missing_merged = _filter_to_open_in_last_12m(missing_merged, "MIS_START", "snapshot_date", "MIS_END")
 
     # Count episodes per child
-    missing_merged["# missing episodes in last 12 months"] = missing_merged.groupby("CHILD")["CHILD"].transform("count")
-
-    # Keep only the most recent episode per child
-    missing_merged = missing_merged.loc[missing_merged.groupby("CHILD")["MIS_START"].idxmax()]
+    missing_merged = missing_merged.groupby("CHILD")["CHILD"].count().to_frame(name="# missing episodes in last 12 months")
 
     # Merge back with pnw_census
     pnw_census_merged = pnw_census.merge(
-        missing_merged[[
-            "CHILD",
-            "# missing episodes in last 12 months"
-        ]],
+        missing_merged,
         left_on="Identifier",
-        right_on="CHILD",
+        right_index=True,
         how="left"
     )
 
     # Row number in pnw_census should not have changed
     try:
         assert len(pnw_census)==len(pnw_census_merged)
-    except AssertionError as e:
-        log.error(f"Join with 903 missing results in too many rows: {e}")
+    except AssertionError:
+        log.error(f"Join with 903 missing results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
-    joins = pnw_census_merged["CHILD"].nunique()
+    joins = pnw_census_merged["# missing episodes in last 12 months"].count()
     log.info(f"{joins} joins made from 903 missing file")
-
-    # Drop unnecessary identifier
-    pnw_census_merged = pnw_census_merged.drop(columns="CHILD")
 
     return pnw_census_merged
 
@@ -282,6 +283,11 @@ def join_onspd_data(postcode: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Data
     Merges data from ONSPD dataframe onto pnw census dataframe
     Returns pnw census dataframe
     '''
+    # Format postcode column to:
+    # - have only one space between first and second halves
+    # - remove trailing and leading spaces
+    postcode["pcd2"] = postcode["pcd2"].str.replace(r"\s+", " ", regex=True).str.strip()
+    
     # Merge postcode table on pnw_census using home postcode
     pnw_census_merged = pnw_census.merge(
         postcode[[
@@ -302,7 +308,7 @@ def join_onspd_data(postcode: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Data
     try:
         assert len(pnw_census)==len(pnw_census_merged)
     except AssertionError:
-        log.error(f"Join with ONSPD home postcode results in too many rows: {len(pnw_census_merged)} rows now with {len(pnw_census)} before")
+        log.error(f"Join with ONSPD home postcode results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["pcd2"].notna().count()
@@ -332,7 +338,7 @@ def join_onspd_data(postcode: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Data
     try:
         assert len(pnw_census)==len(pnw_census_merged)
     except AssertionError:
-        log.error(f"Join with ONSPD placement postcode results in too many rows: {len(pnw_census_merged)} rows now with {len(pnw_census)} before")
+        log.error(f"Join with ONSPD placement postcode results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows.")
 
     # Log number of joins made
     joins = pnw_census_merged["pcd2"].notna().count()

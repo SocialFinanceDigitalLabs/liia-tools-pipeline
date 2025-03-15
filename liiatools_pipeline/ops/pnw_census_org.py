@@ -62,88 +62,104 @@ def joins_pnw_census(
     session_folder: FS,
 ):
     log.info("Checking necessary files are present...")
-    episodes = re.compile(r"episodes")
-    header = re.compile(r"header")
-    uasc = re.compile(r"uasc")
-    oc2 = re.compile(r"oc2")
-    missing = re.compile(r"missing")
-    pnw = re.compile(r"pnw")
+    episodes_pattern = re.compile(r"episodes")
+    header_pattern = re.compile(r"header")
+    uasc_pattern = re.compile(r"uasc")
+    oc2_pattern = re.compile(r"oc2")
+    missing_pattern = re.compile(r"missing")
+    pnw_pattern = re.compile(r"pnw")
 
     files = session_folder.listdir("/")
 
     try:
-        pnw_census_file = next((f for f in files if pnw.search(f)), None)
+        pnw_census_file = next((f for f in files if pnw_pattern.search(f)), None)
     except errors.ResourceNotFound as err:
         log.error(f"No PNW file to open: {err}")
         log.info("Exiting run as PNW Census file not available")
         return
 
-    ssda903_pattern_list = [episodes, header, uasc, oc2, missing]
-
-    # Check which ssda903 files are present
-    ssda903_files = [
-        filename
-        for filename in files
-        if any(pattern.search(filename) for pattern in ssda903_pattern_list)
-    ]
-
-    # Find external data folder for ONSPD file
-    ext_folder = external_data_folder()
+    # Check if there are any SSDA903 files
+    ssda903_patterns = [episodes_pattern, header_pattern, uasc_pattern, oc2_pattern, missing_pattern]
+    if not any(any(pattern.search(f) for f in files) for pattern in ssda903_patterns):
+        log.error("No SSDA903 files found: terminating process.")
+        return
 
     # Open the PNW Census file
     pnw_census = open_file(session_folder, pnw_census_file)
     # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
     pnw_census["snapshot_date"] = pd.to_datetime(pnw_census[["Year", "Month"]].assign(day=1)) + MonthEnd(0)
-    # Execute logic based on available files
-    if ssda903_files:
-        log.info(f"SSDA903 files found: {ssda903_files}")
-        for matched in ssda903_files:
-            log.info(f"Processing {matched}")
-            # Execute logic based on matched files
-            if "episodes" in matched:
-                log.info("Joining SSDA903 episode data with PNW Census data")
-                # Open the file
-                episodes = open_file(session_folder, matched)
-                # Join the data
-                pnw_census = join_episode_data(episodes, pnw_census)
-                # With episodes data, ONSPD data can be matched
-                try:
-                    postcode = open_file(ext_folder, "ONSPD_reduced_to_postcode_sector.csv")
-                    log.info("ONSPD file found")
-                    # Join the data
-                    pnw_census = join_onspd_data(postcode, pnw_census)
-                except errors.ResourceNotFound as err:
-                    log.error(f"No ONSPD postcode file to open: {err}")
-            if "header" in matched:
-                log.info("Joining SSDA903 header data with PNW Census data")
-                # Open the file
-                header = open_file(session_folder, matched)
-                # Join the data
-                pnw_census = join_header_data(header, pnw_census)
-            if "uasc" in matched:
-                log.info("Joining SSDA903 UASC data with PNW Census data")
-                # Open the file
-                uasc = open_file(session_folder, matched)
-                # Join the data
-                pnw_census = join_uasc_data(uasc, pnw_census)
-            if "oc2" in matched:
-                log.info("Joining SSDA903 OC2 data with PNW Census data")
-                # Open the file
-                oc2 = open_file(session_folder, matched)
-                # Join the data
-                pnw_census = join_oc2_data(oc2, pnw_census)
-            if "missing" in matched:
-                log.info("Joining SSDA903 missing data with PNW Census data")
-                # Open the file
-                missing = open_file(session_folder, matched)
-                # Join the data
-                pnw_census = join_missing_data(missing, pnw_census)
-    else:
-        log.error("No SSDA903 files found")
-        return
 
+    # Check and process each SSDA903 file type
+    if any(episodes_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 episode data with PNW Census data")
+        episodes_file = next(f for f in files if episodes_pattern.search(f))
+        episodes = open_file(session_folder, episodes_file)
+        pnw_census = join_episode_data(episodes, pnw_census)
+        try:
+            ext_folder = external_data_folder()
+            postcode = open_file(ext_folder, "ONSPD_reduced_to_postcode_sector.csv")
+            log.info("ONSPD file found")
+            pnw_census = join_onspd_data(postcode, pnw_census)
+        except errors.ResourceNotFound as err:
+            log.error(f"No ONSPD postcode file to open: {err}")
+            empty_ONSPD_cols = ["Home eastings", "Home northings", "Placement eastings", "Placement northings", "Placement LA code"]
+            for col in empty_ONSPD_cols:
+                pnw_census[col] = None
+    else:
+        log.error("No 903 episodes data to join")
+        empty_episode_cols = ["# placements in last 12 months", "903 placement type", "903 provider type", "Home postcode", "Placement postcode", "Home eastings", "Home northings", "Placement eastings", "Placement northings", "Placement LA code"]
+        for col in empty_episode_cols:
+            pnw_census[col] = None
+
+    if any(header_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 header data with PNW Census data")
+        header_file = next(f for f in files if header_pattern.search(f))
+        header = open_file(session_folder, header_file)
+        pnw_census = join_header_data(header, pnw_census)
+    else:
+        log.error("No 903 header data to join")
+        empty_header_cols = ["Gender 903", "Ethnicity 903"]
+        for col in empty_header_cols:
+            pnw_census[col] = None
+
+    if any(uasc_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 UASC data with PNW Census data")
+        uasc_file = next(f for f in files if uasc_pattern.search(f))
+        uasc = open_file(session_folder, uasc_file)
+        pnw_census = join_uasc_data(uasc, pnw_census)
+    else:
+        log.error("No 903 uasc data to join")
+        empty_uasc_cols = ["UASC 903"]
+        for col in empty_uasc_cols:
+            pnw_census[col] = None
+
+    if any(oc2_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 OC2 data with PNW Census data")
+        oc2_file = next(f for f in files if oc2_pattern.search(f))
+        oc2 = open_file(session_folder, oc2_file)
+        pnw_census = join_oc2_data(oc2, pnw_census)
+    else:
+        log.error("No 903 oc2 data to join")
+        empty_oc2_cols = ["Child convicted during the year", "Child identified as having a substance misuse problem", "Child received intervention for substance misuse problem", "Child offered intervention for substance misuse problem"]
+        for col in empty_oc2_cols:
+            pnw_census[col] = None
+
+    if any(missing_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 missing data with PNW Census data")
+        missing_file = next(f for f in files if missing_pattern.search(f))
+        missing = open_file(session_folder, missing_file)
+        pnw_census = join_missing_data(missing, pnw_census)
+    else:
+        log.error("No 903 missing data to join")
+        empty_missing_cols = ["# missing episodes in last 12 months"]
+        for col in empty_missing_cols:
+            pnw_census[col] = None
+
+    # Drop snapshot date field
+    pnw_census = pnw_census.drop(columns="snapshot_date")
+    
     # Export PNW file
-    pnw_dc = DataContainer({"pnw_census":pnw_census})
+    pnw_dc = DataContainer({"ENRICHED_pnw_census_pnw_census":pnw_census})
     log.info("Writing joined PNW Census output to shared folder")
     output_folder = shared_folder()
     pnw_dc.export(output_folder, "", "csv")

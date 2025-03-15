@@ -611,6 +611,11 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     # Rename columns and drop unnecessary columns
     df = rename_and_drop(df, "Postcode")
 
+    # Format postcode column to:
+    # - have only one space between first and second halves
+    # - remove trailing and leading spaces
+    df["Sector"] = df["Sector"].str.replace(r"\s+", " ", regex=True).str.strip()
+
     # Reset indexes and use main index as primary key
     df.reset_index(drop=True, inplace=True)
     df.reset_index(inplace=True, names="PostcodeKey")

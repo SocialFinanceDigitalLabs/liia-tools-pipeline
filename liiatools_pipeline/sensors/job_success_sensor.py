@@ -312,21 +312,11 @@ def deduplicate_annex_a_sensor(context):
     default_status=DefaultSensorStatus.RUNNING,
 )
 def pnw_census_joins_sensor(context):
-    run_records_ssda903 = context.instance.get_run_records(
+    run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": "ssda903"},
-        ),
-        order_by="update_timestamp",
-        ascending=False,
-        limit=1000,
-    )
-    run_records_pnw_census = context.instance.get_run_records(
-        filters=RunsFilter(
-            job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": "pnw_census"},
+            tags={"dataset": ["ssda903", "pnw_census"]},
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -335,11 +325,11 @@ def pnw_census_joins_sensor(context):
 
     # Get the most recent ssda903 & pnw_census run ids
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
-        run_records_ssda903,
+        run_records,
         "ssda903",
     )
     latest_run_id_pnw = find_previous_matching_dataset_run(
-        run_records_pnw_census,
+        run_records,
         "pnw_census",
     )
     # Ensure there is at least one of each record
