@@ -1,6 +1,5 @@
 import importlib.resources
 import logging
-from decouple import config as env_config
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -9,6 +8,7 @@ import yaml
 from pydantic_yaml import parse_yaml_file_as
 
 from liiatools.common.data import PipelineConfig
+from liiatools.common.spec import load_region_env
 from liiatools.common.spec.__data_schema import DataSchema
 
 __ALL__ = ["load_schema", "DataSchema", "Category", "Column"]
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 SCHEMA_DIR = Path(__file__).parent
 
-region_config = env_config("REGION_CONFIG", cast=str)
+region_config = load_region_env()
 
 
 @lru_cache

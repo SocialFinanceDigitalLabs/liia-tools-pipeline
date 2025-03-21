@@ -44,7 +44,7 @@ jobs:
       env:
         CLEAN_SCHEDULE: "* * * * *"
         REPORTS_SCHEDULE: "* * * * *"
-        REGION_CONFIG: "london"
+        REGION_CONFIG: "test"
       run: |
         poetry run pytest
 
@@ -53,7 +53,7 @@ jobs:
       env:
         CLEAN_SCHEDULE: "* * * * *"
         REPORTS_SCHEDULE: "* * * * *"
-        REGION_CONFIG: "london"
+        REGION_CONFIG: "test"
       run: |
         SKIP_E2E=True poetry run coverage run -m pytest
         poetry run coverage report
