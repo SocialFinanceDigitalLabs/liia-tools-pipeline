@@ -57,7 +57,11 @@
         {
           "id": "Identifier",
           "type": "alphanumeric",
-          "unique_key": true
+          "unique_key": true,
+          "enrich": [
+            "integer",
+            "add_la_suffix"
+          ]
         },
         {
           "id": "Age",
