@@ -13,7 +13,7 @@ from liiatools.pnw_census_pipeline.pnw_dataset_join import (
 def test_filter_to_open_in_last_12m():
     data = pd.DataFrame(
         {
-            "DECOM": pd.to_datetime(["2025-01-01", "2024-01-01", "2024-01-01", "2024-01-01", "2024-01-01", None]),
+            "DECOM": pd.to_datetime(["2025-01-01", "2023-01-01", "2024-01-01", "2024-01-01", "2024-01-01", None]),
             "snapshot_date": pd.to_datetime(["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31"]),
             "DEC": pd.to_datetime([None, "2023-12-30", "2024-12-01", "2025-01-01", None, None])
         }
@@ -154,10 +154,3 @@ def test_join_missing_data():
         print("Test passed")
     except AssertionError:
         print("Test failed")
-
-test_filter_to_open_in_last_12m()
-test_filter_to_open_on_snapshot_date()
-test_join_episode_data()
-test_join_uasc_data()
-test_join_oc2_data()
-test_join_missing_data()
