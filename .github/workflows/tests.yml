@@ -20,6 +20,10 @@ jobs:
       env:
         AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
 
+    - name: Configure Git Authentication
+      run: |
+        git config --global url."https://${{ secrets.PRIVATE_REPO_TOKEN }}:x-oauth-basic@github.com".insteadOf "https://github.com"
+
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
@@ -40,6 +44,7 @@ jobs:
       env:
         CLEAN_SCHEDULE: "* * * * *"
         REPORTS_SCHEDULE: "* * * * *"
+        REGION_CONFIG: "test"
       run: |
         poetry run pytest
 
@@ -48,6 +53,7 @@ jobs:
       env:
         CLEAN_SCHEDULE: "* * * * *"
         REPORTS_SCHEDULE: "* * * * *"
+        REGION_CONFIG: "test"
       run: |
         SKIP_E2E=True poetry run coverage run -m pytest
         poetry run coverage report

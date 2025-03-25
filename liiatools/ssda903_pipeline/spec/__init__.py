@@ -1,3 +1,4 @@
+import importlib.resources
 import logging
 import re
 from functools import lru_cache
@@ -7,6 +8,7 @@ import yaml
 from pydantic_yaml import parse_yaml_file_as
 
 from liiatools.common.data import PipelineConfig
+from liiatools.common.spec import load_region_env
 from liiatools.common.spec.__data_schema import DataSchema
 
 __ALL__ = ["load_schema", "DataSchema", "Category", "Column"]
@@ -15,11 +17,22 @@ logger = logging.getLogger(__name__)
 
 SCHEMA_DIR = Path(__file__).parent
 
+region_config = load_region_env()
+
 
 @lru_cache
 def load_pipeline_config():
-    with open(SCHEMA_DIR / "pipeline.json", "rt") as FILE:
-        return parse_yaml_file_as(PipelineConfig, FILE)
+    try:
+        with importlib.resources.open_text(
+            f"{region_config}_pipeline_config", "ssda903_pipeline.json"
+        ) as f:
+            return parse_yaml_file_as(PipelineConfig, f)
+    except ModuleNotFoundError:
+        logger.info(f"Configuration region '{region_config}' not found.")
+    except FileNotFoundError:
+        logger.info(
+            f"Configuration file 'ssda903_pipeline.json' not found in '{region_config}'."
+        )
 
 
 @lru_cache
