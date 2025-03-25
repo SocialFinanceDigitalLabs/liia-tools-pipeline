@@ -56,7 +56,7 @@ class Category(BaseModel):
 
 class Numeric(BaseModel):
     """
-    Represents a numeric value in a column, including the minimum value, maximum value and decimal places
+    Represents a numeric value in a column, including the minimum value, maximum value and decimal places, flags for age verification
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -65,6 +65,7 @@ class Numeric(BaseModel):
     min_value: int = None
     max_value: int = None
     decimal_places: int = None
+    age: bool = False
 
     def __init__(self, **data):
         super().__init__(**data)
