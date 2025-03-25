@@ -29,6 +29,7 @@ column_map:
         numeric:
           type: "integer"
           min_value: 0
+          age: True
         header_regex:
           - /.*age.*/i
       Gender:
