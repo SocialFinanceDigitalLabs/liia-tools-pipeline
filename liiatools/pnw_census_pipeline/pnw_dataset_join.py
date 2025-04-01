@@ -13,7 +13,7 @@ def _filter_to_open_in_last_12m(
     '''
     Filters dataframe to episodes that are open within 12 months before the snapshot date
     '''
-    df = df[
+    filtered_df = df[
         # Opened before or on the snapshot date
         (df[episode_start] <= df[snapshot_date]) &
         # And
@@ -25,7 +25,7 @@ def _filter_to_open_in_last_12m(
         )
     ]
 
-    return df
+    return filtered_df
 
 def _filter_to_open_on_snapshot_date(
         df: pd.DataFrame,
@@ -36,12 +36,12 @@ def _filter_to_open_on_snapshot_date(
     Filters dataframe to episodes that are open on the snapshot date
     They will already have been confirmed to be open before the snapshot date
     '''
-    df = df[
+    filtered_df = df[
         (df[episode_end].isna()) |
         (df[episode_end] >= df[snapshot_date])
     ]
 
-    return df
+    return filtered_df
 
 def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.DataFrame:
     '''
