@@ -8,6 +8,7 @@ from dagster import (
 )
 from decouple import config as env_config
 
+from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
@@ -15,9 +16,9 @@ from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
     reports,
 )
+from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 
@@ -302,4 +303,39 @@ def deduplicate_annex_a_sensor(context):
                     "deduplicate_pan": clean_config,
                 }
             ),
+        )
+
+
+@sensor(
+    job=pnw_census_joins,
+    description="Runs pnw_census_ssda903_join job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+)
+def pnw_census_joins_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["ssda903", "pnw_census"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903 & pnw_census run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
+    )
+    latest_run_id_pnw = find_previous_matching_dataset_run(
+        run_records,
+        "pnw_census",
+    )
+    # Ensure there is at least one of each record
+    if latest_run_id_ssda903 and latest_run_id_pnw:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
         )
