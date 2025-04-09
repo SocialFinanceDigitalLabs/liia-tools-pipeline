@@ -1,0 +1,49 @@
+name: base-build
+permissions:
+  contents: read
+  actions: read
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      dockerfile:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_URL:
+        required: true
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Configure Git Authentication
+        run: |
+          git config --global url."https://${{ secrets.PRIVATE_REPO_TOKEN }}:x-oauth-basic@github.com".insteadOf "https://github.com"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_URL }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ inputs.dockerfile }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_URL }}:${{ inputs.tag }}
+          labels: ${{ steps.meta.outputs.labels }}
