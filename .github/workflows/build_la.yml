@@ -22,3 +22,6 @@ jobs:
       dockerfile: "./Dockerfile_LA"
     secrets:
       DOCKERHUB_URL: ${{ secrets.DOCKERHUB_URL }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      PRIVATE_REPO_TOKEN: ${{ secrets.LIIA_TOOLS_PIPELINE_CONFIG_PAT }}

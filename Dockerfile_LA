@@ -11,7 +11,12 @@ WORKDIR /code
 
 COPY pyproject.toml poetry.lock ./
 
-RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+RUN --mount=type=secret,id=PRIVATE_REPO_TOKEN \
+ export PRIVATE_REPO_TOKEN=$(cat /run/secrets/PRIVATE_REPO_TOKEN) && \
+ git config --global url."https://${PRIVATE_REPO_TOKEN}@github.com/".insteadOf "https://github.com/" \
+ && git ls-remote https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git \
+ && poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR \
+ && git config --global --unset-all url."https://${PRIVATE_REPO_TOKEN}@github.com/".insteadOf
 
 # The runtime image, used to just run the code provided its virtual environment
 FROM python:3.10-slim-buster AS runtime
