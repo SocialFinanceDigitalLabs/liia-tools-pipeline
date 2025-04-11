@@ -19,19 +19,21 @@ from liiatools_pipeline.jobs.common_org import reports
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 
-def open_fs_location(folder_location, context):
+def open_fs_location(folder_location, directory_str, dataset, context):
     """
     Open the specified folder location with error catching.
 
-    :param folder_location: The location of the folder to open.
+    :param folder_location: The base location of the folder to open.
+    :param directory_str: The subdirectory string to open.
+    :param dataset: The dataset to open.
     :param context: The Dagster context object.
     :return: The directory pointer to the folder location.
     """
     try:
-        dir_pointer = open_fs(folder_location)
-        context.log.info(f"Opening folder location: {folder_location}")
+        dir_pointer = open_fs(f"{folder_location}/{directory_str}/{dataset}")
+        context.log.info(f"Opening folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}")
     except fs.errors.CreateFailed:
-        context.log.error(f"Failed to open folder location: {folder_location}")
+        context.log.error(f"Failed to open folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}")
         dir_pointer = None
 
     return dir_pointer
@@ -49,7 +51,7 @@ def input_directory_walker(folder_location, context, dataset):
 
     for directory_str in directories:
         directory = open_fs_location(
-            f"{folder_location}/{directory_str}/{dataset}", context
+            folder_location, directory_str, dataset, context
         )
 
         if directory is not None:
@@ -57,7 +59,7 @@ def input_directory_walker(folder_location, context, dataset):
                 file.lstrip("/") for file in walker.files(directory)
             ]
             if not dir_contents[directory_str]:
-                context.log.info(f"No files in {folder_location} have been found")
+                context.log.info(f"No {dataset} files have been found in the {directory_str.split('-')[-1]} LA folder")
 
     return dir_contents
 
@@ -65,7 +67,7 @@ def input_directory_walker(folder_location, context, dataset):
 def concat_directory_walker(folder_location, context, dataset):
     walker = Walker()
     concat_folder = open_fs_location(
-        f"{folder_location}/concatenated/{dataset}", context
+        folder_location, "concatenated", dataset, context
     )
     context.log.info("Analysing folder contents")
     dir_contents = (
