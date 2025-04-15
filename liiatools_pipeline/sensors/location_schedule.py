@@ -149,8 +149,14 @@ def clean_schedule(context):
         directory_contents = input_directory_walker(folder_location, context, dataset)
 
         for la_path, files in directory_contents.items():
-            context.log.info("Generating Run Key")
+            context.log.info(
+                f"Generating Run Key for {dataset} file in {la_path.split('-')[-1]} folder"
+            )
             run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
+
+            context.log.info(
+                f"Run Key generated for {dataset} in {la_path.split('-')[-1]} folder"
+            )
 
             run_records = context.instance.get_run_records(
                 filters=RunsFilter(
@@ -188,7 +194,9 @@ def clean_schedule(context):
             )
 
             if previous_matching_run_id is None:
-                context.log.info("Differences found, executing run")
+                context.log.info(
+                    f"Differences found in {la_path.split('-')[-1]} {dataset} folder, executing run"
+                )
                 yield RunRequest(
                     run_key=run_key,
                     tags={"dataset": dataset},
@@ -201,7 +209,9 @@ def clean_schedule(context):
                     ),
                 )
             else:
-                context.log.info("No new files found, skipping run")
+                context.log.info(
+                    f"No new {la_path.split('-')[-1]} {dataset} files found, skipping run"
+                )
 
 
 @schedule(
