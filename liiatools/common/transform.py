@@ -145,21 +145,31 @@ def prepare_export(
     # Loop over known tables
     for table_config in table_list:
         table_name = table_config.id
-        table_columns = (
+        table_config = (
             table_config.columns_for_profile(profile)
             if profile
             else table_config.columns
         )
-        table_columns = [column.id for column in table_columns]
+        table_columns = [column.id for column in table_config]
+        column_types = {col.id: col.type for col in table_config}
 
         # Only export if the table is in the data
         if table_name in data:
             table = data[table_name].copy()
 
-            # Create any missing columns
-            for column_name in table_columns:
+            for column_name, type in column_types.items():
+                # Create any missing columns
                 if column_name not in table.columns:
                     table[column_name] = None
+                # If column is numeric, ensure blanks are converted to NaN
+                if type == "float":
+                    table[column_name] = pd.to_numeric(
+                        table[column_name], errors="coerce"
+                    )
+                elif type == "integer":
+                    table[column_name] = pd.to_numeric(
+                        table[column_name], errors="coerce"
+                    ).astype("Int64")
 
             # Return the subset
             data_container[table_name] = table[table_columns].copy()
