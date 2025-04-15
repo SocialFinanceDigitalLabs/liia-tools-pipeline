@@ -231,7 +231,7 @@ def reports_schedule(context):
         files = concat_directory_walker(folder_location, context, dataset)
 
         if files is not None:
-            context.log.info("Generating Run Key")
+            context.log.info(f"Generating Run Key for {dataset} files")
             run_key = generate_run_key(
                 f"{folder_location}/concatenated/{dataset}", files
             )
@@ -246,7 +246,6 @@ def reports_schedule(context):
                 ascending=False,
                 limit=1000,
             )
-            context.log.info(f"List of run records: {run_records}")
 
             previous_matching_run_id = find_previous_matching_run(
                 run_records,
@@ -271,7 +270,7 @@ def reports_schedule(context):
             context.log.debug(f"Config used: {clean_config}")
 
             if previous_matching_run_id is None:
-                context.log.info("Differences found, executing run")
+                context.log.info(f"Differences found for {dataset}, executing run")
                 yield RunRequest(
                     run_key=run_key,
                     tags={"dataset": dataset},
@@ -283,4 +282,4 @@ def reports_schedule(context):
                     ),
                 )
             else:
-                context.log.info("No new files found, skipping run")
+                context.log.info(f"No new {dataset} files found, skipping run")
