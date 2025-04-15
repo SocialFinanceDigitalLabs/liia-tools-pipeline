@@ -31,9 +31,13 @@ def open_fs_location(folder_location, directory_str, dataset, context):
     """
     try:
         dir_pointer = open_fs(f"{folder_location}/{directory_str}/{dataset}")
-        context.log.info(f"Opening folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}")
+        context.log.info(
+            f"Opening folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}"
+        )
     except fs.errors.CreateFailed:
-        context.log.error(f"Failed to open folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}")
+        context.log.error(
+            f"Failed to open folder location: {folder_location}/{directory_str.split('-')[-1]}/{dataset}"
+        )
         dir_pointer = None
 
     return dir_pointer
@@ -50,25 +54,23 @@ def input_directory_walker(folder_location, context, dataset):
     dir_contents = {}
 
     for directory_str in directories:
-        directory = open_fs_location(
-            folder_location, directory_str, dataset, context
-        )
+        directory = open_fs_location(folder_location, directory_str, dataset, context)
 
         if directory is not None:
             dir_contents[directory_str] = [
                 file.lstrip("/") for file in walker.files(directory)
             ]
             if not dir_contents[directory_str]:
-                context.log.info(f"No {dataset} files have been found in the {directory_str.split('-')[-1]} LA folder")
+                context.log.info(
+                    f"No {dataset} files have been found in the {directory_str.split('-')[-1]} LA folder"
+                )
 
     return dir_contents
 
 
 def concat_directory_walker(folder_location, context, dataset):
     walker = Walker()
-    concat_folder = open_fs_location(
-        folder_location, "concatenated", dataset, context
-    )
+    concat_folder = open_fs_location(folder_location, "concatenated", dataset, context)
     context.log.info("Analysing folder contents")
     dir_contents = (
         [file.lstrip("/") for file in walker.files(concat_folder)]
@@ -169,7 +171,14 @@ def clean_schedule(context):
                 "dataset_folder",
                 context,
             )
-            la = check_la(la_path)
+
+            try:
+                la = check_la(la_path)
+            except ValueError:
+                context.log.error(
+                    f"LA code not found in the directory path: {folder_location}/{la_path.split('-')[-1]}/{dataset}"
+                )
+                continue
 
             clean_config = CleanConfig(
                 dataset_folder=f"{folder_location}/{la_path}/{dataset}",
