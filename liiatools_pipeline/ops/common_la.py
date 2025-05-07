@@ -95,6 +95,11 @@ def process_files(
         for file in current_files:
             current.fs.remove(f"{current_path}/{file}")
 
+    la_name = authorities.get_by_code(config.input_la_code)
+    la_signed = pipeline_config(config).la_signed[la_name]["PAN"]
+    if la_signed == "No":
+        return
+
     for file_locator in incoming_files:
         log.info(f"Processing file {file_locator.name}")
         uuid = file_locator.meta["uuid"]
