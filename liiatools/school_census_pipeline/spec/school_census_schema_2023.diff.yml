@@ -132,7 +132,7 @@ Spring:
       *plaa
   column_map.pupilnolongeronroll.youngcarer:
     type: add
-    description: Adds new table for 2022 return
+    description: Adds new column for 2023 return
     value:
       category:
       - code: "P"
