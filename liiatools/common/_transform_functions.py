@@ -55,10 +55,15 @@ def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
+    value = row[column_config.id]
+
+    if pd.isna(value):
+        return ""
+
     try:
-        return int(float(row[column_config.id]))
+        return int(float(value))
     except ValueError:
-        return row[column_config.id]
+        return value
 
 
 def add_school_year(
