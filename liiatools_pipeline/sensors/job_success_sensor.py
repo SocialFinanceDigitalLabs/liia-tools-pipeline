@@ -37,6 +37,7 @@ def find_previous_matching_dataset_run(run_records, dataset):
     job=move_current_la,
     description="Runs move_current_la job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_la_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -71,6 +72,7 @@ def move_current_la_sensor(context):
     job=concatenate,
     description="Runs concatenate job once move_current job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def concatenate_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -114,6 +116,7 @@ def concatenate_sensor(context):
     job=ssda903_fix_episodes,
     description="Runs ssda903_fix_episodes job once concatenate job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def ssda903_fix_episodes_sensor(context):
     run_records = context.instance.get_run_records(
@@ -140,6 +143,7 @@ def ssda903_fix_episodes_sensor(context):
     job=move_error_reports,
     description="Runs move_error_reports job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_error_reports_sensor(context):
     run_records = context.instance.get_run_records(
@@ -167,6 +171,7 @@ def move_error_reports_sensor(context):
     job=move_current_org,
     description="Runs move_current_org job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_org_sensor(context):
     run_records = context.instance.get_run_records(
@@ -193,6 +198,7 @@ def move_current_org_sensor(context):
     job=move_concat,
     description="Runs move_concat job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_concat_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -242,6 +248,7 @@ def move_concat_sensor(context):
     job=ssda903_sufficiency,
     description="Runs ssda903_sufficiency job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
@@ -270,6 +277,7 @@ def sufficiency_sensor(context):
     job=deduplicate_annex_a,
     description="Runs deduplicate_annex_a job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def deduplicate_annex_a_sensor(context):
     run_records = context.instance.get_run_records(
@@ -310,6 +318,7 @@ def deduplicate_annex_a_sensor(context):
     job=pnw_census_joins,
     description="Runs pnw_census_ssda903_join job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def pnw_census_joins_sensor(context):
     run_records = context.instance.get_run_records(
