@@ -40,14 +40,10 @@ def find_previous_matching_dataset_run(run_records, dataset):
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_la_sensor(context):
-    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
-    context.log.info(f"Move current la allowed datasets: {allowed_datasets}")
-
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -56,16 +52,11 @@ def move_current_la_sensor(context):
 
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for clean job")
-        for dataset in allowed_datasets:
-            latest_run_id = find_previous_matching_dataset_run(
-                run_records,
-                dataset,
-            )  # Get the most recent dataset run id
-            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
-            yield RunRequest(
-                run_key=latest_run_id,
-                tags={"dataset": dataset},
-            )
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
 
 
 @sensor(
@@ -80,7 +71,7 @@ def concatenate_sensor(context):
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
-            job_name=move_current_la.name,
+            job_name=clean.name,
             statuses=[DagsterRunStatus.SUCCESS],
             tags={"dataset": allowed_datasets},
         ),
