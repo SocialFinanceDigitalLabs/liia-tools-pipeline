@@ -196,12 +196,12 @@ class DataframeArchive:
 
                 df = data[table_spec.id]
                 if sort_keys:
-                    df = df.sort_values(by=sort_keys, ascending=True)
+                    df = df.sort_values(by=sort_keys, ascending=False)
 
                 subset = [c.id for c in table_spec.columns if c.unique_key]
                 duplicate_mask = df.duplicated(
                     subset=subset if subset else None,
-                    keep="last",
+                    keep="first",
                 )
 
                 duplicate_rows = df.index[duplicate_mask].tolist()
