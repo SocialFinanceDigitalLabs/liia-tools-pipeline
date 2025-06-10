@@ -131,7 +131,7 @@ def move_files_for_sharing(
                     copy_file(source_fs, file_path, destination_fs, dest_path)
                 else:
                     table_id = re.search(r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*_*([a-zA-Z0-9_]*)\.", file_path)
-                    if table_id and table_id.group(1) in required_table_id:
+                    if table_id and table_id.group(2) in required_table_id:
                         dest_path = file_path.split("/")[-1]
                         copy_file(source_fs, file_path, destination_fs, dest_path)
             except Exception as e:
