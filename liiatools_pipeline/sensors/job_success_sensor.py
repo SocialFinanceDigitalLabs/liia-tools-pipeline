@@ -167,7 +167,7 @@ def move_error_reports_sensor(context):
 )
 def move_current_org_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
-    context.log.info(f"Move concat allowed datasets: {allowed_datasets}")
+    context.log.info(f"Move current allowed datasets: {allowed_datasets}")
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(

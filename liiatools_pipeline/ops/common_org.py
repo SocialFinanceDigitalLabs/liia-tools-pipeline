@@ -47,7 +47,7 @@ def move_current_view_org(config: CleanConfig):
         log.info("Moving current files to destination...")
         pl.move_files_for_sharing(current_folder, destination_folder, required_table_id=file_name_list)
     else:
-        log.error(f"No current files found fpr {config.dataset}")
+        log.error(f"No current files found for {config.dataset}")
 
 
 @op()
