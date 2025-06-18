@@ -99,6 +99,7 @@ def process_files(
     la_signed = pipeline_config(config).la_signed[la_name]["PAN"]
     if la_signed == "No":
         return
+    log.info(f"{la_name} is signed for PAN data processing.")
 
     for file_locator in incoming_files:
         log.info(f"Processing file {file_locator.name}")
@@ -114,6 +115,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Discovered year in {file_locator.name}")
 
         if (
             check_year_within_range(
@@ -130,6 +132,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Year in {file_locator.name} is within retention period")
 
         if config.input_la_code is None:
             error_report.append(
@@ -141,6 +144,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Local authority code found in {file_locator.name}")
 
         month = None
         if config.dataset in ["annex_a", "pnw_census"]:
@@ -155,6 +159,7 @@ def process_files(
                     )
                 )
                 continue
+            log.info(f"Month found in {file_locator.name}")
 
         try:
             schema = (
@@ -164,6 +169,7 @@ def process_files(
             )
         except KeyError:
             continue
+        log.info(f"{config.dataset} schema loaded for {file_locator.name}")
 
         metadata = dict(
             year=year, month=month, schema=schema, la_code=config.input_la_code
@@ -171,7 +177,7 @@ def process_files(
 
         try:
             cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema
+                file_locator, schema, log
             )
         except StreamError as e:
             error_report.append(
@@ -183,6 +189,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Cleanfile task completed for {file_locator.name}")
 
         cleanfile_result.data = prepare_export(
             cleanfile_result.data, pipeline_config(config), profile="PAN"

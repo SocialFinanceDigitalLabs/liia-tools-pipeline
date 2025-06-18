@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from sfdata_stream_parser.filters import generic
 
@@ -7,16 +8,18 @@ from liiatools.common.data import DataContainer, FileLocator, ProcessResult
 from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
-logger = logging.getLogger(__name__)
 
-
-def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger]=None) -> ProcessResult:
     """
     Clean input PNW Census csv files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema in a DataSchema class
+    :param logger: Optional logger to log messages
     :return: A class containing a DataContainer and ErrorContainer
     """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     # Open & Parse file
     stream = stream_functions.tablib_parse(src_file)
 
