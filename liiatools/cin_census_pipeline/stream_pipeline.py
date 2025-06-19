@@ -1,4 +1,6 @@
 from pathlib import Path
+from typing import Optional
+import logging
 
 from sfdata_stream_parser.filters import generic
 from xmlschema import XMLSchema
@@ -12,11 +14,12 @@ from liiatools.common.stream_pipeline import to_dataframe_xml
 from . import stream_filters as filters
 
 
-def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path)) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), logger: Optional[logging.Logger]=None) -> ProcessResult:
     """
     Clean input cin census xml files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema, and Path to the data schema
+    :param logger: Optional logger to log messages
     :return: A class containing a DataContainer and ErrorContainer
     """
     schema, schema_path = schema

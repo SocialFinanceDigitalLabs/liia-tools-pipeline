@@ -1,4 +1,6 @@
 import logging
+from typing import Optional
+from os.path import basename
 
 from sfdata_stream_parser.filters import generic
 
@@ -7,20 +9,22 @@ from liiatools.common.data import DataContainer, FileLocator, ProcessResult
 from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
-logger = logging.getLogger(__name__)
 
-
-def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger]=None) -> ProcessResult:
     """
     Clean input Annex A xlsx files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema in a DataSchema class
+    :param logger: Optional logger to log messages
     :return: A class containing a DataContainer and ErrorContainer
     """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     # Open & Parse file
     stream = stream_functions.tablib_parse(src_file)
 
-    logger.info("File %s opened and parsed, beginning processing", src_file.name)
+    logger.info("File %s opened and parsed, beginning processing", basename(src_file.name))
 
     # Configure stream
     stream = stream_functions.add_table_name(stream, schema=schema)
@@ -28,20 +32,20 @@ def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
     stream = stream_functions.convert_column_header_to_match(stream, schema=schema)
     stream = stream_functions.match_config_to_cell(stream, schema=schema)
 
-    logger.info("Stream for file %s configured", src_file.name)
+    logger.info("Stream for file %s configured", basename(src_file.name))
 
     # Clean stream
     stream = stream_functions.log_blanks(stream)
     stream = stream_functions.conform_cell_types(stream)
 
-    logger.info("Stream for file %s cleaned", src_file.name)
+    logger.info("Stream for file %s cleaned", basename(src_file.name))
 
     # Create dataset
     stream = stream_functions.collect_cell_values_for_row(stream)
     dataset_holder, stream = stream_functions.collect_tables(stream)
     error_holder, stream = stream_functions.collect_errors(stream)
 
-    logger.info("Dataset created from file %s", src_file.name)
+    logger.info("Dataset created from file %s", basename(src_file.name))
 
     # Consume stream so we know it's been processed
     generic.consume(stream)
@@ -51,7 +55,7 @@ def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
 
     logger.info(
         "Completed processing file %s with the following tables: %s",
-        src_file.name,
+        basename(src_file.name),
         list(dataset.keys()),
     )
 
