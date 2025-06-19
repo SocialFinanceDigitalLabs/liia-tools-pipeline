@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Message" type="messagetype"/>
+
+  <xs:complexType name="messagetype">
+    <xs:sequence>
+      <xs:element name="Header" type="headertype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="LALevelVacancies" type="vacancytype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="CSWWWorker" type="workertype" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="headertype">
+    <xs:sequence>
+      <xs:element name="CollectionDetails" type="collectiondetailstype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Source" type="sourcetype" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="collectiondetailstype">
+    <xs:sequence>
+      <xs:element name="Collection" minOccurs="0" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="CSWW"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Year" type="xs:gYear" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ReferenceDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="sourcetype">
+    <xs:sequence>
+      <xs:element name="SourceLevel" minOccurs="0" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="L"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="LEA" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" >
+            <xs:pattern value="\d{3}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="vacancytype">
+    <xs:sequence>
+      <xs:element name="NumberOfVacancies" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="NoAgencyFTE" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="NoAgencyHeadcount" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+    <xs:complexType name="workertype">
+    <xs:sequence>
+      <xs:element name="AgencyWorker" type="yesnotype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="SWENo" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="FTE" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="PersonBirthDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="GenderCurrent" type="gendertype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="QualInst" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RoleStartDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="StartOrigin" type="origintype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Cases30" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="WorkingDaysLost" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ContractWeeks" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="CFKSSstatus" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ethnicitytype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White British</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WIRI"><xs:annotation><xs:documentation>White Irish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WIRT"><xs:annotation><xs:documentation>Traveller of Irish heritage</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WOTH"><xs:annotation><xs:documentation>Any other White background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WROM"><xs:annotation><xs:documentation>Gypsy/Roma</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWBC"><xs:annotation><xs:documentation>White and Black Caribbean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWBA"><xs:annotation><xs:documentation>White and Black African</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWAS"><xs:annotation><xs:documentation>White and Asian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MOTH"><xs:annotation><xs:documentation>Any other mixed background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AIND"><xs:annotation><xs:documentation>Indian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="APKN"><xs:annotation><xs:documentation>Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ABAN"><xs:annotation><xs:documentation>Bangladeshi</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AOTH"><xs:annotation><xs:documentation>Any other Asian background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BCRB"><xs:annotation><xs:documentation>Caribbean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BAFR"><xs:annotation><xs:documentation>African</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BOTH"><xs:annotation><xs:documentation>Any other black background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CHNE"><xs:annotation><xs:documentation>Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OOTH"><xs:annotation><xs:documentation>Any other ethnic group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="REFU"><xs:annotation><xs:documentation>Refused</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Information not yet obtained</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="gendertype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="M">
+        <xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="F">
+        <xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="yesnotype">
+    <xs:restriction base="nonEmptyString">
+	  <xs:enumeration value="0"><xs:annotation><xs:documentation>False</xs:documentation></xs:annotation></xs:enumeration>
+	  <xs:enumeration value="1"><xs:annotation><xs:documentation>True</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="unknownupntype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1" />
+      <xs:enumeration value="2" />
+      <xs:enumeration value="3" />
+      <xs:enumeration value="4" />
+      <xs:enumeration value="5" />
+      <xs:enumeration value="6" />
+      <xs:enumeration value="7" />
+      <xs:enumeration value="8" />
+      <xs:enumeration value="9" />
+      <xs:enumeration value="10" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="absenceype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MAT" />
+      <xs:enumeration value="OTH" />
+      <xs:enumeration value="PUB" />
+      <xs:enumeration value="SIC" />
+      <xs:enumeration value="TRN" />
+      <xs:enumeration value="UNA" />
+      <xs:enumeration value="UNP" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
