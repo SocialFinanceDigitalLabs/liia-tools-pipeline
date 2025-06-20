@@ -37,6 +37,8 @@ column_map:
         header_regex:
           - /.*age.*/i
       Gender:
+        header_regex:
+          - /.*gender.*/i
         category:
           - code: "Male (including trans male)"
             name: 
@@ -530,7 +532,7 @@ column_map:
           - code: Not applicable
         canbeblank: True
         header_regex:
-          - /.*primary placing at distance reason.*/i
+          - /.*placing at distance reason.*/i
       Type of provision:
         category:
           - code: "Fostering - Independent Foster Care (IFA)"

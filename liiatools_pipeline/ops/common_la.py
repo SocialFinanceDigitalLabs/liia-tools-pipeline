@@ -111,7 +111,7 @@ def process_files(
                 dict(
                     type="MissingYear",
                     message="Could not find a year in the filename or path",
-                    filename=basename(file_locator.name),
+                    filename=file_locator.name,
                     uuid=uuid,
                 )
             )
@@ -128,7 +128,7 @@ def process_files(
                 dict(
                     type="RetentionPeriod",
                     message="This file is not within the year ranges of data retention policy",
-                    filename=basename(file_locator.name),
+                    filename=file_locator.name,
                     uuid=uuid,
                 )
             )
@@ -140,7 +140,7 @@ def process_files(
                 dict(
                     type="MissingLA",
                     message="Could not find a local authority in the filename or path",
-                    filename=basename(file_locator.name),
+                    filename=file_locator.name,
                     uuid=uuid,
                 )
             )
@@ -155,7 +155,7 @@ def process_files(
                     dict(
                         type="MissingMonth",
                         message="Could not find a month in the filename or path",
-                        filename=basename(file_locator.name),
+                        filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
@@ -185,7 +185,7 @@ def process_files(
                 dict(
                     type="StreamError",
                     message=str(e),
-                    filename=basename(file_locator.name),
+                    filename=file_locator.name,
                     uuid=uuid,
                 )
             )
@@ -226,7 +226,7 @@ def process_files(
 
         error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
-        error_report.set_property("filename", basename(file_locator.name))
+        error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
 
     error_report.set_property("session_id", session_id)
