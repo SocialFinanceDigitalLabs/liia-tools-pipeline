@@ -192,7 +192,15 @@ def add_table_name(event, schema: DataSchema):
                 type="BlankHeaders",
                 message=f"Could not identify headers as first row is blank",
             )
-        table_name = schema.get_table_from_headers(event.headers)
+        try:
+            table_name = schema.get_table_from_headers(event.headers)
+        except ValueError as e:
+            if str(e) == "The actual column name matched multiple configured columns":
+                return EventErrors.add_to_event(
+                    event,
+                    type="HeaderError",
+                    message=f"Could not identify as a column name matched multiple columns in the configuration.",
+                )
 
     if table_name:
         return event.from_event(
