@@ -102,6 +102,8 @@ def process_files(
         return
     log.info(f"{la_name} is signed for PAN data processing.")
 
+    output_config = pipeline_config(config)
+
     for file_locator in incoming_files:
         log.info(f"Processing file {basename(file_locator.name)}")
         uuid = file_locator.meta["uuid"]
@@ -120,7 +122,7 @@ def process_files(
 
         if (
             check_year_within_range(
-                year, max(pipeline_config(config).retention_period.values())
+                year, max(output_config.retention_period.values())
             )
             is False
         ):
@@ -177,8 +179,14 @@ def process_files(
         )
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema, log
+            cleanfile_result = (
+                globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, output_config, logger=log
+                )
+                if config.dataset == "cin"
+                else globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, logger=log
+                )
             )
         except StreamError as e:
             error_report.append(
@@ -193,7 +201,7 @@ def process_files(
         log.info(f"Cleanfile task completed for {basename(file_locator.name)}")
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, pipeline_config(config), profile="PAN"
+            cleanfile_result.data, output_config, profile="PAN"
         )
 
         cleanfile_result.data.export(
@@ -204,7 +212,7 @@ def process_files(
         error_report.extend(cleanfile_result.errors)
 
         enrich_result = enrich_data(
-            cleanfile_result.data, pipeline_config(config), metadata
+            cleanfile_result.data, output_config, metadata
         )
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
@@ -214,7 +222,7 @@ def process_files(
         error_report.extend(enrich_result.errors)
 
         degraded_result = degrade_data(
-            enrich_result.data, pipeline_config(config), metadata
+            enrich_result.data, output_config, metadata
         )
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
