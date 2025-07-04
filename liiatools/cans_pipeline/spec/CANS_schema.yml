@@ -1,0 +1,329 @@
+column_map:
+    CANS_6_21:
+        Assessor Name: &string_not_blank
+            string: "alphanumeric"
+            canbeblank: false
+        Assessment Date: &date_not_blank
+            string: "date"
+            canbeblank: false
+        Youth Last Name: *string_not_blank
+        Youth First Name: *string_not_blank
+        DOB: *date_not_blank
+        Age at Time of Assessment: *string_not_blank
+        Assessment Type: &assessment_type
+            category:
+              - code: "Initial"
+              - code: "Follow-up / Reassessment"
+              - code: "Transition"
+            canbeblank: false
+        Agency/Region: *string_not_blank
+        Caregivers(s) Assessed?: &caregiver_assessed
+            category:
+              - code: "Yes"
+              - code: "No"
+            canbeblank: false
+        Caregiver(s) Name(s): *string_not_blank
+        Family Strengths: &0_3_not_blank
+            numeric:
+                type: "integer"
+                min_value: 0
+                max_value: 3
+            canbeblank: false
+        Interpersonal: *0_3_not_blank
+        Optimism: *0_3_not_blank
+        Educational Setting: *0_3_not_blank
+        Vocational: &0_3_na
+            category:
+              - code: "N/A"
+              - code: "0"
+              - code: "1"
+              - code: "2"
+              - code: "3"
+            canbeblank: false
+        Talents & Interests: *0_3_not_blank
+        Community Life: *0_3_not_blank
+        Relationship Permenance: *0_3_not_blank
+        Resiliency: *0_3_not_blank
+        Resourcesfulness: *0_3_not_blank
+        Cultural Identity: *0_3_not_blank
+        Natural Supports: *0_3_not_blank
+        Family Functioning: *0_3_not_blank
+        Living Situation: *0_3_not_blank
+        Social Functioning: *0_3_not_blank
+        Recreational: *0_3_not_blank
+        Developmental/Intellectual*: *0_3_na
+        Cognitive (Developmental/Intellectual*): &0_3_na_blank
+            category:
+              - code: "N/A"
+              - code: "0"
+              - code: "1"
+              - code: "2"
+              - code: "3"
+            canbeblank: true
+        Developmental (Developmental/Intellectual*): *0_3_na_blank
+        Communication (Developmental/Intellectual*): *0_3_na_blank
+        Self-care/Daily Living Skills (Developmental/Intellectual*): *0_3_na_blank
+        Job Functioning: *0_3_na
+        Legal: *0_3_not_blank
+        Medical/Physical: *0_3_not_blank
+        Sexual Development: *0_3_not_blank
+        Sleep: *0_3_not_blank
+        School Attendance: *0_3_not_blank
+        School Behaviour: *0_3_not_blank
+        School Acheivement: *0_3_not_blank
+        Decision-Making: *0_3_not_blank
+        Psychosis: *0_3_not_blank
+        Impulsivity/Hyperactivity: *0_3_na
+        Attention/Concentration: *0_3_not_blank
+        Depression: *0_3_not_blank
+        Anxiety: *0_3_not_blank
+        Oppositional: *0_3_not_blank
+        Conduct (Antisocial Behaviour): *0_3_not_blank
+        Adjustment to Trauma: *0_3_not_blank
+        Anger Control: *0_3_not_blank
+        Substance Use*: *0_3_na
+        Severity of Use (Substance Use*): &0_3_blank
+            numeric:
+                type: "integer"
+                min_value: 0
+                max_value: 3
+            canbeblank: true
+        Duration of Use (Substance Use*): *0_3_blank
+        Stage of Recovery (Substance Use*): *0_3_blank
+        Peer Influences (Substance Use*): *0_3_blank
+        Environmental Influences (Substance Use*): *0_3_blank
+        Recovery Support in Community (Substance Use*): *0_3_blank
+        Acute Intoxication (Substance Use*): *0_3_blank
+        Withdrawal History (Substance Use*): *0_3_blank
+        Awareness of Relapse Triggers (Substance Use*): *0_3_blank
+        Withdrawal Risks (Substance Use*): *0_3_blank
+        Eating Disturbance: *0_3_not_blank
+        Attachment Difficulties: *0_3_not_blank
+        Behavioural Regression: *0_3_not_blank
+        Psycho-somatic Symptoms (Somatisation): *0_3_not_blank
+        Suicide Risk: *0_3_not_blank
+        Non-Suicidal Self-Harm/Self-Injury: *0_3_not_blank
+        Other Self-harm: *0_3_not_blank
+        Danger to Others*: *0_3_not_blank
+        CH History of Violence (Need) (Danger to Others*): *0_3_blank
+        CH Fustration Management (Need) (Danger to Others*): *0_3_blank
+        CH Bullying (Need) (Danger to Others*): *0_3_blank
+        Hostility (Need) (Danger to Others*): *0_3_blank
+        CH Paraniod Thinking (Need) (Danger to Others*): *0_3_blank
+        CH Secondary Gains from Anger (Need) (Danger to Others*): *0_3_blank
+        CH Violent Thinking (Need) (Danger to Others*): *0_3_blank
+        CH Awareness of Violence Potential (Strength): *0_3_blank
+        CH Response to Consequences (Strength): *0_3_blank
+        CH Commitment to Self-Control (Strength): *0_3_blank
+        CH Treatment Involvement (Strength): *0_3_blank
+        Sexual Agression*: *0_3_not_blank
+        Relationship (Sexual Agression*): *0_3_blank
+        Physical Force/Threat (Sexual Agression*): *0_3_blank
+        Planning (Sexual Agression*): *0_3_blank
+        Age Differential (Sexual Agression*): *0_3_blank
+        Type of Sex Act (Sexual Agression*): *0_3_blank
+        Response to Accusation (Sexual Agression*): *0_3_blank
+        Temporal Consistency (Sexual Agression*): *0_3_blank
+        History of Sexually Aggressive Behaviour (Sexual Agression*): *0_3_blank
+        Running Away*: *0_3_not_blank
+        Frequency of Running (Running Away*): *0_3_blank
+        Consistency of Destination (Running Away*): *0_3_blank
+        Safety of Destination (Running Away*): *0_3_blank
+        Involvement in Illegal Activities (Running Away*): *0_3_blank
+        Likelihood of Return on Own (Running Away*): *0_3_blank
+        Involvement with Others (Running Away*): *0_3_blank
+        Realistic Expectations (Running Away*): *0_3_blank
+        Planning (Running Away*): *0_3_blank
+        Offending/Criminal Behaviour*: *0_3_not_blank
+        History (Offending/Criminal Behaviour*): *0_3_blank
+        Seriousness (Offending/Criminal Behaviour*): *0_3_blank
+        Planning (Offending/Criminal Behaviour*): *0_3_blank
+        Community Safety (Offending/Criminal Behaviour*): *0_3_blank
+        Peer Influences (Offending/Criminal Behaviour*): *0_3_blank
+        Parental Criminal Behaviour (Offending/Criminal Behaviour*): *0_3_blank
+        Environmental Influences (Offending/Criminal Behaviour*): *0_3_blank
+        Legal Compliance (Offending/Criminal Behaviour*): *0_3_blank
+        Fire Setting*: *0_3_not_blank
+        History (Fire Setting*): *0_3_blank
+        Seriousness (Fire Setting*): *0_3_blank
+        Planning (Fire Setting*): *0_3_blank
+        Use of Accelerants (Fire Setting*): *0_3_blank
+        Intention to Harm (Fire Setting*): *0_3_blank
+        Community Safety (Fire Setting*): *0_3_blank
+        Response to Accusation (Fire Setting*): *0_3_blank
+        Remorse (Fire Setting*): *0_3_blank
+        Likelihood of Future Fire Setting (Fire Setting*): *0_3_blank
+        Intentional Misbehaviour: *0_3_not_blank
+        Bullying: *0_3_not_blank
+        Victimisation/Exploitation*: *0_3_not_blank
+        Duration of Exploitation (Victimisation/Exploitation*): *0_3_blank
+        Age of Onset - Exploitation (Victimisation/Exploitation*): *0_3_blank
+        Perception of Dangerousness (Victimisation/Exploitation*): *0_3_blank
+        Knowledge of Exploitation (Victimisation/Exploitation*): *0_3_blank
+        Trauma Bond (Victimisation/Exploitation*): *0_3_blank
+        Exploitation of Others (Victimisation/Exploitation*): *0_3_blank
+        Reproductive Health (Victimisation/Exploitation*): *0_3_blank
+        Arrests for Liotering/Solicitaion (Victimisation/Exploitation*): *0_3_blank
+        Exploitation History (Victimisation/Exploitation*): *0_3_blank
+        Gang Involvement: *0_3_not_blank
+        Language: *0_3_not_blank
+        Traditions & Rituals: *0_3_not_blank
+        Cultural Stress: *0_3_not_blank
+        Cultural Differences within the Family: *0_3_not_blank
+        Sexual Abuse*: &yes_no
+            category:
+              - code: "Yes"
+              - code: "No"
+            canbeblank: false
+        Emotional Closeness to Perpetrator (Sexual Abuse*): *0_3_blank
+        Frequency of Abuse (Sexual Abuse*): *0_3_blank
+        Duration (Sexual Abuse*): *0_3_blank
+        Force (Sexual Abuse*): *0_3_blank
+        Reaction to Disclosure (Sexual Abuse*): *0_3_blank
+        Physical Abuse: *yes_no
+        Neglect: *yes_no
+        Emotional Abuse: *yes_no
+        Medical Trauma: *yes_no
+        Natural or Manmade Disaster: *yes_no
+        Witness to Family Violence: *yes_no
+        Witness to Community/School Violence: *yes_no
+        Witness/Victim of Criminal Activity: *yes_no
+        War/Terrorism Affected: *yes_no
+        Discruption in Caregiving/Attachment: *yes_no
+        Intrusions/Re-experiencing: *0_3_not_blank
+        Emotional and/or Physical Dysregulation: *0_3_not_blank
+        Traumatic Grief: *0_3_not_blank
+        Hyperarousal: *0_3_not_blank
+        Avoidance: *0_3_not_blank
+        Numbing: *0_3_not_blank
+        Dissociation: *0_3_not_blank
+        Time Before Treatment: *0_3_not_blank
+        Items: *0_3_blank
+        Supervision: *0_3_blank
+        Involvement with Care: *0_3_blank
+        Knowledge: *0_3_blank
+        Organisation: *0_3_blank
+        Social Resources: *0_3_blank
+        Residential Stability: *0_3_blank
+        Medical/Physical: *0_3_blank
+        Mental Health: *0_3_blank
+        Substance Use: *0_3_blank
+        Developmental: *0_3_blank
+        Safety: *0_3_blank
+        Family Stress: *0_3_blank
+        Post-traumatic Reactions: *0_3_blank
+        Marital/Partner Violence in Home: *0_3_blank
+        Family Relationship to the System: *0_3_blank
+        Legal Involvement: *0_3_blank
+        Interpersonal Problems: *0_3_blank
+        Independent Living Skills: *0_3_blank
+        Young Carer/Parenting Roles*: *0_3_blank
+        Knowledge of Needs (Young Carer/Parenting Roles*): *0_3_blank
+        Supervision (Young Carer/Parenting Roles*): *0_3_blank
+        Involvement with Care (Young Carer/Parenting Roles*): *0_3_blank
+        Organisation (Young Carer/Parenting Roles*): *0_3_blank
+        Marital/Partner Violence in the Home (Young Carer/Parenting Roles*): *0_3_blank
+        Job Functioning*: *0_3_blank
+        Career Aspirations (Job Functioning*): *0_3_blank
+        Aspirational Congruence (Job Functioning*): *0_3_blank
+        Job Market Expectations (Job Functioning*): *0_3_blank
+        Work Ethic (Job Functioning*): *0_3_blank
+        Work History (Job Functioning*): *0_3_blank
+        Time Since Last Job (Job Functioning*): *0_3_blank
+        Job Turnover (Job Functioning*): *0_3_blank
+        Job Attendance (Job Functioning*): *0_3_blank
+        Job Performance (Job Functioning*): *0_3_blank
+        Job Relations (Job Functioning*): *0_3_blank
+        Job Enjoyment (Job Functioning*): *0_3_blank
+        Customer Orientation (Job Functioning*): *0_3_blank
+        Routine (Job Functioning*): *0_3_blank
+        Skills Relevant to Aspirations (Job Functioning*): *0_3_blank
+        Digital Literacy (Job Functioning*): *0_3_blank
+        Financial Literacy (Job Functioning*): *0_3_blank
+        CV/Cover Letter (Job Functioning*): *0_3_blank
+        Interview Clothes (Job Functioning*): *0_3_blank
+        Self-Care: *0_3_blank
+        Medication Adherence: *0_3_blank
+        Intimate Relationships: *0_3_blank
+        Transportation: *0_3_blank
+    CANS_0_5:
+        Assessor Name: *string_not_blank
+        Assessment Date: *date_not_blank
+        Youth Last Name: *string_not_blank
+        Youth First Name: *string_not_blank
+        DOB: *date_not_blank
+        Age at Time of Assessment: *string_not_blank
+        Assessment Type: *assessment_type
+        Agency/Region: *string_not_blank
+        Caregivers(s) Assessed?: *caregiver_assessed
+        Caregiver(s) Name(s): *string_not_blank
+        Impulsivity/Hyperactivity (3yrs+): *0_3_not_blank
+        Depression: *0_3_not_blank
+        Anxiety: *0_3_not_blank
+        Oppositional (3yrs+): *0_3_not_blank
+        Attachment Difficulties: *0_3_not_blank
+        Adjustment to Trauma: *0_3_not_blank
+        "Regulatory: Body/Emotion": *0_3_not_blank
+        Atypical Behaviours: *0_3_not_blank
+        Sleep (12mo+): *0_3_not_blank
+        Family Functioning: *0_3_not_blank
+        Early Education: *0_3_not_blank
+        Social Emotional Functioning: *0_3_not_blank
+        Development/Intellectual: *0_3_not_blank
+        Medical/Physical: *0_3_not_blank
+        Self-Injury (12mo+): *0_3_not_blank
+        Prenatal Care: *0_3_not_blank
+        Exposure: *0_3_not_blank
+        Labour & Delivery: *0_3_not_blank
+        Birth Weight: *0_3_not_blank
+        Failure to Thrive: *0_3_not_blank
+        Family Strengths: *0_3_not_blank
+        Interpersonal: *0_3_not_blank
+        Natural Supports: *0_3_not_blank
+        Resiliency (Persistence and Adaptability): *0_3_not_blank
+        Relationship Permanence: *0_3_not_blank
+        Playfulness: *0_3_not_blank
+        Language: *0_3_not_blank
+        Traditions & Rituals: *0_3_not_blank
+        Cultural Stress: *0_3_not_blank
+        Cultural Differences within the Family: *0_3_not_blank
+        Sexual Abuse*: *yes_no
+        Emotional Closeness to Perpetrator (Sexual Abuse*): *0_3_blank
+        Frequency of Abuse (Sexual Abuse*): *0_3_blank
+        Duration (Sexual Abuse*): *0_3_blank
+        Force (Sexual Abuse*): *0_3_blank
+        Reaction to Disclosure (Sexual Abuse*): *0_3_blank
+        Physical Abuse: *yes_no
+        Neglect: *yes_no
+        Emotional Abuse: *yes_no
+        Medical Trauma: *yes_no
+        Natural or Manmade Disaster: *yes_no
+        Witness to Family Violence: *yes_no
+        Witness to Community/School Violence: *yes_no
+        Witness/Victim of Criminal Activity: *yes_no
+        War/Terrorism Affected: *yes_no
+        Disruption in Caregiving/Attachment: *yes_no
+        Intrusions/Re-experiencing: *0_3_not_blank
+        Emotional and/or Physical Dysregulation: *0_3_not_blank
+        Traumatic Grief: *0_3_not_blank
+        Hyperarousal: *0_3_not_blank
+        Avoidance: *0_3_not_blank
+        Numbing: *0_3_not_blank
+        Dissociation: *0_3_not_blank
+        Time Before Treatment: *0_3_not_blank
+        Supervision: *0_3_can_be_blank
+        Involvement with Care: *0_3_can_be_blank
+        Knowledge: *0_3_can_be_blank
+        Organisation: *0_3_can_be_blank
+        Social Resources: *0_3_can_be_blank
+        Residential Stability: *0_3_can_be_blank
+        Medical/Physical: *0_3_can_be_blank
+        Mental Health: *0_3_can_be_blank
+        Substance Use: *0_3_can_be_blank
+        Developmental: *0_3_can_be_blank
+        Safety: *0_3_can_be_blank
+        Family Stress: *0_3_can_be_blank
+        Post-traumatic Reactions: *0_3_can_be_blank
+        Marital/Partner Violence in Home: *0_3_can_be_blank
+        Family Relationship to the System: *0_3_can_be_blank
+        Legal Involvement: *0_3_can_be_blank
