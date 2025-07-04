@@ -97,7 +97,8 @@ def process_files(
             current.fs.remove(f"{current_path}/{file}")
 
     la_name = authorities.get_by_code(config.input_la_code)
-    la_signed = pipeline_config(config).la_signed[la_name]["PAN"]
+    output_config = pipeline_config(config)
+    la_signed = output_config.la_signed[la_name]["PAN"]
     if la_signed == "No":
         return
     log.info(f"{la_name} is signed for PAN data processing.")
@@ -120,7 +121,7 @@ def process_files(
 
         if (
             check_year_within_range(
-                year, max(pipeline_config(config).retention_period.values())
+                year, max(output_config.retention_period.values())
             )
             is False
         ):
@@ -177,8 +178,14 @@ def process_files(
         )
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema, log
+            cleanfile_result = (
+                globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, output_config, logger=log
+                )
+                if config.dataset == "cin"
+                else globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, logger=log
+                )
             )
         except StreamError as e:
             error_report.append(
@@ -193,7 +200,7 @@ def process_files(
         log.info(f"Cleanfile task completed for {basename(file_locator.name)}")
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, pipeline_config(config), profile="PAN"
+            cleanfile_result.data, output_config, profile="PAN"
         )
 
         cleanfile_result.data.export(
@@ -204,7 +211,7 @@ def process_files(
         error_report.extend(cleanfile_result.errors)
 
         enrich_result = enrich_data(
-            cleanfile_result.data, pipeline_config(config), metadata
+            cleanfile_result.data, output_config, metadata
         )
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
@@ -214,7 +221,7 @@ def process_files(
         error_report.extend(enrich_result.errors)
 
         degraded_result = degrade_data(
-            enrich_result.data, pipeline_config(config), metadata
+            enrich_result.data, output_config, metadata
         )
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),

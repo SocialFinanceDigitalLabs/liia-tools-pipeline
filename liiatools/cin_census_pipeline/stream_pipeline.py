@@ -4,6 +4,7 @@ import logging
 
 from sfdata_stream_parser.filters import generic
 from xmlschema import XMLSchema
+from liiatools.common.data import PipelineConfig
 
 from liiatools.cin_census_pipeline import stream_record
 from liiatools.common import stream_filters as stream_functions
@@ -14,12 +15,13 @@ from liiatools.common.stream_pipeline import to_dataframe_xml
 from . import stream_filters as filters
 
 
-def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), logger: Optional[logging.Logger]=None) -> ProcessResult:
+def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), output_config: PipelineConfig, logger: Optional[logging.Logger]=None) -> ProcessResult:
     """
     Clean input cin census xml files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema, and Path to the data schema
     :param logger: Optional logger to log messages
+    :param output_config: Configuration for the output, imported as a PipelineConfig class
     :return: A class containing a DataContainer and ErrorContainer
     """
     schema, schema_path = schema
@@ -41,7 +43,7 @@ def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), logger: Opt
         # Create dataset
         error_holder, stream = stream_functions.collect_errors(stream)
         stream = stream_record.message_collector(stream)
-        dataset_holder, stream = stream_record.export_table(stream)
+        dataset_holder, stream = stream_record.export_table(stream, output_config)
 
         # Consume stream so we know it's been processed
         generic.consume(stream)
