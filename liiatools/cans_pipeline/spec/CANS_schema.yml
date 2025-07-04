@@ -198,23 +198,22 @@ column_map:
         Numbing: *0_3_not_blank
         Dissociation: *0_3_not_blank
         Time Before Treatment: *0_3_not_blank
-        Items: *0_3_blank
-        Supervision: *0_3_blank
-        Involvement with Care: *0_3_blank
-        Knowledge: *0_3_blank
-        Organisation: *0_3_blank
-        Social Resources: *0_3_blank
-        Residential Stability: *0_3_blank
-        Medical/Physical: *0_3_blank
-        Mental Health: *0_3_blank
-        Substance Use: *0_3_blank
-        Developmental: *0_3_blank
-        Safety: *0_3_blank
-        Family Stress: *0_3_blank
-        Post-traumatic Reactions: *0_3_blank
-        Marital/Partner Violence in Home: *0_3_blank
-        Family Relationship to the System: *0_3_blank
-        Legal Involvement: *0_3_blank
+        Supervision (Caregiver needs): *0_3_blank
+        Involvement with Care (Caregiver needs): *0_3_blank
+        Knowledge (Caregiver needs): *0_3_blank
+        Organisation (Caregiver needs): *0_3_blank
+        Social Resources (Caregiver needs): *0_3_blank
+        Residential Stability (Caregiver needs): *0_3_blank
+        Medical/Physical (Caregiver needs): *0_3_blank
+        Mental Health (Caregiver needs): *0_3_blank
+        Substance Use (Caregiver needs): *0_3_blank
+        Developmental (Caregiver needs): *0_3_blank
+        Safety (Caregiver needs): *0_3_blank
+        Family Stress (Caregiver needs): *0_3_blank
+        Post-traumatic Reactions (Caregiver needs): *0_3_blank
+        Marital/Partner Violence in Home (Caregiver needs): *0_3_blank
+        Family Relationship to the System (Caregiver needs): *0_3_blank
+        Legal Involvement (Caregiver needs): *0_3_blank
         Interpersonal Problems: *0_3_blank
         Independent Living Skills: *0_3_blank
         Young Carer/Parenting Roles*: *0_3_blank
@@ -311,19 +310,19 @@ column_map:
         Numbing: *0_3_not_blank
         Dissociation: *0_3_not_blank
         Time Before Treatment: *0_3_not_blank
-        Supervision: *0_3_can_be_blank
-        Involvement with Care: *0_3_can_be_blank
-        Knowledge: *0_3_can_be_blank
-        Organisation: *0_3_can_be_blank
-        Social Resources: *0_3_can_be_blank
-        Residential Stability: *0_3_can_be_blank
-        Medical/Physical: *0_3_can_be_blank
-        Mental Health: *0_3_can_be_blank
-        Substance Use: *0_3_can_be_blank
-        Developmental: *0_3_can_be_blank
-        Safety: *0_3_can_be_blank
-        Family Stress: *0_3_can_be_blank
-        Post-traumatic Reactions: *0_3_can_be_blank
-        Marital/Partner Violence in Home: *0_3_can_be_blank
-        Family Relationship to the System: *0_3_can_be_blank
-        Legal Involvement: *0_3_can_be_blank
+        Supervision (Caregiver needs): *0_3_can_be_blank
+        Involvement with Care (Caregiver needs): *0_3_can_be_blank
+        Knowledge (Caregiver needs): *0_3_can_be_blank
+        Organisation (Caregiver needs): *0_3_can_be_blank
+        Social Resources (Caregiver needs): *0_3_can_be_blank
+        Residential Stability (Caregiver needs): *0_3_can_be_blank
+        Medical/Physical (Caregiver needs): *0_3_can_be_blank
+        Mental Health (Caregiver needs): *0_3_can_be_blank
+        Substance Use (Caregiver needs): *0_3_can_be_blank
+        Developmental (Caregiver needs): *0_3_can_be_blank
+        Safety (Caregiver needs): *0_3_can_be_blank
+        Family Stress (Caregiver needs): *0_3_can_be_blank
+        Post-traumatic Reactions (Caregiver needs): *0_3_can_be_blank
+        Marital/Partner Violence in Home (Caregiver needs): *0_3_can_be_blank
+        Family Relationship to the System (Caregiver needs): *0_3_can_be_blank
+        Legal Involvement (Caregiver needs): *0_3_can_be_blank
