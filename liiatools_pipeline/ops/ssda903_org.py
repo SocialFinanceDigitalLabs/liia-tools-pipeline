@@ -7,13 +7,8 @@ from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesSufficiency
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.sufficiency_transform import (
-    dict_to_dfs,
-    open_file,
-    ons_transform,
-    postcode_transform,
-    ofsted_transform,
-    ss903_transform,
-)
+    dict_to_dfs, ofsted_transform, ons_transform, open_file,
+    postcode_transform, ss903_transform)
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
 
@@ -63,12 +58,11 @@ def create_dim_fact_tables(
     header = re.compile(r"header")
     uasc = re.compile(r"uasc")
     pattern_list = [episodes, header, uasc]
-    
+
     files = session_folder.listdir("/")
-    
+
     all_files_present = all(
-        any(pattern.search(filename) for filename in files)
-        for pattern in pattern_list
+        any(pattern.search(filename) for filename in files) for pattern in pattern_list
     )
 
     # Run the data transformation if all necessary files are present

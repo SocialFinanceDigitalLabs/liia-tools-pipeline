@@ -1,20 +1,94 @@
 import unittest
 from datetime import date
 
-from sfdata_stream_parser.events import StartElement, EndElement, TextNode
+from sfdata_stream_parser.events import EndElement, StartElement, TextNode
 
-from liiatools.cin_census_pipeline.stream_record import (
-    CINEvent,
-    HeaderEvent,
-    cin_collector,
-    child_collector,
-    message_collector,
-    _maybe_list,
-    cin_event,
-    event_to_records,
-    export_table,
+from liiatools.common.data import PipelineConfig
+from liiatools.cin_census_pipeline.stream_record import (CINEvent, HeaderEvent,
+                                                         _maybe_list,
+                                                         child_collector,
+                                                         cin_collector,
+                                                         cin_event,
+                                                         event_to_records,
+                                                         export_table,
+                                                         message_collector)
+
+output_config = PipelineConfig(
+    sensor_trigger={"move_current_org_sensor": False, "move_concat_sensor": False},
+    retention_columns={"year_column": "Year", "la_column": "LA"},
+    retention_period={"PAN": 12},
+    la_signed={
+        "Barking and Dagenham": {"PAN": "Yes"},
+    },
+    table_list=[
+        {
+            "id": "cin",
+            "retain": ["PAN"],
+            "columns": [
+                {
+                    "id": "LAchildID",
+                    "type": "string",
+                    "unique_key": True,
+                    "enrich": ["integer", "add_la_suffix"],
+                },
+                {"id": "Date", "type": "date", "unique_key": True},
+                {"id": "Type", "type": "string", "unique_key": True},
+                {"id": "CINreferralDate", "type": "date"},
+                {"id": "ReferralSource", "type": "category", "unique_key": True},
+                {"id": "PrimaryNeedCode", "type": "category"},
+                {"id": "CINclosureDate", "type": "date"},
+                {"id": "ReasonForClosure", "type": "category"},
+                {"id": "DateOfInitialCPC", "type": "date"},
+                {"id": "ReferralNFA", "type": "category"},
+                {"id": "CINPlanStartDate", "type": "date"},
+                {"id": "CINPlanEndDate", "type": "date"},
+                {"id": "S47ActualStartDate", "type": "date"},
+                {"id": "InitialCPCtarget", "type": "date", "sort": 2},
+                {"id": "ICPCnotRequired", "type": "category"},
+                {"id": "AssessmentActualStartDate", "type": "date"},
+                {"id": "AssessmentInternalReviewDate", "type": "date", "sort": 1},
+                {"id": "AssessmentAuthorisationDate", "type": "date"},
+                {"id": "Factors", "type": "category"},
+                {"id": "CPPstartDate", "type": "date"},
+                {"id": "CPPendDate", "type": "date"},
+                {"id": "InitialCategoryOfAbuse", "type": "category"},
+                {"id": "LatestCategoryOfAbuse", "type": "category"},
+                {"id": "NumberOfPreviousCPP", "type": "numeric"},
+                {"id": "UPN", "type": "string"},
+                {"id": "FormerUPN", "type": "string"},
+                {"id": "UPNunknown", "type": "category"},
+                {
+                    "id": "PersonBirthDate",
+                    "type": "date",
+                    "degrade": "first_of_month",
+                },
+                {
+                    "id": "ExpectedPersonBirthDate",
+                    "type": "date",
+                    "degrade": "first_of_month",
+                },
+                {"id": "GenderCurrent", "type": "category"},
+                {
+                    "id": "PersonDeathDate",
+                    "type": "date",
+                    "degrade": "first_of_month",
+                },
+                {
+                    "id": "PersonSchoolYear",
+                    "type": "numeric",
+                    "enrich": "school_year",
+                },
+                {"id": "Ethnicity", "type": "category"},
+                {"id": "Disabilities", "type": "category"},
+                {"id": "LA", "type": "string", "enrich": "la_name"},
+                {"id": "Year", "type": "numeric", "enrich": "year", "sort": 0},
+            ],
+        }
+    ],
 )
 
+output_table = output_config["cin"]
+output_columns = [column.id for column in output_table.columns]
 
 def test_maybe_list():
     assert _maybe_list(None) == []
@@ -25,13 +99,14 @@ def test_maybe_list():
 def test_cin_event():
     record = {"Name": "John", "DOB": "2000-01-01"}
     property = "DOB"
+    export_headers = ["DOB", "Date", "Type"]
     event_name = "Date of Birth"
     assert cin_event(
-        record, property, event_name, export_headers=["DOB", "Date", "Type"]
+        record, property, export_headers, event_name=event_name
     ) == (
         {"DOB": "2000-01-01", "Date": "2000-01-01", "Type": "Date of Birth"},
     )
-    assert cin_event(record, "UnknownProperty") == ()
+    assert cin_event(record, "UnknownProperty", export_headers) == ()
 
 
 def test_event_to_records():
@@ -47,7 +122,7 @@ def test_event_to_records():
         },
     }
 
-    assert list(event_to_records(CINEvent(record=cin_record))) == [
+    assert list(event_to_records(CINEvent(record=cin_record), output_columns=output_columns)) == [
         {
             "LAchildID": "DfEX0000001",
             "Date": "2009-03-15",
@@ -80,8 +155,11 @@ def test_event_to_records():
             "ExpectedPersonBirthDate": None,
             "GenderCurrent": None,
             "PersonDeathDate": None,
+            "PersonSchoolYear": None,
             "Ethnicity": "WBRI",
             "Disabilities": "",
+            "LA": None,
+            "Year": None
         },
     ]
 
@@ -224,7 +302,7 @@ class TestRecord(unittest.TestCase):
     def test_export_table(self):
         test_stream = self.generate_test_cin_census_file()
         test_events = list(message_collector(test_stream))
-        dataset_holder, stream = export_table(test_events)
+        dataset_holder, stream = export_table(test_events, output_config=output_config)
 
         self.assertEqual(len(list(stream)), 2)
 
@@ -265,8 +343,11 @@ class TestRecord(unittest.TestCase):
                     "ExpectedPersonBirthDate": None,
                     "GenderCurrent": None,
                     "PersonDeathDate": None,
+                    "PersonSchoolYear": None,
                     "Ethnicity": "WBRI",
                     "Disabilities": "",
+                    "LA": None,
+                    "Year": None,
                 },
                 {
                     "LAchildID": "DfEX0000001",
@@ -300,8 +381,11 @@ class TestRecord(unittest.TestCase):
                     "ExpectedPersonBirthDate": None,
                     "GenderCurrent": None,
                     "PersonDeathDate": None,
+                    "PersonSchoolYear": None,
                     "Ethnicity": "WBRI",
                     "Disabilities": "",
+                    "LA": None,
+                    "Year": None,
                 },
                 {
                     "LAchildID": "DfEX0000001",
@@ -335,8 +419,11 @@ class TestRecord(unittest.TestCase):
                     "ExpectedPersonBirthDate": None,
                     "GenderCurrent": None,
                     "PersonDeathDate": None,
+                    "PersonSchoolYear": None,
                     "Ethnicity": "WBRI",
                     "Disabilities": "",
+                    "LA": None,
+                    "Year": None,
                 },
             ],
         )

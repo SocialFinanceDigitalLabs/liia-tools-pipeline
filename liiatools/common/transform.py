@@ -1,8 +1,10 @@
 import logging
-from typing import Callable, Dict
 from datetime import datetime
+from typing import Callable, Dict
+
 import pandas as pd
 
+from liiatools.common.checks import check_la_signature
 from liiatools.common.data import (
     DataContainer,
     ErrorContainer,
@@ -11,7 +13,6 @@ from liiatools.common.data import (
     ProcessResult,
     TableConfig,
 )
-from liiatools.common.checks import check_la_signature
 
 from ._transform_functions import degrade_functions, enrich_functions
 
@@ -75,6 +76,23 @@ def data_transforms(
                 _transform(
                     data[table_config.id], table_config, metadata, property, functions
                 )
+                remove_row_mask = (
+                    ~data[table_config.id].isin(["remove_row"]).any(axis=1)
+                )
+                remove_row_indices = (
+                    data[table_config.id].index[~remove_row_mask].tolist()
+                )
+                data[table_config.id] = data[table_config.id][remove_row_mask]
+
+                for row in remove_row_indices:
+                    errors.append(
+                        dict(
+                            type="InvalidMandatoryField",
+                            message=f"Row {row} removed due to invalid mandatory field",
+                            table_name=table_config.id,
+                            r_ix=row,
+                        )
+                    )
     except Exception as e:
         # As this step is crucial for ensure privacy, if we have any errors we should fail and return no data for this dataset.
         logger.exception(f"Error in {property} transform")
@@ -127,21 +145,31 @@ def prepare_export(
     # Loop over known tables
     for table_config in table_list:
         table_name = table_config.id
-        table_columns = (
+        table_config = (
             table_config.columns_for_profile(profile)
             if profile
             else table_config.columns
         )
-        table_columns = [column.id for column in table_columns]
+        table_columns = [column.id for column in table_config]
+        column_types = {col.id: col.type for col in table_config}
 
         # Only export if the table is in the data
         if table_name in data:
             table = data[table_name].copy()
 
-            # Create any missing columns
-            for column_name in table_columns:
+            for column_name, type in column_types.items():
+                # Create any missing columns
                 if column_name not in table.columns:
                     table[column_name] = None
+                # If column is numeric, ensure blanks are converted to NaN
+                if type == "float":
+                    table[column_name] = pd.to_numeric(
+                        table[column_name], errors="coerce"
+                    )
+                elif type == "integer":
+                    table[column_name] = pd.to_numeric(
+                        table[column_name], errors="coerce"
+                    ).astype("Int64")
 
             # Return the subset
             data_container[table_name] = table[table_columns].copy()

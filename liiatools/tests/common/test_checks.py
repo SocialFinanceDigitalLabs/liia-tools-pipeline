@@ -1,11 +1,15 @@
 import unittest
+from unittest import mock
 from datetime import datetime
+
 from liiatools.common.checks import (
-    check_year,
     check_la,
-    check_year_within_range,
     check_la_signature,
+    check_month,
+    check_year,
+    check_year_within_range,
 )
+from liiatools.common.reference import LACodeLookup
 
 
 def test_check_year():
@@ -34,20 +38,38 @@ class TestCheckYear(unittest.TestCase):
             check_year("1811.csv")
 
 
-def test_check_la():
-    assert check_la("Fons-a821f-Cambridgeshire-873") == "873"
-    assert check_la("Fons-04cd3-Thurrock-883") == "883"
-    assert check_la("Fons-0fg93-Hackney-HAC") == "HAC"
+def test_check_month():
+    assert check_month("annex_a_jan_2024") == "jan"
+    assert check_month("annex_a_FEB_2022") == "feb"
+    assert check_month("annex_a_Mar_2021") == "mar"
+    assert check_month("annex_a_april_2030") == "apr"
+
+
+class TestCheckMonth(unittest.TestCase):
+    def test_check_month(self):
+        with self.assertRaises(ValueError):
+            check_month("file_no_month.csv")
+
+    def test_check_month_2(self):
+        with self.assertRaises(ValueError):
+            check_month("file_apeel_2012.csv")
 
 
 class TestCheckLA(unittest.TestCase):
-    def test_check_la(self):
-        with self.assertRaises(ValueError):
-            check_la("file_no_la.csv")
+    @mock.patch.object(LACodeLookup, "codes", new_callable=mock.PropertyMock)
+    def test_check_la_valid_code(self, mock_codes):
+        mock_codes.return_value = ["873", "883", "HAC"]
 
-    def test_check_la_2(self):
+        self.assertEqual(check_la("Fons-a821f-Cambridgeshire-873"), "873")
+        self.assertEqual(check_la("Fons-04cd3-Thurrock-883"), "883")
+        self.assertEqual(check_la("Fons-0fg93-Hackney-HAC"), "HAC")
+
+    @mock.patch.object(LACodeLookup, "codes", new_callable=mock.PropertyMock)
+    def test_check_la_no_code(self, mock_codes):
+        mock_codes.return_value = ["873", "883", "HAC"]
+
         with self.assertRaises(ValueError):
-            check_la("SSDA903_2020_episodes.csv")
+            check_la("Fons-04cd3-Unknown-999")
 
 
 def test_check_year_within_range():

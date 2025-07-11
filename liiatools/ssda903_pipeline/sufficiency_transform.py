@@ -1,10 +1,11 @@
 from dagster import get_dagster_logger
 import pandas as pd
 import numpy as np
-import chardet
+import pandas as pd
 from fs.base import FS
 import fs.errors as errors
-from typing import Union, Tuple
+
+from liiatools.common.pipeline import open_file, Tuple
 
 log = get_dagster_logger()
 
@@ -515,38 +516,6 @@ def dict_to_dfs() -> dict:
     return dim_dfs
 
 
-def open_file(fs: FS, file: str) -> pd.DataFrame:
-    """
-    Opens a file within a pyfilesystem
-    """
-    # Check file encoding
-    encoding = check_encoding(fs, file)
-    # Open the CSV file using the FS URL
-    with fs.open(file, "rb") as f:
-        # Read the file content into a pandas DataFrame
-        df = pd.read_csv(f, encoding=encoding)
-    df = drop_blank_columns(df)
-    return df
-
-
-def check_encoding(fs: FS, file_path: str) -> str:
-    """
-    Check encoding of a file
-    """
-    file = fs.open(file_path, "rb")
-
-    bytes_data = file.read()  # Read as bytes
-    result = chardet.detect(bytes_data)  # Detect encoding on bytes
-    return result["encoding"]
-
-
-def drop_blank_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Removes columns with no names in a pandas DataFrame"""
-    unnamed_columns = [col for col in df.columns if "Unnamed" in col]
-    df = df.drop(columns=unnamed_columns)
-    return df
-
-
 def ons_transform(df: pd.DataFrame) -> pd.DataFrame:
     """Performs steps to transform ONSArea table"""
     # Rename columns and drop unnecessary columns
@@ -640,6 +609,11 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     """Performs steps to transform Postcode table"""
     # Rename columns and drop unnecessary columns
     df = rename_and_drop(df, "Postcode")
+
+    # Format postcode column to:
+    # - have only one space between first and second halves
+    # - remove trailing and leading spaces
+    df["Sector"] = df["Sector"].str.replace(r"\s+", " ", regex=True).str.strip()
 
     # Reset indexes and use main index as primary key
     df.reset_index(drop=True, inplace=True)

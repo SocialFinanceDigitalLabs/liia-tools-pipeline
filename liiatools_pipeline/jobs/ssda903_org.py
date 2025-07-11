@@ -1,7 +1,9 @@
-from dagster import job, get_dagster_logger
+from dagster import get_dagster_logger, job
+
 from liiatools_pipeline.ops import ssda903_org as ssda903
 
 log = get_dagster_logger()
+
 
 @job
 def ssda903_sufficiency():

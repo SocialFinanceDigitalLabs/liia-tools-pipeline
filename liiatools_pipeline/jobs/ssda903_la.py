@@ -1,9 +1,9 @@
-from dagster import job
+from dagster import get_dagster_logger, job
 
 from liiatools_pipeline.ops import ssda903_la as ssda903
-from dagster import get_dagster_logger
 
 log = get_dagster_logger()
+
 
 @job
 def ssda903_fix_episodes():

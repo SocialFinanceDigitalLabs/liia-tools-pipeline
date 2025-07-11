@@ -9,6 +9,7 @@ from liiatools.common.data import ColumnConfig, PipelineConfig, TableConfig
 @pytest.fixture
 def cfg():
     cfg = PipelineConfig(
+        sensor_trigger  ={"move_current_org_sensor": True},
         retention_columns={"year_column": "Year", "la_column": "LA"},
         retention_period={"PAN": 12, "SUFFICIENCY": 7},
         la_signed={
@@ -59,7 +60,7 @@ def test_archive(archive: DataframeArchive):
             ]
         ),
     }
-    archive.add(dataset, la_code, year)
+    archive.add(dataset, la_code, year, month=None)
 
     snapshots = archive.list_snapshots()
     assert snapshots == {
@@ -77,7 +78,7 @@ def test_combine(archive: DataframeArchive):
     dataset = {
         "table1": pd.DataFrame([{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]),
     }
-    archive.add(dataset, la_code, year)
+    archive.add(dataset, la_code, year, month=None)
     current = archive.current(la_code)
     table_1 = current["table1"]
 
@@ -87,7 +88,7 @@ def test_combine(archive: DataframeArchive):
     dataset = {
         "table1": pd.DataFrame([{"id": 4, "name": "SNAFU"}]),
     }
-    archive.add(dataset, la_code, year)
+    archive.add(dataset, la_code, year, month=None)
     current = archive.current(la_code)
     table_1 = current["table1"]
 

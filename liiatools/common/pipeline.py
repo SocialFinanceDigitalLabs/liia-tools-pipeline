@@ -1,21 +1,22 @@
 import hashlib
 import logging
-import uuid
 import re
+import uuid
 from datetime import datetime
+from enum import Enum
 from os.path import basename, dirname
 from typing import List, Tuple
-from enum import Enum
 
-import pandas as pd
+import chardet
 import numpy as np
+import pandas as pd
 import yaml
 from fs.base import FS
 from fs.info import Info
 from fs.move import copy_file
 
+from liiatools.common.checks import check_la, check_month, check_year
 from liiatools.common.constants import ProcessNames, SessionNames
-from liiatools.common.checks import check_year, check_la
 
 from .data import FileLocator
 
@@ -73,7 +74,9 @@ def create_session_folder(destination_fs: FS, session_names) -> Tuple[FS, str]:
             f"{ProcessNames.SESSIONS_FOLDER}/{session_id}"
         )
     except Exception as err:
-        logger.error(f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}")
+        logger.error(
+            f"Can't create session folder {ProcessNames.SESSIONS_FOLDER} using {session_id}"
+        )
     for folder in session_names:
         logger.info(f"Creating session name folder: {folder}")
         session_folder.makedirs(folder)
@@ -127,8 +130,8 @@ def move_files_for_sharing(
                     dest_path = file_path.split("/")[-1]
                     copy_file(source_fs, file_path, destination_fs, dest_path)
                 else:
-                    table_id = re.search(r"_([a-zA-Z0-9]*)\.", file_path)
-                    if table_id and table_id.group(1) in required_table_id:
+                    table_id = re.search(r"(([a-zA-Z0-9]*)_([a-zA-Z0-9]*))\.", file_path)
+                    if table_id and table_id.group(3) in required_table_id or table_id and table_id.group(1) in required_table_id:
                         dest_path = file_path.split("/")[-1]
                         copy_file(source_fs, file_path, destination_fs, dest_path)
             except Exception as e:
@@ -227,6 +230,28 @@ def discover_year(file_locator: FileLocator) -> int:
         pass
 
 
+def discover_month(file_locator: FileLocator) -> str:
+    """
+    Try to discover the month for a file.
+
+    This function will try to find a month in the path, and if that fails, it will try to find a month in the full filename.
+
+    If the month is found, it will be added to the file metadata.
+    """
+    file_dir = dirname(file_locator.name)
+    file_name = basename(file_locator.name)
+
+    try:
+        return check_month(file_dir)
+    except ValueError:
+        pass
+
+    try:
+        return check_month(file_name)
+    except ValueError:
+        pass
+
+
 class DataType(Enum):
     EMPTY_COLUMN = "empty_column"
     MISSING_COLUMN = "missing_column"
@@ -290,3 +315,35 @@ def remove_files(regex: str, existing_files: list, folder: FS):
     files_to_remove = list(filter(current_files.match, existing_files))
     for file in files_to_remove:
         folder.remove(file)
+
+
+def open_file(fs: FS, file: str) -> pd.DataFrame:
+    """
+    Opens a file within a pyfilesystem
+    """
+    # Check file encoding
+    encoding = check_encoding(fs, file)
+    # Open the CSV file using the FS URL
+    with fs.open(file, "rb") as f:
+        # Read the file content into a pandas DataFrame
+        df = pd.read_csv(f, encoding=encoding)
+    df = drop_blank_columns(df)
+    return df
+
+
+def check_encoding(fs: FS, file_path: str) -> str:
+    """
+    Check encoding of a file
+    """
+    file = fs.open(file_path, "rb")
+
+    bytes_data = file.read()  # Read as bytes
+    result = chardet.detect(bytes_data)  # Detect encoding on bytes
+    return result["encoding"]
+
+
+def drop_blank_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Removes columns with no names in a pandas DataFrame"""
+    unnamed_columns = [col for col in df.columns if "Unnamed" in col]
+    df = df.drop(columns=unnamed_columns)
+    return df

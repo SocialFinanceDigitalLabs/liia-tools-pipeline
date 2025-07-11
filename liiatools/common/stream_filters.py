@@ -1,33 +1,46 @@
 import logging
-import xmlschema
-import tablib
 import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
-from typing import Iterable, Union, Any, Dict, List
 from pathlib import Path
-from tablib import import_book, import_set
+from typing import Any, Dict, Iterable, List, Union
 
-from sfdata_stream_parser import events, collectors
+import numpy as np
+import pandas as pd
+import tablib
+import xmlschema
+from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
     generator_with_value,
     pass_event,
     streamfilter,
 )
+from tablib import UnsupportedFormat, import_book, import_set
 
-from liiatools.common.data import FileLocator
-from liiatools.common.stream_errors import StreamError, EventErrors
 from liiatools.common.converters import (
+    to_category,
     to_date,
     to_numeric,
     to_postcode,
     to_regex,
-    to_category,
 )
+from liiatools.common.data import FileLocator
+from liiatools.common.stream_errors import EventErrors, StreamError
 
-from .spec.__data_schema import Column, DataSchema, Numeric, Category
+from .spec.__data_schema import Category, Column, DataSchema, Numeric
 
 logger = logging.getLogger(__name__)
+
+
+def _import_set_workaround(data):
+    """
+    Workaround for a bug in tablib that causes it to fail to import
+    sets of data.
+    """
+    try:
+        return import_set(data)
+    except UnsupportedFormat:
+        return pd.read_csv(data)
 
 
 def tablib_parse(source: FileLocator):
@@ -39,7 +52,7 @@ def tablib_parse(source: FileLocator):
         data = f.read()
 
     try:
-        data = data.decode("utf-8")
+        data = data.decode("utf-8-sig")
         data = StringIO(data)
     except UnicodeDecodeError:
         data = BytesIO(data)
@@ -57,7 +70,7 @@ def tablib_parse(source: FileLocator):
         pass
 
     try:
-        dataset = import_set(data)
+        dataset = _import_set_workaround(data)
         logger.debug("Opened %s as a sheet", filename)
         return tablib_to_stream(dataset, filename=filename)
     except Exception as e:
@@ -70,7 +83,7 @@ def tablib_parse(source: FileLocator):
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
     yield events.StartContainer(**params)
-    yield events.StartTable(headers=dataset.headers)
+    yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
@@ -78,6 +91,27 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
                 r_ix=r_ix,
                 c_ix=c_ix,
                 header=dataset.headers[c_ix],
+                cell=cell,
+            )
+        yield events.EndRow()
+    yield events.EndTable()
+    yield events.EndContainer()
+
+
+def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
+    params = {k: v for k, v in kwargs.items() if v is not None}
+    yield events.StartContainer(**params)
+    yield events.StartTable(headers=dataset.columns.tolist())
+    for r_ix, row in enumerate(dataset.itertuples(index=False)):
+        yield events.StartRow()
+        for c_ix, cell in enumerate(row[0:]):
+            if isinstance(cell, float):
+                if np.isnan(cell):
+                    cell = ""
+            yield events.Cell(
+                r_ix=r_ix,
+                c_ix=c_ix,
+                header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
         yield events.EndRow()
@@ -103,6 +137,9 @@ def tablib_to_stream(
             yield from _tablib_dataset_to_stream(
                 sheet, filename=filename, sheetname=sheet.title
             )
+
+    elif isinstance(data, pd.DataFrame):
+        yield from _pandas_dataframe_to_stream(data, filename=filename)
 
 
 def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=False):
@@ -149,7 +186,7 @@ def add_table_name(event, schema: DataSchema):
     if not headers:
         table_name = None
     else:
-        if all(header == "" for header in headers):
+        if all(header in ("", None) for header in headers):
             return EventErrors.add_to_event(
                 event,
                 type="BlankHeaders",
@@ -162,10 +199,17 @@ def add_table_name(event, schema: DataSchema):
             event, table_name=table_name, table_spec=schema.column_map[table_name]
         )
     else:
+        sheetname = getattr(event, "sheetname", None)
+        message = (
+            "Failed to identify table based on headers"
+            if sheetname is None
+            else f"Failed to identify table based on headers, sheet name: {sheetname}"
+        )
+
         return EventErrors.add_to_event(
             event,
             type="UnidentifiedTable",
-            message=f"Failed to identify table based on headers",
+            message=message,
         )
 
 
@@ -261,6 +305,7 @@ def conform_cell_types(event, preserve_value=False):
             column_spec.numeric.min_value,
             column_spec.numeric.max_value,
             column_spec.numeric.decimal_places,
+            column_spec.numeric.age,
         )
     elif column_spec.type == "postcode":
         converter = to_postcode
@@ -295,7 +340,7 @@ def collect_cell_values_for_row(row):
     Collects the cell values for each row and set these as `column_spec` on the StartRow event.
 
     Requires:
-        * `table_spec` on Cell events to idenfity this column as part of the table
+        * `table_spec` on Cell events to identify this column as part of the table
         * `header` on Cell events with the column key
         * `cell` on Cell events with the value
 
@@ -616,3 +661,26 @@ def _create_regex_spec(field: str, file: Path) -> str | None:
         regex_spec = p.get("value")
 
     return regex_spec
+
+
+@streamfilter(check=type_check(events.Cell), fail_function=pass_event)
+def convert_column_header_to_match(event, schema: DataSchema):
+    """
+    Converts the column header to the correct column header it was matched with e.g. Age -> Age of Child (Years)
+    :param event: A filtered list of event objects of type Cell
+    :param schema: The data schema in a DataSchema class
+    :return: An updated list of event objects
+    """
+    if hasattr(event, "table_name") and hasattr(event, "header"):
+        column_config = schema.table.get(event.table_name)
+        for column in column_config:
+            if column_config[column].header_regex is not None:
+                for regex in column_config[column].header_regex:
+                    parse = Column().parse_regex(regex)
+                    if parse.match(event.header) is not None:
+                        return event.from_event(event, header=column)
+            elif column.lower().strip() == event.header.lower().strip():
+                return event.from_event(event, header=column)
+            else:
+                logger.debug('No match found for header "%s"', event.header)
+    return event

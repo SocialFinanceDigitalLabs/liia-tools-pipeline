@@ -1,33 +1,42 @@
 from typing import List, Tuple
-from dagster import In, Out, op
-from fs.base import FS
-from fs import open_fs
 
+from dagster import In, Out, get_dagster_logger, op
+from fs import open_fs
+from fs.base import FS
+import fs.errors
+from os.path import basename
+
+from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
+from liiatools.annex_a_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_annex_a,
+)
+from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
+from liiatools.cin_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_cin,
+)
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.checks import check_year_within_range
 from liiatools.common.constants import SessionNames
-from liiatools.common.data import FileLocator, ErrorContainer
+from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
-from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
-from liiatools.cin_census_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_cin,
+from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_census
+from liiatools.pnw_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_pnw_census,
 )
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
-
 from liiatools_pipeline.assets.common import (
-    workspace_folder,
-    shared_folder,
     pipeline_config,
+    shared_folder,
+    workspace_folder,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
-
-from dagster import get_dagster_logger
+from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger(__name__)
 
@@ -80,12 +89,22 @@ def process_files(
     log.info("Procesing Files...")
     error_report = ErrorContainer()
 
-    if current.fs.isdir(f"{config.input_la_code}/{config.dataset}"):
+    current_path = f"{config.input_la_code}/{config.dataset}"
+    if current.fs.isdir(current_path):
         log.info("Removing existing LA data...")
-        current.fs.removetree(f"{config.input_la_code}/{config.dataset}")
+        current_files = current.fs.listdir(current_path)
+        for file in current_files:
+            current.fs.remove(f"{current_path}/{file}")
+
+    la_name = authorities.get_by_code(config.input_la_code)
+    output_config = pipeline_config(config)
+    la_signed = output_config.la_signed[la_name]["PAN"]
+    if la_signed == "No":
+        return
+    log.info(f"{la_name} is signed for PAN data processing.")
 
     for file_locator in incoming_files:
-        log.info(f"Processing file {file_locator.name}")
+        log.info(f"Processing file {basename(file_locator.name)}")
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
         if year is None:
@@ -98,10 +117,11 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Discovered year in {basename(file_locator.name)}")
 
         if (
             check_year_within_range(
-                year, max(pipeline_config(config).retention_period.values())
+                year, max(output_config.retention_period.values())
             )
             is False
         ):
@@ -114,6 +134,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Year in {basename(file_locator.name)} is within retention period")
 
         if config.input_la_code is None:
             error_report.append(
@@ -125,17 +146,46 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Local authority code found in {basename(file_locator.name)}")
+
+        month = None
+        if config.dataset in ["annex_a", "pnw_census"]:
+            month = pl.discover_month(file_locator)
+            if month is None:
+                error_report.append(
+                    dict(
+                        type="MissingMonth",
+                        message="Could not find a month in the filename or path",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
+                continue
+            log.info(f"Month found in {basename(file_locator.name)}")
 
         try:
-            schema = globals()[f"load_schema_{config.dataset}"](year)
+            schema = (
+                globals()[f"load_schema_{config.dataset}"]()
+                if config.dataset in ["annex_a", "pnw_census"]
+                else globals()[f"load_schema_{config.dataset}"](year)
+            )
         except KeyError:
             continue
+        log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
-        metadata = dict(year=year, schema=schema, la_code=config.input_la_code)
+        metadata = dict(
+            year=year, month=month, schema=schema, la_code=config.input_la_code
+        )
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema
+            cleanfile_result = (
+                globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, output_config, logger=log
+                )
+                if config.dataset == "cin"
+                else globals()[f"task_cleanfile_{config.dataset}"](
+                file_locator, schema, logger=log
+                )
             )
         except StreamError as e:
             error_report.append(
@@ -147,9 +197,10 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Cleanfile task completed for {basename(file_locator.name)}")
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, pipeline_config(config), profile="PAN"
+            cleanfile_result.data, output_config, profile="PAN"
         )
 
         cleanfile_result.data.export(
@@ -160,7 +211,7 @@ def process_files(
         error_report.extend(cleanfile_result.errors)
 
         enrich_result = enrich_data(
-            cleanfile_result.data, pipeline_config(config), metadata
+            cleanfile_result.data, output_config, metadata
         )
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
@@ -170,7 +221,7 @@ def process_files(
         error_report.extend(enrich_result.errors)
 
         degraded_result = degrade_data(
-            enrich_result.data, pipeline_config(config), metadata
+            enrich_result.data, output_config, metadata
         )
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
@@ -178,7 +229,9 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, config.input_la_code, year)
+        current.add(degraded_result.data, config.input_la_code, year, month)
+
+        error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
         error_report.set_property("filename", file_locator.name)
         error_report.set_property("uuid", uuid)
@@ -201,10 +254,15 @@ def process_files(
 
 @op()
 def move_current_view_la():
-    current_folder = workspace_folder().opendir("current")
-    destination_folder = shared_folder().makedirs("current", recreate=True)
-    destination_folder.removetree("/")
-    pl.move_files_for_sharing(current_folder, destination_folder)
+    current_folder = opendir_location(workspace_folder(), "current")
+    if current_folder is not None:
+        destination_folder = shared_folder().makedirs("current", recreate=True)
+        destination_folder.removetree("/")
+        pl.move_files_for_sharing(current_folder, destination_folder)
+    else:
+        raise fs.errors.ResourceNotFound(
+            f"Current folder not found in {workspace_folder()}"
+        )
 
 
 @op(
@@ -218,9 +276,15 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
 
     for la_code in authorities.codes:
         la_files_regex = f"{la_code}_{config.dataset}_"
+        log.info(f"Removing files with regex: {la_files_regex}")
         pl.remove_files(la_files_regex, existing_files, concat_folder)
+        log.info(f"Successfully removed files")
 
-        concat_data = current.current(la_code)
+        if config.dataset == "annex_a":
+            concat_data = current.current(la_code, deduplicate_mode="N")
+        else:
+            concat_data = current.current(la_code)
 
         if concat_data:
+            log.info("Exporting concatenated data")
             concat_data.export(concat_folder, f"{la_code}_{config.dataset}_", "csv")

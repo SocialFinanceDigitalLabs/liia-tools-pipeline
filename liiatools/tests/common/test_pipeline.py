@@ -1,14 +1,18 @@
+import unittest
+from unittest import mock
 from fs import open_fs
 
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import FileLocator
 from liiatools.common.pipeline import (
     create_session_folder,
+    discover_la,
+    discover_month,
     discover_year,
     move_files_for_processing,
     restore_session_folder,
-    discover_la,
 )
+from liiatools.common.reference import LACodeLookup
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 
 
@@ -108,19 +112,67 @@ def test_discover_year_dir_and_file_year():
     assert discover_year(locator) == 2021
 
 
-def test_discover_la():
+def test_discover_month():
     samples_fs = open_fs(DIR_903.as_posix())
-    locator = FileLocator(
-        samples_fs, "SSDA903_2020_episodes.csv", original_path="/2020_episodes_822"
-    )
-    assert discover_la(locator) == "822"
-
-
-def test_discover_la_no_la():
-    samples_fs = open_fs(DIR_903.as_posix())
-    locator = FileLocator(
+    locator_file = FileLocator(
         samples_fs,
         "SSDA903_2020_episodes.csv",
-        original_path="/SSDA903_2020_episodes.csv",
+        original_path="/2020/SSDA903_2020_jan_episodes.csv",
     )
-    assert discover_la(locator) is None
+    assert discover_month(locator_file) == "jan"
+
+    locator_dir = FileLocator(
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_episodes.csv",
+    )
+    assert discover_month(locator_dir) == "feb"
+
+    locator_dir_and_file = FileLocator(
+        samples_fs,
+        "SSDA903_2020_episodes.csv",
+        original_path="/2020_feb/SSDA903_2020_jan_episodes.csv",
+    )
+    assert discover_month(locator_dir) == "feb"
+
+    locator_no_month = FileLocator(samples_fs, "SSDA903_2020_episodes.csv")
+    assert discover_month(locator_no_month) is None
+
+
+class TestDiscoverLA(unittest.TestCase):
+    @mock.patch.object(LACodeLookup, "codes", new_callable=mock.PropertyMock)
+    def test_discover_la_from_directory(self, mock_codes):
+        mock_codes.return_value = ["873", "883", "HAC"]
+
+        file_locator = FileLocator(
+            open_fs(DIR_903.as_posix()),
+            "path/to/Fons-a821f-Cambridgeshire-873/file.csv",
+        )
+
+        result = discover_la(file_locator)
+        self.assertEqual(result, "873")
+
+    @mock.patch.object(LACodeLookup, "codes", new_callable=mock.PropertyMock)
+    def test_discover_la_from_filename(self, mock_codes):
+        mock_codes.return_value = ["873", "883", "HAC"]
+
+        file_locator = FileLocator(
+            open_fs(DIR_903.as_posix()),
+            "path/to/Fons-04cd3-Thurrock-883/file.csv",
+        )
+
+        result = discover_la(file_locator)
+        self.assertEqual(result, "883")
+
+    @mock.patch.object(LACodeLookup, "codes", new_callable=mock.PropertyMock)
+    def test_discover_la_no_match(self, mock_codes):
+        mock_codes.return_value = ["873", "883", "HAC"]
+
+        file_locator = FileLocator(
+            open_fs(DIR_903.as_posix()),
+            "path/to/unknown_file.csv",
+            original_path="/path/to/unknown_file.csv",
+        )
+
+        result = discover_la(file_locator)
+        self.assertEqual(result, None)

@@ -1,11 +1,8 @@
 import unittest
 
-from sfdata_stream_parser.events import StartElement, EndElement, TextNode
+from sfdata_stream_parser.events import EndElement, StartElement, TextNode
 
-from liiatools.common.stream_record import (
-    _reduce_dict,
-    text_collector,
-)
+from liiatools.common.stream_record import _reduce_dict, text_collector
 
 
 def test_reduce_dict():

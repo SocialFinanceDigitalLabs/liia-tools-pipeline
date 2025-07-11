@@ -3,11 +3,8 @@ from typing import Dict
 
 import pandas as pd
 
+from liiatools.common.converters import to_nth_of_month, to_short_postcode
 from liiatools.common.reference import authorities
-from liiatools.common.converters import (
-    to_nth_of_month,
-    to_short_postcode,
-)
 
 from .data import ColumnConfig, Metadata
 
@@ -37,13 +34,36 @@ def add_year(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) ->
     return metadata["year"]
 
 
+def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    month_map = {
+        "jan": 1,
+        "feb": 2,
+        "mar": 3,
+        "apr": 4,
+        "may": 5,
+        "jun": 6,
+        "jul": 7,
+        "aug": 8,
+        "sep": 9,
+        "oct": 10,
+        "nov": 11,
+        "dec": 12,
+    }
+    return month_map[metadata["month"]]
+
+
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
+    value = row[column_config.id]
+
+    if pd.isna(value):
+        return ""
+
     try:
-        return int(float(row[column_config.id]))
+        return int(float(value))
     except ValueError:
-        return row[column_config.id]
+        return value
 
 
 def add_school_year(
@@ -64,6 +84,7 @@ enrich_functions = {
     "la_code": add_la_code,
     "la_name": add_la_name,
     "year": add_year,
+    "month": add_month,
     "integer": to_integer,
     "school_year": add_school_year,
 }
@@ -98,8 +119,16 @@ def hash_column_sha256(
     return digest.hexdigest()
 
 
+def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    if not row[column_config.id]:
+        return "remove_row"
+    else:
+        return row[column_config.id]
+
+
 degrade_functions = {
     "first_of_month": degrade_to_first_of_month,
     "short_postcode": degrade_to_short_postcode,
     "hash_sha256": hash_column_sha256,
+    "remove_row": remove_row,
 }

@@ -1,7 +1,6 @@
-from dagster import job
-from liiatools_pipeline.ops import common_la
+from dagster import get_dagster_logger, job
 
-from dagster import get_dagster_logger
+from liiatools_pipeline.ops import common_la
 
 log = get_dagster_logger(__name__)
 
@@ -25,3 +24,8 @@ def move_current_la():
 def concatenate():
     current = common_la.open_current()
     common_la.create_concatenated_view(current)
+
+
+@job
+def no_op_job():
+    pass

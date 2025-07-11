@@ -1,13 +1,20 @@
-import logging
 import re
-from typing import Iterable, Literal, Dict
+from typing import Dict, Iterable, Literal
 
+import fs.errors
 import pandas as pd
+from dagster import get_dagster_logger
 from fs.base import FS
 
-from liiatools.common.data import DataContainer, PipelineConfig, TableConfig
+from liiatools.common.data import (
+    DataContainer,
+    ErrorContainer,
+    PipelineConfig,
+    ProcessResult,
+    TableConfig,
+)
 
-logger = logging.getLogger(__name__)
+log = get_dagster_logger(__name__)
 
 
 def _normalise_table(df: pd.DataFrame, table_spec: TableConfig) -> pd.DataFrame:
@@ -48,7 +55,7 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int):
+    def add(self, data: DataContainer, la_code: str, year: int, month: str | None):
         """
         Add a new snapshot to the archive.
         """
@@ -56,20 +63,28 @@ class DataframeArchive:
 
         for table_spec in self.config.table_list:
             if table_spec.id in data:
-                self._add_table(la_dir, la_code, year, table_spec, data[table_spec.id])
+                self._add_table(
+                    la_dir, la_code, year, month, table_spec, data[table_spec.id]
+                )
 
     def _add_table(
         self,
         la_dir: FS,
         la_code: str,
         year: int,
+        month: str,
         table_spec: TableConfig,
         df: pd.DataFrame,
     ):
         """
         Add a table to the archive.
         """
-        with la_dir.open(f"{la_code}_{year}_{table_spec.id}.csv", "w") as f:
+        path = (
+            f"{la_code}_{year}_{table_spec.id}.csv"
+            if month is None
+            else f"{la_code}_{year}_{month}_{table_spec.id}.csv"
+        )
+        with la_dir.open(path, "w") as f:
             df = _normalise_table(df, table_spec)
             df.to_csv(f, index=False)
 
@@ -77,15 +92,23 @@ class DataframeArchive:
         """
         List the snapshots in the archive.
         """
-        directories = sorted(self.fs.listdir("/"))
+        try:
+            directories = sorted(self.fs.listdir("/"))
+        except fs.errors.ResourceNotFound:
+            log.error(f"Resource not found error when listing snapshots")
+            return {}
         la_snapshots = {}
 
         for directory in directories:
-            snapshots = self.fs.listdir(f"/{directory}/{self.dataset}")
-            for snap in snapshots:
-                la_snapshots.setdefault(directory, []).append(
-                    f"{directory}/{self.dataset}/{snap}"
-                )
+            try:
+                snapshots = self.fs.listdir(f"/{directory}/{self.dataset}")
+                for snap in snapshots:
+                    la_snapshots.setdefault(directory, []).append(
+                        f"{directory}/{self.dataset}/{snap}"
+                    )
+            except fs.errors.ResourceNotFound:
+                log.error(f"Resource not found error: /{directory}/{self.dataset}")
+                continue
 
         return la_snapshots
 
@@ -98,14 +121,16 @@ class DataframeArchive:
         for snap_id in snap_ids:
             self.fs.removetree(snap_id)
 
-    def current(self, la_code: str) -> DataContainer:
+    def current(
+        self, la_code: str, deduplicate_mode: Literal["E", "A", "N"] = "E"
+    ) -> DataContainer:
         """
         Get the current session as a datacontainer.
         """
         try:
             directories = self.list_snapshots()
             snap_ids = directories[la_code]
-            return self.combine_snapshots(snap_ids)
+            return self.combine_snapshots(snap_ids, deduplicate_mode)
 
         except KeyError:
             return
@@ -115,10 +140,14 @@ class DataframeArchive:
         Load a snapshot from the archive.
         """
         data = DataContainer()
-        table_id = re.search(r"\d{4}_([a-zA-Z0-9_]*)\.", snap_id)
+        table_id = re.search(
+            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*_*([a-zA-Z0-9_]*)\.",
+            snap_id,
+        )
 
         for table_spec in self.config.table_list:
-            if table_id and table_id.group(1) == table_spec.id:
+            if table_id and table_id.group(2) == table_spec.id:
+                log.info(f"table id match: {table_spec.id}")
                 with self.fs.open(snap_id, "r") as f:
                     df = pd.read_csv(f)
                     df = _normalise_table(df, table_spec)
@@ -127,7 +156,7 @@ class DataframeArchive:
         return data
 
     def combine_snapshots(
-        self, snap_ids: Iterable[str], deduplicate_mode: Literal["E", "A", "N"] = "E"
+        self, snap_ids: Iterable[str], deduplicate_mode: Literal["E", "A", "N"]
     ) -> DataContainer:
         """
         Combine a list of snapshots into a single dataframe.
@@ -149,32 +178,48 @@ class DataframeArchive:
             )
 
         if deduplicate_mode == "A":
-            combined = self.deduplicate(combined)
+            combined = self.deduplicate(combined).data
 
         return combined
 
-    def deduplicate(self, data: DataContainer) -> DataContainer:
+    def deduplicate(self, data: DataContainer) -> ProcessResult:
         """
         Deduplicate the dataframes in the container.
 
         If a dataframe has a 'sort' configuration, then the dataframe is sorted by the specified columns before deduplication.
         """
+        errors = ErrorContainer()
+
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 sort_keys = table_spec.sort_keys
 
                 df = data[table_spec.id]
                 if sort_keys:
-                    df = df.sort_values(by=sort_keys, ascending=True)
-                df = df.drop_duplicates(
-                    subset=[c.id for c in table_spec.columns if c.unique_key]
-                    if [c.id for c in table_spec.columns if c.unique_key]
-                    else None,
-                    keep="last",
+                    df = df.sort_values(by=sort_keys, ascending=False)
+
+                subset = [c.id for c in table_spec.columns if c.unique_key]
+                duplicate_mask = df.duplicated(
+                    subset=subset if subset else None,
+                    keep="first",
                 )
+
+                duplicate_rows = df.index[duplicate_mask].tolist()
+
+                df = df[~duplicate_mask]
+
+                for row in duplicate_rows:
+                    errors.append(
+                        dict(
+                            type="DuplicateError",
+                            message=f"Row {row} removed as it was a duplicate",
+                            r_ix=row,
+                            table_name=table_spec.id,
+                        )
+                    )
                 data[table_spec.id] = df
 
-        return data
+        return ProcessResult(data=data, errors=errors)
 
     def _combine_snapshots(
         self, *sources: DataContainer, deduplicate: bool = True
@@ -199,6 +244,6 @@ class DataframeArchive:
                 data[table_id] = pd.concat(all_sources, ignore_index=True)
 
         if deduplicate:
-            data = self.deduplicate(data)
+            data = self.deduplicate(data).data
 
         return data
