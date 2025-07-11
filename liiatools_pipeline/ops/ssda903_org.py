@@ -14,15 +14,6 @@ from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 log = get_dagster_logger()
 
-# This op should be ported to the external_dataset pipeline as it only needs to run once
-@op
-def output_lookup_tables():
-    dim_dfs = dict_to_dfs()
-    dim_dfs = DataContainer(dim_dfs)
-    log.info("Moving lookup tables to shared folder")
-    dim_dfs.export(shared_folder(), "", "csv")
-
-
 @op(
     out={
         "session_folder": Out(FS),
@@ -71,8 +62,8 @@ def create_dim_fact_tables(
         ext_folder = external_data_folder()
         output_folder = shared_folder()
 
-        # Create empty dictionary to store tables
-        dim_tables = {}
+        # Create dictionary to store tables, starting with basic dim tables
+        dim_tables = dict_to_dfs()
 
         # Create dimONSArea table
         # Open external file
@@ -104,7 +95,7 @@ def create_dim_fact_tables(
 
         # Create dimOfstedProvider and factOfstedInspection tables
         # Open and transform files
-        OfstedProvider, factOfstedInspection = ofsted_transform(ext_folder, ONSArea)
+        OfstedProvider, factOfstedInspection = ofsted_transform(ext_folder, ONSArea, log)
         if OfstedProvider is None and factOfstedInspection is None:
             log.info("Terminating process")
             return

@@ -1,13 +1,11 @@
-from dagster import get_dagster_logger
 from typing import Union, Tuple
+import logging
 import pandas as pd
 import numpy as np
 from fs.base import FS
 import fs.errors as errors
 
 from liiatools.common.pipeline import open_file
-
-log = get_dagster_logger()
 
 # ALL of the code from here to the creation of factOfstedInspection should be ported to the external data pipeline
 
@@ -628,8 +626,11 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def ofsted_transform(fs: FS, ONSArea: pd.DataFrame, log: logging.Logger=None) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Creates a dimension table with all Ofsted providers and a fact table with all Ofsted inspections"""
+    if log is None:
+        log = logging.getLogger(__name__)
+
     try:
         fs.makedir("Ofsted")
     except errors.DirectoryExists:
