@@ -1,11 +1,11 @@
 from dagster import get_dagster_logger
+from typing import Union, Tuple
 import pandas as pd
 import numpy as np
-import pandas as pd
 from fs.base import FS
 import fs.errors as errors
 
-from liiatools.common.pipeline import open_file, Tuple
+from liiatools.common.pipeline import open_file
 
 log = get_dagster_logger()
 
