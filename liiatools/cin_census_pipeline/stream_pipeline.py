@@ -1,15 +1,19 @@
-from dagster import get_dagster_logger
+import logging
 from pathlib import Path
 from typing import Optional
-import logging
 
+from dagster import get_dagster_logger
 from sfdata_stream_parser.filters import generic
 from xmlschema import XMLSchema
-from liiatools.common.data import PipelineConfig
 
 from liiatools.cin_census_pipeline import stream_record
 from liiatools.common import stream_filters as stream_functions
-from liiatools.common.data import DataContainer, FileLocator, ProcessResult
+from liiatools.common.data import (
+    DataContainer,
+    FileLocator,
+    PipelineConfig,
+    ProcessResult,
+)
 from liiatools.common.stream_parse import dom_parse
 from liiatools.common.stream_pipeline import to_dataframe_xml
 
@@ -18,7 +22,12 @@ from . import stream_filters as filters
 log = get_dagster_logger(__name__)
 
 
-def task_cleanfile(src_file: FileLocator, schema: (XMLSchema, Path), output_config: PipelineConfig, logger: Optional[logging.Logger]=None) -> ProcessResult:
+def task_cleanfile(
+    src_file: FileLocator,
+    schema: (XMLSchema, Path),
+    output_config: PipelineConfig,
+    logger: Optional[logging.Logger] = None,
+) -> ProcessResult:
     """
     Clean input cin census xml files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
