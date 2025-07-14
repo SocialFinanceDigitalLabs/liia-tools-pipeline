@@ -9,7 +9,7 @@ from liiatools.common.data import ColumnConfig, PipelineConfig, TableConfig
 @pytest.fixture
 def cfg():
     cfg = PipelineConfig(
-        sensor_trigger  ={"move_current_org_sensor": True},
+        sensor_trigger={"move_current_org_sensor": True},
         retention_columns={"year_column": "Year", "la_column": "LA"},
         retention_period={"PAN": 12, "SUFFICIENCY": 7},
         la_signed={

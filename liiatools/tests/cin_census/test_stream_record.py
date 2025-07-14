@@ -3,15 +3,18 @@ from datetime import date
 
 from sfdata_stream_parser.events import EndElement, StartElement, TextNode
 
+from liiatools.cin_census_pipeline.stream_record import (
+    CINEvent,
+    HeaderEvent,
+    _maybe_list,
+    child_collector,
+    cin_collector,
+    cin_event,
+    event_to_records,
+    export_table,
+    message_collector,
+)
 from liiatools.common.data import PipelineConfig
-from liiatools.cin_census_pipeline.stream_record import (CINEvent, HeaderEvent,
-                                                         _maybe_list,
-                                                         child_collector,
-                                                         cin_collector,
-                                                         cin_event,
-                                                         event_to_records,
-                                                         export_table,
-                                                         message_collector)
 
 output_config = PipelineConfig(
     sensor_trigger={"move_current_org_sensor": False, "move_concat_sensor": False},
@@ -90,6 +93,7 @@ output_config = PipelineConfig(
 output_table = output_config["cin"]
 output_columns = [column.id for column in output_table.columns]
 
+
 def test_maybe_list():
     assert _maybe_list(None) == []
     assert _maybe_list(42) == [42]
@@ -101,9 +105,7 @@ def test_cin_event():
     property = "DOB"
     export_headers = ["DOB", "Date", "Type"]
     event_name = "Date of Birth"
-    assert cin_event(
-        record, property, export_headers, event_name=event_name
-    ) == (
+    assert cin_event(record, property, export_headers, event_name=event_name) == (
         {"DOB": "2000-01-01", "Date": "2000-01-01", "Type": "Date of Birth"},
     )
     assert cin_event(record, "UnknownProperty", export_headers) == ()
@@ -122,7 +124,9 @@ def test_event_to_records():
         },
     }
 
-    assert list(event_to_records(CINEvent(record=cin_record), output_columns=output_columns)) == [
+    assert list(
+        event_to_records(CINEvent(record=cin_record), output_columns=output_columns)
+    ) == [
         {
             "LAchildID": "DfEX0000001",
             "Date": "2009-03-15",
@@ -159,7 +163,7 @@ def test_event_to_records():
             "Ethnicity": "WBRI",
             "Disabilities": "",
             "LA": None,
-            "Year": None
+            "Year": None,
         },
     ]
 

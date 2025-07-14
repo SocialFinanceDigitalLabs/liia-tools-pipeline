@@ -1,8 +1,12 @@
 from io import BytesIO
 
-from sfdata_stream_parser.events import (CommentNode, EndElement,
-                                         ProcessingInstructionNode,
-                                         StartElement, TextNode)
+from sfdata_stream_parser.events import (
+    CommentNode,
+    EndElement,
+    ProcessingInstructionNode,
+    StartElement,
+    TextNode,
+)
 
 from liiatools.common.stream_parse import dom_parse
 

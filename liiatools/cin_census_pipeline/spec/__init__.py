@@ -31,6 +31,7 @@ def load_pipeline_config():
             f"Configuration file 'cin_census_pipeline.json' not found in '{region_config}'."
         )
 
+
 @lru_cache
 def load_schema(year: int) -> (xmlschema.XMLSchema, Path):
     return (

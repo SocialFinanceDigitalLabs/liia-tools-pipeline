@@ -1,10 +1,10 @@
+from os.path import basename
 from typing import List, Tuple
 
+import fs.errors
 from dagster import In, Out, get_dagster_logger, op
 from fs import open_fs
 from fs.base import FS
-import fs.errors
-from os.path import basename
 
 from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
 from liiatools.annex_a_pipeline.stream_pipeline import (
@@ -120,9 +120,7 @@ def process_files(
         log.info(f"Discovered year in {basename(file_locator.name)}")
 
         if (
-            check_year_within_range(
-                year, max(output_config.retention_period.values())
-            )
+            check_year_within_range(year, max(output_config.retention_period.values()))
             is False
         ):
             error_report.append(
@@ -180,11 +178,11 @@ def process_files(
         try:
             cleanfile_result = (
                 globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema, output_config, logger=log
+                    file_locator, schema, output_config, logger=log
                 )
                 if config.dataset == "cin"
                 else globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema, logger=log
+                    file_locator, schema, logger=log
                 )
             )
         except StreamError as e:
@@ -210,9 +208,7 @@ def process_files(
         )
         error_report.extend(cleanfile_result.errors)
 
-        enrich_result = enrich_data(
-            cleanfile_result.data, output_config, metadata
-        )
+        enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -220,9 +216,7 @@ def process_files(
         )
         error_report.extend(enrich_result.errors)
 
-        degraded_result = degrade_data(
-            enrich_result.data, output_config, metadata
-        )
+        degraded_result = degrade_data(enrich_result.data, output_config, metadata)
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
             file_locator.meta["uuid"] + "_",
