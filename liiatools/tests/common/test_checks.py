@@ -1,6 +1,6 @@
 import unittest
-from unittest import mock
 from datetime import datetime
+from unittest import mock
 
 from liiatools.common.checks import (
     check_la,

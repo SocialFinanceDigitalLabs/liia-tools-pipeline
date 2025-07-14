@@ -5,8 +5,12 @@ import numpy as np
 import pandas as pd
 
 from liiatools.cin_census_pipeline.reports.reports import (
-    _filter_events, _time_between_date_series, expanded_assessment_factors,
-    referral_outcomes, s47_journeys)
+    _filter_events,
+    _time_between_date_series,
+    expanded_assessment_factors,
+    referral_outcomes,
+    s47_journeys,
+)
 
 
 def test_assessment_factors():

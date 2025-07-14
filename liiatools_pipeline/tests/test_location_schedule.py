@@ -1,6 +1,7 @@
-import pytest
-from unittest.mock import MagicMock
 from collections import namedtuple
+from unittest.mock import MagicMock
+
+import pytest
 from dagster import build_op_context
 
 from liiatools_pipeline.sensors.location_schedule import find_previous_matching_run

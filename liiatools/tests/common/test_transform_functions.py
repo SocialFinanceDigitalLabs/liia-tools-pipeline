@@ -1,9 +1,11 @@
 import unittest
-import pandas as pd
-import numpy as np
 
-from liiatools.common.data import ColumnConfig
+import numpy as np
+import pandas as pd
+
 from liiatools.common._transform_functions import to_integer
+from liiatools.common.data import ColumnConfig
+
 
 class TestToInteger(unittest.TestCase):
     def setUp(self):

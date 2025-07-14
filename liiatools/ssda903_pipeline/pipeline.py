@@ -1,7 +1,8 @@
 import logging
-from typing import List, Tuple
-from fs.base import FS
 from os.path import basename
+from typing import List, Tuple
+
+from fs.base import FS
 
 from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
@@ -9,8 +10,7 @@ from liiatools.common.archive import DataframeArchive
 from liiatools.common.constants import SessionNames
 from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
-from liiatools.common.transform import (degrade_data, enrich_data,
-                                        prepare_export)
+from liiatools.common.transform import degrade_data, enrich_data, prepare_export
 from liiatools.ssda903_pipeline.spec import load_pipeline_config, load_schema
 from liiatools.ssda903_pipeline.stream_pipeline import task_cleanfile
 
