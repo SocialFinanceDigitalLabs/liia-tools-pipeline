@@ -60,7 +60,7 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
 
     # Count episodes per child
     episodes_merged["# placements in last 12 months"] = episodes_merged.groupby(
-        "CHILD"
+        ["CHILD", "snapshot_date"]
     )["CHILD"].transform("count")
 
     # Filter to only keep episodes open on day of snapshot
@@ -78,10 +78,11 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
                 "HOME_POST",
                 "PL_POST",
                 "# placements in last 12 months",
+                "snapshot_date",
             ]
         ],
-        left_on="Identifier",
-        right_on="CHILD",
+        left_on=["Identifier", "snapshot_date"],
+        right_on=["CHILD", "snapshot_date"],
         how="left",
     )
 
