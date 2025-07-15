@@ -31,11 +31,21 @@ def dom_parse(source, filename, **kwargs):
                 yield StartElement(
                     tag=elem.tag, attrib=elem.attrib, node=elem, filename=filename
                 )
-                yield TextNode(cell=elem.text, filename=filename, text=None)
+                # if elem.text and elem.text.strip():
+                #     yield TextNode(cell=elem.text, filename=filename, text=None)
+
+                # with open("debug_output.txt", "a", encoding="utf-8") as f:
+                #     f.write(f"StartElement: {elem.tag}, {elem.text}\n")
             elif action == "end":
+                if elem.text and elem.text.strip():
+                    yield TextNode(cell=elem.text, filename=filename, text=None)
+
                 yield EndElement(tag=elem.tag, node=elem, filename=filename)
                 if elem.tail:
                     yield TextNode(cell=elem.tail, filename=filename, text=None)
+                
+                # with open("debug_output.txt", "a", encoding="utf-8") as f:
+                #     f.write(f"EndElement: {elem.tag}, {elem.text}\n")
             elif action == "comment":
                 yield CommentNode(
                     cell=elem.text, node=elem, filename=filename, text=None

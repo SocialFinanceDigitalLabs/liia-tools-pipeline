@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Union
-from dagster import get_dagster_logger
 
 import numpy as np
 import pandas as pd
@@ -31,8 +30,6 @@ from liiatools.common.stream_errors import EventErrors, StreamError
 from .spec.__data_schema import Category, Column, DataSchema, Numeric
 
 logger = logging.getLogger(__name__)
-
-log = get_dagster_logger(__name__)
 
 
 def _import_set_workaround(data):
@@ -297,17 +294,11 @@ def conform_cell_types(event, preserve_value=False):
     if not column_spec:
         return event
 
-    try:
-        col_type = column_spec.type
-    except ValueError:
-        log.info("Unkown column type, likely due to large file reading in text nodes for parent nodes")
-        return
-
-    if col_type == "category":
+    if column_spec.type == "category":
         converter = lambda x: to_category(x, column_spec)
-    elif col_type == "date":
+    elif column_spec.type == "date":
         converter = lambda x: to_date(x, column_spec.date)
-    elif col_type == "numeric":
+    elif column_spec.type == "numeric":
         converter = lambda x: to_numeric(
             x,
             column_spec.numeric.type,
@@ -316,15 +307,15 @@ def conform_cell_types(event, preserve_value=False):
             column_spec.numeric.decimal_places,
             column_spec.numeric.age,
         )
-    elif col_type == "postcode":
+    elif column_spec.type == "postcode":
         converter = to_postcode
-    elif col_type == "string":
+    elif column_spec.type == "string":
         converter = lambda x: str(x)
-    elif col_type == "regex":
+    elif column_spec.type == "regex":
         converter = lambda x: to_regex(x, column_spec.cell_regex)
     else:
         return EventErrors.add_to_event(
-            event, type="UnknownType", message=f"Unknown cell type {col_type}"
+            event, type="UnknownType", message=f"Unknown cell type {column_spec.type}"
         )
 
     cell_value = getattr(event, "cell", None)
@@ -332,12 +323,12 @@ def conform_cell_types(event, preserve_value=False):
     try:
         cell_value = converter(cell_value)
         return event.from_event(event, cell=cell_value)
-    except ValueError:
+    except ValueError as e:
         event = event.from_event(event, cell=cell_value if preserve_value else "")
         return EventErrors.add_to_event(
             event,
             type="ConversionError",
-            message=f"Could not convert to {col_type}",
+            message=f"Could not convert to {column_spec.type}",
         )
 
 
