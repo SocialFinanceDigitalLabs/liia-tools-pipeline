@@ -4,7 +4,7 @@ column_map:
             string: "alphanumeric"
             canbeblank: false
         Assessment Date: &date_not_blank
-            string: "date"
+            date: "%d/%m/%Y"
             canbeblank: false
         Youth Last Name: *string_not_blank
         Youth First Name: *string_not_blank
