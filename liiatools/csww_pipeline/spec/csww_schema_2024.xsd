@@ -116,7 +116,7 @@
 
   <xs:simpleType name="swetype">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Za-z]{2}\d{10}"/>
+      <xs:pattern value="[A-Za-z]{2}\d{1,10}$"/>
     </xs:restriction>
   </xs:simpleType>
   

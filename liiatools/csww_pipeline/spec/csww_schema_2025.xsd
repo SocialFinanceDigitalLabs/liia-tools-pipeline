@@ -56,8 +56,17 @@
   <xs:complexType name="vacancytype">
     <xs:sequence>
       <xs:element name="NumberOfVacancies" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
-	  <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
-	  <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="RecruitmentBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="RetentionBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="PerformanceAward" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="CarAllowance" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="RelocationPackage" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="RegionalWeighting" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="CostSWE" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="CostDBS" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="OtherAllowances" type="xs:string" minOccurs="1" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -67,9 +76,8 @@
       <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="FTE" type="ftetype" minOccurs="0" maxOccurs="1"/>
 	    <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="GenderCurrent" type="gendertype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="QualInst" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
       <xs:element name="QualLevel" type="qualtype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
 	    <xs:element name="OrgRole" type="roletype" minOccurs="0" maxOccurs="1"/>
@@ -85,7 +93,9 @@
       <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="unbounded"/>
 	    <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="CFKSSstatus" type="cfksstype" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="BaseSalary" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RRPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="OtherPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
   
@@ -128,12 +138,10 @@
     </xs:restriction>
   </xs:simpleType>
   
-  <xs:simpleType name="gendertype">
+  <xs:simpleType name="sextype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>Not Known</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Specified</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="M"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="F"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
   
@@ -172,6 +180,14 @@
     <xs:restriction base="nonEmptyString">
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+    <xs:simpleType name="noallsometype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes, all LA-employed social workers are eligible</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>Yes, some LA-employed social workers are eligible</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
   
@@ -239,15 +255,6 @@
 	    <xs:enumeration value="TRN"><xs:annotation><xs:documentation>Training</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="UNA"><xs:annotation><xs:documentation>Unauthorised Absence</xs:documentation></xs:annotation></xs:enumeration>
 	    <xs:enumeration value="UNP"><xs:annotation><xs:documentation>Unpaid Authorised Absence</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="cfksstype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Assessed and Supported Year in Employment (AYSE)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Frontline Practitioner</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="3"><xs:annotation><xs:documentation>Practice Supervisor</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="4"><xs:annotation><xs:documentation>Practice Leader</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
