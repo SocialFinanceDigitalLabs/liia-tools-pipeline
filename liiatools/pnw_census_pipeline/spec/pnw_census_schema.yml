@@ -78,7 +78,7 @@ column_map:
         canbeblank: False
         header_regex:
           - /.*ethnic.*/i
-      How the placement was sourced: # Final spec to be provided by Hannah
+      How the placement was sourced:
         category:
           - code: "NW Contract - SaILS DPS or previous"
           - code: "NW Contract - Residential FPS or previous"
@@ -90,6 +90,7 @@ column_map:
           - code: "Local Contract or Framework"
           - code: "Block Contract - Local"
           - code: "Block Contract - Collaborative"
+          - code: "GM RCC Flexi Block"
         canbeblank: False
         header_regex:
           - /.*placement was sourced.*/i
@@ -517,7 +518,7 @@ column_map:
         canbeblank: False
         header_regex:
           - /.*host authority.*/i
-      Primary Placing at Distance Reason: # Final spec to be provided by Hannah
+      Primary Placing at Distance Reason:
         category:
           - code: Placement available locally but provider refused due to need
           - code: Placement available locally but provider refused due to matching
@@ -530,6 +531,7 @@ column_map:
           - code: Other (please specify)
           - code: Unknown
           - code: Not applicable
+          - code: N/A
         canbeblank: True
         header_regex:
           - /.*placing at distance reason.*/i
