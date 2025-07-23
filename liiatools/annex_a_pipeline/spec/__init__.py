@@ -1,6 +1,5 @@
 import importlib.resources
 import logging
-
 from functools import lru_cache
 from pathlib import Path
 
@@ -21,6 +20,7 @@ logger = logging.getLogger(__name__)
 SCHEMA_DIR = Path(__file__).parent
 
 region_config = load_region_env()
+
 
 @lru_cache
 def load_pipeline_config():
