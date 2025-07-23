@@ -1,10 +1,13 @@
 from dagster import get_dagster_logger
-from sfdata_stream_parser.events import (CommentNode, EndElement,
-                                         ProcessingInstructionNode,
-                                         StartElement, TextNode)
+from sfdata_stream_parser.events import (
+    CommentNode,
+    EndElement,
+    ProcessingInstructionNode,
+    StartElement,
+    TextNode,
+)
 
 from liiatools.common.stream_errors import StreamError
-
 
 log = get_dagster_logger(__name__)
 

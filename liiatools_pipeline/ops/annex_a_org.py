@@ -1,16 +1,15 @@
-from dagster import op, In, Out, get_dagster_logger
+from dagster import In, Out, get_dagster_logger, op
 from fs.base import FS
 
-from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common import pipeline as pl
+from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
-from liiatools_pipeline.ops.common_config import CleanConfig
-
 from liiatools_pipeline.assets.common import (
     pipeline_config,
-    workspace_folder,
     shared_folder,
+    workspace_folder,
 )
+from liiatools_pipeline.ops.common_config import CleanConfig
 
 log = get_dagster_logger()
 
@@ -48,9 +47,7 @@ def deduplicate_pan(
     config: CleanConfig,
 ):
     log.info("Creating PAN Data Frames...")
-    pan = DataframeAggregator(
-        session_folder, pipeline_config(config), config.dataset
-    )
+    pan = DataframeAggregator(session_folder, pipeline_config(config), config.dataset)
 
     log.info("Deduplicating PAN Data Frames...")
     pan_data = pan.current(deduplicate=True)

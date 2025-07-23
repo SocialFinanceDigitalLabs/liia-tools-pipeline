@@ -45,7 +45,9 @@ def move_current_view_org(config: CleanConfig):
         pl.remove_files(current_files_regex, existing_files, destination_folder)
 
         log.info("Moving current files to destination...")
-        pl.move_files_for_sharing(current_folder, destination_folder, required_table_id=file_name_list)
+        pl.move_files_for_sharing(
+            current_folder, destination_folder, required_table_id=file_name_list
+        )
     else:
         log.error(f"No current files found for {config.dataset}")
 

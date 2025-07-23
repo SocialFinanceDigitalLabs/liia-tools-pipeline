@@ -181,7 +181,9 @@ def move_current_org_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        context.log.info(f"Run records found for reports job in move current org sensor")
+        context.log.info(
+            f"Run records found for reports job in move current org sensor"
+        )
         for dataset in allowed_datasets:
             clean_config = CleanConfig(
                 dataset_folder=None,
@@ -189,7 +191,9 @@ def move_current_org_sensor(context):
                 input_la_code=None,
                 dataset=dataset,
             )
-            sensor_trigger = pipeline_config(clean_config).sensor_trigger["move_current_org_sensor"]
+            sensor_trigger = pipeline_config(clean_config).sensor_trigger[
+                "move_current_org_sensor"
+            ]
             if sensor_trigger:
                 context.log.info(f"Sensor trigger is enabled for {dataset}")
                 latest_run_id = find_previous_matching_dataset_run(
@@ -242,7 +246,9 @@ def move_concat_sensor(context):
                 input_la_code=None,
                 dataset=dataset,
             )
-            sensor_trigger = pipeline_config(clean_config).sensor_trigger["move_concat_sensor"]
+            sensor_trigger = pipeline_config(clean_config).sensor_trigger[
+                "move_concat_sensor"
+            ]
             if sensor_trigger:
                 context.log.info(f"Sensor trigger is enabled for {dataset}")
                 latest_run_id = find_previous_matching_dataset_run(
