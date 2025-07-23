@@ -1,0 +1,98 @@
+Autumn:
+  column_map.pupilnolongeronroll.gender:
+    type: rename
+    description: Rename column in pupilnolongeronroll
+    value:
+      sex
+  column_map.pupilonroll.gender:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      sex
+  column_map.schoolarrangedapdetailoffroll.applacementpostcode:
+    type: add
+    description: Adds new column for schoolarrangedapdetailoffroll
+    value:
+      &postcode-blank
+      string: "postcode"
+      canbeblank: yes
+  column_map.schoolarrangedapdetailoffroll.companynumber:
+    type: add
+    description: Adds new column for schoolarrangedapdetailoffroll
+    value:
+      &company-number
+      string: "regex"
+      cell_regex:
+        - ([A-Za-z]{2}|\d{2})\d{6}
+      canbeblank: yes
+  column_map.schoolarrangedapdetailonroll.applacementpostcode:
+    type: add
+    description: Adds new column for schoolarrangedapdetailonroll
+    value:
+      *postcode-blank
+  column_map.schoolarrangedapdetailonroll.companynumber:
+    type: add
+    description: Adds new column for schoolarrangedapdetailonroll
+    value:
+      *company-number
+
+Spring:
+  column_map.pupilnolongeronroll.gender:
+    type: rename
+    description: Rename column in pupilnolongeronroll
+    value:
+      sex
+  column_map.pupilonroll.gender:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      sex
+
+Summer:
+  column_map.fundingbasisitems:
+    type: add
+    description: Adds new table for 2024 return
+    value:
+      fundingbasisitemstableid:
+        &alphanumeric-not-blank
+        string: "alphanumeric"
+        canbeblank: no
+      NativeId:
+        *alphanumeric-not-blank
+      fundingbasisitemsorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilonrolltableid:
+        *alphanumeric-not-blank
+      fundingbasis:
+        category:
+        - code: "ECO"
+        - code: "HSD"
+        - code: "LAA"
+        canbeblank: yes
+  column_map.pupilnolongeronroll.gender:
+    type: rename
+    description: Rename column in pupilnolongeronroll
+    value:
+      sex
+  column_map.pupilonroll.gender:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      sex
+  column_map.pupilonroll.thirtyhourcode:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      eligibilitycode
+  column_map.pupilonroll.eyppr:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      category:
+      - code: "Y"
+        name: "Yes"
+      - code: "N"
+        name: "No"
+      canbeblank: yes
