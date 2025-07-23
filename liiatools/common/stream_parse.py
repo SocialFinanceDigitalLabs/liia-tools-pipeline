@@ -34,8 +34,10 @@ def dom_parse(source, filename, **kwargs):
                 yield StartElement(
                     tag=elem.tag, attrib=elem.attrib, node=elem, filename=filename
                 )
-                yield TextNode(cell=elem.text, filename=filename, text=None)
             elif action == "end":
+                if elem.text and elem.text.strip():
+                    yield TextNode(cell=elem.text, filename=filename, text=None)
+
                 yield EndElement(tag=elem.tag, node=elem, filename=filename)
                 if elem.tail:
                     yield TextNode(cell=elem.tail, filename=filename, text=None)
