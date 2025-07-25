@@ -29,13 +29,16 @@ def _filter_to_open_in_last_12m(
 
 
 def _filter_to_open_on_snapshot_date(
-    df: pd.DataFrame, episode_end: str, snapshot_date: str
+    df: pd.DataFrame, episode_end: str, snapshot_date: str, episode_start: str
 ) -> pd.DataFrame:
     """
     Filters dataframe to episodes that are open on the snapshot date
     They will already have been confirmed to be open before the snapshot date
     """
-    filtered_df = df[(df[episode_end].isna()) | (df[episode_end] >= df[snapshot_date])]
+    filtered_df = df[
+        ((df[episode_end].isna()) | (df[episode_end] >= df[snapshot_date]))
+        & (df[episode_start] < df[snapshot_date])
+    ]
 
     return filtered_df
 
@@ -65,7 +68,7 @@ def join_episode_data(episodes: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Da
 
     # Filter to only keep episodes open on day of snapshot
     episodes_merged = _filter_to_open_on_snapshot_date(
-        episodes_merged, "DEC", "snapshot_date"
+        episodes_merged, "DEC", "snapshot_date", "DECOM"
     )
 
     # Merge back with pnw_census
