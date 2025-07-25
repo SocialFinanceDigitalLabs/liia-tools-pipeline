@@ -8,6 +8,7 @@ from dagster import (
 )
 from decouple import config as env_config
 
+from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
@@ -37,16 +38,13 @@ def find_previous_matching_dataset_run(run_records, dataset):
     job=move_current_la,
     description="Runs move_current_la job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_la_sensor(context):
-    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
-    context.log.info(f"Move current la allowed datasets: {allowed_datasets}")
-
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -55,22 +53,18 @@ def move_current_la_sensor(context):
 
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for clean job")
-        for dataset in allowed_datasets:
-            latest_run_id = find_previous_matching_dataset_run(
-                run_records,
-                dataset,
-            )  # Get the most recent dataset run id
-            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
-            yield RunRequest(
-                run_key=latest_run_id,
-                tags={"dataset": dataset},
-            )
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
 
 
 @sensor(
     job=concatenate,
     description="Runs concatenate job once move_current job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def concatenate_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -78,7 +72,7 @@ def concatenate_sensor(context):
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
-            job_name=move_current_la.name,
+            job_name=clean.name,
             statuses=[DagsterRunStatus.SUCCESS],
             tags={"dataset": allowed_datasets},
         ),
@@ -114,6 +108,7 @@ def concatenate_sensor(context):
     job=ssda903_fix_episodes,
     description="Runs ssda903_fix_episodes job once concatenate job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def ssda903_fix_episodes_sensor(context):
     run_records = context.instance.get_run_records(
@@ -140,6 +135,7 @@ def ssda903_fix_episodes_sensor(context):
     job=move_error_reports,
     description="Runs move_error_reports job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_error_reports_sensor(context):
     run_records = context.instance.get_run_records(
@@ -167,12 +163,17 @@ def move_error_reports_sensor(context):
     job=move_current_org,
     description="Runs move_current_org job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_org_sensor(context):
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Move current allowed datasets: {allowed_datasets}")
+
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -180,19 +181,46 @@ def move_current_org_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        context.log.info(f"Run records found for reports job")
-        latest_run_record = run_records[0]
-        context.log.info(f"Run key: {latest_run_record.dagster_run.run_id}")
-
-        yield RunRequest(
-            run_key=latest_run_record.dagster_run.run_id,
+        context.log.info(
+            f"Run records found for reports job in move current org sensor"
         )
+        for dataset in allowed_datasets:
+            clean_config = CleanConfig(
+                dataset_folder=None,
+                la_folder=None,
+                input_la_code=None,
+                dataset=dataset,
+            )
+            sensor_trigger = pipeline_config(clean_config).sensor_trigger[
+                "move_current_org_sensor"
+            ]
+            if sensor_trigger:
+                context.log.info(f"Sensor trigger is enabled for {dataset}")
+                latest_run_id = find_previous_matching_dataset_run(
+                    run_records,
+                    dataset,
+                )  # Get the most recent dataset run id
+                context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
+
+                yield RunRequest(
+                    run_key=latest_run_id,
+                    run_config=RunConfig(
+                        ops={
+                            "move_current_view_org": clean_config,
+                        }
+                    ),
+                )
+            else:
+                context.log.info(
+                    f"Sensor trigger is disabled for {dataset}, skipping move_current_org"
+                )
 
 
 @sensor(
     job=move_concat,
     description="Runs move_concat job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_concat_sensor(context):
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -210,38 +238,43 @@ def move_concat_sensor(context):
     )
 
     if run_records:  # Ensure there is at least one run record
-        if "annex_a" in allowed_datasets:
-            allowed_datasets.remove("annex_a")
-            context.log.info(f"Annex A removed from reports job for move concat sensor")
-        # Check if there are run records for the reports job after removing annex_a
-        if run_records:
-            context.log.info(f"Run records found for reports job in move concat sensor")
+        context.log.info(f"Run records found for reports job in move concat sensor")
         for dataset in allowed_datasets:
-            latest_run_id = find_previous_matching_dataset_run(
-                run_records,
-                dataset,
-            )  # Get the most recent dataset run id
-            context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             clean_config = CleanConfig(
                 dataset_folder=None,
                 la_folder=None,
                 input_la_code=None,
                 dataset=dataset,
             )
-            yield RunRequest(
-                run_key=latest_run_id,
-                run_config=RunConfig(
-                    ops={
-                        "move_concat_view": clean_config,
-                    }
-                ),
-            )
+            sensor_trigger = pipeline_config(clean_config).sensor_trigger[
+                "move_concat_sensor"
+            ]
+            if sensor_trigger:
+                context.log.info(f"Sensor trigger is enabled for {dataset}")
+                latest_run_id = find_previous_matching_dataset_run(
+                    run_records,
+                    dataset,
+                )  # Get the most recent dataset run id
+                context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
+                yield RunRequest(
+                    run_key=latest_run_id,
+                    run_config=RunConfig(
+                        ops={
+                            "move_concat_view": clean_config,
+                        }
+                    ),
+                )
+            else:
+                context.log.info(
+                    f"Sensor trigger is disabled for {dataset}, skipping move_concat"
+                )
 
 
 @sensor(
     job=ssda903_sufficiency,
     description="Runs ssda903_sufficiency job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
@@ -270,6 +303,7 @@ def sufficiency_sensor(context):
     job=deduplicate_annex_a,
     description="Runs deduplicate_annex_a job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def deduplicate_annex_a_sensor(context):
     run_records = context.instance.get_run_records(
@@ -310,6 +344,7 @@ def deduplicate_annex_a_sensor(context):
     job=pnw_census_joins,
     description="Runs pnw_census_ssda903_join job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def pnw_census_joins_sensor(context):
     run_records = context.instance.get_run_records(

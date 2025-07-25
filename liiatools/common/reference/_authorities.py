@@ -1,7 +1,7 @@
 import importlib.resources
 import logging
-import yaml
 
+import yaml
 from decouple import config as env_config
 
 logger = logging.getLogger(__name__)

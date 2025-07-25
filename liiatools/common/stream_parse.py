@@ -1,8 +1,16 @@
-from sfdata_stream_parser.events import (CommentNode, EndElement,
-                                         ProcessingInstructionNode,
-                                         StartElement, TextNode)
+from dagster import get_dagster_logger
+from sfdata_stream_parser.events import (
+    CommentNode,
+    EndElement,
+    ProcessingInstructionNode,
+    StartElement,
+    TextNode,
+)
 
 from liiatools.common.stream_errors import StreamError
+
+log = get_dagster_logger(__name__)
+
 
 try:
     from lxml import etree
@@ -26,8 +34,10 @@ def dom_parse(source, filename, **kwargs):
                 yield StartElement(
                     tag=elem.tag, attrib=elem.attrib, node=elem, filename=filename
                 )
-                yield TextNode(cell=elem.text, filename=filename, text=None)
             elif action == "end":
+                if elem.text and elem.text.strip():
+                    yield TextNode(cell=elem.text, filename=filename, text=None)
+
                 yield EndElement(tag=elem.tag, node=elem, filename=filename)
                 if elem.tail:
                     yield TextNode(cell=elem.tail, filename=filename, text=None)
@@ -46,4 +56,5 @@ def dom_parse(source, filename, **kwargs):
             else:
                 raise ValueError(f"Unknown event: {action}")
     except etree.XMLSyntaxError:
-        raise StreamError(f"Could not parse as file is blank")
+        log.info("Could not parse cin file as it is not a valid XML file")
+        raise StreamError("Could not parse as file is blank")

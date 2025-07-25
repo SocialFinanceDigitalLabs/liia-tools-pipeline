@@ -1,12 +1,11 @@
-from typing import Iterator
+from typing import Iterator, Optional
 
 from more_itertools import peekable
 from sfdata_stream_parser import events
 from sfdata_stream_parser.collectors import xml_collector
 from sfdata_stream_parser.filters.generic import generator_with_value
 
-from liiatools.common.stream_record import (HeaderEvent, _reduce_dict,
-                                            text_collector)
+from liiatools.common.stream_record import HeaderEvent, _reduce_dict, text_collector
 
 
 class CINEvent(events.ParseEvent):
@@ -95,43 +94,6 @@ def message_collector(stream):
             next(stream)
 
 
-__EXPORT_HEADERS = [
-    "LAchildID",
-    "Date",
-    "Type",
-    "CINreferralDate",
-    "ReferralSource",
-    "PrimaryNeedCode",
-    "CINclosureDate",
-    "ReasonForClosure",
-    "DateOfInitialCPC",
-    "ReferralNFA",
-    "CINPlanStartDate",
-    "CINPlanEndDate",
-    "S47ActualStartDate",
-    "InitialCPCtarget",
-    "ICPCnotRequired",
-    "AssessmentActualStartDate",
-    "AssessmentInternalReviewDate",
-    "AssessmentAuthorisationDate",
-    "Factors",
-    "CPPstartDate",
-    "CPPendDate",
-    "InitialCategoryOfAbuse",
-    "LatestCategoryOfAbuse",
-    "NumberOfPreviousCPP",
-    "UPN",
-    "FormerUPN",
-    "UPNunknown",
-    "PersonBirthDate",
-    "ExpectedPersonBirthDate",
-    "GenderCurrent",
-    "PersonDeathDate",
-    "Ethnicity",
-    "Disabilities",
-]
-
-
 def _maybe_list(value):
     """
     Ensures that the given value is a list.
@@ -154,7 +116,7 @@ def _maybe_list(value):
     return value
 
 
-def cin_event(record, property, event_name=None, export_headers=__EXPORT_HEADERS):
+def cin_event(record, property, export_headers, event_name: Optional[str] = None):
     """
     Create an event record based on the given property from the original record.
 
@@ -168,8 +130,7 @@ def cin_event(record, property, event_name=None, export_headers=__EXPORT_HEADERS
     - record (dict): The original record containing various key-value pairs.
     - property (str): The key in the `record` dictionary to look for.
     - event_name (str, optional): The name of the event. Defaults to the value of `property` if not specified.
-    - export_headers (list, optional): A list of keys to include in the returned dictionary.
-    Defaults to `__EXPORT_HEADERS`.
+    - export_headers (list): A list of keys to include in the returned dictionary.
 
     Returns:
     - tuple: A single-element tuple containing the new filtered dictionary, or an empty tuple if `property` is not
@@ -189,7 +150,7 @@ def cin_event(record, property, event_name=None, export_headers=__EXPORT_HEADERS
     return ()
 
 
-def event_to_records(event: CINEvent) -> Iterator[dict]:
+def event_to_records(event: CINEvent, output_columns: list) -> Iterator[dict]:
     """
     Transforms a CINEvent into a series of event records.
 
@@ -197,6 +158,7 @@ def event_to_records(event: CINEvent) -> Iterator[dict]:
 
     Parameters:
     - event (CINEvent): A CINEvent object containing the record and various details related to it.
+    - output_columns (list): A list of column names that should be allowed in the output records.
 
     Returns:
     - Iterator[dict]: An iterator that yields dictionaries representing individual event records.
@@ -216,55 +178,85 @@ def event_to_records(event: CINEvent) -> Iterator[dict]:
     child["Disabilities"] = ",".join(_maybe_list(child.get("Disability")))
 
     for cin_item in _maybe_list(record.get("CINdetails")):
-        yield from cin_event({**child, **cin_item}, "CINreferralDate")
-        yield from cin_event({**child, **cin_item}, "CINclosureDate")
+        yield from cin_event(
+            {**child, **cin_item}, "CINreferralDate", export_headers=output_columns
+        )
+        yield from cin_event(
+            {**child, **cin_item}, "CINclosureDate", export_headers=output_columns
+        )
 
         for assessment in _maybe_list(cin_item.get("Assessments")):
             assessment["Factors"] = ",".join(
                 _maybe_list(assessment.get("AssessmentFactors"))
             )
             yield from cin_event(
-                {**child, **cin_item, **assessment}, "AssessmentActualStartDate"
+                {**child, **cin_item, **assessment},
+                "AssessmentActualStartDate",
+                export_headers=output_columns,
             )
             yield from cin_event(
-                {**child, **cin_item, **assessment}, "AssessmentAuthorisationDate"
+                {**child, **cin_item, **assessment},
+                "AssessmentAuthorisationDate",
+                export_headers=output_columns,
             )
 
         for cin in _maybe_list(cin_item.get("CINPlanDates")):
             yield from cin_event(
                 {**child, **cin_item, **cin},
                 "CINPlanStartDate",
+                export_headers=output_columns,
             )
-            yield from cin_event({**child, **cin_item, **cin}, "CINPlanEndDate")
+            yield from cin_event(
+                {**child, **cin_item, **cin},
+                "CINPlanEndDate",
+                export_headers=output_columns,
+            )
 
         for s47 in _maybe_list(cin_item.get("Section47")):
-            yield from cin_event({**child, **cin_item, **s47}, "S47ActualStartDate")
+            yield from cin_event(
+                {**child, **cin_item, **s47},
+                "S47ActualStartDate",
+                export_headers=output_columns,
+            )
 
         for cpp in _maybe_list(cin_item.get("ChildProtectionPlans")):
-            yield from cin_event({**child, **cin_item, **cpp}, "CPPstartDate")
-            yield from cin_event({**child, **cin_item, **cpp}, "CPPendDate")
+            yield from cin_event(
+                {**child, **cin_item, **cpp},
+                "CPPstartDate",
+                export_headers=output_columns,
+            )
+            yield from cin_event(
+                {**child, **cin_item, **cpp},
+                "CPPendDate",
+                export_headers=output_columns,
+            )
             for cpp_review in _maybe_list(cpp.get("CPPreviewDate")):
                 cpp_review = {"CPPreviewDate": cpp_review}
                 yield from cin_event(
-                    {**child, **cin_item, **cpp, **cpp_review}, "CPPreviewDate"
+                    {**child, **cin_item, **cpp, **cpp_review},
+                    "CPPreviewDate",
+                    export_headers=output_columns,
                 )
 
 
 @generator_with_value
-def export_table(stream):
+def export_table(stream, output_config):
     """
     Collects all the records into a dictionary of lists of rows
 
     This filter requires that the stream has been processed by `message_collector` first
 
     :param stream: An iterator of events from message_collector
+    :param output_config: Configuration for the output, imported as a PipelineConfig class
     :yield: All events
     :return: A dictionary of lists of rows, keyed by record name
     """
     dataset = {}
+    output_table = output_config[CINEvent.name()]
+    output_columns = [column.id for column in output_table.columns]
     for event in stream:
         event_type = type(event)
-        for record in event_to_records(event):
+        for record in event_to_records(event, output_columns):
             dataset.setdefault(event_type.name(), []).append(record)
         yield event
     return dataset

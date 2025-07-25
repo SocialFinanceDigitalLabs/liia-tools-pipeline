@@ -52,7 +52,7 @@ def tablib_parse(source: FileLocator):
         data = f.read()
 
     try:
-        data = data.decode("utf-8")
+        data = data.decode("utf-8-sig")
         data = StringIO(data)
     except UnicodeDecodeError:
         data = BytesIO(data)

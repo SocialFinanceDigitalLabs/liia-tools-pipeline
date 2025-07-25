@@ -42,6 +42,7 @@ class TableConfig(BaseModel):
 class PipelineConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    sensor_trigger: Dict
     retention_columns: Dict
     retention_period: Dict
     la_signed: Dict

@@ -1,9 +1,10 @@
+from os.path import basename
 from typing import List, Tuple
 
+import fs.errors
 from dagster import In, Out, get_dagster_logger, op
 from fs import open_fs
 from fs.base import FS
-import fs.errors
 
 from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
 from liiatools.annex_a_pipeline.stream_pipeline import (
@@ -96,12 +97,14 @@ def process_files(
             current.fs.remove(f"{current_path}/{file}")
 
     la_name = authorities.get_by_code(config.input_la_code)
-    la_signed = pipeline_config(config).la_signed[la_name]["PAN"]
+    output_config = pipeline_config(config)
+    la_signed = output_config.la_signed[la_name]["PAN"]
     if la_signed == "No":
         return
+    log.info(f"{la_name} is signed for PAN data processing.")
 
     for file_locator in incoming_files:
-        log.info(f"Processing file {file_locator.name}")
+        log.info(f"Processing file {basename(file_locator.name)}")
         uuid = file_locator.meta["uuid"]
         year = pl.discover_year(file_locator)
         if year is None:
@@ -114,11 +117,10 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Discovered year in {basename(file_locator.name)}")
 
         if (
-            check_year_within_range(
-                year, max(pipeline_config(config).retention_period.values())
-            )
+            check_year_within_range(year, max(output_config.retention_period.values()))
             is False
         ):
             error_report.append(
@@ -130,6 +132,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Year in {basename(file_locator.name)} is within retention period")
 
         if config.input_la_code is None:
             error_report.append(
@@ -141,6 +144,7 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Local authority code found in {basename(file_locator.name)}")
 
         month = None
         if config.dataset in ["annex_a", "pnw_census"]:
@@ -155,6 +159,7 @@ def process_files(
                     )
                 )
                 continue
+            log.info(f"Month found in {basename(file_locator.name)}")
 
         try:
             schema = (
@@ -164,14 +169,21 @@ def process_files(
             )
         except KeyError:
             continue
+        log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
         metadata = dict(
             year=year, month=month, schema=schema, la_code=config.input_la_code
         )
 
         try:
-            cleanfile_result = globals()[f"task_cleanfile_{config.dataset}"](
-                file_locator, schema
+            cleanfile_result = (
+                globals()[f"task_cleanfile_{config.dataset}"](
+                    file_locator, schema, output_config, logger=log
+                )
+                if config.dataset == "cin"
+                else globals()[f"task_cleanfile_{config.dataset}"](
+                    file_locator, schema, logger=log
+                )
             )
         except StreamError as e:
             error_report.append(
@@ -183,9 +195,10 @@ def process_files(
                 )
             )
             continue
+        log.info(f"Cleanfile task completed for {basename(file_locator.name)}")
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, pipeline_config(config), profile="PAN"
+            cleanfile_result.data, output_config, profile="PAN"
         )
 
         cleanfile_result.data.export(
@@ -195,9 +208,7 @@ def process_files(
         )
         error_report.extend(cleanfile_result.errors)
 
-        enrich_result = enrich_data(
-            cleanfile_result.data, pipeline_config(config), metadata
-        )
+        enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
         enrich_result.data.export(
             session_folder.opendir(SessionNames.ENRICHED_FOLDER),
             file_locator.meta["uuid"] + "_",
@@ -205,9 +216,7 @@ def process_files(
         )
         error_report.extend(enrich_result.errors)
 
-        degraded_result = degrade_data(
-            enrich_result.data, pipeline_config(config), metadata
-        )
+        degraded_result = degrade_data(enrich_result.data, output_config, metadata)
         degraded_result.data.export(
             session_folder.opendir(SessionNames.DEGRADED_FOLDER),
             file_locator.meta["uuid"] + "_",

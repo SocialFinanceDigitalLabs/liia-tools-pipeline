@@ -1,3 +1,6 @@
+import logging
+from typing import Optional
+
 from sfdata_stream_parser.filters import generic
 
 from liiatools.common import stream_filters as stream_functions
@@ -6,11 +9,14 @@ from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
 
-def task_cleanfile(src_file: FileLocator, schema: DataSchema) -> ProcessResult:
+def task_cleanfile(
+    src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger] = None
+) -> ProcessResult:
     """
     Clean input ssda903 csv files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
     :param schema: The data schema in a DataSchema class
+    :param logger: Optional logger to log messages
     :return: A class containing a DataContainer and ErrorContainer
     """
     # Open & Parse file
