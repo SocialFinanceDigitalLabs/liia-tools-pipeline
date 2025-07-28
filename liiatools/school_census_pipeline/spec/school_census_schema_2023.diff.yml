@@ -130,7 +130,7 @@ Spring:
     description: Update codes for 2022 schema
     value:
       *plaa
-  column_map.pupilnolongeronroll.youngcarer:
+  column_map.pupilonroll.youngcarer:
     type: add
     description: Adds new column for 2023 return
     value:

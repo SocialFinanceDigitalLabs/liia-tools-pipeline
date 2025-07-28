@@ -957,8 +957,6 @@ table_list:
     type: numeric
   - id: annualsessionsauthorised
     type: numeric
-  - id: youngcarer
-    type: category
   - id: LA
     type: string
     enrich: la_name
@@ -1133,6 +1131,8 @@ table_list:
   - id: annualsessionsauthorised
     type: numeric
   - id: proficiencyinenglish
+    type: category
+  - id: youngcarer
     type: category
   - id: LA
     type: string
