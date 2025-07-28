@@ -33,7 +33,10 @@ def _filter_to_open_on_snapshot_date(
 ) -> pd.DataFrame:
     """
     Filters dataframe to episodes that are open on the snapshot date
-    They will already have been confirmed to be open before the snapshot date
+    Removes episodes that opened on the snapshot date to 
+    avoid counting two episodes for the same child where:
+    - One closed on the snapshot date
+    - One opened on the snapshot date
     """
     filtered_df = df[
         ((df[episode_end].isna()) | (df[episode_end] >= df[snapshot_date]))
