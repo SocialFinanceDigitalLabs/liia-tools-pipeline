@@ -43,7 +43,7 @@ class DataframeAggregator:
         for table_spec in self.config.table_list:
             if table_id and table_id.group(1) == table_spec.id:
                 with self.fs.open(file, "r") as f:
-                    df = pd.read_csv(f)
+                    df = pd.read_csv(f, dtype={c.id: c.type for c in table_spec.columns if c.type != "date"}, parse_dates=[c.id for c in table_spec.columns if c.type == "date"])
                     df = _normalise_table(df, table_spec)
                     data[table_spec.id] = df
 
