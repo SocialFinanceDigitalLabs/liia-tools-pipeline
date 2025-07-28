@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+from liiatools.common.checks import Term
 from liiatools.common.reference import authorities
 
 
@@ -82,6 +83,37 @@ def check_month(filename):
     )
     if match:
         return match.group(0).lower()
+
+    raise ValueError
+
+
+def check_term(filename):
+    """
+    Check a filename to see if it contains the term information: Autumn/Spring/Summer, if it does, return that term
+    Expected filename formats:
+        October_2023_addressesonroll.csv
+        January_2023_addressesoffroll.csv
+    :param filename: Filename that contains a term
+    :return: A term within the string
+    :raises ValueError: If no term is found
+    """
+    match_short = re.search(
+        f"{Term.OCT.name}|{Term.JAN.name}|{Term.MAY.name}",
+        filename,
+        re.IGNORECASE,
+    )
+
+    if match_short:
+        return Term[match_short.group(0).upper()].value
+
+    match_long = re.search(
+        f"{Term.OCT.value}|{Term.JAN.value}|{Term.MAY.value}",
+        filename,
+        re.IGNORECASE,
+    )
+
+    if match_long:
+        return match_long.group(0).title()
 
     raise ValueError
 

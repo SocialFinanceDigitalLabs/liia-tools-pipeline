@@ -42,3 +42,8 @@ class SessionNamesPNWCensusJoins(StrEnum):
     """Enum for sufficiency session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+class Term(StrEnum):
+    OCT = "Autumn"
+    JAN = "Spring"
+    MAY = "Summer"

@@ -30,6 +30,10 @@ from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
+from liiatools.school_census_pipeline.spec import load_schema as load_schema_school_census
+from liiatools.school_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_school_census,
+)
 from liiatools_pipeline.assets.common import (
     pipeline_config,
     shared_folder,
@@ -161,10 +165,27 @@ def process_files(
                 continue
             log.info(f"Month found in {basename(file_locator.name)}")
 
+        term = None
+        if config.dataset == "school_census":
+            month = pl.discover_term(file_locator)
+            if term is None:
+                error_report.append(
+                    dict(
+                        type="MissingTerm",
+                        message="Could not find a term in the filename or path",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
+                continue
+            log.info(f"Term found in {basename(file_locator.name)}")
+
         try:
             schema = (
                 globals()[f"load_schema_{config.dataset}"]()
                 if config.dataset in ["annex_a", "pnw_census"]
+                else globals()[f"load_schema_{config.dataset}"](year, term)
+                if config.dataset == "school_census"
                 else globals()[f"load_schema_{config.dataset}"](year)
             )
         except KeyError:
@@ -172,7 +193,7 @@ def process_files(
         log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
         metadata = dict(
-            year=year, month=month, schema=schema, la_code=config.input_la_code
+            year=year, month=month, term=term, schema=schema, la_code=config.input_la_code
         )
 
         try:
@@ -223,7 +244,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, config.input_la_code, year, month)
+        current.add(degraded_result.data, config.input_la_code, year, month, term)
 
         error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
