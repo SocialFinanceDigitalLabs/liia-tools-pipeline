@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map:
     addressesoffroll:
         addressesoffrolltableid:
@@ -1417,7 +1417,7 @@ Autumn:
             *int-blank
         attendancereason:
             *attendance-reason
-Spring:
+spring:
   column_map:
     addresses:
         addressestableid:
@@ -2180,7 +2180,7 @@ Spring:
             *int-blank
         attendancereason:
             *attendance-reason
-Summer:
+summer:
   column_map:
     addresses:
         addressestableid:

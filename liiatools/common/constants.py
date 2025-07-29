@@ -44,6 +44,6 @@ class SessionNamesPNWCensusJoins(StrEnum):
     INCOMING_FOLDER = "incoming"
 
 class Term(StrEnum):
-    OCT = "Autumn"
-    JAN = "Spring"
-    MAY = "Summer"
+    OCT = "autumn"
+    JAN = "spring"
+    MAY = "summer"

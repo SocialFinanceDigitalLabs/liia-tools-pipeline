@@ -167,7 +167,7 @@ def process_files(
 
         term = None
         if config.dataset == "school_census":
-            month = pl.discover_term(file_locator)
+            term = pl.discover_term(file_locator)
             if term is None:
                 error_report.append(
                     dict(

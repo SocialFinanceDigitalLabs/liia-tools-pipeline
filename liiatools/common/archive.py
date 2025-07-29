@@ -144,7 +144,7 @@ class DataframeArchive:
         """
         data = DataContainer()
         table_id = re.search(
-            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*_*([a-zA-Z0-9_]*)\.",
+            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|autumn|spring|summer)*_*([a-zA-Z0-9_]*)\.",
             snap_id,
         )
 

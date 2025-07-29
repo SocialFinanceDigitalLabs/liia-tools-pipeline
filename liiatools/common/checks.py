@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-from liiatools.common.checks import Term
+from liiatools.common.constants import Term
 from liiatools.common.reference import authorities
 
 
@@ -113,7 +113,7 @@ def check_term(filename):
     )
 
     if match_long:
-        return match_long.group(0).title()
+        return match_long.group(0).lower()
 
     raise ValueError
 
