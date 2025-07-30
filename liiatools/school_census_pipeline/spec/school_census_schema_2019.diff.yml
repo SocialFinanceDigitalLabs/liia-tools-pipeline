@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map:
     type: remove
     description: Remove files from 2018
@@ -32,7 +32,7 @@ Autumn:
         name: "Refused"
       canbeblank: yes
 
-Spring:
+spring:
   column_map:
     type: remove
     description: Remove files from 2018
@@ -67,7 +67,7 @@ Spring:
     value:
       eyppr
 
-Summer:
+summer:
   column_map:
     type: remove
     description: Remove files from 2018

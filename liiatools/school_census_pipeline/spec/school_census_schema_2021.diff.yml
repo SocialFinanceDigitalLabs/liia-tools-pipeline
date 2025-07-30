@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map.learningaimsonroll.progtype:
     type: add
     description: Adds new column for learningaimsonroll
@@ -252,7 +252,7 @@ Autumn:
       wpemployerid:
         *int-blank
 
-Spring:
+spring:
   column_map.pupilnolongeronroll.termlysessionscoronavirus:
     type: add
     description: Adds new column for pupilnolongeronroll
@@ -362,7 +362,7 @@ Spring:
     value:
       *attendance-reason
 
-Summer:
+summer:
   column_map.pupilnolongeronroll.termlysessionscoronavirus:
     type: add
     description: Adds new column for pupilnolongeronroll

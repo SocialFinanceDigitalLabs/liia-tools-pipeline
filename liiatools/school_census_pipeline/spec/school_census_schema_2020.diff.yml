@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map.pupilnolongeronroll.englishgcsehighestpriorattainmentpreviousyear:
     type: add
     description: Adds new column for pupilnolongeronroll
@@ -86,7 +86,7 @@ Autumn:
     value:
       *sen-provision
 
-Spring:
+spring:
   column_map.classes.ppa:
     type: rename
     description: Rename column in classes
@@ -178,7 +178,7 @@ Spring:
     value:
       *sen-provision
 
-Summer:
+summer:
   column_map.pupilonroll.senprovision:
     type: modify
     description: Update codes for 2020 schema
