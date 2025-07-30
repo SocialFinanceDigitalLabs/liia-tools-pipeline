@@ -1,0 +1,494 @@
+autumn:
+  column_map.learnerfamonroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      &learner-fam-code
+      category:
+      - code: "01"
+      - code: "22"
+      canbeblank: yes
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
+  column_map.pupilonroll.eyppr:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      category:
+      - code: "Y"
+        name: "Yes"
+      - code: "N"
+        name: "No"
+      canbeblank: yes
+  column_map.pupilonroll.eyppbf:
+    type: add
+    description: Add new field for pupilonroll
+    value:
+      category:
+      - code: "RE"
+      - code: "RO"
+      - code: "RB"
+      - code: "RU"
+      canbeblank: yes
+  column_map.summerhalfterm2sessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      &attendance-reason
+      category:
+      - code: "/"
+      - code: "\\" # 2 backslashses as Python reads this as 1
+      - code: "B"
+      - code: "C"
+      - code: "C1"
+      - code: "C2"
+      - code: "D"
+      - code: "E"
+      - code: "G"
+      - code: "I"
+      - code: "J1"
+      - code: "K"
+      - code: "L"
+      - code: "M"
+      - code: "N"
+      - code: "O"
+      - code: "P"
+      - code: "Q"
+      - code: "R"
+      - code: "S"
+      - code: "T"
+      - code: "U"
+      - code: "V"
+      - code: "W"
+      - code: "X"
+      - code: "Y1"
+      - code: "Y2"
+      - code: "Y3"
+      - code: "Y4"
+      - code: "Y5"
+      - code: "Y6"
+      - code: "Y7"
+      - code: "Z"
+      - code: "#"
+      canbeblank: yes
+  column_map.summerhalfterm2sessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.annualsessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.annualsessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.workplaceentityoffroll:
+    type: remove
+    description: Remove column from workplaceentityoffroll
+    value:
+      - wpemployerid
+  column_map.workplaceentityonroll:
+    type: remove
+    description: Remove column from workplaceentityonroll
+    value:
+      - wpemployerid
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - annualsessionsauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - annualsessionsunauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - summerhalfterm2sessionsauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - summerhalfterm2sessionsunauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - annualsessionsauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - annualsessionsunauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - summerhalfterm2sessionsauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - summerhalfterm2sessionsunauthorised
+
+spring:
+  column_map.childcare.childcareplacesavailability:
+    type: add
+    description: Add new column for 2025 return
+    value:
+      category:
+      - code: "YES"
+      - code: "NO"
+      - code: "UNKNOWN"
+      - code: "Information not available from external provider"
+      canbeblank: yes
+  column_map.childcare.childcarebefore8am:
+    type: add
+    description: Add new column for 2025 return
+    value:
+      category:
+      - code: "YES"
+      - code: "NO"
+      - code: "UNKNOWN"
+      canbeblank: yes
+  column_map.childcare.childcarecovers8amto6pm:
+    type: add
+    description: Add new column for 2025 return
+    value:
+      category:
+      - code: "ALL"
+      - code: "MOST"
+      - code: "SOME"
+      - code: "NONE"
+      - code: "UNKNOWN"
+      canbeblank: yes
+  column_map.childcare.childcareuntil6pm:
+    type: add
+    description: Add new column for 2025 return
+    value:
+      category:
+      - code: "YES"
+      - code: "NO"
+      - code: "UNKNOWN"
+      canbeblank: yes
+  column_map.childcare.holidaychildcareproviderhours:
+    type: add
+    description: Add new column for 2025 return
+    value:
+      category:
+      - code: "YES"
+      - code: "NO"
+      - code: "UNKNOWN"
+      canbeblank: yes
+  column_map.childcare.childcareprovider:
+    type: modify
+    description: Update codes for 2025 return
+    value:
+      category:
+        - code: "SCH"
+        - code: "SIP"
+        - code: "PIP"
+        - code: "VOL"
+        - code: "OTH"
+      canbeblank: yes
+  column_map.learnerfamonroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
+  column_map.termlysessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.pupilnolongeronroll.ethnicity:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      &ethnicity
+      category:
+        - code: "WBRI"
+        - code: "WCOR"
+        - code: "WENG"
+        - code: "WNIR"
+        - code: "WSCO"
+        - code: "WWEL"
+        - code: "WOWB"
+        - code: "WIRI"
+        - code: "WIRT"
+        - code: "WOTH"
+        - code: "WALB"
+        - code: "WBOS"
+        - code: "WCRO"
+        - code: "WGRE"
+        - code: "WGRK"
+        - code: "WGRC"
+        - code: "WITA"
+        - code: "WKOS"
+        - code: "WPOR"
+        - code: "WSER"
+        - code: "WTUR"
+        - code: "WTUK"
+        - code: "WTUC"
+        - code: "WEUR"
+        - code: "WEEU"
+        - code: "WWEU"
+        - code: "WOTW"
+        - code: "WROM"
+        - code: "WROG"
+        - code: "WROR"
+        - code: "WROO"
+        - code: "MWBC"
+        - code: "MWBA"
+        - code: "MWAS"
+        - code: "MWAP"
+        - code: "MWAI"
+        - code: "MWAO"
+        - code: "ABRI"
+        - code: "AWEL"
+        - code: "MOTH"
+        - code: "MAOE"
+        - code: "MABL"
+        - code: "MACH"
+        - code: "MBOE"
+        - code: "MBCH"
+        - code: "MCOE"
+        - code: "MWOE"
+        - code: "MWCH"
+        - code: "MOTM"
+        - code: "AIND"
+        - code: "APKN"
+        - code: "AMPK"
+        - code: "AKPA"
+        - code: "AOPK"
+        - code: "ABAN"
+        - code: "AOTH"
+        - code: "AAFR"
+        - code: "AKAO"
+        - code: "ANEP"
+        - code: "ASNL"
+        - code: "ASLT"
+        - code: "ASRO"
+        - code: "AOTA"
+        - code: "BBRI"
+        - code: "BWEL"
+        - code: "BCRB"
+        - code: "BAFR"
+        - code: "BANN"
+        - code: "BCON"
+        - code: "BGHA"
+        - code: "BNGN"
+        - code: "BSLN"
+        - code: "BSOM"
+        - code: "BSUD"
+        - code: "BAOF"
+        - code: "BOTH"
+        - code: "BEUR"
+        - code: "BNAM"
+        - code: "BOTB"
+        - code: "CHNE"
+        - code: "CHKC"
+        - code: "CMAL"
+        - code: "CSNG"
+        - code: "CTWN"
+        - code: "COCH"
+        - code: "OOTH"
+        - code: "OAFG"
+        - code: "ORAB"
+        - code: "OARA"
+        - code: "OEGY"
+        - code: "OFIL"
+        - code: "OIRN"
+        - code: "OIRQ"
+        - code: "OJPN"
+        - code: "OKOR"
+        - code: "OKRD"
+        - code: "OLAM"
+        - code: "OLEB"
+        - code: "OLIB"
+        - code: "OMAL"
+        - code: "OMRC"
+        - code: "OPOL"
+        - code: "OTHA"
+        - code: "OVIE"
+        - code: "OYEM"
+        - code: "OOEG"
+        - code: "NOBT"
+        - code: "REFU"
+      canbeblank: yes
+  column_map.pupilonroll.ethnicity:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *ethnicity
+  column_map.learnerfamoffroll:
+    type: remove
+    description: Remove column from learnerfamoffroll
+    value:
+      - learnerfamhours
+  column_map.learnerfamonroll:
+    type: remove
+    description: Remove column from learnerfamonroll
+    value:
+      - learnerfamhours
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionseducational
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsexceptional
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionseducational
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsexceptional
+
+summer:
+  column_map.learnerfamonroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
+  column_map.termlysessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *attendance-reason
+  column_map.learnerfamoffroll:
+    type: remove
+    description: Remove column from learnerfamoffroll
+    value:
+      - learnerfamhours
+  column_map.learnerfamonroll:
+    type: remove
+    description: Remove column from learnerfamonroll
+    value:
+      - learnerfamhours
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionseducational
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - termlysessionsexceptional
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsunauthorised
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionseducational
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - termlysessionsexceptional

@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map.pupilnolongeronroll.gender:
     type: rename
     description: Rename column in pupilnolongeronroll
@@ -36,7 +36,7 @@ Autumn:
     value:
       *company-number
 
-Spring:
+spring:
   column_map.pupilnolongeronroll.gender:
     type: rename
     description: Rename column in pupilnolongeronroll
@@ -48,7 +48,7 @@ Spring:
     value:
       sex
 
-Summer:
+summer:
   column_map.fundingbasisitems:
     type: add
     description: Adds new table for 2024 return
@@ -95,4 +95,23 @@ Summer:
         name: "Yes"
       - code: "N"
         name: "No"
+      canbeblank: yes
+  column_map.pupilonroll.eyppbf:
+    type: add
+    description: Add new field for pupilonroll
+    value:
+      category:
+      - code: "RE"
+      - code: "RO"
+      - code: "RB"
+      - code: "RU"
+      canbeblank: yes
+  column_map.pupilonroll.expandedhours:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      &two-decimal-places
+      numeric:
+        type: "float"
+        decimal_places: 2
       canbeblank: yes

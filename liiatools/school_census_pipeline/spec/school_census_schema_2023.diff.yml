@@ -1,4 +1,4 @@
-Autumn:
+autumn:
   column_map.pupilonroll.plaa:
     type: modify
     description: Update codes for 2022 schema
@@ -114,7 +114,7 @@ Autumn:
       apattendancepattern:
         *attendance-pattern
 
-Spring:
+spring:
   column_map.pupilnolongeronroll:
     type: remove
     description: Remove column from pupilnolongeronroll
@@ -169,7 +169,7 @@ Spring:
     value:
       *company-number
 
-Summer:
+summer:
   column_map.pupilnolongeronroll:
     type: remove
     description: Remove column from pupilnolongeronroll
