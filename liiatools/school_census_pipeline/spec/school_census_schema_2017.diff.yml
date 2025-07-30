@@ -1,4 +1,4 @@
-autumn:
+Autumn:
   column_map.addressesoffroll.uniquepropertyreferencenumber:
     type: add
     description: Adds new column for addressesoffroll
@@ -742,7 +742,7 @@ autumn:
     value:
       - incare
 
-spring:
+Spring:
   column_map.addresses.uniquepropertyreferencenumber:
     type: add
     description: Adds new column for addressesoffroll
@@ -853,7 +853,7 @@ spring:
     value:
       - incare
 
-summer:
+Summer:
   column_map.addresses.uniquepropertyreferencenumber:
     type: add
     description: Adds new column for addressesoffroll

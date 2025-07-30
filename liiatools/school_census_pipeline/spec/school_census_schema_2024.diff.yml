@@ -1,4 +1,4 @@
-autumn:
+Autumn:
   column_map.pupilnolongeronroll.gender:
     type: rename
     description: Rename column in pupilnolongeronroll
@@ -36,7 +36,7 @@ autumn:
     value:
       *company-number
 
-spring:
+Spring:
   column_map.pupilnolongeronroll.gender:
     type: rename
     description: Rename column in pupilnolongeronroll
@@ -48,7 +48,7 @@ spring:
     value:
       sex
 
-summer:
+Summer:
   column_map.fundingbasisitems:
     type: add
     description: Adds new table for 2024 return

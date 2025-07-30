@@ -1,4 +1,4 @@
-autumn:
+Autumn:
   column_map.approvisiondetailoffroll:
     type: add
     description: Adds new table for 2022 return
@@ -298,7 +298,7 @@ autumn:
     value:
       *sen-provision
 
-spring:
+Spring:
   column_map.approvisiondetailoffroll:
     type: add
     description: Adds new table for 2022 return
@@ -484,7 +484,7 @@ spring:
     value:
       *sen-provision
 
-summer:
+Summer:
   column_map.approvisiondetailoffroll:
     type: add
     description: Adds new table for 2022 return
