@@ -41,7 +41,11 @@ def move_current_view_org(config: CleanConfig):
         file_name_list = [table.id for table in pipeline_config(config).table_list]
         file_regex = "|".join(file_name_list)
 
-        current_files_regex = f"({authority_regex})_\d{{4}}_({file_regex})"
+        current_files_regex = (
+            f"({authority_regex})_\d{{4}}_({file_regex})"  # matches files like "TT1_2023_table.csv"
+            f"|"
+            f"({authority_regex})_\d{{4}}_.{{3}}_({file_regex})"  # matches files like "TT1_2023_mar_table.csv"
+        )
         pl.remove_files(current_files_regex, existing_files, destination_folder)
 
         log.info(f"Moving current {config.dataset} files to destination...")
