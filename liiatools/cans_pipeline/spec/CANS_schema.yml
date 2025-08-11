@@ -6,6 +6,7 @@ column_map:
         Assessment Date: &date_not_blank
             date: "%d/%m/%Y"
             canbeblank: false
+        Youth Unique ID: *string_not_blank
         Youth Last Name: *string_not_blank
         Youth First Name: *string_not_blank
         DOB: *date_not_blank
@@ -248,6 +249,7 @@ column_map:
     CANS_0_5:
         Assessor Name: *string_not_blank
         Assessment Date: *date_not_blank
+        Youth Unique ID: *string_not_blank
         Youth Last Name: *string_not_blank
         Youth First Name: *string_not_blank
         DOB: *date_not_blank
