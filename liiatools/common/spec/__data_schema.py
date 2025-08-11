@@ -181,7 +181,6 @@ class DataSchema(BaseModel):
                 if len(matching_configs) == 1:
                     matched_columns.append(matching_configs[0])
                 elif len(matching_configs) > 1:
-                    # this is were we need to raise an error
                     raise ValueError(
                         "The actual column name matched multiple configured columns"
                     )

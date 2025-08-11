@@ -199,7 +199,7 @@ def add_table_name(event, schema: DataSchema):
                 return EventErrors.add_to_event(
                     event,
                     type="HeaderError",
-                    message=f"Could not identify as a column name matched multiple columns in the configuration.",
+                    message=f"Could not identify as a column name matched multiple columns in the configuration",
                 )
 
     if table_name:
