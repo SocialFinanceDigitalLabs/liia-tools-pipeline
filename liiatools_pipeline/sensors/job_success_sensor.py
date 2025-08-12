@@ -379,7 +379,7 @@ def pnw_census_joins_sensor(context):
 
 @sensor(
     job=cin_reports,
-    description="Runs ssda903_sufficiency job once reports job is complete",
+    description="Runs cin_reports job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
