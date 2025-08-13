@@ -16,13 +16,13 @@ from liiatools.cin_census_pipeline.reports.reports import (
 def test_assessment_factors():
     df = pd.DataFrame(
         [
-            ["CHILD1", "A,B,C"],
-            ["CHILD1", None],
-            ["CHILD1", ""],
-            ["CHILD2", "A"],
-            ["CHILD3", "D,A,D"],
+            ["CHILD1", "A,B,C", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
+            ["CHILD1", None, "AssessmentAuthorisationDate", date(2022, 2, 12), "TT1"],
+            ["CHILD1", "", "AssessmentAuthorisationDate", date(2022, 3, 15), "TT1"],
+            ["CHILD2", "A", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
+            ["CHILD3", "D,A,D", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
         ],
-        columns=["LAchildID", "Factors"],
+        columns=["LAchildID", "Factors", "Type", "AssessmentAuthorisationDate", "LA"],
     )
 
     df = expanded_assessment_factors(df)
@@ -74,39 +74,94 @@ def test_referral_outcomes():
         [
             [
                 "CHILD1",
+                "AssessmentActualStartDate",
                 date(1965, 6, 15),
                 date(1970, 10, 6),
                 date(1970, 6, 3),
-                date(1970, 6, 2),
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD1",
+                "S47ActualStartDate",
                 date(1965, 6, 15),
                 date(1970, 10, 6),
-                date(1970, 6, 3),
+                pd.NA,
                 date(1970, 6, 2),
+                "TT1",
+            ],
+            [
+                "CHILD1",
+                "CINreferralDate",
+                date(1965, 6, 15),
+                date(1970, 10, 6),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD2",
+                "AssessmentActualStartDate",
                 date(1992, 1, 2),
                 date(2001, 11, 7),
                 date(2001, 10, 25),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "S47ActualStartDate",
+                date(1992, 1, 2),
+                date(2001, 11, 7),
+                pd.NA,
                 date(2001, 10, 20),
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "CINreferralDate",
+                date(1992, 1, 2),
+                date(2001, 11, 7),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD3",
+                "AssessmentActualStartDate",
                 date(1995, 7, 21),
                 date(2003, 9, 5),
                 date(2003, 8, 28),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD3",
+                "S47ActualStartDate",
+                date(1995, 7, 21),
+                date(2003, 9, 5),
+                pd.NA,
                 date(2003, 8, 26),
+                "TT1",
+            ],
+            [
+                "CHILD3",
+                "CINreferralDate",
+                date(1995, 7, 21),
+                date(2003, 9, 5),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
         ],
         columns=[
             "LAchildID",
+            "Type",
             "PersonBirthDate",
             "CINreferralDate",
             "AssessmentActualStartDate",
             "S47ActualStartDate",
+            "LA"
         ],
     )
 
@@ -133,6 +188,7 @@ def test_s47_journeys():
         [
             [
                 "CHILD1",
+                "CPPstartDate",
                 date(1970, 5, 25),
                 date(1965, 6, 15),
                 date(1970, 10, 6),
@@ -144,6 +200,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD1",
+                "S47ActualStartDate",
                 date(1970, 3, 15),
                 date(1965, 6, 15),
                 date(1970, 10, 6),
@@ -155,6 +212,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD2",
+                "S47ActualStartDate",
                 date(2001, 10, 12),
                 date(1992, 1, 2),
                 date(2001, 11, 7),
@@ -166,6 +224,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD2",
+                "CPPstartDate",
                 date(2001, 10, 31),
                 date(1992, 1, 2),
                 date(2001, 11, 7),
@@ -177,6 +236,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD3",
+                "S47ActualStartDate",
                 date(2022, 1, 31),
                 date(2015, 7, 21),
                 date(2022, 9, 5),
@@ -188,6 +248,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD4",
+                "S47ActualStartDate",
                 date(2006, 8, 16),
                 date(1997, 7, 21),
                 date(2006, 9, 5),
@@ -199,6 +260,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD5",
+                "S47ActualStartDate",
                 date(2001, 7, 22),
                 date(1993, 4, 22),
                 date(2001, 9, 2),
@@ -210,6 +272,7 @@ def test_s47_journeys():
             ],
             [
                 "CHILD6",
+                "S47ActualStartDate",
                 date(2022, 2, 22),
                 date(2011, 4, 22),
                 date(2021, 9, 2),
@@ -222,6 +285,7 @@ def test_s47_journeys():
         ],
         columns=[
             "LAchildID",
+            "Type",
             "Date",
             "PersonBirthDate",
             "CINreferralDate",
@@ -233,7 +297,6 @@ def test_s47_journeys():
         ],
     )
 
-    print(df)
     df = s47_journeys(df)
 
     assert list(df["icpc_to_cpp"]) == [
