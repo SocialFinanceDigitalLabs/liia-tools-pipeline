@@ -10,6 +10,10 @@ from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
 from liiatools.annex_a_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_annex_a,
 )
+from liiatools.cans_pipeline.spec import load_schema as load_schema_cans
+from liiatools.cans_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_cans,
+)
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_cin,
@@ -164,10 +168,13 @@ def process_files(
         try:
             schema = (
                 globals()[f"load_schema_{config.dataset}"]()
-                if config.dataset in ["annex_a", "pnw_census"]
+                if config.dataset in ["annex_a", "pnw_census", "cans"]
                 else globals()[f"load_schema_{config.dataset}"](year)
             )
         except KeyError:
+            log.error(
+                f"Schema for dataset {config.dataset} not found. Skipping file {file_locator.name}"
+            )
             continue
         log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
