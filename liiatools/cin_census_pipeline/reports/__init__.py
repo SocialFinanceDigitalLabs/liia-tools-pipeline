@@ -17,8 +17,8 @@ def _time_between_date_series(
     :param days: If True, returns the number of days between the two dates. The default is True.
     :returns: The number of days between the dates.
     """
-    later_date = pd.to_datetime(later_date, dayfirst=True)
-    earlier_date = pd.to_datetime(earlier_date, dayfirst=True)
+    later_date = pd.to_datetime(later_date, dayfirst=True, format="mixed")
+    earlier_date = pd.to_datetime(earlier_date, dayfirst=True, format="mixed")
     time = later_date - earlier_date
     time = time.dt.days
 

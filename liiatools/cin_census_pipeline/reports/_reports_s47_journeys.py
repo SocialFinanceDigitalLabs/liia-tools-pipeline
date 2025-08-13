@@ -17,13 +17,14 @@ def s47_journeys(data: pd.DataFrame) -> pd.DataFrame:
     reports_config = load_reports()
 
     s47_dates = (
-        data[data["S47ActualStartDate"].notna()]
+        data[data["Type"] == "S47ActualStartDate"]
         .drop_duplicates(subset=["LAchildID", "S47ActualStartDate", "LA"])
         .dropna(axis=1, how="all")
     )
 
     cpp_dates = (
-        data[data["CPPstartDate"].notna()][["LAchildID", "CPPstartDate", "LA"]]
+        data[data["Type"] == "CPPstartDate"]
+        [["LAchildID", "CPPstartDate", "LA"]]
         .drop_duplicates()
         .dropna(axis=1, how="all")
     )
@@ -77,7 +78,7 @@ def s47_journeys(data: pd.DataFrame) -> pd.DataFrame:
     )
 
     tbd = (
-        pd.to_datetime(s47_outcomes["S47ActualStartDate"], dayfirst=True)
+        pd.to_datetime(s47_outcomes["S47ActualStartDate"], dayfirst=True, format="mixed")
         >= s47_outcomes["s47_max_date"]
     )
 
@@ -93,7 +94,7 @@ def s47_journeys(data: pd.DataFrame) -> pd.DataFrame:
     cpp_start_2 = icpc_destination["CPPstartDate"].notna()
 
     tbd_2 = (
-        pd.to_datetime(icpc_destination["DateOfInitialCPC"], dayfirst=True)
+        pd.to_datetime(icpc_destination["DateOfInitialCPC"], dayfirst=True, format="mixed")
         >= icpc_destination["icpc_max_date"]
     )
 

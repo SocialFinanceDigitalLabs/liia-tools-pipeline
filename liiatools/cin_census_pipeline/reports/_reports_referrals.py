@@ -18,9 +18,11 @@ def referral_outcomes(data: pd.DataFrame) -> pd.DataFrame:
     """
     reports_config = load_reports()
 
-    s17_dates = data[data["AssessmentActualStartDate"].notna()][
-        ["LAchildID", "CINreferralDate", "AssessmentActualStartDate"]
-    ].drop_duplicates()
+    s17_dates = (
+        data[data["Type"] == "AssessmentActualStartDate"][["LAchildID", "CINreferralDate", "AssessmentActualStartDate", "LA"]]
+        .drop_duplicates()
+        .dropna(axis=1, how="all")
+    )
 
     s17_dates["days_to_s17"] = _time_between_date_series(
         s17_dates["CINreferralDate"], s17_dates["AssessmentActualStartDate"], days=True
@@ -31,9 +33,11 @@ def referral_outcomes(data: pd.DataFrame) -> pd.DataFrame:
         s17_dates, "days_to_s17", max_days=reports_config["ref_assessment"]
     )
 
-    s47_dates = data[data["S47ActualStartDate"].notna()][
-        ["LAchildID", "CINreferralDate", "S47ActualStartDate"]
-    ].drop_duplicates()
+    s47_dates = (
+        data[data["Type"] == "S47ActualStartDate"][["LAchildID", "CINreferralDate", "S47ActualStartDate", "LA"]]
+        .drop_duplicates()
+        .dropna(axis=1, how="all")
+    )
 
     s47_dates["days_to_s47"] = _time_between_date_series(
         s47_dates["CINreferralDate"], s47_dates["S47ActualStartDate"], days=True
@@ -44,9 +48,14 @@ def referral_outcomes(data: pd.DataFrame) -> pd.DataFrame:
         s47_dates, "days_to_s47", max_days=reports_config["ref_assessment"]
     )
 
-    merged = data[["LAchildID", "CINreferralDate", "PersonBirthDate"]].drop_duplicates()
-    merged = merged.merge(s17_dates, how="left", on=["LAchildID", "CINreferralDate"])
-    merged = merged.merge(s47_dates, how="left", on=["LAchildID", "CINreferralDate"])
+    referral = (
+        data[data["Type"] == "CINreferralDate"]
+        .drop_duplicates()
+        .dropna(axis=1, how="all")
+    )
+
+    merged = referral.merge(s17_dates, how="left", on=["LAchildID", "CINreferralDate", "LA"])
+    merged = merged.merge(s47_dates, how="left", on=["LAchildID", "CINreferralDate", "LA"])
 
     neither = (
         merged["AssessmentActualStartDate"].isna() & merged["S47ActualStartDate"].isna()
