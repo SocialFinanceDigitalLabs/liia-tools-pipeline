@@ -76,25 +76,25 @@ def test_referral_outcomes():
                 "CHILD1",
                 "AssessmentActualStartDate",
                 date(1965, 6, 15),
+                date(1970, 6, 3),
                 date(1970, 10, 6),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD1",
+                "S47ActualStartDate",
+                date(1965, 6, 15),
                 date(1970, 6, 3),
                 pd.NA,
-                "TT1",
-            ],
-            [
-                "CHILD1",
-                "S47ActualStartDate",
-                date(1965, 6, 15),
                 date(1970, 10, 6),
-                pd.NA,
-                date(1970, 6, 2),
                 "TT1",
             ],
             [
                 "CHILD1",
                 "CINreferralDate",
                 date(1965, 6, 15),
-                date(1970, 10, 6),
+                date(1970, 6, 3),
                 pd.NA,
                 pd.NA,
                 "TT1",
@@ -103,25 +103,25 @@ def test_referral_outcomes():
                 "CHILD2",
                 "AssessmentActualStartDate",
                 date(1992, 1, 2),
+                date(2001, 10, 25),
                 date(2001, 11, 7),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "S47ActualStartDate",
+                date(1992, 1, 2),
                 date(2001, 10, 25),
                 pd.NA,
-                "TT1",
-            ],
-            [
-                "CHILD2",
-                "S47ActualStartDate",
-                date(1992, 1, 2),
-                date(2001, 11, 7),
-                pd.NA,
-                date(2001, 10, 20),
+                date(2001, 11, 12),
                 "TT1",
             ],
             [
                 "CHILD2",
                 "CINreferralDate",
                 date(1992, 1, 2),
-                date(2001, 11, 7),
+                date(2001, 10, 25),
                 pd.NA,
                 pd.NA,
                 "TT1",
@@ -130,8 +130,8 @@ def test_referral_outcomes():
                 "CHILD3",
                 "AssessmentActualStartDate",
                 date(1995, 7, 21),
-                date(2003, 9, 5),
                 date(2003, 8, 28),
+                date(2003, 9, 5),
                 pd.NA,
                 "TT1",
             ],
@@ -139,16 +139,16 @@ def test_referral_outcomes():
                 "CHILD3",
                 "S47ActualStartDate",
                 date(1995, 7, 21),
-                date(2003, 9, 5),
+                date(2003, 8, 28),
                 pd.NA,
-                date(2003, 8, 26),
+                date(2003, 9, 7),
                 "TT1",
             ],
             [
                 "CHILD3",
                 "CINreferralDate",
                 date(1995, 7, 21),
-                date(2003, 9, 5),
+                date(2003, 8, 28),
                 pd.NA,
                 pd.NA,
                 "TT1",
@@ -169,18 +169,18 @@ def test_referral_outcomes():
 
     assert list(df["AssessmentActualStartDate"]) == [
         np.nan,
-        date(2001, 10, 25),
-        date(2003, 8, 28),
+        date(2001, 11, 7),
+        date(2003, 9, 5),
     ]
     assert list(df["days_to_s17"]) == [pd.NA, 13, 8]
     assert list(df["S47ActualStartDate"]) == [
         np.nan,
-        date(2001, 10, 20),
-        date(2003, 8, 26),
+        date(2001, 11, 12),
+        date(2003, 9, 7),
     ]
     assert list(df["days_to_s47"]) == [pd.NA, 18, 10]
     assert list(df["referral_outcome"]) == ["NFA", "BOTH", "BOTH"]
-    assert list(df["Age at referral"]) == [5, 9, 8]
+    assert list(df["Age at referral"]) == [4, 9, 8]
 
 
 def test_s47_journeys():

@@ -25,7 +25,7 @@ def referral_outcomes(data: pd.DataFrame) -> pd.DataFrame:
     )
 
     s17_dates["days_to_s17"] = _time_between_date_series(
-        s17_dates["CINreferralDate"], s17_dates["AssessmentActualStartDate"], days=True
+        s17_dates["AssessmentActualStartDate"], s17_dates["CINreferralDate"], days=True
     )
 
     # Only assessments within config-specified period following referral are valid
@@ -40,7 +40,7 @@ def referral_outcomes(data: pd.DataFrame) -> pd.DataFrame:
     )
 
     s47_dates["days_to_s47"] = _time_between_date_series(
-        s47_dates["CINreferralDate"], s47_dates["S47ActualStartDate"], days=True
+        s47_dates["S47ActualStartDate"], s47_dates["CINreferralDate"], days=True
     )
 
     # Only S47s within config-specified period following referral are valid
