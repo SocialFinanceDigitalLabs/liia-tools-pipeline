@@ -16,13 +16,13 @@ from liiatools.cin_census_pipeline.reports.reports import (
 def test_assessment_factors():
     df = pd.DataFrame(
         [
-            ["CHILD1", "A,B,C"],
-            ["CHILD1", None],
-            ["CHILD1", ""],
-            ["CHILD2", "A"],
-            ["CHILD3", "D,A,D"],
+            ["CHILD1", "A,B,C", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
+            ["CHILD1", None, "AssessmentAuthorisationDate", date(2022, 2, 12), "TT1"],
+            ["CHILD1", "", "AssessmentAuthorisationDate", date(2022, 3, 15), "TT1"],
+            ["CHILD2", "A", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
+            ["CHILD3", "D,A,D", "AssessmentAuthorisationDate", date(2022, 1, 1), "TT1"],
         ],
-        columns=["LAchildID", "Factors"],
+        columns=["LAchildID", "Factors", "Type", "AssessmentAuthorisationDate", "LA"],
     )
 
     df = expanded_assessment_factors(df)
@@ -33,7 +33,6 @@ def test_assessment_factors():
     assert df.D.tolist() == [0, 0, 0, 0, 1]
 
 
-@unittest.skip("unused function, need to fix error")
 def test_time_between_date_series():
     test_df_1 = pd.DataFrame(
         [
@@ -70,45 +69,99 @@ def test_filter_events():
     assert output_2.shape == (2, 1)
 
 
-@unittest.skip("unused function, need to fix error")
 def test_referral_outcomes():
     df = pd.DataFrame(
         [
             [
                 "CHILD1",
+                "AssessmentActualStartDate",
                 date(1965, 6, 15),
-                date(1970, 10, 6),
                 date(1970, 6, 3),
-                date(1970, 6, 2),
+                date(1970, 10, 6),
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD1",
+                "S47ActualStartDate",
                 date(1965, 6, 15),
-                date(1970, 10, 6),
                 date(1970, 6, 3),
-                date(1970, 6, 2),
+                pd.NA,
+                date(1970, 10, 6),
+                "TT1",
+            ],
+            [
+                "CHILD1",
+                "CINreferralDate",
+                date(1965, 6, 15),
+                date(1970, 6, 3),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD2",
+                "AssessmentActualStartDate",
                 date(1992, 1, 2),
-                date(2001, 11, 7),
                 date(2001, 10, 25),
-                date(2001, 10, 20),
+                date(2001, 11, 7),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "S47ActualStartDate",
+                date(1992, 1, 2),
+                date(2001, 10, 25),
+                pd.NA,
+                date(2001, 11, 12),
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "CINreferralDate",
+                date(1992, 1, 2),
+                date(2001, 10, 25),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
             [
                 "CHILD3",
+                "AssessmentActualStartDate",
                 date(1995, 7, 21),
-                date(2003, 9, 5),
                 date(2003, 8, 28),
-                date(2003, 8, 26),
+                date(2003, 9, 5),
+                pd.NA,
+                "TT1",
+            ],
+            [
+                "CHILD3",
+                "S47ActualStartDate",
+                date(1995, 7, 21),
+                date(2003, 8, 28),
+                pd.NA,
+                date(2003, 9, 7),
+                "TT1",
+            ],
+            [
+                "CHILD3",
+                "CINreferralDate",
+                date(1995, 7, 21),
+                date(2003, 8, 28),
+                pd.NA,
+                pd.NA,
+                "TT1",
             ],
         ],
         columns=[
             "LAchildID",
+            "Type",
             "PersonBirthDate",
             "CINreferralDate",
             "AssessmentActualStartDate",
             "S47ActualStartDate",
+            "LA"
         ],
     )
 
@@ -116,95 +169,165 @@ def test_referral_outcomes():
 
     assert list(df["AssessmentActualStartDate"]) == [
         np.nan,
-        date(2001, 10, 25),
-        date(2003, 8, 28),
+        date(2001, 11, 7),
+        date(2003, 9, 5),
     ]
     assert list(df["days_to_s17"]) == [pd.NA, 13, 8]
     assert list(df["S47ActualStartDate"]) == [
         np.nan,
-        date(2001, 10, 20),
-        date(2003, 8, 26),
+        date(2001, 11, 12),
+        date(2003, 9, 7),
     ]
     assert list(df["days_to_s47"]) == [pd.NA, 18, 10]
     assert list(df["referral_outcome"]) == ["NFA", "BOTH", "BOTH"]
-    assert list(df["Age at referral"]) == [5, 9, 8]
+    assert list(df["Age at referral"]) == [4, 9, 8]
 
 
-@unittest.skip("unused function, need to fix error")
 def test_s47_journeys():
     df = pd.DataFrame(
         [
             [
                 "CHILD1",
+                "CPPstartDate",
+                date(1970, 5, 25),
                 date(1965, 6, 15),
                 date(1970, 10, 6),
-                date(1970, 3, 3),
+                pd.NA,
+                pd.NA,
                 date(1970, 5, 25),
-                date(1970, 4, 5),
                 2022,
+                "TT1",
             ],
             [
                 "CHILD1",
+                "S47ActualStartDate",
+                date(1970, 3, 15),
                 date(1965, 6, 15),
                 date(1970, 10, 6),
-                date(1970, 3, 3),
-                date(1970, 5, 25),
-                date(1970, 4, 5),
+                date(1970, 5, 12),
+                date(1970, 3, 15),
+                pd.NA,
                 2022,
+                "TT1",
             ],
             [
                 "CHILD2",
+                "S47ActualStartDate",
+                date(2001, 10, 12),
                 date(1992, 1, 2),
                 date(2001, 11, 7),
-                date(2001, 8, 2),
+                pd.NA,
                 date(2001, 10, 12),
-                date(2001, 9, 29),
+                pd.NA,
                 2022,
+                "TT1",
+            ],
+            [
+                "CHILD2",
+                "CPPstartDate",
+                date(2001, 10, 31),
+                date(1992, 1, 2),
+                date(2001, 11, 7),
+                pd.NA,
+                pd.NA,
+                date(2001, 10, 31),
+                2022,
+                "TT1",
             ],
             [
                 "CHILD3",
+                "S47ActualStartDate",
+                date(2022, 1, 31),
                 date(2015, 7, 21),
                 date(2022, 9, 5),
-                date(2022, 7, 27),
                 pd.NA,
+                date(2022, 1, 31),
                 pd.NA,
                 2022,
+                "TT1",
             ],
             [
                 "CHILD4",
+                "S47ActualStartDate",
+                date(2006, 8, 16),
                 date(1997, 7, 21),
                 date(2006, 9, 5),
-                date(2006, 7, 28),
+                pd.NA,
                 date(2006, 8, 16),
                 pd.NA,
                 2022,
+                "TT1",
             ],
             [
                 "CHILD5",
+                "S47ActualStartDate",
+                date(2001, 7, 22),
                 date(1993, 4, 22),
                 date(2001, 9, 2),
+                date(2001, 7, 15),
                 date(2001, 7, 22),
                 pd.NA,
+                2022,
+                "TT1",
+            ],
+            [
+                "CHILD6",
+                "S47ActualStartDate",
+                date(2022, 2, 22),
+                date(2011, 4, 22),
+                date(2021, 9, 2),
+                date(2022, 2, 15),
+                date(2022, 2, 22),
                 pd.NA,
                 2022,
+                "TT1",
             ],
         ],
         columns=[
             "LAchildID",
+            "Type",
+            "Date",
             "PersonBirthDate",
             "CINreferralDate",
+            "DateOfInitialCPC",
             "S47ActualStartDate",
             "CPPstartDate",
-            "DateOfInitialCPC",
             "Year",
+            "LA",
         ],
     )
 
     df = s47_journeys(df)
 
-    assert list(df["icpc_to_cpp"]) == [13, pd.NA, 13]
-    assert list(df["s47_to_cpp"]) == [71, 19, 71]
+    assert list(df["icpc_to_cpp"]) == [
+        13,
+        pd.NA,
+        pd.NA,
+        pd.NA,
+        pd.NA,
+        pd.NA,
+        13,
+        pd.NA,
+        pd.NA,
+    ]
+    assert list(df["s47_to_cpp"]) == [
+        71,
+        19,
+        pd.NA,
+        pd.NA,
+        pd.NA,
+        pd.NA,
+        71,
+        pd.NA,
+        pd.NA,
+    ]
     assert list(df["cin_census_close"]) == [
+        date(2022, 3, 31),
+        date(2022, 3, 31),
+        date(2022, 3, 31),
+        date(2022, 3, 31),
+        date(2022, 3, 31),
+        date(2022, 3, 31),
         date(2022, 3, 31),
         date(2022, 3, 31),
         date(2022, 3, 31),
@@ -213,8 +336,20 @@ def test_s47_journeys():
         date(2022, 1, 30),
         date(2022, 1, 30),
         date(2022, 1, 30),
+        date(2022, 1, 30),
+        date(2022, 1, 30),
+        date(2022, 1, 30),
+        date(2022, 1, 30),
+        date(2022, 1, 30),
+        date(2022, 1, 30),
     ]
     assert list(df["icpc_max_date"]) == [
+        date(2022, 2, 14),
+        date(2022, 2, 14),
+        date(2022, 2, 14),
+        date(2022, 2, 14),
+        date(2022, 2, 14),
+        date(2022, 2, 14),
         date(2022, 2, 14),
         date(2022, 2, 14),
         date(2022, 2, 14),
@@ -222,7 +357,23 @@ def test_s47_journeys():
     assert list(df["Source"]) == [
         "S47 strategy discussion",
         "S47 strategy discussion",
+        "S47 strategy discussion",
+        "S47 strategy discussion",
+        "S47 strategy discussion",
+        "S47 strategy discussion",
+        "ICPC",
+        "ICPC",
         "ICPC",
     ]
-    assert list(df["Destination"]) == ["ICPC", "CPP Start", "CPP Start"]
-    assert list(df["Age at S47"]) == [9, 9, 9]
+    assert list(df["Destination"]) == [
+        "ICPC",
+        "CPP Start",
+        "TBD - S47 too recent",
+        "No ICPC or CPP",
+        "ICPC",
+        "ICPC",
+        "CPP Start",
+        "No CPP",
+        "TBD - ICPC too recent",
+    ]
+    assert list(df["Age at S47"]) == [4, 9, 6, 9, 8, 10, 4, 8, 10]

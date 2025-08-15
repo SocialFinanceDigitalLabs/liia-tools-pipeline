@@ -10,6 +10,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
@@ -373,4 +374,33 @@ def pnw_census_joins_sensor(context):
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
+        )
+
+
+@sensor(
+    job=cin_reports,
+    description="Runs cin_reports job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cin_reports_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cin"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    latest_run_id = find_previous_matching_dataset_run(
+        run_records,
+        "cin",
+    )  # Get the most recent cin run id
+    if latest_run_id:  # Ensure there is at least one cin run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
         )
