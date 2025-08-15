@@ -30,7 +30,9 @@ def task_cleanfile(
     logger.info("File %s opened and parsed, beginning processing", src_file.name)
 
     # Configure stream
-    stream = stream_functions.add_table_name(stream, schema=schema)
+    stream = stream_functions.add_table_name_from_filename(
+        stream, schema=schema, filename=src_file.name
+    )
     stream = stream_functions.inherit_property(stream, ["table_name", "table_spec"])
     stream = stream_functions.convert_column_header_to_match(stream, schema=schema)
     stream = stream_functions.match_config_to_cell(stream, schema=schema)

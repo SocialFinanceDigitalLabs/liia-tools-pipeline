@@ -1,4 +1,5 @@
 import logging
+import re
 import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
 from pathlib import Path
@@ -175,9 +176,9 @@ def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=Fals
 
 
 @streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
-def add_table_name(event, schema: DataSchema):
+def add_table_name_from_headers(event, schema: DataSchema):
     """
-    Match the loaded table name against one of the 10 903 file names
+    Match the loaded table to relevant schema table name using table headers
 
     :param event: A filtered list of event objects of type StartTable
     :return: An updated list of event objects
@@ -684,3 +685,41 @@ def convert_column_header_to_match(event, schema: DataSchema):
             else:
                 logger.debug('No match found for header "%s"', event.header)
     return event
+
+
+@streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
+def add_table_name_from_filename(event, schema: DataSchema, filename):
+    """
+    Match the loaded table to relevant schema table name using filename
+
+    :param event: A filtered list of event objects of type StartTable
+    :return: An updated list of event objects
+    """
+    table_names = schema.column_map.keys()
+    matched_tables = []
+    if not filename:
+        table_name = None
+    else:
+        for table in table_names:
+            pattern = re.compile(re.escape(table))
+            if pattern.search(filename):
+                matched_tables.append(table)
+
+    if len(matched_tables) == 1:
+        table_name = matched_tables[0]
+
+        return event.from_event(
+            event, table_name=table_name, table_spec=schema.column_map[table_name]
+        )
+
+    elif len(matched_tables) > 1:
+        message = f"Multiple tables matched the filename, file name: {filename}"
+
+    else:
+        message = f"Failed to identify table based on filename, file name: {filename}"
+
+    return EventErrors.add_to_event(
+        event,
+        type="UnidentifiedTable",
+        message=message,
+    )

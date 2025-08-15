@@ -65,12 +65,12 @@ def test_collect_tables():
     ]
 
 
-def test_add_table_name():
+def test_add_table_name_from_headers():
     schema = s903_schema(2040)
 
     def get_table_name(headers):
         stream = [events.StartTable(headers=headers)]
-        stream = stream_filters.add_table_name(stream, schema=schema)
+        stream = stream_filters.add_table_name_from_headers(stream, schema=schema)
         event = list(stream)[0]
         table_name = getattr(event, "table_name", None)
         errors = getattr(event, "errors", None)
@@ -399,3 +399,42 @@ def test_clean_regex():
     cleaned_event = list(stream_filters.conform_cell_types(event))[0]
     assert cleaned_event.cell == "A12345678901B"
     assert_errors(cleaned_event)
+
+
+def test_add_table_name_from_filename():
+    schema = s903_schema(2040)
+
+    def get_table_name(filename):
+        stream = stream_filters.add_table_name_from_filename(
+            stream, schema=schema, filename=filename
+        )
+        event = list(stream)[0]
+        table_name = getattr(event, "table_name", None)
+        errors = getattr(event, "errors", None)
+        return {"table_name": table_name, "errors": errors}
+
+    assert get_table_name("episodes.csv")["table_name"] == "episodes"
+
+    assert get_table_name("episodes_headers.csv")["table_name"] is None
+    assert list(get_table_name("episodes_headers.csv")["errors"]) == [
+        {
+            "message": "Multiple tables matched the filename, file name: episodes_headers.csv",
+            "type": "UnidentifiedTable",
+        }
+    ]
+
+    assert get_table_name(["june_2024_v2.csv"])["table_name"] is None
+    assert list(get_table_name(["june_2024_v2.csv"])["errors"]) == [
+        {
+            "message": "Failed to identify table based on filename, file name: june_2024_v2.csv",
+            "type": "UnidentifiedTable",
+        }
+    ]
+
+    assert get_table_name("")["table_name"] is None
+    assert list(get_table_name("")["errors"]) == [
+        {
+            "message": "Failed to identify table based on filename, file name: ",
+            "type": "UnidentifiedTable",
+        }
+    ]
