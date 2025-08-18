@@ -12,6 +12,7 @@ import xmlschema
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
+    block_event,
     generator_with_value,
     pass_event,
     streamfilter,
@@ -25,7 +26,7 @@ from liiatools.common.converters import (
     to_postcode,
     to_regex,
 )
-from liiatools.common.data import FileLocator
+from liiatools.common.data import FileLocator, PipelineConfig
 from liiatools.common.stream_errors import EventErrors, StreamError
 
 from .spec.__data_schema import Category, Column, DataSchema, Numeric
@@ -723,3 +724,22 @@ def add_table_name_from_filename(event, schema: DataSchema, filename):
         type="UnidentifiedTable",
         message=message,
     )
+
+
+@streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
+def check_sheetname_table_match(event, output_config: PipelineConfig):
+    """
+    Check that the stream sheetname matches the sheetname in the schema,
+    consume stream if not a match
+
+    :param event: A filtered list of event objects of type StartTable
+    :return: The same event object, should parameters be met, or block the event if not
+    """
+    if hasattr(event, "table_name") and hasattr(event, "sheetname"):
+        for table_config in output_config.table_list:
+            if (
+                table_config.id == event.table_name
+                and table_config.sheetname == event.sheetname
+            ):
+                return event
+        return block_event()

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -19,6 +19,7 @@ class TableConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
+    sheetname: Optional[str] = None
     retain: List[str] = []
     columns: List[ColumnConfig]
 
