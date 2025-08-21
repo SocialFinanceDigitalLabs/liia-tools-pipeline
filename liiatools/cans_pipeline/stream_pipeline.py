@@ -32,18 +32,17 @@ def task_cleanfile(
     if logger is None:
         logger = logging.getLogger(__name__)
 
+    # Collect table information for stream
+    table_info = stream_functions.table_spec_from_filename(
+        schema=schema, filename=src_file.name, output_config=output_config
+    )
+
     # Open & Parse file
-    stream = stream_functions.tablib_parse(src_file)
+    stream = stream_functions.tablib_parse(src_file, table_info=table_info)
 
     logger.info("File %s opened and parsed, beginning processing", src_file.name)
 
     # Configure stream
-    stream = stream_functions.add_table_name_from_filename(
-        stream, schema=schema, filename=src_file.name
-    )
-    stream = stream_functions.check_sheetname_table_match(
-        stream, output_config=output_config
-    )
     stream = stream_functions.inherit_property(stream, ["table_name", "table_spec"])
     stream = stream_functions.convert_column_header_to_match(stream, schema=schema)
     stream = stream_functions.match_config_to_cell(stream, schema=schema)

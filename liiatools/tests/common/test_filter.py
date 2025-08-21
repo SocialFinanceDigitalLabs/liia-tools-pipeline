@@ -1,12 +1,14 @@
 from datetime import datetime
 
-import pytest
 from sfdata_stream_parser import events
 from sfdata_stream_parser.filters import generic
 
+from liiatools.cans_pipeline.spec import load_schema as cans_schema
 from liiatools.common import stream_filters
 from liiatools.common.spec.__data_schema import Column
 from liiatools.ssda903_pipeline.spec import load_schema as s903_schema
+from liiatools_pipeline.assets.common import pipeline_config
+from liiatools_pipeline.ops.common_config import CleanConfig
 
 
 def test_collect_row():
@@ -401,40 +403,68 @@ def test_clean_regex():
     assert_errors(cleaned_event)
 
 
-def test_add_table_name_from_filename():
-    schema = s903_schema(2040)
+def test_table_spec_from_filename():
+    schema = cans_schema()
+    config = CleanConfig()
+    config.dataset = "cans"
+    output_config = pipeline_config(config)
 
-    def get_table_name(filename):
-        stream = stream_filters.add_table_name_from_filename(
-            stream, schema=schema, filename=filename
-        )
-        event = list(stream)[0]
-        table_name = getattr(event, "table_name", None)
-        errors = getattr(event, "errors", None)
-        return {"table_name": table_name, "errors": errors}
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="0940569457_0_5_2024.csv",
+            output_config=output_config,
+        )["table_name"]
+        == "0_5"
+    )
 
-    assert get_table_name("episodes.csv")["table_name"] == "episodes"
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["error_message"]
+        == "Multiple tables matched the filename, file name: 8937598475_0_5_6_21_2025.csv"
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["sheetname"]
+        is None
+    )
 
-    assert get_table_name("episodes_headers.csv")["table_name"] is None
-    assert list(get_table_name("episodes_headers.csv")["errors"]) == [
-        {
-            "message": "Multiple tables matched the filename, file name: episodes_headers.csv",
-            "type": "UnidentifiedTable",
-        }
-    ]
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )["error_message"]
+        == "Failed to identify table based on filename, file name: 0835708574_2026.csv"
+    )
 
-    assert get_table_name(["june_2024_v2.csv"])["table_name"] is None
-    assert list(get_table_name(["june_2024_v2.csv"])["errors"]) == [
-        {
-            "message": "Failed to identify table based on filename, file name: june_2024_v2.csv",
-            "type": "UnidentifiedTable",
-        }
-    ]
-
-    assert get_table_name("")["table_name"] is None
-    assert list(get_table_name("")["errors"]) == [
-        {
-            "message": "Failed to identify table based on filename, file name: ",
-            "type": "UnidentifiedTable",
-        }
-    ]
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="", output_config=output_config
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="", output_config=output_config
+        )["error_message"]
+        == "Failed to identify table based on filename, file name: "
+    )
