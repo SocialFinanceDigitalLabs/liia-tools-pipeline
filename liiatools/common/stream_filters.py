@@ -177,7 +177,7 @@ def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=Fals
 @streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
 def add_table_name(event, schema: DataSchema):
     """
-    Match the loaded table name against one of the 10 903 file names
+    Matches headers against sets of expected values to match a table in the config.
 
     :param event: A filtered list of event objects of type StartTable
     :return: An updated list of event objects
