@@ -100,7 +100,9 @@ def process_files(
     output_config = pipeline_config(config)
     la_signed = output_config.la_signed[la_name]["PAN"]
     if la_signed == "No":
-        log.info(f"{la_name} is not signed up for PAN data processing.")
+        log.info(
+            f"{la_name} is not signed up for PAN {config.dataset} data processing."
+        )
         error_report.append(
             dict(
                 type="NotSigned",
@@ -108,7 +110,7 @@ def process_files(
             )
         )
     else:
-        log.info(f"{la_name} is signed for PAN data processing.")
+        log.info(f"{la_name} is signed for PAN {config.dataset} data processing.")
 
         for file_locator in incoming_files:
             log.info(f"Processing file {basename(file_locator.name)}")
