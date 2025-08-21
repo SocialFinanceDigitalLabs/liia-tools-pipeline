@@ -211,7 +211,7 @@ class DataframeArchive:
                 for row in duplicate_rows:
                     errors.append(
                         dict(
-                            type="DuplicateError",
+                            type="DuplicateRemoval",
                             message=f"Row {row} removed as it was a duplicate",
                             r_ix=row,
                             table_name=table_spec.id,
