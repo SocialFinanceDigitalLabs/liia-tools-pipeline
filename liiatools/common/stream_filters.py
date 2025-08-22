@@ -454,6 +454,7 @@ def collect_errors(stream):
                     "c_ix",
                     "table_name",
                     "header",
+                    "xml_row",
                 )
                 collected_errors.append(error_entry)
 
