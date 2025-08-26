@@ -249,9 +249,9 @@ column_map:
     CANS_0_5:
         Assessor Name: *string_not_blank
         Assessment Date: *date_not_blank
-        Youth Unique ID: *string_not_blank
-        Youth Last Name: *string_not_blank
-        Youth First Name: *string_not_blank
+        Child Unique ID: *string_not_blank
+        Child Last Name: *string_not_blank
+        Child First Name: *string_not_blank
         DOB: *date_not_blank
         Age at Time of Assessment: *string_not_blank
         Assessment Type: *assessment_type
