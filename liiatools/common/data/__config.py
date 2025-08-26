@@ -37,7 +37,6 @@ class TableConfig(BaseModel):
             for c in self.columns
             if c.sort is not None
         ]
-        # sort_keys = [(c.id, c.sort) for c in self.columns if c.sort is not None]
         sort_tuples.sort(key=lambda x: x[2])
         return [(col_id, asc) for col_id, asc, _ in sort_tuples]
 
