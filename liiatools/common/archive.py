@@ -208,15 +208,26 @@ class DataframeArchive:
 
                 df = df[~duplicate_mask]
 
-                for row in duplicate_rows:
-                    errors.append(
-                        dict(
-                            type="DuplicateRemoval",
-                            message=f"Row {row} removed as it was a duplicate",
-                            r_ix=row,
-                            table_name=table_spec.id,
+                for index in duplicate_rows:
+                    # CIN xml file cannot give rows TO DO: add node information instead
+                    if self.dataset == "cin":
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row removed as it was a duplicate",
+                                table_name=table_spec.id,
+                            )
                         )
-                    )
+                    # For other csv files, row can be given as index + 2
+                    else:
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row {index + 2} removed as it was a duplicate",
+                                r_ix=index + 2,
+                                table_name=table_spec.id,
+                            )
+                        )
                 data[table_spec.id] = df
 
         return ProcessResult(data=data, errors=errors)
