@@ -57,13 +57,18 @@ def test_filter_to_open_on_snapshot_date():
     data = pd.DataFrame(
         {
             "snapshot_date": pd.to_datetime(
-                ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31"]
+                ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31"]
             ),
-            "DEC": pd.to_datetime([None, "2023-12-30", "2024-12-31", "2025-01-01"]),
+            "DEC": pd.to_datetime(
+                [None, "2023-12-30", "2024-12-31", "2025-01-01", "2025-01-12"]
+            ),
+            "DECOM": pd.to_datetime(
+                ["2024-12-01", "2023-11-30", "2024-12-12", "2024-12-12", "2024-12-31"]
+            ),
         }
     )
 
-    data = _filter_to_open_on_snapshot_date(data, "DEC", "snapshot_date")
+    data = _filter_to_open_on_snapshot_date(data, "DEC", "snapshot_date", "DECOM")
 
     try:
         assert len(data) == 3

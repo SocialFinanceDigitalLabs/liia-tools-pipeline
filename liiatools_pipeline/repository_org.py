@@ -8,6 +8,7 @@ from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
     reports,
 )
+from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
@@ -19,6 +20,7 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     move_error_reports_sensor,
     pnw_census_joins_sensor,
     sufficiency_sensor,
+    cin_reports_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
 
@@ -42,6 +44,7 @@ def sync():
         ssda903_sufficiency,
         deduplicate_annex_a,
         pnw_census_joins,
+        cin_reports,
     ]
     schedules = [
         reports_schedule,
@@ -54,6 +57,7 @@ def sync():
         sufficiency_sensor,
         deduplicate_annex_a_sensor,
         pnw_census_joins_sensor,
+        cin_reports_sensor,
     ]
 
     return jobs + schedules + sensors

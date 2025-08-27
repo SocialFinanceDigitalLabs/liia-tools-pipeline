@@ -2040,7 +2040,7 @@ develop = false
 type = "git"
 url = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"
 reference = "HEAD"
-resolved_reference = "81a152bdd853aae8597736b30dc5af0b78c92c16"
+resolved_reference = "3dbedf306715ff604260c6e64610382db02409cd"
 
 [[package]]
 name = "lxml"

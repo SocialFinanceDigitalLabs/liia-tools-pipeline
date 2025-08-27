@@ -1,14 +1,11 @@
+from typing import Union, Tuple
 import logging
-from typing import Union
-
-import numpy as np
 import pandas as pd
+import numpy as np
 from fs.base import FS
-from fs.errors import DirectoryExists
+import fs.errors as errors
 
 from liiatools.common.pipeline import open_file
-
-logger = logging.getLogger()
 
 # ALL of the code from here to the creation of factOfstedInspection should be ported to the external data pipeline
 
@@ -524,13 +521,13 @@ def ons_transform(df: pd.DataFrame) -> pd.DataFrame:
 
     # Create AreaType, AreaCode and AreaName fields to allow a single primary key to access all area types
     # For wards
-    ward_df = df
+    ward_df = df.copy()
     ward_df["AreaType"] = "Ward"
     ward_df["AreaCode"] = ward_df["WardCode"]
     ward_df["AreaName"] = ward_df["WardName"]
 
     # For LAs
-    la_df = df[
+    la_df = df.copy()[
         [
             "LACode",
             "LAName",
@@ -542,12 +539,13 @@ def ons_transform(df: pd.DataFrame) -> pd.DataFrame:
             "CountryName",
         ]
     ]
-    la_df.loc[~la_df["LACode"].isna(), "AreaType"] = "LA"
-    la_df.loc[~la_df["LACode"].isna(), "AreaCode"] = la_df["LACode"]
-    la_df.loc[~la_df["LACode"].isna(), "AreaName"] = la_df["LAName"]
+    mask_la = la_df["LACode"].notna()
+    la_df.loc[mask_la, "AreaType"] = "LA"
+    la_df.loc[mask_la, "AreaCode"] = la_df["LACode"]
+    la_df.loc[mask_la, "AreaName"] = la_df["LAName"]
 
     # For counties
-    county_df = df[
+    county_df = df.copy()[
         [
             "CountyCode",
             "CountyName",
@@ -557,12 +555,13 @@ def ons_transform(df: pd.DataFrame) -> pd.DataFrame:
             "CountryName",
         ]
     ]
-    county_df.loc[~county_df["CountyCode"].isna(), "AreaType"] = "County"
-    county_df.loc[~county_df["CountyCode"].isna(), "AreaCode"] = county_df["CountyCode"]
-    county_df.loc[~county_df["CountyCode"].isna(), "AreaName"] = county_df["CountyName"]
+    mask_county = county_df["CountyCode"].notna()
+    county_df.loc[mask_county, "AreaType"] = "County"
+    county_df.loc[mask_county, "AreaCode"] = county_df["CountyCode"]
+    county_df.loc[mask_county, "AreaName"] = county_df["CountyName"]
 
     # For regions
-    region_df = df[
+    region_df = df.copy()[
         [
             "RegionCode",
             "RegionName",
@@ -570,40 +569,38 @@ def ons_transform(df: pd.DataFrame) -> pd.DataFrame:
             "CountryName",
         ]
     ]
-    region_df.loc[~region_df["RegionCode"].isna(), "AreaType"] = "Region"
-    region_df.loc[~region_df["RegionCode"].isna(), "AreaCode"] = region_df["RegionCode"]
-    region_df.loc[~region_df["RegionCode"].isna(), "AreaName"] = region_df["RegionName"]
+    mask_region = region_df["RegionCode"].notna()
+    region_df.loc[mask_region, "AreaType"] = "Region"
+    region_df.loc[mask_region, "AreaCode"] = region_df["RegionCode"]
+    region_df.loc[mask_region, "AreaName"] = region_df["RegionName"]
 
     # For countries
-    country_df = df[
+    country_df = df.copy()[
         [
             "CountryCode",
             "CountryName",
         ]
     ]
-    country_df.loc[~country_df["CountryCode"].isna(), "AreaType"] = "Country"
-    country_df.loc[~country_df["CountryCode"].isna(), "AreaCode"] = country_df[
-        "CountryCode"
-    ]
-    country_df.loc[~country_df["CountryCode"].isna(), "AreaName"] = country_df[
-        "CountryName"
-    ]
+    mask_country = country_df["CountryCode"].notna()
+    country_df.loc[mask_country, "AreaType"] = "Country"
+    country_df.loc[mask_country, "AreaCode"] = country_df["CountryCode"]
+    country_df.loc[mask_country, "AreaName"] = country_df["CountryName"]
 
     # Joining together into a single file and dropping duplicates and rows with no AreaType defined
-    df = pd.concat([ward_df, la_df, county_df, region_df, country_df]).drop_duplicates()
-    df.dropna(subset="AreaType", inplace=True)
+    expanded_df = pd.concat([ward_df, la_df, county_df, region_df, country_df]).drop_duplicates()
+    expanded_df.dropna(subset="AreaType", inplace=True)
 
     # Reset indexes and use main index as primary key
-    df.reset_index(drop=True, inplace=True)
-    df.reset_index(inplace=True, names="ONSAreaKey")
+    expanded_df.reset_index(drop=True, inplace=True)
+    expanded_df.reset_index(inplace=True, names="ONSAreaKey")
 
     # Add a row to return when a foreign key returns no match
-    df = add_nan_row(df)
+    expanded_df = add_nan_row(expanded_df)
 
     # Replace missing values
-    df = fill_missing_values(df, "ONSArea")
+    expanded_df = fill_missing_values(expanded_df, "ONSArea")
 
-    return df
+    return expanded_df
 
 
 def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
@@ -629,11 +626,14 @@ def postcode_transform(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
+def ofsted_transform(fs: FS, ONSArea: pd.DataFrame, log: logging.Logger=None) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Creates a dimension table with all Ofsted providers and a fact table with all Ofsted inspections"""
+    if log is None:
+        log = logging.getLogger(__name__)
+
     try:
         fs.makedir("Ofsted")
-    except DirectoryExists:
+    except errors.DirectoryExists:
         pass
     fs_ofs = fs.opendir("Ofsted")
 
@@ -642,38 +642,64 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
     year_list = [f[-6:-4] for f in directory_contents]
     unique_years = set(year_list)
 
+    # Ensure that there is at least one year of data
+    if len(unique_years) == 0:
+        log.error("No Ofsted data present in external data folder")
+        return None, None
+
     # Create OfstedProvider table
     # For each year, create a unique record for each provider and put in dictionary
+    # Each year must have a copy of three files to produce a useful output
+    # If no years meet this standard, table cannot be produced and process is terminated
     provider_df_dict = {}
     for year in unique_years:
         last_year = int(year) - 1
 
         # Open providers_in_year file
         providers_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
-        providers_in_df = open_file(fs_ofs, providers_in_file)
+        try:
+            providers_in_df = open_file(fs_ofs, providers_in_file)
+        except errors.ResourceNotFound:
+            log.info(f"No provider in year file for {year}")
+            providers_in_df = None
 
         # Open closed file
         closed_file = f"Closed_childrens_homes_31Mar{year}.csv"
-        closed_df = open_file(fs_ofs, closed_file)
-
-        # Merge on URN to add closure info to richer providers_in record
-        providers_closed = providers_in_df.merge(closed_df, on="URN", how="outer")
+        try:
+            closed_df = open_file(fs_ofs, closed_file)
+        except errors.ResourceNotFound:
+            log.info(f"No closed provider file for {year}")
+            closed_df = None
 
         # Open providers_places file
         providers_places_file = f"Providers_places_at_31_Aug_20{year}.csv"
-        providers_places = open_file(fs_ofs, providers_places_file)
+        try:
+            providers_places = open_file(fs_ofs, providers_places_file)
+            providers_places = providers_places.rename(
+                columns={"Organisation name": "Organisation which owns the provider"}
+            )
+        except errors.ResourceNotFound:
+            log.info(f"No providers places file for 20{year}")
+            providers_places = None
 
-        # Concatenate providers_places with merged providers_closed df
-        providers_places = providers_places.rename(
-            columns={"Organisation name": "Organisation which owns the provider"}
-        )
-        providers_df = pd.concat([providers_places, providers_closed])
-        providers_df = providers_df.drop_duplicates(subset="URN", keep="first")
+        # If all three files exist for the year, create an output
+        if providers_in_df is not None and closed_df is not None and providers_places is not None:
+            # Merge providers_in and providesr_closed on URN to add closure info to richer providers_in record
+            providers_closed = providers_in_df.merge(closed_df, on="URN", how="outer")
 
-        # Add year to table and output to dictionary
-        providers_df["Year"] = year
-        provider_df_dict[year] = providers_df
+            # Concatenate providers_places with merged providers_closed df
+            providers_df = pd.concat([providers_places, providers_closed])
+            providers_df = providers_df.drop_duplicates(subset="URN", keep="first")
 
+            # Add year to table and output to dictionary if output created
+            providers_df["Year"] = year
+            provider_df_dict[year] = providers_df
+
+    # Check that at least one year has provided an output
+    # If not, terminate process as not enough data to create table
+    if len(provider_df_dict) == 0:
+        log.error("Insufficient Ofsted data to create dimOfstedProvider table")
+        return None, None
     # Across the years in the dictionary, concatenate to single file and drop duplicates
     OfstedProvider = concat_and_drop(provider_df_dict, "Year", "URN")
 
@@ -687,7 +713,7 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
     )
 
     OfstedProvider = OfstedProvider.merge(
-        ONSArea, left_on="Local authority", right_on="AreaName", how="left"
+        ONSArea.copy(), left_on="Local authority", right_on="AreaName", how="left"
     )
 
     # Rename columns and drop unnecessary columns
@@ -698,57 +724,78 @@ def ofsted_transform(fs: FS, ONSArea: pd.DataFrame) -> (pd.DataFrame, pd.DataFra
     OfstedProvider.reset_index(inplace=True, names="OfstedProviderKey")
 
     # Add nan rows: one for unmatched URNs, one for missing URNs and one for XXXXXXX (regional adoption agencies)
-    unmatched_row = {col: None for col in OfstedProvider.columns}
+    unmatched_row = pd.DataFrame([[np.nan] * len(OfstedProvider.columns)], columns=OfstedProvider.columns)
     unmatched_row["OfstedProviderKey"] = -3
     unmatched_row["UnknownSourceFlag"] = True
-    OfstedProvider.loc[len(OfstedProvider)] = unmatched_row
+    OfstedProvider = pd.concat([OfstedProvider, unmatched_row], ignore_index=True)
 
-    raa_row = {col: None for col in OfstedProvider.columns}
+    raa_row = pd.DataFrame([[np.nan] * len(OfstedProvider.columns)], columns=OfstedProvider.columns)
     raa_row["OfstedProviderKey"] = -2
     raa_row["URN"] = "XXXXXXX"
     raa_row["ProviderType"] = "Regional Adoption Agency"
     raa_row["UnknownSourceFlag"] = True
-    OfstedProvider.loc[len(OfstedProvider)] = raa_row
+    OfstedProvider = pd.concat([OfstedProvider, raa_row], ignore_index=True)
 
-    missing_row = {col: None for col in OfstedProvider.columns}
+    missing_row = pd.DataFrame([[np.nan] * len(OfstedProvider.columns)], columns=OfstedProvider.columns)
     missing_row["OfstedProviderKey"] = -1
     missing_row["URN"] = "Missing"
     missing_row["UnknownSourceFlag"] = True
-    OfstedProvider.loc[len(OfstedProvider)] = missing_row
+    OfstedProvider = pd.concat([OfstedProvider, missing_row], ignore_index=True)
 
     # Replace missing values
     OfstedProvider = fill_missing_values(OfstedProvider, "OfstedProvider")
 
     # Create OfstedInspection table
     # For each year, create a unique record for each provider and put in dictionary
+    # Either the provider_at or the provider_in file is sufficient to create a record each year; if both exist, concat to create single file
     inspection_df_dict = {}
     for year in unique_years:
         last_year = int(year) - 1
 
         # Open provider at file
         provider_at_file = f"Provider_level_at_31_Aug_20{year}.csv"
-        provider_at_df = open_file(fs_ofs, provider_at_file)
+        try:
+            provider_at_df = open_file(fs_ofs, provider_at_file)
+            provider_at_df = provider_at_df.rename(
+                columns={"Latest full inspection date": "Inspection date"}
+            )
+        except errors.ResourceNotFound:
+            log.info(f"No provider at file for {year}")
+            provider_at_df = None
 
         # Open providers_in_year file and keep only full inspections
         provider_in_file = f"Provider_level_in_year_20{last_year}-{year}.csv"
-        provider_in_df = open_file(fs_ofs, provider_in_file)
-        provider_in_df = provider_in_df.loc[
-            provider_in_df["Inspection event type"] == "Full inspection"
-        ]
+        try:
+            provider_in_df = open_file(fs_ofs, provider_in_file)
+            provider_in_df = provider_in_df.loc[
+                provider_in_df["Inspection event type"] == "Full inspection"
+            ]
+        except errors.ResourceNotFound:
+            log.info(f"No provider in file for {year}")
+            provider_in_df = None
 
-        # Concatenate provider_at with provider_in
-        provider_at_df = provider_at_df.rename(
-            columns={"Latest full inspection date": "Inspection date"}
-        )
-        inspections_df = pd.concat([provider_at_df, provider_in_df])
-        inspections_df = inspections_df.drop_duplicates(
-            subset=["URN", "Inspection date"], keep="first"
-        )
+        if provider_at_df is not None and provider_in_df is not None:
+            # Concatenate provider_at with provider_in
+            inspections_df = pd.concat([provider_at_df, provider_in_df])
+            inspections_df = inspections_df.drop_duplicates(
+                subset=["URN", "Inspection date"], keep="first"
+            )
+        elif provider_at_df is not None:
+            inspections_df = provider_at_df
+        elif provider_in_df is not None:
+            inspections_df = provider_in_df
+        else:
+            inspections_df = None
 
-        # Add year to table and output to dictionary
-        inspections_df["Year"] = year
-        inspection_df_dict[year] = inspections_df
+        if inspections_df is not None:
+            # Add year to table and output to dictionary
+            inspections_df["Year"] = year
+            inspection_df_dict[year] = inspections_df
 
+    # If there was insufficient data for a single year, terminate the process
+    if len(inspection_df_dict) == 0:
+        log.error("Insufficient data to create factOfstedInspection table")
+        return None, None
     # Across the years in the dictionary, concatenate to single file and drop duplicates
     factOfstedInspection = concat_and_drop(
         inspection_df_dict, "Year", ["URN", "Inspection date"]
@@ -808,7 +855,7 @@ def ss903_transform(
     Episode: pd.DataFrame,
     Postcode: pd.DataFrame,
     OfstedProvider: pd.DataFrame,
-) -> (pd.DataFrame, pd.DataFrame):
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Takes three ssda903 files (header, episodes and uasc) and creates:
     - a dimension table with one row per child
     - a fact table with one row per episode"""
@@ -860,10 +907,10 @@ def ss903_transform(
     # Create factEpisode table
     # Add bespoke columns
     # Add LookedAfterChildKey by merge with LookedAfterChild table
-    looked_after_child = LookedAfterChild.copy()
-    looked_after_child = looked_after_child[["LookedAfterChildKey", "ChildIdentifier"]]
+    lac_copy = LookedAfterChild.copy()
+    lac_copy = lac_copy[["LookedAfterChildKey", "ChildIdentifier"]]
     Episode = Episode.merge(
-        looked_after_child, left_on="CHILD", right_on="ChildIdentifier", how="left"
+        lac_copy, left_on="CHILD", right_on="ChildIdentifier", how="left"
     )
 
     # Add ReasonForNewEpisodeKey
@@ -936,30 +983,30 @@ def ss903_transform(
     )
 
     # Add HomePostcodeKey
-    Postcode = Postcode[["PostcodeKey", "Sector"]]
+    pc_copy = Postcode.copy()[["PostcodeKey", "Sector"]]
     Episode = Episode.merge(
-        Postcode, left_on="HOME_POST", right_on="Sector", how="left"
+        pc_copy, left_on="HOME_POST", right_on="Sector", how="left"
     )
     Episode = Episode.rename(columns={"PostcodeKey": "HomePostcodeKey"})
 
     # Add PlacementPostcodeKey
-    Episode = Episode.merge(Postcode, left_on="PL_POST", right_on="Sector", how="left")
+    Episode = Episode.merge(pc_copy, left_on="PL_POST", right_on="Sector", how="left")
     Episode = Episode.rename(columns={"PostcodeKey": "PlacementPostcodeKey"})
 
     # Add OfstedProviderKey
-    OfstedProvider = OfstedProvider[["OfstedProviderKey", "URN"]]
-    OfstedProvider.URN = OfstedProvider.URN.astype(str)
+    op_copy = OfstedProvider.copy()[["OfstedProviderKey", "URN"]]
+    op_copy.URN = op_copy.URN.astype(str)
     Episode.URN = Episode.URN.astype(str)
-    Episode = Episode.merge(OfstedProvider, left_on="URN", right_on="URN", how="left")
+    Episode = Episode.merge(op_copy, left_on="URN", right_on="URN", how="left")
     # Where no match with OfstedProvider, give a value of -3 to differentiate from missing URNs
     Episode.loc[
-        (~Episode["URN"].isna()) & (Episode["OfstedProviderKey"].isna()),
+        (Episode["URN"].notna()) & (Episode["OfstedProviderKey"].isna()),
         "OfstedProviderKey",
     ] = -3
 
     # Add ONSAreaKey
-    ONSArea = ONSArea[["ONSAreaKey", "AreaName"]]
-    Episode = Episode.merge(ONSArea, left_on="LA", right_on="AreaName", how="left")
+    ons_copy = ONSArea.copy()[["ONSAreaKey", "AreaName"]]
+    Episode = Episode.merge(ons_copy, left_on="LA", right_on="AreaName", how="left")
 
     # Rename columns and drop unnecessary columns
     Episode = rename_and_drop(Episode, "Episode")
@@ -987,8 +1034,8 @@ def add_nan_row(df: pd.DataFrame) -> pd.DataFrame:
     """
     Add a lookup for other tables with missing key values
     """
-    nan_col = {col: None for col in df.columns}
-    df.loc[len(df)] = nan_col
+    nan_row = pd.DataFrame([[np.nan] * len(df.columns)], columns=df.columns)
+    df = pd.concat([df, nan_row], ignore_index=True)
     return df
 
 
