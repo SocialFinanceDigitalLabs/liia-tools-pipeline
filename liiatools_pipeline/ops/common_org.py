@@ -41,11 +41,14 @@ def move_current_view_org(config: CleanConfig):
         file_name_list = [table.id for table in pipeline_config(config).table_list]
         file_regex = "|".join(file_name_list)
 
-        current_files_regex = f"({authority_regex})_\d{{4}}_({file_regex})"
+        # Regex to match year and optional month filename format
+        current_files_regex = f"({authority_regex})_\d{{4}}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)?_?({file_regex})"
         pl.remove_files(current_files_regex, existing_files, destination_folder)
 
-        log.info("Moving current files to destination...")
-        pl.move_files_for_sharing(current_folder, destination_folder, required_table_id=file_name_list)
+        log.info(f"Moving current {config.dataset} files to destination...")
+        pl.move_files_for_sharing(
+            current_folder, destination_folder, required_table_id=file_name_list
+        )
     else:
         log.error(f"No current files found for {config.dataset}")
 
@@ -64,7 +67,7 @@ def move_concat_view(config: CleanConfig):
         concat_files_regex = f"({authority_regex})_{config.dataset}"
         pl.remove_files(concat_files_regex, existing_files, destination_folder)
 
-        log.info("Moving concat files to destination...")
+        log.info(f"Moving concat {config.dataset} files to destination...")
         pl.move_files_for_sharing(concat_folder, destination_folder)
     else:
         log.error(f"No concat files found for {config.dataset}")

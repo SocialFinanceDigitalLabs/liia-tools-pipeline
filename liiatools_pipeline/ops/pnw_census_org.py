@@ -1,10 +1,10 @@
 import re
-import pandas as pd
-from pandas.tseries.offsets import MonthEnd
 
+import pandas as pd
 from dagster import In, Out, get_dagster_logger, op
-from fs.base import FS
 from fs import errors
+from fs.base import FS
+from pandas.tseries.offsets import MonthEnd
 
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesPNWCensusJoins
@@ -13,12 +13,12 @@ from liiatools.common.pipeline import open_file
 from liiatools.pnw_census_pipeline.pnw_dataset_join import (
     join_episode_data,
     join_header_data,
-    join_uasc_data,
-    join_oc2_data,
     join_missing_data,
+    join_oc2_data,
     join_onspd_data,
-    )
-from liiatools_pipeline.assets.common import workspace_folder, shared_folder
+    join_uasc_data,
+)
+from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 log = get_dagster_logger(__name__)
@@ -36,9 +36,7 @@ def create_join_session_folder() -> FS:
     )
 
     log.info("Opening incoming folder...")
-    session_folder = session_folder.opendir(
-        SessionNamesPNWCensusJoins.INCOMING_FOLDER
-    )
+    session_folder = session_folder.opendir(SessionNamesPNWCensusJoins.INCOMING_FOLDER)
 
     ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
     pl.move_files_for_sharing(
@@ -79,7 +77,13 @@ def joins_pnw_census(
         return
 
     # Check if there are any SSDA903 files
-    ssda903_patterns = [episodes_pattern, header_pattern, uasc_pattern, oc2_pattern, missing_pattern]
+    ssda903_patterns = [
+        episodes_pattern,
+        header_pattern,
+        uasc_pattern,
+        oc2_pattern,
+        missing_pattern,
+    ]
     if not any(any(pattern.search(f) for f in files) for pattern in ssda903_patterns):
         log.error("No SSDA903 files found: terminating process.")
         return
@@ -87,7 +91,9 @@ def joins_pnw_census(
     # Open the PNW Census file
     pnw_census = open_file(session_folder, pnw_census_file)
     # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
-    pnw_census["snapshot_date"] = pd.to_datetime(pnw_census[["Year", "Month"]].assign(day=1)) + MonthEnd(0)
+    pnw_census["snapshot_date"] = pd.to_datetime(
+        pnw_census[["Year", "Month"]].assign(day=1)
+    ) + MonthEnd(0)
 
     # Check and process each SSDA903 file type
     if any(episodes_pattern.search(f) for f in files):
@@ -102,12 +108,29 @@ def joins_pnw_census(
             pnw_census = join_onspd_data(postcode, pnw_census)
         except errors.ResourceNotFound as err:
             log.error(f"No ONSPD postcode file to open: {err}")
-            empty_ONSPD_cols = ["Home eastings", "Home northings", "Placement eastings", "Placement northings", "Placement LA code"]
+            empty_ONSPD_cols = [
+                "Home eastings",
+                "Home northings",
+                "Placement eastings",
+                "Placement northings",
+                "Placement LA code",
+            ]
             for col in empty_ONSPD_cols:
                 pnw_census[col] = None
     else:
         log.error("No 903 episodes data to join")
-        empty_episode_cols = ["# placements in last 12 months", "903 placement type", "903 provider type", "Home postcode", "Placement postcode", "Home eastings", "Home northings", "Placement eastings", "Placement northings", "Placement LA code"]
+        empty_episode_cols = [
+            "# placements in last 12 months",
+            "903 placement type",
+            "903 provider type",
+            "Home postcode",
+            "Placement postcode",
+            "Home eastings",
+            "Home northings",
+            "Placement eastings",
+            "Placement northings",
+            "Placement LA code",
+        ]
         for col in empty_episode_cols:
             pnw_census[col] = None
 
@@ -140,7 +163,12 @@ def joins_pnw_census(
         pnw_census = join_oc2_data(oc2, pnw_census)
     else:
         log.error("No 903 oc2 data to join")
-        empty_oc2_cols = ["Child convicted during the year", "Child identified as having a substance misuse problem", "Child received intervention for substance misuse problem", "Child offered intervention for substance misuse problem"]
+        empty_oc2_cols = [
+            "Child convicted during the year",
+            "Child identified as having a substance misuse problem",
+            "Child received intervention for substance misuse problem",
+            "Child offered intervention for substance misuse problem",
+        ]
         for col in empty_oc2_cols:
             pnw_census[col] = None
 
@@ -157,9 +185,9 @@ def joins_pnw_census(
 
     # Drop snapshot date field
     pnw_census = pnw_census.drop(columns="snapshot_date")
-    
+
     # Export PNW file
-    pnw_dc = DataContainer({"ENRICHED_pnw_census_pnw_census":pnw_census})
+    pnw_dc = DataContainer({"ENRICHED_pnw_census_pnw_census": pnw_census})
     log.info("Writing joined PNW Census output to shared folder")
     output_folder = shared_folder()
     pnw_dc.export(output_folder, "", "csv")

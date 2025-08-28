@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+
 from fs import open_fs
 
 from liiatools.common.constants import SessionNames

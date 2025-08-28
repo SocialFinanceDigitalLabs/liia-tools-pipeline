@@ -5,8 +5,7 @@ from sfdata_stream_parser import events
 from sfdata_stream_parser.collectors import xml_collector
 from sfdata_stream_parser.filters.generic import generator_with_value
 
-from liiatools.common.stream_record import (HeaderEvent, _reduce_dict,
-                                            text_collector)
+from liiatools.common.stream_record import HeaderEvent, _reduce_dict, text_collector
 
 
 class CINEvent(events.ParseEvent):
@@ -117,7 +116,7 @@ def _maybe_list(value):
     return value
 
 
-def cin_event(record, property, export_headers, event_name: Optional[str]=None):
+def cin_event(record, property, export_headers, event_name: Optional[str] = None):
     """
     Create an event record based on the given property from the original record.
 
@@ -179,37 +178,64 @@ def event_to_records(event: CINEvent, output_columns: list) -> Iterator[dict]:
     child["Disabilities"] = ",".join(_maybe_list(child.get("Disability")))
 
     for cin_item in _maybe_list(record.get("CINdetails")):
-        yield from cin_event({**child, **cin_item}, "CINreferralDate", export_headers=output_columns)
-        yield from cin_event({**child, **cin_item}, "CINclosureDate", export_headers=output_columns)
+        yield from cin_event(
+            {**child, **cin_item}, "CINreferralDate", export_headers=output_columns
+        )
+        yield from cin_event(
+            {**child, **cin_item}, "CINclosureDate", export_headers=output_columns
+        )
 
         for assessment in _maybe_list(cin_item.get("Assessments")):
             assessment["Factors"] = ",".join(
                 _maybe_list(assessment.get("AssessmentFactors"))
             )
             yield from cin_event(
-                {**child, **cin_item, **assessment}, "AssessmentActualStartDate", export_headers=output_columns
+                {**child, **cin_item, **assessment},
+                "AssessmentActualStartDate",
+                export_headers=output_columns,
             )
             yield from cin_event(
-                {**child, **cin_item, **assessment}, "AssessmentAuthorisationDate", export_headers=output_columns
+                {**child, **cin_item, **assessment},
+                "AssessmentAuthorisationDate",
+                export_headers=output_columns,
             )
 
         for cin in _maybe_list(cin_item.get("CINPlanDates")):
             yield from cin_event(
                 {**child, **cin_item, **cin},
-                "CINPlanStartDate", export_headers=output_columns
+                "CINPlanStartDate",
+                export_headers=output_columns,
             )
-            yield from cin_event({**child, **cin_item, **cin}, "CINPlanEndDate", export_headers=output_columns)
+            yield from cin_event(
+                {**child, **cin_item, **cin},
+                "CINPlanEndDate",
+                export_headers=output_columns,
+            )
 
         for s47 in _maybe_list(cin_item.get("Section47")):
-            yield from cin_event({**child, **cin_item, **s47}, "S47ActualStartDate", export_headers=output_columns)
+            yield from cin_event(
+                {**child, **cin_item, **s47},
+                "S47ActualStartDate",
+                export_headers=output_columns,
+            )
 
         for cpp in _maybe_list(cin_item.get("ChildProtectionPlans")):
-            yield from cin_event({**child, **cin_item, **cpp}, "CPPstartDate", export_headers=output_columns)
-            yield from cin_event({**child, **cin_item, **cpp}, "CPPendDate", export_headers=output_columns)
+            yield from cin_event(
+                {**child, **cin_item, **cpp},
+                "CPPstartDate",
+                export_headers=output_columns,
+            )
+            yield from cin_event(
+                {**child, **cin_item, **cpp},
+                "CPPendDate",
+                export_headers=output_columns,
+            )
             for cpp_review in _maybe_list(cpp.get("CPPreviewDate")):
                 cpp_review = {"CPPreviewDate": cpp_review}
                 yield from cin_event(
-                    {**child, **cin_item, **cpp, **cpp_review}, "CPPreviewDate", export_headers=output_columns
+                    {**child, **cin_item, **cpp, **cpp_review},
+                    "CPPreviewDate",
+                    export_headers=output_columns,
                 )
 
 
