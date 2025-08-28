@@ -1,6 +1,6 @@
 import logging
-from typing import Optional
 from os.path import basename
+from typing import Optional
 
 from sfdata_stream_parser.filters import generic
 
@@ -10,7 +10,9 @@ from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
 
-def task_cleanfile(src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger]=None) -> ProcessResult:
+def task_cleanfile(
+    src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger] = None
+) -> ProcessResult:
     """
     Clean input Annex A xlsx files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
@@ -24,7 +26,9 @@ def task_cleanfile(src_file: FileLocator, schema: DataSchema, logger: Optional[l
     # Open & Parse file
     stream = stream_functions.tablib_parse(src_file)
 
-    logger.info("File %s opened and parsed, beginning processing", basename(src_file.name))
+    logger.info(
+        "File %s opened and parsed, beginning processing", basename(src_file.name)
+    )
 
     # Configure stream
     stream = stream_functions.add_table_name(stream, schema=schema)

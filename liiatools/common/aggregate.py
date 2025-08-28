@@ -49,11 +49,7 @@ class DataframeAggregator:
 
         return data
 
-    def combine_files(
-        self,
-        files: Iterable[str],
-        deduplicate: bool
-    ) -> DataContainer:
+    def combine_files(self, files: Iterable[str], deduplicate: bool) -> DataContainer:
         """
         Combine a list of files into a single dataframe.
 
