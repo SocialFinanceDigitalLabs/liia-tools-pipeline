@@ -4,20 +4,29 @@ from io import BytesIO
 from typing import Iterable
 
 from fs import open_fs
-from sfdata_stream_parser.events import (EndElement, ParseEvent,
-                                         StartContainer, StartElement,
-                                         TextNode)
+from sfdata_stream_parser.events import (
+    EndElement,
+    ParseEvent,
+    StartContainer,
+    StartElement,
+    TextNode,
+)
 
 from liiatools.annex_a_pipeline.spec.samples import DIR as DIR_AA
 from liiatools.cin_census_pipeline.spec import load_schema
 from liiatools.cin_census_pipeline.spec.samples import CIN_2022
 from liiatools.common.data import FileLocator
 from liiatools.common.spec.__data_schema import Category, Numeric
-from liiatools.common.stream_filters import (_create_category_spec,
-                                             _create_numeric_spec,
-                                             _create_regex_spec, add_context,
-                                             add_schema, strip_text,
-                                             tablib_parse, validate_elements)
+from liiatools.common.stream_filters import (
+    _create_category_spec,
+    _create_numeric_spec,
+    _create_regex_spec,
+    add_context,
+    add_schema,
+    strip_text,
+    tablib_parse,
+    validate_elements,
+)
 from liiatools.common.stream_parse import dom_parse
 from liiatools.ssda903_pipeline.spec.samples import DIR as DIR_903
 

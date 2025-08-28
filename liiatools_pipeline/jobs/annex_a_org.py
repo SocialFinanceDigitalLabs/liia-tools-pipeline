@@ -1,7 +1,6 @@
-from dagster import job
-from liiatools_pipeline.ops import annex_a_org
+from dagster import get_dagster_logger, job
 
-from dagster import get_dagster_logger
+from liiatools_pipeline.ops import annex_a_org
 
 log = get_dagster_logger(__name__)
 

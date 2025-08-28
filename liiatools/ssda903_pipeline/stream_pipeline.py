@@ -9,7 +9,9 @@ from liiatools.common.spec.__data_schema import DataSchema
 from liiatools.common.stream_pipeline import to_dataframe
 
 
-def task_cleanfile(src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger]=None) -> ProcessResult:
+def task_cleanfile(
+    src_file: FileLocator, schema: DataSchema, logger: Optional[logging.Logger] = None
+) -> ProcessResult:
     """
     Clean input ssda903 csv files according to schema and output clean data and errors
     :param src_file: The pointer to a file in a virtual filesystem
