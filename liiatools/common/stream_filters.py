@@ -679,19 +679,19 @@ def convert_column_header_to_match(event, schema: DataSchema):
     :param schema: The data schema in a DataSchema class
     :return: An updated list of event objects
     """
-    if hasattr(event, "table_name") and hasattr(event, "header"):
+    if event.table_name and event.header:
         column_config = schema.table.get(event.table_name)
         for column in column_config:
-            if event.header:
-                if column_config[column].header_regex is not None:
-                    for regex in column_config[column].header_regex:
-                        parse = Column().parse_regex(regex)
-                        if parse.match(event.header) is not None:
-                            return event.from_event(event, header=column)
-                elif column.lower().strip() == event.header.lower().strip():
-                    return event.from_event(event, header=column)
-                else:
-                    logger.debug('No match found for header "%s"', event.header)
-            else:
-                logger.debug('Skipping blank header in table "%s"', event.table_name)
+            if column_config[column].header_regex is not None:
+                for regex in column_config[column].header_regex:
+                    parse = Column().parse_regex(regex)
+                    if parse.match(event.header) is not None:
+                        return event.from_event(event, header=column)
+            elif column.lower().strip() == event.header.lower().strip():
+                return event.from_event(event, header=column)
+        logger.debug(
+            'No match found for cell with header="%s" and table_name="%s"',
+            event.header,
+            event.table_name
+            )
     return event
