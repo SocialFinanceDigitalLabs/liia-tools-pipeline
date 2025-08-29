@@ -679,7 +679,7 @@ def convert_column_header_to_match(event, schema: DataSchema):
     :param schema: The data schema in a DataSchema class
     :return: An updated list of event objects
     """
-    if event.table_name and event.header:
+    if hasattr(event, "table_name") and getattr(event, "header", None):
         column_config = schema.table.get(event.table_name)
         for column in column_config:
             if column_config[column].header_regex is not None:
