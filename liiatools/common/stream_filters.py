@@ -177,7 +177,7 @@ def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=Fals
 @streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
 def add_table_name(event, schema: DataSchema):
     """
-    Match the loaded table name against one of the 10 903 file names
+    Matches headers against sets of expected values to match a table in the config.
 
     :param event: A filtered list of event objects of type StartTable
     :return: An updated list of event objects
@@ -680,7 +680,7 @@ def convert_column_header_to_match(event, schema: DataSchema):
     :param schema: The data schema in a DataSchema class
     :return: An updated list of event objects
     """
-    if hasattr(event, "table_name") and hasattr(event, "header"):
+    if hasattr(event, "table_name") and getattr(event, "header", None):
         column_config = schema.table.get(event.table_name)
         for column in column_config:
             if column_config[column].header_regex is not None:
@@ -690,6 +690,9 @@ def convert_column_header_to_match(event, schema: DataSchema):
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
-            else:
-                logger.debug('No match found for header "%s"', event.header)
+        logger.debug(
+            'No match found for cell with header="%s" and table_name="%s"',
+            event.header,
+            event.table_name
+            )
     return event
