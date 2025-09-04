@@ -113,7 +113,7 @@ def process_files(
         log.info(f"{la_name} is signed for PAN {config.dataset} data processing.")
 
         for file_locator in incoming_files:
-            log.info(f"Processing file {basename(file_locator.name)}")
+            log.info(f"Processing file {basename(str(file_locator.name))}")
             uuid = file_locator.meta["uuid"]
             year = pl.discover_year(file_locator)
             if year is None:
@@ -126,7 +126,7 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Discovered year in {basename(file_locator.name)}")
+            log.info(f"Discovered year in {basename(str(file_locator.name))}")
 
             if (
                 check_year_within_range(
@@ -144,7 +144,7 @@ def process_files(
                 )
                 continue
             log.info(
-                f"Year in {basename(file_locator.name)} is within retention period"
+                f"Year in {basename(str(file_locator.name))} is within retention period"
             )
 
             if config.input_la_code is None:
@@ -157,7 +157,9 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Local authority code found in {basename(file_locator.name)}")
+            log.info(
+                f"Local authority code found in {basename(str(file_locator.name))}"
+            )
 
             month = None
             if config.dataset in ["annex_a", "pnw_census"]:
@@ -172,7 +174,7 @@ def process_files(
                         )
                     )
                     continue
-                log.info(f"Month found in {basename(file_locator.name)}")
+                log.info(f"Month found in {basename(str(file_locator.name))}")
 
             try:
                 schema = (
@@ -183,7 +185,7 @@ def process_files(
             except KeyError:
                 continue
             log.info(
-                f"{config.dataset} schema loaded for {basename(file_locator.name)}"
+                f"{config.dataset} schema loaded for {basename(str(file_locator.name))}"
             )
 
             metadata = dict(
@@ -210,7 +212,7 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Cleanfile task completed for {basename(file_locator.name)}")
+            log.info(f"Cleanfile task completed for {basename(str(file_locator.name))}")
 
             cleanfile_result.data = prepare_export(
                 cleanfile_result.data, output_config, profile="PAN"
@@ -259,6 +261,8 @@ def process_files(
     for location in log_locations:
         with location.open(error_report_name, "w") as FILE:
             error_report.to_dataframe().to_csv(FILE, index=False)
+
+    log.info(f"Error report for {config.input_la_code} written for {config.dataset}")
 
 
 @op()
