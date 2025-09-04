@@ -33,7 +33,7 @@ def load_pipeline_config():
 @lru_cache
 def load_schema(year: int) -> (xmlschema.XMLSchema, Path):
     return (
-        xmlschema.XMLSchema(SCHEMA_DIR / f"csww_schmea_{year:04d}.xsd")
+        xmlschema.XMLSchema(SCHEMA_DIR / f"csww_schmea_{year:04d}.xsd"),
         Path(_SCHEMADIR, f"csww_schmea_{year:04d}.xsd")
     )
 
