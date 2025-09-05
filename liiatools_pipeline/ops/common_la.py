@@ -216,12 +216,16 @@ def process_files(
                 cleanfile_result.data, output_config, profile="PAN"
             )
             log.info(f"Cleanfile export prepared for {basename(file_locator.name)}")
-
-            cleanfile_result.data.export(
-                session_folder.opendir(SessionNames.CLEANED_FOLDER),
-                file_locator.meta["uuid"] + "_",
-                "parquet",
-            )
+            try:
+                cleanfile_result.data.export(
+                    session_folder.opendir(SessionNames.CLEANED_FOLDER),
+                    file_locator.meta["uuid"] + "_",
+                    "parquet",
+                )
+            except Exception as e:
+                log.error(
+                    f"Error exporting cleanfile for {basename(file_locator.name)}: {e}"
+                )
             log.info(f"Cleanfile exported for {basename(file_locator.name)}")
             error_report.extend(cleanfile_result.errors)
 
