@@ -215,15 +215,19 @@ def process_files(
             cleanfile_result.data = prepare_export(
                 cleanfile_result.data, output_config, profile="PAN"
             )
+            log.info(f"Cleanfile export prepared for {basename(file_locator.name)}")
 
             cleanfile_result.data.export(
                 session_folder.opendir(SessionNames.CLEANED_FOLDER),
                 file_locator.meta["uuid"] + "_",
                 "parquet",
             )
+            log.info(f"Cleanfile exported for {basename(file_locator.name)}")
             error_report.extend(cleanfile_result.errors)
 
-            log.info(f"Cleanfile exported for {basename(file_locator.name)}")
+            log.info(
+                f"Cleanfile errors found in {basename(file_locator.name)} added to report"
+            )
 
             enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
             enrich_result.data.export(
