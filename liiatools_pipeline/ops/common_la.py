@@ -86,9 +86,10 @@ def process_files(
     session_id: str,
     config: CleanConfig,
 ):
-    log.info("Procesing Files...")
-    error_report = ErrorContainer()
+    la_name = authorities.get_by_code(config.input_la_code)
+    log.info(f"Processing {config.dataset} {la_name} files...")
 
+    error_report = ErrorContainer()
     current_path = f"{config.input_la_code}/{config.dataset}"
     if current.fs.isdir(current_path):
         log.info("Removing existing LA data...")
@@ -96,7 +97,6 @@ def process_files(
         for file in current_files:
             current.fs.remove(f"{current_path}/{file}")
 
-    la_name = authorities.get_by_code(config.input_la_code)
     output_config = pipeline_config(config)
     la_signed = output_config.la_signed[la_name]["PAN"]
     if la_signed == "No":
@@ -223,6 +223,8 @@ def process_files(
             )
             error_report.extend(cleanfile_result.errors)
 
+            log.info(f"Cleanfile exported for {basename(file_locator.name)}")
+
             enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
             enrich_result.data.export(
                 session_folder.opendir(SessionNames.ENRICHED_FOLDER),
@@ -230,6 +232,8 @@ def process_files(
                 "parquet",
             )
             error_report.extend(enrich_result.errors)
+
+            log.info(f"Enrichfile exported for {basename(file_locator.name)}")
 
             degraded_result = degrade_data(enrich_result.data, output_config, metadata)
             degraded_result.data.export(
@@ -240,11 +244,15 @@ def process_files(
             error_report.extend(degraded_result.errors)
             current.add(degraded_result.data, config.input_la_code, year, month)
 
+            log.info(f"Degraded file exported for {basename(file_locator.name)}")
+
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
             error_report.set_property("filename", file_locator.name)
             error_report.set_property("uuid", uuid)
+            log.info(f"Finished processing {basename(file_locator.name)} errors")
 
+    log.info(f"Writing error report for {config.input_la_code} {config.dataset}")
     error_report.set_property("session_id", session_id)
     error_report_name = (
         f"{config.input_la_code}_{config.dataset}_{session_id}_error_report.csv"
@@ -259,6 +267,8 @@ def process_files(
     for location in log_locations:
         with location.open(error_report_name, "w") as FILE:
             error_report.to_dataframe().to_csv(FILE, index=False)
+
+    log.info(f"Error report for {config.input_la_code} {config.dataset}")
 
 
 @op()
