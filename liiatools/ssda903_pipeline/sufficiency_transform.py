@@ -118,6 +118,7 @@ dim_tables = {
             25,
             26,
             27,
+            28,
         ],
         "PlacementTypeCode": [
             "-1",
@@ -128,7 +129,6 @@ dim_tables = {
             "H5",
             "K1",
             "K2",
-            "K3",
             "P1",
             "P2",
             "P3",
@@ -149,6 +149,7 @@ dim_tables = {
             "U5",
             "U6",
             "Z1",
+            "K3",
         ],
         "PlacementTypeDescription": [
             "Unknown",
@@ -159,7 +160,6 @@ dim_tables = {
             "Semi-independent living accommodation not subject to children's homes regulations",
             "Secure children's homes",
             "Children's Homes subject to Children's Homes Regulations",
-            "Registered supported accommodation",
             "Placed with own parent(s) or other person(s) with parental responsibility",
             "Independent living for example in a flat, lodgings, bedsit, bed and breakfast (B&B) or with friends, with or without formal support",
             "Residential employment",
@@ -180,6 +180,7 @@ dim_tables = {
             "Foster placement with other foster carer(s) who is/are also an approved adopter(s) - fostering for adoption /concurrent planning",
             "Foster placement with other foster carer(s) - not long term or fostering for adoption /concurrent planning",
             "Other placements (must be listed on a schedule sent to DfE with annual submission)",
+            "Registered supported accommodation",
         ],
     },
     "dimReasonEpisodeCeased": {
