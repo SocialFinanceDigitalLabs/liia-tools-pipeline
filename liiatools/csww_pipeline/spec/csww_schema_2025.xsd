@@ -6,7 +6,7 @@
   <xs:complexType name="messagetype">
     <xs:sequence>
       <xs:element name="Header" type="headertype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="LALevelVacancies" type="vacancytype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="LALevel" type="vacancytype" minOccurs="1" maxOccurs="1"/>
 	  <xs:element name="CSWWWorker" type="workertype" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
