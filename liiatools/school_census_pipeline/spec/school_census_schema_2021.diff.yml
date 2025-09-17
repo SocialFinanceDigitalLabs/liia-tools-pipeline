@@ -328,17 +328,17 @@ spring:
       - senexpert
   column_map.termlyexclusionsonroll.reason1:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlyexclusionsonroll.reason2:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlyexclusionsonroll.reason3:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlysessiondetailsoffroll.absencesessions:
@@ -438,17 +438,17 @@ summer:
       - senexpert
   column_map.termlyexclusionsonroll.reason1:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlyexclusionsonroll.reason2:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlyexclusionsonroll.reason3:
     type: add
-    description: Adds new column for termlyexclusionsoffroll
+    description: Adds new column for termlyexclusionsonroll
     value:
       *exclusion-reason
   column_map.termlysessiondetailsoffroll.absencesessions:

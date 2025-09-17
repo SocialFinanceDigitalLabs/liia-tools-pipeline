@@ -709,7 +709,7 @@ autumn:
       plaa
   column_map.pupilonroll.countryofbirth:
     type: add
-    description: Adds new column for pupilnolongeronroll
+    description: Adds new column for pupilonroll
     value:
       *nationality
   column_map.pupilonroll.proficiencyinenglish:
@@ -738,14 +738,14 @@ autumn:
       - incare
   column_map.termlyexclusionsonroll:
     type: remove
-    description: Remove column from termlyexclusionsoffroll
+    description: Remove column from termlyexclusionsonroll
     value:
       - incare
 
 spring:
   column_map.addresses.uniquepropertyreferencenumber:
     type: add
-    description: Adds new column for addressesoffroll
+    description: Adds new column for addresses
     value:
       *uprn
   column_map.nationalitiesoffroll:
@@ -792,7 +792,7 @@ spring:
       plaa
   column_map.pupilonroll.countryofbirth:
     type: add
-    description: Adds new column for pupilnolongeronroll
+    description: Adds new column for pupilonroll
     value:
       *nationality
   column_map.pupilonroll.proficiencyinenglish:
@@ -849,14 +849,14 @@ spring:
       - incare
   column_map.termlyexclusionsonroll:
     type: remove
-    description: Remove column from termlyexclusionsoffroll
+    description: Remove column from termlyexclusionsonroll
     value:
       - incare
 
 summer:
   column_map.addresses.uniquepropertyreferencenumber:
     type: add
-    description: Adds new column for addressesoffroll
+    description: Adds new column for addresses
     value:
       *uprn
   column_map.nationalitiesoffroll:
@@ -903,7 +903,7 @@ summer:
       plaa
   column_map.pupilonroll.countryofbirth:
     type: add
-    description: Adds new column for pupilnolongeronroll
+    description: Adds new column for pupilonroll
     value:
       *nationality
   column_map.termlyexclusionsoffroll:
@@ -913,6 +913,6 @@ summer:
       - incare
   column_map.termlyexclusionsonroll:
     type: remove
-    description: Remove column from termlyexclusionsoffroll
+    description: Remove column from termlyexclusionsonroll
     value:
       - incare
