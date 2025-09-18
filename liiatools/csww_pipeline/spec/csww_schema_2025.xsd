@@ -74,7 +74,7 @@
     <xs:sequence>
       <xs:element name="AgencyWorker" type="agencyworkertype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="FTE" type="ftetype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="FTE" type="ftedecimal" minOccurs="0" maxOccurs="1"/>
 	    <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
@@ -86,7 +86,7 @@
 	    <xs:element name="RoleEndDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <xs:element name="LeaverDestination" type="leavertype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="ReasonLeave" type="reasontype" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="FTE30" type="ftetype" minOccurs="0" maxOccurs="1"/>
+	    <xs:element name="FTE30" type="ftedecimal" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Cases30" type="xs:integer" minOccurs="0" maxOccurs="1"/>
       <xs:element name="WorkingDaysLost" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
 	    <xs:element name="ContractWeeks" type="onedecimalplace" minOccurs="0" maxOccurs="unbounded"/>
@@ -130,7 +130,7 @@
     </xs:restriction>
   </xs:simpleType>
   
-  <xs:simpleType name="ftetype">
+  <xs:simpleType name="ftedecimal">
     <xs:restriction base="xs:decimal">
         <xs:fractionDigits fixed="true" value="6"/>
 		<xs:minInclusive value="0"/>
