@@ -10,11 +10,19 @@
       <!-- Changed min from 0 in line below as it must be compulsory, right? -->
       <xs:element name="Header" type="headertype" minOccurs="1" maxOccurs="1"/>
       <!-- Added lines below based on 2 lines that have now been commented out from csww 2025 schema (2023 technical spec not very helpful...)-->
+      <!-- Could we rename below 'PersonDetails' to 'Person' and 'persondetailstype' to 'persontype' so it's similar to pg27 of 2023 doc?-->
       <xs:element name="PersonDetails" type="persondetailstype" minOccurs="0" maxOccurs="1"/>
+      <!-- Could we rename below 'RequestsforEHCNeedsAssessment' to 'Requests' and 'requestsforehcneedsassessmenttype' to 'requeststype' so it's similar to pg28 of 2023 doc?-->
       <xs:element name="RequestsForEHCNeedsAssessment" type="requestsforehcneedsassessmenttype" minOccurs="0" maxOccurs="1"/>
+      <!-- Could we rename below 'EHCNeedsAssessments' to 'Assessment' and 'ehcneedsassessmentstype' to 'assessmenttype' so it's similar to pg28 of 2023 doc?-->
       <xs:element name="EHCNeedsAssessments" type="ehcneedsassessmentstype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
+      <!-- Do we need PlanDetail here? If so, need to add further below too -->
+      <!-- Could we rename below 'Placements' to 'PlanDetail' and 'placementstype' to 'plandetailtype' so it's similar to pg28 of 2023 doc?-->
       <xs:element name="Placements" type="placementstype" minOccurs="0" maxOccurs="1"/>
+      <!-- Need to add ActivePlans somewhere here? If so, will need to add further below as well -->
+      <!-- Need to add PlacementDetail somewhere here? If so, will need to add further below as well -->
+      <!-- Need to add SENneed somewhere here? If so, will need to add further below as well -->
       <!-- Remove 2 lines below -->
       <!-- <xs:element name="LALevelVacancies" type="vacancytype" minOccurs="1" maxOccurs="1"/> -->
 	  <!-- <xs:element name="CSWWWorker" type="workertype" minOccurs="1" maxOccurs="unbounded"/> -->
@@ -67,62 +75,123 @@
         </xs:simpleType>
       </xs:element>
       <!-- Should minoccurs be 1 on line below? -->
-      <!-- In CSWW it says 'CSWW Template v1.0' whereas in SEN2 it says 'Supplier Reference' so is string still okay in line below? -->
       <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <!-- I NEED TO ADD 'Release' HERE - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this?-->
+      <!-- I added 'SerialNo' below, using LEA example -->
+      <xs:element name="SerialNo" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" >
+            <xs:pattern value="\d{3}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
       <!-- Should minoccurs be 1 on line below? -->
-      <!-- I NEED TO ADD 'Release' HERE -->
-      <!-- I NEED TO ADD 'SerialNo' HERE -->
       <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
-      <!-- I NEED TO ADD 'DMO' HERE -->
-      <!-- I NEED TO ADD 'DCO' HERE-->
+      <!-- I added 'DMO' below using SourceLevel example but changed minoccurs to 1 -->
+      <xs:element name="DMO" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+          <!-- Changed 'L' to 'Y' below-->
+            <xs:enumeration value="Y"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <!-- I added 'DCO' below using SourceLevel example but changed minoccurs to 1-->
+      <xs:element name="DMO" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+          <!-- Changed 'L' to 'Y' below-->
+            <xs:enumeration value="Y"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="vacancytype">
+
+
+
+
+
+
+<!-- Need to finish below - if changes are made to wording above, they'll need changing here too -->
+
+  <xs:complexType name="persondetailstype">
     <xs:sequence>
-      <xs:element name="NumberOfVacancies" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="RecruitmentBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="RetentionBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="PerformanceAward" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="CarAllowance" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="RelocationPackage" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="RegionalWeighting" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="CostSWE" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="CostDBS" type="noallsometype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="OtherAllowances" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="workertype">
+<xs:complexType name="requestsforehcneedsassessmenttype">
     <xs:sequence>
-      <xs:element name="AgencyWorker" type="agencyworkertype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="FTE" type="ftedecimal" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="QualLevel" type="qualtype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="OrgRole" type="roletype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="RoleStartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="StartOrigin" type="origintype" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="RoleEndDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="LeaverDestination" type="leavertype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="ReasonLeave" type="reasontype" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="FTE30" type="ftedecimal" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Cases30" type="xs:integer" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="WorkingDaysLost" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
-	    <xs:element name="ContractWeeks" type="onedecimalplace" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="unbounded"/>
-	    <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="BaseSalary" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="RRPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="OtherPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
     </xs:sequence>
   </xs:complexType>
+
+<xs:complexType name="ehcneedsassessmenttype">
+    <xs:sequence>
+      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
+    </xs:sequence>
+  </xs:complexType>
+
+<xs:complexType name="namedplantype">
+    <xs:sequence>
+      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
+    </xs:sequence>
+  </xs:complexType>
+
+<xs:complexType name="placementstype">
+    <xs:sequence>
+      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
+    </xs:sequence>
+  </xs:complexType>
+
+<!-- Commented out the following -->
+  <!-- <xs:complexType name="vacancytype"> -->
+    <!-- <xs:sequence> -->
+      <!-- <xs:element name="NumberOfVacancies" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="RecruitmentBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="RetentionBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="PerformanceAward" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="CarAllowance" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="RelocationPackage" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="RegionalWeighting" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="CostSWE" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="CostDBS" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="OtherAllowances" type="xs:string" minOccurs="1" maxOccurs="1"/> -->
+    <!-- </xs:sequence> -->
+  <!-- </xs:complexType> -->
+
+  <!-- <xs:complexType name="workertype"> -->
+    <!-- <xs:sequence> -->
+      <!-- <xs:element name="AgencyWorker" type="agencyworkertype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/> -->
+      <!-- <xs:element name="FTE" type="ftedecimal" minOccurs="0" maxOccurs="1"/> -->
+	    <!-- <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="QualLevel" type="qualtype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/> -->
+	    <!-- <xs:element name="OrgRole" type="roletype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="RoleStartDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="StartOrigin" type="origintype" minOccurs="0" maxOccurs="1"/> -->
+	    <!-- <xs:element name="RoleEndDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="LeaverDestination" type="leavertype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="ReasonLeave" type="reasontype" minOccurs="0" maxOccurs="1"/> -->
+	    <!-- <xs:element name="FTE30" type="ftedecimal" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="Cases30" type="xs:integer" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="WorkingDaysLost" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
+	    <!-- <xs:element name="ContractWeeks" type="onedecimalplace" minOccurs="0" maxOccurs="unbounded"/> -->
+      <!-- <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="unbounded"/> -->
+	    <!-- <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="unbounded"/> -->
+      <!-- <xs:element name="BaseSalary" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="RRPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
+      <!-- <xs:element name="OtherPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
+    <!-- </xs:sequence> -->
+  <!-- </xs:complexType> -->
   
   <xs:simpleType name="onedecimalplace">
     <xs:restriction base="xs:decimal">
