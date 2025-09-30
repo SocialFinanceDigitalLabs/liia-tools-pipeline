@@ -452,22 +452,4 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="disabilitytype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="NONE"><xs:annotation><xs:documentation>No disability</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="MOB"><xs:annotation><xs:documentation>Mobility</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="HAND"><xs:annotation><xs:documentation>Hand function</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="PC"><xs:annotation><xs:documentation>Personal care</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="INC"><xs:annotation><xs:documentation>Incontinence</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="COMM"><xs:annotation><xs:documentation>Communication</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="LD"><xs:annotation><xs:documentation>Learning</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="HEAR"><xs:annotation><xs:documentation>Hearing</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="VIS"><xs:annotation><xs:documentation>Vision</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="BEH"><xs:annotation><xs:documentation>Behaviour</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="CON"><xs:annotation><xs:documentation>Consciousness</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="AUT"><xs:annotation><xs:documentation>Autism</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="DDA"><xs:annotation><xs:documentation>Other</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-
 </xs:schema>
