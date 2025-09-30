@@ -107,10 +107,10 @@ column_map:
         Other Self-Harm: *0_3_not_blank
         Danger to Others*: *0_3_not_blank
         CH History of Violence (Need) (Danger to Others*): *0_3_can_be_blank
-        CH Fustration Management (Need) (Danger to Others*): *0_3_can_be_blank
+        CH Frustration Management (Need) (Danger to Others*): *0_3_can_be_blank
         CH Bullying (Need) (Danger to Others*): *0_3_can_be_blank
         Hostility (Need) (Danger to Others*): *0_3_can_be_blank
-        CH Paraniod Thinking (Need) (Danger to Others*): *0_3_can_be_blank
+        CH Paranoid Thinking (Need) (Danger to Others*): *0_3_can_be_blank
         CH Secondary Gains from Anger (Need) (Danger to Others*): *0_3_can_be_blank
         CH Violent Thinking (Need) (Danger to Others*): *0_3_can_be_blank
         CH Awareness of Violence Potential (Strength): *0_3_can_be_blank
@@ -158,13 +158,13 @@ column_map:
         Bullying: *0_3_not_blank
         Victimisation/Exploitation*: *0_3_not_blank
         Duration of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
-        Age of Onset - Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
+        Age of Onset – Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Perception of Dangerousness (Victimisation/Exploitation*): *0_3_can_be_blank
         Knowledge of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Trauma Bond (Victimisation/Exploitation*): *0_3_can_be_blank
         Exploitation of Others (Victimisation/Exploitation*): *0_3_can_be_blank
         Reproductive Health (Victimisation/Exploitation*): *0_3_can_be_blank
-        Arrests for Liotering/Solicitaion (Victimisation/Exploitation*): *0_3_can_be_blank
+        Arrests for Loitering/Solicitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Exploitation History (Victimisation/Exploitation*): *0_3_can_be_blank
         Gang Involvement: *0_3_not_blank
         Language: *0_3_not_blank
