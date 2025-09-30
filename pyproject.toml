@@ -31,7 +31,6 @@ python-decouple = "^3.8"
 faust-cchardet = "^2.1.19"
 pydantic = "<2.0.0"
 pydantic-yaml = "^1.1.1"
-pyarrow = "^13.0.0"
 fs = "^2.4.16"
 fs-s3fs = "^1.1.1"
 backports-strenum = "^1.2.4"
@@ -44,6 +43,8 @@ alembic = "^1.13.1"
 python-dateutil = "^2.9.0.post0"
 chardet = "^5.2.0"
 liia-tools-pipeline-config = {git = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"}
+pre-commit = "^4.2.0"
+pyarrow = "^21.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0.1"

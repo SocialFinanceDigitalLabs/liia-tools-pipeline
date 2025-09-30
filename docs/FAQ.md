@@ -57,7 +57,7 @@ def _create_category_spec(field: str, file: Path) -> List[Category] | None:
 ```json
 "id": "YEAR",
 "type": "integer",
-"enrich": "year",
+"enrich": "add_year",
 "sort": 0
 ```
 
