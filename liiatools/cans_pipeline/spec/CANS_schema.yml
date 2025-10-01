@@ -1,5 +1,5 @@
 column_map:
-    6_21:
+    "6_21":
         Assessor Name: &string_not_blank
             string: "alphanumeric"
             canbeblank: false
@@ -246,7 +246,7 @@ column_map:
         Medication Adherence: *0_3_can_be_blank
         Intimate Relationships: *0_3_can_be_blank
         Transportation: *0_3_can_be_blank
-    0_5:
+    "0_5":
         Assessor Name: *string_not_blank
         Assessment Date: *date_not_blank
         Child Unique ID: *string_not_blank
