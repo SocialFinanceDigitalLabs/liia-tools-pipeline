@@ -10,6 +10,10 @@ from liiatools.annex_a_pipeline.spec import load_schema as load_schema_annex_a
 from liiatools.annex_a_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_annex_a,
 )
+from liiatools.cans_pipeline.spec import load_schema as load_schema_cans
+from liiatools.cans_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_cans,
+)
 from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_cin,
@@ -112,147 +116,144 @@ def process_files(
     else:
         log.info(f"{la_name} is signed for PAN {config.dataset} data processing.")
 
-        for file_locator in incoming_files:
-            log.info(f"Processing file {basename(str(file_locator.name))}")
-            uuid = file_locator.meta["uuid"]
-            year = pl.discover_year(file_locator)
-            if year is None:
+    for file_locator in incoming_files:
+        log.info(f"Processing file {basename(file_locator.name)}")
+        uuid = file_locator.meta["uuid"]
+        year = pl.discover_year(file_locator)
+        if year is None:
+            error_report.append(
+                dict(
+                    type="MissingYear",
+                    message="Could not find a year in the filename or path",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+        log.info(f"Discovered year in {basename(file_locator.name)}")
+
+        if (
+            check_year_within_range(year, max(output_config.retention_period.values()))
+            is False
+        ):
+            error_report.append(
+                dict(
+                    type="RetentionPeriod",
+                    message="This file is not within the year ranges of data retention policy",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+        log.info(
+            f"Year in {basename(str(file_locator.name))} is within retention period"
+        )
+
+        if config.input_la_code is None:
+            error_report.append(
+                dict(
+                    type="MissingLA",
+                    message="Could not find a local authority in the filename or path",
+                    filename=file_locator.name,
+                    uuid=uuid,
+                )
+            )
+            continue
+        log.info(f"Local authority code found in {basename(str(file_locator.name))}")
+
+        month = None
+        if config.dataset in ["annex_a", "pnw_census"]:
+            month = pl.discover_month(file_locator)
+            if month is None:
                 error_report.append(
                     dict(
-                        type="MissingYear",
-                        message="Could not find a year in the filename or path",
+                        type="MissingMonth",
+                        message="Could not find a month in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
                 continue
-            log.info(f"Discovered year in {basename(str(file_locator.name))}")
+            log.info(f"Month found in {basename(str(file_locator.name))}")
 
-            if (
-                check_year_within_range(
-                    year, max(output_config.retention_period.values())
+        try:
+            schema = (
+                globals()[f"load_schema_{config.dataset}"]()
+                if config.dataset in ["annex_a", "pnw_census", "cans"]
+                else globals()[f"load_schema_{config.dataset}"](year)
+            )
+        except KeyError:
+            log.error(
+                f"Schema for dataset {config.dataset} not found. Skipping file {file_locator.name}"
+            )
+            continue
+        log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
+
+        metadata = dict(
+            year=year, month=month, schema=schema, la_code=config.input_la_code
+        )
+
+        try:
+            cleanfile_result = (
+                globals()[f"task_cleanfile_{config.dataset}"](
+                    file_locator, schema, output_config, logger=log
                 )
-                is False
-            ):
-                error_report.append(
-                    dict(
-                        type="RetentionPeriod",
-                        message="This file is not within the year ranges of data retention policy",
-                        filename=file_locator.name,
-                        uuid=uuid,
-                    )
+                if config.dataset == "cin"
+                else globals()[f"task_cleanfile_{config.dataset}"](
+                    file_locator, schema, logger=log
                 )
-                continue
-            log.info(
-                f"Year in {basename(str(file_locator.name))} is within retention period"
             )
-
-            if config.input_la_code is None:
-                error_report.append(
-                    dict(
-                        type="MissingLA",
-                        message="Could not find a local authority in the filename or path",
-                        filename=file_locator.name,
-                        uuid=uuid,
-                    )
+        except StreamError as e:
+            error_report.append(
+                dict(
+                    type="StreamError",
+                    message=str(e),
+                    filename=file_locator.name,
+                    uuid=uuid,
                 )
-                continue
-            log.info(
-                f"Local authority code found in {basename(str(file_locator.name))}"
             )
+            continue
+        log.info(f"Cleanfile task completed for {basename(str(file_locator.name))}")
 
-            month = None
-            if config.dataset in ["annex_a", "pnw_census"]:
-                month = pl.discover_month(file_locator)
-                if month is None:
-                    error_report.append(
-                        dict(
-                            type="MissingMonth",
-                            message="Could not find a month in the filename or path",
-                            filename=file_locator.name,
-                            uuid=uuid,
-                        )
-                    )
-                    continue
-                log.info(f"Month found in {basename(str(file_locator.name))}")
+        cleanfile_result.data = prepare_export(
+            cleanfile_result.data, output_config, profile="PAN"
+        )
 
-            try:
-                schema = (
-                    globals()[f"load_schema_{config.dataset}"]()
-                    if config.dataset in ["annex_a", "pnw_census"]
-                    else globals()[f"load_schema_{config.dataset}"](year)
-                )
-            except KeyError:
-                continue
-            log.info(
-                f"{config.dataset} schema loaded for {basename(str(file_locator.name))}"
-            )
+        cleanfile_result.data.export(
+            session_folder.opendir(SessionNames.CLEANED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
+        )
+        error_report.extend(cleanfile_result.errors)
 
-            metadata = dict(
-                year=year, month=month, schema=schema, la_code=config.input_la_code
-            )
+        log.info(f"Cleanfile exported for {basename(file_locator.name)}")
 
-            try:
-                cleanfile_result = (
-                    globals()[f"task_cleanfile_{config.dataset}"](
-                        file_locator, schema, output_config, logger=log
-                    )
-                    if config.dataset == "cin"
-                    else globals()[f"task_cleanfile_{config.dataset}"](
-                        file_locator, schema, logger=log
-                    )
-                )
-            except StreamError as e:
-                error_report.append(
-                    dict(
-                        type="StreamError",
-                        message=str(e),
-                        filename=file_locator.name,
-                        uuid=uuid,
-                    )
-                )
-                continue
-            log.info(f"Cleanfile task completed for {basename(str(file_locator.name))}")
+        enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
+        enrich_result.data.export(
+            session_folder.opendir(SessionNames.ENRICHED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
+        )
+        error_report.extend(enrich_result.errors)
 
-            cleanfile_result.data = prepare_export(
-                cleanfile_result.data, output_config, profile="PAN"
-            )
+        log.info(f"Enrichfile exported for {basename(file_locator.name)}")
 
-            cleanfile_result.data.export(
-                session_folder.opendir(SessionNames.CLEANED_FOLDER),
-                file_locator.meta["uuid"] + "_",
-                "parquet",
-            )
-            error_report.extend(cleanfile_result.errors)
+        degraded_result = degrade_data(enrich_result.data, output_config, metadata)
+        degraded_result.data.export(
+            session_folder.opendir(SessionNames.DEGRADED_FOLDER),
+            file_locator.meta["uuid"] + "_",
+            "parquet",
+        )
+        error_report.extend(degraded_result.errors)
+        current.add(degraded_result.data, config.input_la_code, year, month)
 
-            log.info(f"Cleanfile exported for {basename(file_locator.name)}")
+        log.info(f"Degraded file exported for {basename(file_locator.name)}")
 
-            enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
-            enrich_result.data.export(
-                session_folder.opendir(SessionNames.ENRICHED_FOLDER),
-                file_locator.meta["uuid"] + "_",
-                "parquet",
-            )
-            error_report.extend(enrich_result.errors)
+        error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
-            log.info(f"Enrichfile exported for {basename(file_locator.name)}")
-
-            degraded_result = degrade_data(enrich_result.data, output_config, metadata)
-            degraded_result.data.export(
-                session_folder.opendir(SessionNames.DEGRADED_FOLDER),
-                file_locator.meta["uuid"] + "_",
-                "parquet",
-            )
-            error_report.extend(degraded_result.errors)
-            current.add(degraded_result.data, config.input_la_code, year, month)
-
-            log.info(f"Degraded file exported for {basename(file_locator.name)}")
-
-            error_report.extend(current.deduplicate(cleanfile_result.data).errors)
-
-            error_report.set_property("filename", file_locator.name)
-            error_report.set_property("uuid", uuid)
-            log.info(f"Finished processing {basename(file_locator.name)} errors")
+        error_report.set_property("filename", file_locator.name)
+        error_report.set_property("uuid", uuid)
+        log.info(f"Finished processing {basename(file_locator.name)} errors")
 
     log.info(f"Writing error report for {config.input_la_code} {config.dataset}")
     error_report.set_property("session_id", session_id)
