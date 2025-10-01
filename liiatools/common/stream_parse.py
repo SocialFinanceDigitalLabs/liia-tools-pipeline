@@ -36,7 +36,7 @@ def dom_parse(source, filename, **kwargs):
                 )
             elif action == "end":
                 if elem.text and elem.text.strip():
-                    yield TextNode(cell=elem.text, filename=filename, text=None)
+                    yield TextNode(cell=elem.text, filename=filename, text=None, xml_row=elem.sourceline)
 
                 yield EndElement(tag=elem.tag, node=elem, filename=filename)
                 if elem.tail:

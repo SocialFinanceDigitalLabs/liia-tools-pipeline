@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,6 +12,7 @@ class ColumnConfig(BaseModel):
     enrich: str | list = None
     degrade: str = None
     sort: int = None
+    asc: bool = False
     exclude: List[str] = []
 
 
@@ -28,13 +29,15 @@ class TableConfig(BaseModel):
         return ix[value]
 
     @property
-    def sort_keys(self) -> List[str]:
+    def sort_keys(self) -> List[Tuple[str, bool]]:
         """
-        Returns a list of column ids that should be used to sort the table in order of priority
+        Returns a list of (column id, ascending) tuples that should be used to sort the table in order of priority
         """
-        sort_keys = [(c.id, c.sort) for c in self.columns if c.sort is not None]
-        sort_keys.sort(key=lambda x: x[1])
-        return [c[0] for c in sort_keys]
+        sort_tuples = [
+            (c.id, c.asc, c.sort) for c in self.columns if c.sort is not None
+        ]
+        sort_tuples.sort(key=lambda x: x[2])
+        return [(col_id, asc) for col_id, asc, _ in sort_tuples]
 
     def columns_for_profile(self, profile: str) -> List[ColumnConfig]:
         return [c for c in self.columns if profile not in c.exclude]

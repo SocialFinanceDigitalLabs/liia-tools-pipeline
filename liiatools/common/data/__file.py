@@ -40,6 +40,9 @@ class FileLocator:
 
     @property
     def name(self) -> str:
+        # This conditional splits the public path on AWS but relies on the format, may not work on other file systems, will break if AWS changes what they doing
+        if " on <" in str(self.__public_path):
+            return str(self.__public_path).split(" on <")[0]
         return self.__public_path
 
     @property

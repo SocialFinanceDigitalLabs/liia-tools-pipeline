@@ -10,8 +10,13 @@ def expanded_assessment_factors(
     Expands these values into a "one-hot" encoding of the values. Can optionally prefix the column names with a
     prefix string.
     """
+    assessments = (
+        data[data["Type"] == "AssessmentAuthorisationDate"]
+        .drop_duplicates(subset=["LAchildID", "AssessmentAuthorisationDate", "LA"])
+        .dropna(axis=1, how="all")
+        )
 
-    factors = data[[column_name]].copy()
+    factors = assessments[[column_name]].copy()
     factors[column_name] = factors[column_name].str.split(",")
     factors = factors.explode(column_name)
     factors[column_name] = factors[column_name].str.strip()
@@ -21,7 +26,7 @@ def expanded_assessment_factors(
     )
     factors_grouped = factors.groupby(factors.index).max()
 
-    factors_merged = data.merge(
+    factors_merged = assessments.merge(
         factors_grouped, how="left", left_index=True, right_index=True
     )
     factors_merged[factors_grouped.columns] = (

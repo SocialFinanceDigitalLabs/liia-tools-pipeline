@@ -18,7 +18,7 @@ column_map:
               - code: "Transition"
             canbeblank: false
         Agency/Region: *string_not_blank
-        Caregivers(s) Assessed?: &caregiver_assessed
+        Caregiver(s) Assessed?: &caregiver_assessed
             category:
               - code: "Yes"
               - code: "No"
@@ -43,9 +43,9 @@ column_map:
             canbeblank: false
         Talents & Interests: *0_3_not_blank
         Community Life: *0_3_not_blank
-        Relationship Permenance: *0_3_not_blank
+        Relationship Permanence: *0_3_not_blank
         Resiliency: *0_3_not_blank
-        Resourcesfulness: *0_3_not_blank
+        Resourcefulness: *0_3_not_blank
         Cultural Identity: *0_3_not_blank
         Natural Supports: *0_3_not_blank
         Family Functioning: *0_3_not_blank
@@ -71,9 +71,9 @@ column_map:
         Sleep: *0_3_not_blank
         School Attendance: *0_3_not_blank
         School Behaviour: *0_3_not_blank
-        School Acheivement: *0_3_not_blank
+        School Achievement: *0_3_not_blank
         Decision-Making: *0_3_not_blank
-        Psychosis: *0_3_not_blank
+        Psychosis (Thought Disorder): *0_3_not_blank
         Impulsivity/Hyperactivity: *0_3_na
         Attention/Concentration: *0_3_not_blank
         Depression: *0_3_not_blank
@@ -104,28 +104,28 @@ column_map:
         Psycho-somatic Symptoms (Somatisation): *0_3_not_blank
         Suicide Risk: *0_3_not_blank
         Non-Suicidal Self-Harm/Self-Injury: *0_3_not_blank
-        Other Self-harm: *0_3_not_blank
+        Other Self-Harm: *0_3_not_blank
         Danger to Others*: *0_3_not_blank
         CH History of Violence (Need) (Danger to Others*): *0_3_can_be_blank
-        CH Fustration Management (Need) (Danger to Others*): *0_3_can_be_blank
+        CH Frustration Management (Need) (Danger to Others*): *0_3_can_be_blank
         CH Bullying (Need) (Danger to Others*): *0_3_can_be_blank
         Hostility (Need) (Danger to Others*): *0_3_can_be_blank
-        CH Paraniod Thinking (Need) (Danger to Others*): *0_3_can_be_blank
+        CH Paranoid Thinking (Need) (Danger to Others*): *0_3_can_be_blank
         CH Secondary Gains from Anger (Need) (Danger to Others*): *0_3_can_be_blank
         CH Violent Thinking (Need) (Danger to Others*): *0_3_can_be_blank
         CH Awareness of Violence Potential (Strength): *0_3_can_be_blank
         CH Response to Consequences (Strength): *0_3_can_be_blank
         CH Commitment to Self-Control (Strength): *0_3_can_be_blank
         CH Treatment Involvement (Strength): *0_3_can_be_blank
-        Sexual Agression*: *0_3_not_blank
-        Relationship (Sexual Agression*): *0_3_can_be_blank
-        Physical Force/Threat (Sexual Agression*): *0_3_can_be_blank
-        Planning (Sexual Agression*): *0_3_can_be_blank
-        Age Differential (Sexual Agression*): *0_3_can_be_blank
-        Type of Sex Act (Sexual Agression*): *0_3_can_be_blank
-        Response to Accusation (Sexual Agression*): *0_3_can_be_blank
-        Temporal Consistency (Sexual Agression*): *0_3_can_be_blank
-        History of Sexually Aggressive Behaviour (Sexual Agression*): *0_3_can_be_blank
+        Sexual Aggression*: *0_3_not_blank
+        Relationship (Sexual Aggression*): *0_3_can_be_blank
+        Physical Force/Threat (Sexual Aggression*): *0_3_can_be_blank
+        Planning (Sexual Aggression*): *0_3_can_be_blank
+        Age Differential (Sexual Aggression*): *0_3_can_be_blank
+        Type of Sex Act (Sexual Aggression*): *0_3_can_be_blank
+        Response to Accusation (Sexual Aggression*): *0_3_can_be_blank
+        Temporal Consistency (Sexual Aggression*): *0_3_can_be_blank
+        History of Sexually Aggressive Behaviour (Sexual Aggression*): *0_3_can_be_blank
         Running Away*: *0_3_not_blank
         Frequency of Running (Running Away*): *0_3_can_be_blank
         Consistency of Destination (Running Away*): *0_3_can_be_blank
@@ -158,13 +158,13 @@ column_map:
         Bullying: *0_3_not_blank
         Victimisation/Exploitation*: *0_3_not_blank
         Duration of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
-        Age of Onset - Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
+        Age of Onset – Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Perception of Dangerousness (Victimisation/Exploitation*): *0_3_can_be_blank
         Knowledge of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Trauma Bond (Victimisation/Exploitation*): *0_3_can_be_blank
         Exploitation of Others (Victimisation/Exploitation*): *0_3_can_be_blank
         Reproductive Health (Victimisation/Exploitation*): *0_3_can_be_blank
-        Arrests for Liotering/Solicitaion (Victimisation/Exploitation*): *0_3_can_be_blank
+        Arrests for Loitering/Solicitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Exploitation History (Victimisation/Exploitation*): *0_3_can_be_blank
         Gang Involvement: *0_3_not_blank
         Language: *0_3_not_blank
@@ -190,7 +190,7 @@ column_map:
         Witness to Community/School Violence: *yes_no
         Witness/Victim of Criminal Activity: *yes_no
         War/Terrorism Affected: *yes_no
-        Discruption in Caregiving/Attachment: *yes_no
+        Disruption in Caregiving/Attachment: *yes_no
         Intrusions/Re-experiencing: *0_3_not_blank
         Emotional and/or Physical Dysregulation: *0_3_not_blank
         Traumatic Grief: *0_3_not_blank
@@ -249,14 +249,14 @@ column_map:
     "0_5":
         Assessor Name: *string_not_blank
         Assessment Date: *date_not_blank
-        Youth Unique ID: *string_not_blank
-        Youth Last Name: *string_not_blank
-        Youth First Name: *string_not_blank
+        Child Unique ID: *string_not_blank
+        Child Last Name: *string_not_blank
+        Child First Name: *string_not_blank
         DOB: *date_not_blank
         Age at Time of Assessment: *string_not_blank
         Assessment Type: *assessment_type
         Agency/Region: *string_not_blank
-        Caregivers(s) Assessed?: *caregiver_assessed
+        Caregiver(s) Assessed?: *caregiver_assessed
         Caregiver(s) Name(s): *string_not_blank
         Impulsivity/Hyperactivity (3yrs+): *0_3_not_blank
         Depression: *0_3_not_blank

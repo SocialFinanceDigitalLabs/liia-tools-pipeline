@@ -258,7 +258,7 @@ def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=Fals
 @streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
 def add_table_name_from_headers(event, schema: DataSchema):
     """
-    Match the loaded table to relevant schema table name using table headers
+    Matches headers against sets of expected values to match a table in the config.
 
     :param event: A filtered list of event objects of type StartTable
     :return: An updated list of event objects
@@ -273,7 +273,15 @@ def add_table_name_from_headers(event, schema: DataSchema):
                 type="BlankHeaders",
                 message=f"Could not identify headers as first row is blank",
             )
-        table_name = schema.get_table_from_headers(event.headers)
+        try:
+            table_name = schema.get_table_from_headers(event.headers)
+        except ValueError as e:
+            if str(e) == "The actual column name matched multiple configured columns":
+                return EventErrors.add_to_event(
+                    event,
+                    type="HeaderError",
+                    message=f"Could not identify as a column name matched multiple columns in the configuration",
+                )
 
     if table_name:
         return event.from_event(
@@ -527,6 +535,7 @@ def collect_errors(stream):
                     "c_ix",
                     "table_name",
                     "header",
+                    "xml_row",
                 )
                 collected_errors.append(error_entry)
 
@@ -752,7 +761,7 @@ def convert_column_header_to_match(event, schema: DataSchema):
     :param schema: The data schema in a DataSchema class
     :return: An updated list of event objects
     """
-    if hasattr(event, "table_name") and hasattr(event, "header"):
+    if hasattr(event, "table_name") and getattr(event, "header", None):
         column_config = schema.table.get(event.table_name)
         for column in column_config:
             if column_config[column].header_regex is not None:
@@ -762,6 +771,11 @@ def convert_column_header_to_match(event, schema: DataSchema):
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
+        logger.debug(
+            'No match found for cell with header="%s" and table_name="%s"',
+            event.header,
+            event.table_name,
+        )
     return event
 
 
