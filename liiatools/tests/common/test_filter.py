@@ -402,8 +402,6 @@ def test_clean_regex():
     assert_errors(cleaned_event)
 
 
-"""
-TODO: Implement once cans_config is available
 def test_table_spec_from_filename():
     schema = cans_schema()
     output_config = cans_config()
@@ -467,4 +465,3 @@ def test_table_spec_from_filename():
         )["error_message"]
         == "Failed to identify table based on filename, file name: "
     )
-"""
