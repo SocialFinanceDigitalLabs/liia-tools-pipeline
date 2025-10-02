@@ -47,7 +47,6 @@ def cin_deduplication(
         data = DataContainer()
         cin_table = re.search(r"cin", file)
         la_code = re.search(r"([A-Za-z0-9]*)_", file)
-        print(la_code.group(1))
         with session_folder.open(file, "r") as f:
             try:
                 df = pd.read_csv(f)
