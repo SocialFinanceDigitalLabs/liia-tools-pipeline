@@ -10,6 +10,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cin_la import cin_deduplicate_files
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
@@ -131,6 +132,32 @@ def ssda903_fix_episodes_sensor(context):
     if latest_run_id:  # Ensure there is at least one ssda903 run record
         yield RunRequest(run_key=latest_run_id, run_config=RunConfig())
 
+
+@sensor(
+    job=cin_deduplicate_files,
+    description="Runs cin_deduplicate_files job once concatenate job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cin_deduplicate_files_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=concatenate.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cin"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    latest_run_id = find_previous_matching_dataset_run(
+        run_records,
+        "cin",
+    )  # Get the most recent cin run id
+    context.log.info(f"Run key: {latest_run_id}")
+    if latest_run_id:  # Ensure there is at least one cin run record
+        yield RunRequest(run_key=latest_run_id, run_config=RunConfig())
 
 @sensor(
     job=move_error_reports,

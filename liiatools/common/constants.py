@@ -48,3 +48,8 @@ class SessionNamesCINReports(StrEnum):
     """Enum for CIN Reports session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+class SessionNamesCINDedup(StrEnum):
+    """Enum for CIN Dedup session folders."""
+
+    INCOMING_FOLDER = "incoming"

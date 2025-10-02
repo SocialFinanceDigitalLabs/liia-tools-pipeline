@@ -248,7 +248,8 @@ def process_files(
 
             log.info(f"Degraded file exported for {basename(file_locator.name)}")
 
-            error_report.extend(current.deduplicate(cleanfile_result.data).errors)
+            if config.dataset != "cin":
+                error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
             error_report.set_property("filename", file_locator.name)
             error_report.set_property("uuid", uuid)
@@ -301,7 +302,7 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         pl.remove_files(la_files_regex, existing_files, concat_folder)
         log.info(f"Successfully removed files")
 
-        if config.dataset == "annex_a":
+        if config.dataset in ("annex_a","cin"):
             concat_data = current.current(la_code, deduplicate_mode="N")
         else:
             concat_data = current.current(la_code)
