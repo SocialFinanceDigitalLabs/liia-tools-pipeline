@@ -15,6 +15,7 @@
       <!-- Could we rename below 'RequestsforEHCNeedsAssessment' to 'Requests' and 'requestsforehcneedsassessmenttype' to 'requeststype' so it's similar to pg28 of 2023 doc?-->
       <xs:element name="RequestsForEHCNeedsAssessment" type="requestsforehcneedsassessmenttype" minOccurs="0" maxOccurs="1"/>
       <!-- Could we rename below 'EHCNeedsAssessments' to 'Assessment' and 'ehcneedsassessmentstype' to 'assessmenttype' so it's similar to pg28 of 2023 doc?-->
+      <!-- SC doesn't have the 3 lines I added below in his code... -->
       <xs:element name="EHCNeedsAssessments" type="ehcneedsassessmentstype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
       <!-- Do we need PlanDetail here? If so, need to add further below too -->
@@ -68,19 +69,22 @@
         </xs:simpleType>
       </xs:element>
       <xs:element name="LEA" minOccurs="1" maxOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string" >
-            <xs:pattern value="\d{3}"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
+      <!-- Bits below commented out by SC - why? -->
+        <!-- <xs:simpleType> -->
+          <!-- <xs:restriction base="xs:string" > -->
+            <!-- <xs:pattern value="\d{3}"/> -->
+          <!-- </xs:restriction> -->
+        <!-- </xs:simpleType> -->
+      <!-- </xs:element> -->
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <!-- I NEED TO ADD 'Release' HERE - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this?-->
+      <!-- Is 'Release' bit below ok? - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this?-->
+      <xs:element name="Release" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <!-- I added 'SerialNo' below, using LEA example -->
       <xs:element name="SerialNo" minOccurs="1" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
+          <!-- SC has \d{3}\d* on line below -->
             <xs:pattern value="\d{3}"/>
           </xs:restriction>
         </xs:simpleType>
@@ -96,8 +100,9 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
+      <!-- HOWEVER, SC has the following line instead <xs:element name="DMO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/> -->
       <!-- I added 'DCO' below using SourceLevel example but changed minoccurs to 1-->
-      <xs:element name="DMO" minOccurs="1" maxOccurs="1">
+      <xs:element name="DCO" minOccurs="1" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">
           <!-- Changed 'L' to 'Y' below-->
@@ -105,6 +110,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
+      <!-- HOWEVER, SC has the following line instead <xs:element name="DCO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/> -->
     </xs:sequence>
   </xs:complexType>
 
