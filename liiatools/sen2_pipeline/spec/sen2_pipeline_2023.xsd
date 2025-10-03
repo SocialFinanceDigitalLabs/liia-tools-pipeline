@@ -5,7 +5,7 @@
 
   <xs:complexType name="messagetype">
     <xs:sequence>
-      <xs:element name="Header" type="headertype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Header" type="headertype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="Persons" type="personstype" minOccurs="1" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
@@ -73,7 +73,7 @@
       <xs:element name="UPN" type="upntype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="UniqueLearnerNumber" type="ulntype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="UPNunknown" type="unknownupntype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="1"/> 
+      <xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/> 
     </xs:sequence>
   </xs:complexType>
 
@@ -99,7 +99,6 @@
         <xs:element name="AssessmentTribunal" type="assesstribtype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="OtherMediation" type="othermedtype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="Week20" type="week20type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
@@ -123,7 +122,7 @@
     <xs:sequence>
         <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
         <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
@@ -134,10 +133,10 @@
   <xs:complexType name="activeplanstype">
     <xs:sequence>
         <xs:element name="TransferLA" type="leatype" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
         <xs:element name="WBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
         <xs:element name="LastReview" type="xs:date" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
@@ -204,10 +203,10 @@
       <xs:enumeration value="UN1" />
       <xs:enumeration value="UN2" />
       <xs:enumeration value="UN3" />
-      <xs:enumeration value="UN4" />
       <xs:enumeration value="UN5" />
-      <xs:enumeration value="UN6" />
-      <xs:enumeration value="UN7" />
+      <xs:enumeration value="UN8" />
+      <xs:enumeration value="UN9" />
+      <xs:enumeration value="UN10" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -393,6 +392,7 @@
       <xs:enumeration value="MSI"><xs:annotation><xs:documentation> Multi-sensory impairment</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="PD"><xs:annotation><xs:documentation>Physical disability</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="ASD"><xs:annotation><xs:documentation>Autistic spectrum disorder</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="DS"><xs:annotation><xs:documentation>Down Syndrome</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other difficulty</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
