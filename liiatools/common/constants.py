@@ -48,3 +48,9 @@ class SessionNamesCINReports(StrEnum):
     """Enum for CIN Reports session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+
+class SessionNamesCANSMapping(StrEnum):
+    """Enum for CANS Mapping session folders."""
+
+    INCOMING_FOLDER = "incoming"

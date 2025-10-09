@@ -10,6 +10,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cans_la import cans_summary_columns
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
@@ -37,14 +38,26 @@ def find_previous_matching_dataset_run(run_records, dataset):
 
 @sensor(
     job=move_current_la,
-    description="Runs move_current_la job once clean job is complete",
+    description="Runs move_current_la job once clean job is complete, waits for cans_summary_columns if CANS is an allowed dataset",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def move_current_la_sensor(context):
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    cans_summary_columns_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=cans_summary_columns.name,
             statuses=[DagsterRunStatus.SUCCESS],
         ),
         order_by="update_timestamp",
@@ -55,6 +68,20 @@ def move_current_la_sensor(context):
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for clean job")
         latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+
+        if "cans" in allowed_datasets:
+            # Don't run move_current_la until cans_summary_columns has completed
+            if not cans_summary_columns_run_records:
+                context.log.info(
+                    f"No successful run records found for cans_summary_columns, skipping move_current_la"
+                )
+                return
+
+            latest_cans_summary_columns_run_id = cans_summary_columns_run_records[
+                0
+            ].dagster_run.run_id
+            latest_run_id = f"{latest_run_id}_{latest_cans_summary_columns_run_id}"
+
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
@@ -63,7 +90,7 @@ def move_current_la_sensor(context):
 
 @sensor(
     job=concatenate,
-    description="Runs concatenate job once move_current job is complete",
+    description="Runs concatenate job once move_current_la job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
@@ -73,9 +100,7 @@ def concatenate_sensor(context):
 
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
-            job_name=clean.name,
-            statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": allowed_datasets},
+            job_name=move_current_la.name, statuses=[DagsterRunStatus.SUCCESS]
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -85,10 +110,9 @@ def concatenate_sensor(context):
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for move_current_la job")
         for dataset in allowed_datasets:
-            latest_run_id = find_previous_matching_dataset_run(
-                run_records,
-                dataset,
-            )  # Get the most recent dataset run id
+            latest_run_id = run_records[
+                0
+            ].dagster_run.run_id  # Get the most recent run id
             context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             concat_config = CleanConfig(
                 dataset=dataset,
@@ -400,6 +424,33 @@ def cin_reports_sensor(context):
         "cin",
     )  # Get the most recent cin run id
     if latest_run_id:  # Ensure there is at least one cin run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+@sensor(
+    job=cans_summary_columns,
+    description="Runs cans_summary_columns job once clean job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cans_summary_columns_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=clean.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cans"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for CANS clean job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,

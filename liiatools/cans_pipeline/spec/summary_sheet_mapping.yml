@@ -1,0 +1,279 @@
+'6_21':
+  Family Strengths: &option_set_1
+    '0': Centerpiece of the Plan
+    '1': Strength used in the Plan
+    '2': Consider Strength Development
+    '3': No Strength, Consider Building
+  Interpersonal: *option_set_1
+  Optimism: *option_set_1
+  Educational Setting: *option_set_1
+  Vocational: *option_set_1
+  Talents & Interests: *option_set_1
+  Community Life: *option_set_1
+  Relationship Permanence: *option_set_1
+  Resiliency: *option_set_1
+  Resourcefulness: *option_set_1
+  Cultural Identity: *option_set_1
+  Natural Supports: *option_set_1
+  Family Functioning: &option_set_2
+    '2': Action Needed (Youth)
+    '3': Immediate/Intensive Action Needed (Youth)
+  Living Situation: *option_set_2
+  Social Functioning: *option_set_2
+  Recreational: *option_set_2
+  Developmental/Intellectual*: *option_set_2
+  Cognitive (Developmental/Intellectual*): *option_set_2
+  Developmental (Developmental/Intellectual*): *option_set_2
+  Communication (Developmental/Intellectual*): *option_set_2
+  Self-care/Daily Living Skills (Developmental/Intellectual*): *option_set_2
+  Job Functioning: *option_set_2
+  Legal: *option_set_2
+  Medical/Physical: *option_set_2
+  Sexual Development: *option_set_2
+  Sleep: *option_set_2
+  School Attendance: *option_set_2
+  School Behaviour: *option_set_2
+  School Achievement: *option_set_2
+  Decision-Making: *option_set_2
+  Psychosis (Thought Disorder): *option_set_2
+  Impulsivity/Hyperactivity: *option_set_2
+  Attention/Concentration: *option_set_2
+  Depression: *option_set_2
+  Anxiety: *option_set_2
+  Oppositional: *option_set_2
+  Conduct (Antisocial Behaviour): *option_set_2
+  Adjustment to Trauma: *option_set_2
+  Anger Control: *option_set_2
+  Substance Use*: *option_set_2
+  Severity of Use (Substance Use*): *option_set_2
+  Duration of Use (Substance Use*): *option_set_2
+  Stage of Recovery (Substance Use*): *option_set_2
+  Peer Influences (Substance Use*): *option_set_2
+  Environmental Influences (Substance Use*): *option_set_2
+  Recovery Support in Community (Substance Use*): *option_set_2
+  Acute Intoxication (Substance Use*): *option_set_2
+  Withdrawal History (Substance Use*): *option_set_2
+  Awareness of Relapse Triggers (Substance Use*): *option_set_2
+  Withdrawal Risks (Substance Use*): *option_set_2
+  Eating Disturbance: *option_set_2
+  Attachment Difficulties: *option_set_2
+  Behavioural Regression: *option_set_2
+  Psycho-somatic Symptoms (Somatisation): *option_set_2
+  Suicide Risk: *option_set_2
+  Non-Suicidal Self-Harm/Self-Injury: *option_set_2
+  Other Self-harm: *option_set_2
+  Danger to Others*: *option_set_2
+  CH History of Violence (Need) (Danger to Others*): *option_set_2
+  CH Fustration Management (Need) (Danger to Others*): *option_set_2
+  CH Bullying (Need) (Danger to Others*): *option_set_2
+  Hostility (Need) (Danger to Others*): *option_set_2
+  CH Paraniod Thinking (Need) (Danger to Others*): *option_set_2
+  CH Secondary Gains from Anger (Need) (Danger to Others*): *option_set_2
+  CH Violent Thinking (Need) (Danger to Others*): *option_set_2
+  CH Awareness of Violence Potential (Strength): *option_set_1
+  CH Response to Consequences (Strength): *option_set_1
+  CH Commitment to Self-Control (Strength): *option_set_1
+  CH Treatment Involvement (Strength): *option_set_1
+  Sexual Agression*: *option_set_2
+  Relationship (Sexual Agression*): *option_set_2
+  Physical Force/Threat (Sexual Agression*): *option_set_2
+  Planning (Sexual Agression*): *option_set_2
+  Age Differential (Sexual Agression*): *option_set_2
+  Type of Sex Act (Sexual Agression*): *option_set_2
+  Response to Accusation (Sexual Agression*): *option_set_2
+  Temporal Consistency (Sexual Agression*): *option_set_2
+  History of Sexually Aggressive Behaviour (Sexual Agression*): *option_set_2
+  Running Away*: *option_set_2
+  Frequency of Running (Running Away*): *option_set_2
+  Consistency of Destination (Running Away*): *option_set_2
+  Safety of Destination (Running Away*): *option_set_2
+  Involvement in Illegal Activities (Running Away*): *option_set_2
+  Likelihood of Return on Own (Running Away*): *option_set_2
+  Involvement with Others (Running Away*): *option_set_2
+  Realistic Expectations (Running Away*): *option_set_2
+  Planning (Running Away*): *option_set_2
+  Offending/Criminal Behaviour*: *option_set_2
+  History (Offending/Criminal Behaviour*): *option_set_2
+  Seriousness (Offending/Criminal Behaviour*): *option_set_2
+  Planning (Offending/Criminal Behaviour*): *option_set_2
+  Community Safety (Offending/Criminal Behaviour*): *option_set_2
+  Peer Influences (Offending/Criminal Behaviour*): *option_set_2
+  Parental Criminal Behaviour (Offending/Criminal Behaviour*): *option_set_2
+  Environmental Influences (Offending/Criminal Behaviour*): *option_set_2
+  Legal Compliance (Offending/Criminal Behaviour*): *option_set_2
+  Fire Setting*: *option_set_2
+  History (Fire Setting*): *option_set_2
+  Seriousness (Fire Setting*): *option_set_2
+  Planning (Fire Setting*): *option_set_2
+  Use of Accelerants (Fire Setting*): *option_set_2
+  Intention to Harm (Fire Setting*): *option_set_2
+  Community Safety (Fire Setting*): *option_set_2
+  Response to Accusation (Fire Setting*): *option_set_2
+  Remorse (Fire Setting*): *option_set_2
+  Likelihood of Future Fire Setting (Fire Setting*): *option_set_2
+  Intentional Misbehaviour: *option_set_2
+  Bullying: *option_set_2
+  Victimisation/Exploitation*: *option_set_2
+  Duration of Exploitation (Victimisation/Exploitation*): *option_set_2
+  Age of Onset – Exploitation (Victimisation/Exploitation*): *option_set_2
+  Perception of Dangerousness (Victimisation/Exploitation*): *option_set_2
+  Knowledge of Exploitation (Victimisation/Exploitation*): *option_set_2
+  Trauma Bond (Victimisation/Exploitation*): *option_set_2
+  Exploitation of Others (Victimisation/Exploitation*): *option_set_2
+  Reproductive Health (Victimisation/Exploitation*): *option_set_2
+  Arrests for Liotering/Solicitaion (Victimisation/Exploitation*): *option_set_2
+  Exploitation History (Victimisation/Exploitation*): *option_set_2
+  Gang Involvement: *option_set_2
+  Language: *option_set_2
+  Traditions & Rituals: *option_set_2
+  Cultural Stress: *option_set_2
+  Cultural Differences within the Family: *option_set_2
+  Sexual Abuse*: &option_set_3
+    Yes: Trauma Experience (Over Lifetime)
+  Emotional Closeness to Perpetrator (Sexual Abuse*): &option_set_4
+    '2': Trauma Experience (Over Lifetime)
+    '3': Trauma Experience (Over Lifetime)
+  Frequency of Abuse (Sexual Abuse*): *option_set_4
+  Duration (Sexual Abuse*): *option_set_4
+  Force (Sexual Abuse*): *option_set_4
+  Reaction to Disclosure (Sexual Abuse*): *option_set_4
+  Physical Abuse: *option_set_3
+  Neglect: *option_set_3
+  Emotional Abuse: *option_set_3
+  Medical Trauma: *option_set_3
+  Natural or Manmade Disaster: *option_set_3
+  Witness to Family Violence: *option_set_3
+  Witness to Community/School Violence: *option_set_3
+  Witness/Victim of Criminal Activity: *option_set_3
+  War/Terrorism Affected: *option_set_3
+  Discruption in Caregiving/Attachment: *option_set_3
+  Intrusions/Re-experiencing: *option_set_2
+  Emotional and/or Physical Dysregulation: *option_set_2
+  Traumatic Grief: *option_set_2
+  Hyperarousal: *option_set_2
+  Avoidance: *option_set_2
+  Numbing: *option_set_2
+  Dissociation: *option_set_2
+  Time Before Treatment: *option_set_2
+  Supervision (Caregiver needs): &option_set_5
+    '2': Action Needed (Caregiver)
+    '3': Immediate/Intensive Action Needed (Caregiver)
+  Involvement with Care (Caregiver needs): *option_set_5
+  Knowledge (Caregiver needs): *option_set_5
+  Organisation (Caregiver needs): *option_set_5
+  Social Resources (Caregiver needs): *option_set_5
+  Residential Stability (Caregiver needs): *option_set_5
+  Medical/Physical (Caregiver needs): *option_set_5
+  Mental Health (Caregiver needs): *option_set_5
+  Substance Use (Caregiver needs): *option_set_5
+  Developmental (Caregiver needs): *option_set_5
+  Safety (Caregiver needs): *option_set_5
+  Family Stress (Caregiver needs): *option_set_5
+  Post-traumatic Reactions (Caregiver needs): *option_set_5
+  Marital/Partner Violence in Home (Caregiver needs): *option_set_5
+  Family Relationship to the System (Caregiver needs): *option_set_5
+  Legal Involvement (Caregiver needs): *option_set_5
+  Interpersonal Problems: &option_set_6
+    '2': Transition Age Action Needed
+    '3': Immediate/Intensive Transition Age Action Needed
+  Independent Living Skills: *option_set_6
+  Young Carer/Parenting Roles*: *option_set_6
+  Knowledge of Needs (Young Carer/Parenting Roles*): *option_set_6
+  Supervision (Young Carer/Parenting Roles*): *option_set_6
+  Involvement with Care (Young Carer/Parenting Roles*): *option_set_6
+  Organisation (Young Carer/Parenting Roles*): *option_set_6
+  Marital/Partner Violence in the Home (Young Carer/Parenting Roles*): *option_set_6
+  Job Functioning*: *option_set_6
+  Career Aspirations (Job Functioning*): *option_set_6
+  Aspirational Congruence (Job Functioning*): *option_set_6
+  Job Market Expectations (Job Functioning*): *option_set_6
+  Work Ethic (Job Functioning*): *option_set_6
+  Work History (Job Functioning*): *option_set_6
+  Time Since Last Job (Job Functioning*): *option_set_6
+  Job Turnover (Job Functioning*): *option_set_6
+  Job Attendance (Job Functioning*): *option_set_6
+  Job Performance (Job Functioning*): *option_set_6
+  Job Relations (Job Functioning*): *option_set_6
+  Job Enjoyment (Job Functioning*): *option_set_6
+  Customer Orientation (Job Functioning*): *option_set_6
+  Routine (Job Functioning*): *option_set_6
+  Skills Relevant to Aspirations (Job Functioning*): *option_set_6
+  Digital Literacy (Job Functioning*): *option_set_6
+  Financial Literacy (Job Functioning*): *option_set_6
+  CV/Cover Letter (Job Functioning*): *option_set_6
+  Interview Clothes (Job Functioning*): *option_set_6
+  Self-Care: *option_set_6
+  Medication Adherence: *option_set_6
+  Intimate Relationships: *option_set_6
+  Transportation: *option_set_6
+'0_5':
+  Impulsivity/Hyperactivity (3yrs+): *option_set_2
+  Depression: *option_set_2
+  Anxiety: *option_set_2
+  Oppositional (3yrs+): *option_set_2
+  Attachment Difficulties: *option_set_2
+  Adjustment to Trauma: *option_set_2
+  'Regulatory: Body/Emotion': *option_set_2
+  Atypical Behaviours: *option_set_2
+  Sleep (12mo+): *option_set_2
+  Family Functioning: *option_set_2
+  Early Education: *option_set_2
+  Social Emotional Functioning: *option_set_2
+  Development/Intellectual: *option_set_2
+  Medical/Physical: *option_set_2
+  Self-Injury (12mo+): *option_set_2
+  Prenatal Care: *option_set_2
+  Exposure: *option_set_2
+  Labour & Delivery: *option_set_2
+  Birth Weight: *option_set_2
+  Failure to Thrive: *option_set_2
+  Family Strengths: *option_set_1
+  Interpersonal: *option_set_1
+  Natural Supports: *option_set_1
+  Resiliency (Persistence and Adaptability): *option_set_1
+  Relationship Permanence: *option_set_1
+  Playfulness: *option_set_1
+  Language: *option_set_2
+  Traditions & Rituals: *option_set_2
+  Cultural Stress: *option_set_2
+  Cultural Differences within the Family: *option_set_2
+  Sexual Abuse*: *option_set_3
+  Emotional Closeness to Perpetrator (Sexual Abuse*): *option_set_4
+  Frequency of Abuse (Sexual Abuse*): *option_set_4
+  Duration (Sexual Abuse*): *option_set_4
+  Force (Sexual Abuse*): *option_set_4
+  Reaction to Disclosure (Sexual Abuse*): *option_set_4
+  Physical Abuse: *option_set_3
+  Neglect: *option_set_3
+  Emotional Abuse: *option_set_3
+  Medical Trauma: *option_set_3
+  Natural or Manmade Disaster: *option_set_3
+  Witness to Family Violence: *option_set_3
+  Witness to Community/School Violence: *option_set_3
+  Witness/Victim of Criminal Activity: *option_set_3
+  War/Terrorism Affected: *option_set_3
+  Disruption in Caregiving/Attachment: *option_set_3
+  Intrusions/Re-experiencing: *option_set_2
+  Emotional and/or Physical Dysregulation: *option_set_2
+  Traumatic Grief: *option_set_2
+  Hyperarousal: *option_set_2
+  Avoidance: *option_set_2
+  Numbing: *option_set_2
+  Dissociation: *option_set_2
+  Time Before Treatment: *option_set_2
+  Supervision (Caregiver needs): *option_set_5
+  Involvement with Care (Caregiver needs): *option_set_5
+  Knowledge (Caregiver needs): *option_set_5
+  Organisation (Caregiver needs): *option_set_5
+  Social Resources (Caregiver needs): *option_set_5
+  Residential Stability (Caregiver needs): *option_set_5
+  Medical/Physical (Caregiver needs): *option_set_5
+  Mental Health (Caregiver needs): *option_set_5
+  Substance Use (Caregiver needs): *option_set_5
+  Developmental (Caregiver needs): *option_set_5
+  Safety (Caregiver needs): *option_set_5
+  Family Stress (Caregiver needs): *option_set_5
+  Post-traumatic Reactions (Caregiver needs): *option_set_5
+  Marital/Partner Violence in Home (Caregiver needs): *option_set_5
+  Family Relationship to the System (Caregiver needs): *option_set_5
+  Legal Involvement (Caregiver needs): *option_set_5
