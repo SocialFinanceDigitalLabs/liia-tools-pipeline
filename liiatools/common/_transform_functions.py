@@ -81,7 +81,7 @@ def add_school_year(
     return school_year
 
 
-def add_la_from_postcode(data: pd.DataFrame) -> pd.DataFrame:
+def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: str) -> pd.DataFrame:
     # Load postcode lookup
     ext_folder = external_data_folder()
     mapping_file = "postcode_la_lookup.parquet"
@@ -89,8 +89,8 @@ def add_la_from_postcode(data: pd.DataFrame) -> pd.DataFrame:
         mapping_df = pd.read_parquet(f)
 
     # Merge LA name into data
-    merged = data.merge(mapping_df, left_on="PL_POST", right_on="pcds", how="left")
-    data["PL_HOST"] = merged["lad25cd"]
+    merged = data.merge(mapping_df, left_on=mapping_field, right_on="pcds", how="left")
+    data[output_field] = merged["lad25cd"]
     return data
 
 
