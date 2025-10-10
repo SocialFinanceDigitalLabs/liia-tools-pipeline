@@ -35,20 +35,28 @@ def _transform(
                     assert (
                         transform_name in functions
                     ), f"Unknown transform for property '{property}': {transform_name}"
-                    data[column_config.id] = data.apply(
-                        lambda row: functions[transform_name](
-                            row, column_config, metadata
-                        ),
-                        axis=1,
-                    )
+                    if transform_name == "postcode_la_lookup":
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data)
+                    else:
+                        data[column_config.id] = data.apply(
+                            lambda row: functions[transform_name](
+                                row, column_config, metadata
+                            ),
+                            axis=1,
+                        )
             else:
                 assert (
                     transform_name in functions
                 ), f"Unknown transform for property '{property}': {transform_name}"
-                data[column_config.id] = data.apply(
-                    lambda row: functions[transform_name](row, column_config, metadata),
-                    axis=1,
-                )
+                if transform_name == "postcode_la_lookup":
+                    mapping_function = functions[transform_name]
+                    data = mapping_function(data)
+                else:
+                    data[column_config.id] = data.apply(
+                        lambda row: functions[transform_name](row, column_config, metadata),
+                        axis=1,
+                    )
 
 
 def data_transforms(
