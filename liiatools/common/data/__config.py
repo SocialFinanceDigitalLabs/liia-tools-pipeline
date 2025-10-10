@@ -10,6 +10,7 @@ class ColumnConfig(BaseModel):
     type: str
     unique_key: bool = False
     enrich: str | list = None
+    enrich_extra: str = None
     degrade: str = None
     sort: int = None
     asc: bool = False
