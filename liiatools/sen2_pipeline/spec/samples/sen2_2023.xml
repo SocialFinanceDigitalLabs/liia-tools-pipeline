@@ -1,34 +1,32 @@
 <!-- Below is from csww 2025 file -->
 
+<!-- It says utf not UTF in line below in LBWF live file - shall we update as well? Does it need updating for other returns?? -->
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:element name="Message" type="messagetype"/>
 
+<!-- Sections listed below -->
   <xs:complexType name="messagetype">
     <xs:sequence>
+      <!-- N.B. 2023 technical spec not very helpful...-->
       <!-- Changed min from 0 in line below as it must be compulsory, right? -->
       <xs:element name="Header" type="headertype" minOccurs="1" maxOccurs="1"/>
-      <!-- Added lines below based on 2 lines that have now been commented out from csww 2025 schema (2023 technical spec not very helpful...)-->
-      <!-- Could we rename below 'PersonDetails' to 'Person' and 'persondetailstype' to 'persontype' so it's similar to pg27 of 2023 doc?-->
-      <xs:element name="PersonDetails" type="persondetailstype" minOccurs="0" maxOccurs="1"/>
-      <!-- Could we rename below 'RequestsforEHCNeedsAssessment' to 'Requests' and 'requestsforehcneedsassessmenttype' to 'requeststype' so it's similar to pg28 of 2023 doc?-->
-      <xs:element name="RequestsForEHCNeedsAssessment" type="requestsforehcneedsassessmenttype" minOccurs="0" maxOccurs="1"/>
-      <!-- Could we rename below 'EHCNeedsAssessments' to 'Assessment' and 'ehcneedsassessmentstype' to 'assessmenttype' so it's similar to pg28 of 2023 doc?-->
-      <!-- SC doesn't have the 3 lines I added below in his code... -->
-      <xs:element name="EHCNeedsAssessments" type="ehcneedsassessmentstype" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
-      <!-- Do we need PlanDetail here? If so, need to add further below too -->
-      <!-- Could we rename below 'Placements' to 'PlanDetail' and 'placementstype' to 'plandetailtype' so it's similar to pg28 of 2023 doc?-->
-      <xs:element name="Placements" type="placementstype" minOccurs="0" maxOccurs="1"/>
-      <!-- Need to add ActivePlans somewhere here? If so, will need to add further below as well -->
-      <!-- Need to add PlacementDetail somewhere here? If so, will need to add further below as well -->
-      <!-- Need to add SENneed somewhere here? If so, will need to add further below as well -->
-      <!-- Remove 2 lines below -->
-      <!-- <xs:element name="LALevelVacancies" type="vacancytype" minOccurs="1" maxOccurs="1"/> -->
-	  <!-- <xs:element name="CSWWWorker" type="workertype" minOccurs="1" maxOccurs="unbounded"/> -->
-    </xs:sequence>
-  </xs:complexType>
+      <xs:element name="Persons" type="personstype" minOccurs="0" maxOccurs="1"/>
+      <!-- Stop 2 lines below being comments if section below is removed -->
+</xs:sequence>
+</xs:complexType>
+
+  <!-- DON'T NEED BELOW? -->
+  <!-- I don't think RequestsforEHCNeedsAssessment is required as it's Requests which we've accounted for -->
+  <!-- Could we rename below 'RequestsforEHCNeedsAssessment' to 'Requests' and 'requestsforehcneedsassessmenttype' to 'requeststype' so it's similar to pg28 of 2023 doc?-->
+      <!-- <xs:element name="RequestsForEHCNeedsAssessment" type="requestsforehcneedsassessmenttype" minOccurs="0" maxOccurs="1"/> -->
+  <!-- I don't think EHCNeedsAssessment is required as it's Assessment which we've accounted for -->
+  <!-- Could we rename below 'EHCNeedsAssessments' to 'Assessment' and 'ehcneedsassessmentstype' to 'assessmenttype' so it's similar to pg28 of 2023 doc?-->
+  <!-- SC doesn't have the 3 lines I added below in his code... -->
+      <!-- <xs:element name="EHCNeedsAssessments" type="ehcneedsassessmentstype" minOccurs="0" maxOccurs="1"/> -->
+    <!-- </xs:sequence> -->
+  <!-- </xs:complexType> -->
 
 <!-- Within header it needs to mention DMO or DCO? Or is it enough being in the 2nd section below? -->
   <xs:complexType name="headertype">
@@ -46,12 +44,12 @@
       <xs:element name="Collection" minOccurs="0" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-          <!-- Changed from CSWW to SEN2 in line below-->
             <xs:enumeration value="SEN2"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
       <!-- Should minoccurs be 1 on line below? -->
+      <!-- Even better - should we make it compulsory what value the year ought to be?? -->
       <xs:element name="Year" type="xs:gYear" minOccurs="0" maxOccurs="1"/>
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="ReferenceDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
@@ -68,7 +66,8 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="LEA" minOccurs="1" maxOccurs="1">
+      <!-- Added type bit as SC has -->
+      <xs:element name="LEA" type = "leatype" minOccurs="1" maxOccurs="1"/>
       <!-- Bits below commented out by SC - why? -->
         <!-- <xs:simpleType> -->
           <!-- <xs:restriction base="xs:string" > -->
@@ -80,7 +79,7 @@
       <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <!-- Is 'Release' bit below ok? - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this?-->
       <xs:element name="Release" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <!-- I added 'SerialNo' below, using LEA example -->
+      <!-- I added 'SerialNo' below, using my original LEA addition -->
       <xs:element name="SerialNo" minOccurs="1" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
@@ -92,41 +91,219 @@
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
       <!-- I added 'DMO' below using SourceLevel example but changed minoccurs to 1 -->
-      <xs:element name="DMO" minOccurs="1" maxOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
+      <!-- SC had type bit so I added in too -->
+      <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1">
+      <!-- SC doesn't have lines below which I've commented out -->
+        <!-- <xs:simpleType> -->
+          <!-- <xs:restriction base="xs:string"> -->
           <!-- Changed 'L' to 'Y' below-->
-            <xs:enumeration value="Y"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <!-- HOWEVER, SC has the following line instead <xs:element name="DMO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/> -->
+            <!-- <xs:enumeration value="Y"/> -->
+          <!-- </xs:restriction> -->
+        <!-- </xs:simpleType> -->
+      <!-- </xs:element> -->
       <!-- I added 'DCO' below using SourceLevel example but changed minoccurs to 1-->
-      <xs:element name="DCO" minOccurs="1" maxOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
+      <!-- SC had type bit so I added in too -->
+      <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1">
+      <!-- SC doesn't have lines below which I've commented out -->
+        <!-- <xs:simpleType> -->
+          <!-- <xs:restriction base="xs:string"> -->
           <!-- Changed 'L' to 'Y' below-->
-            <xs:enumeration value="Y"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
+            <!-- <xs:enumeration value="Y"/> -->
+          <!-- </xs:restriction> -->
+        <!-- </xs:simpleType> -->
+      <!-- </xs:element> -->
       <!-- HOWEVER, SC has the following line instead <xs:element name="DCO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/> -->
     </xs:sequence>
   </xs:complexType>
 
 
+<!-- Module 1: Person details <Person> -->
+  <xs:complexType name="personstype">
+    <xs:sequence>
+    <!-- Should minoccurs be 1 on line below? If Person section exists then it ought to be filled in? -->
+    <!-- SC has maxoccurs unbounded so I changed from 1-->
+      <xs:element name="Person" type="persondetailstype" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+<!-- Need to have a think about which bits/sections are compulsory e.g. if linked to another bit/section - how does this affect minoccurs and maxoccurs? -->
+
+<xs:complexType name="persondetailstype">
+<xs:sequence>
+    <!-- I need to check section below -->
+    <!-- Should minoccurs be 1 on line below like SC has? -->
+      <xs:element name="Surname" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    <!-- Should minoccurs be 1 on line below like SC has? -->
+      <xs:element name="Forename" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
+      <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Need to change GenderCurrent and gendertype to Sex and sextype in a future xsd schema (LBWF live file mentions Sex) -->
+      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
+      <xs:element name="GenderCurrent" type="gendertype" minOccurs="0" maxOccurs="1"/>
+      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
+      <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
+      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
+      <!-- Should we put a condition (if so, how?) which shows format postcode must take? Guide for LAs says leave blank if not possible to get postcode but provide an explanatory note - where? In this same field?-->
+      <xs:element name="PostCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <!-- Not compulsory for child to have UPN (hence UPNunknown need to be filled in) or to have ULN hence minoccurs 0 for next 2 lines -->
+      <xs:element name="UPN" type="upntype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="UniqueLearnerNumber" type="uniquelearnernumbertype" minOccurs="0" maxOccurs="1"/>
+      <!-- Is below even needed? Changed minoccurs to 0. However, it should be compusory if UPN not given above?? -->
+      <xs:element name="UPNunknown" type="upnunknowntype" minOccurs="0" maxOccurs="1"/>
+      <!-- SC has Requests line which I've added below - I have it as a section only?? Need line below so we can have section below! -->
+      <xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
 
 
+<!-- Requests section has RequestOutcome, Assessment, and ActivePlans sections -->
+<!-- Assessment section has AssessmentOutcome and NamedPlan sections... -->
+<!-- ... where NamedPlan section has StartDate, PlanDetail, PB, CeaseDate, and CeaseReason bits -->
+<!-- ... where PlanDetail section has URN and PlacementRank bits -->
+<!-- ActivePlans section has PlacementDetail and SENneed sections... -->
+<!-- ... where PlacementDetail section has URN, PlacementRank and EntryDate bits-->
+<!-- ... where SENneed section has SENtype and SENtypeRank bits -->
 
+
+<!-- Module 2: Requests for EHC needs assessment <Requests> -->
+<!-- Need to check indentation for this section -->
+<xs:complexType name="requeststype">
+<xs:sequence>
+      <!-- Item 2.4 in guide for LAs -->
+      <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Added following lines as SC has them - does order matter as I've left RequestOutcome as first line but he has it on 3rd line? -->
+      <!-- Item 2.1 in guide for LAs -->
+      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for ReceivedDate? Do we need to add further down?? -->
+        <xs:element name="ReceivedDate" type="xs:date" minOccurs="0" maxOccurs="1"/> YES
+      <!-- I can't find below in LBWF live file however in guide for LAs -->
+      <!-- Item 2.2 in guide for LAs -->
+      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for RYA? Do we need to do something else further down?? -->
+        <xs:element name="RYA" type="yesnotype" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Item 2.3 in guide for LAs -->
+      <!-- No date is required in certain cases - see guide for LAs for more info -->
+        <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Item 2.5 in guide for LAs -->
+        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Item 2.6 in guide for LAs -->
+        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/> YES
+        <!-- I can't find below in LBWF live file however in guide for LAs -->
+      <!-- Item 2.7 in guide for LAs -->
+        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/> YES
+        <!-- Why does below have to be here when it's made into a section below? -->
+        <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
+        <!-- Why does below have to be here when it's made into a section below? -->
+        <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<!-- Need to check indentation for this section -->
+<xs:complexType name="assessmenttype">
+<xs:sequence>
+      <xs:element name="AssessmentOutcome" type="assessmentoutcometype" minOccurs="0" maxOccurs="1"/>
+      <!-- Added following lines as SC has them -->
+      <xs:element name="AssessmentOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="AssessmentMediation" type="assessmedtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="AssessmentTribunal" type="assesstribtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="OtherMediation" type="othermedtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Week20" type="week20type" minOccurs="0" maxOccurs="1"/>
+        <!-- Why does below have to be here when it's made into a section below? -->
+      <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<!-- Need to check indentation for this section -->
+<xs:complexType name="namedplantype">
+<xs:sequence>
+      <xs:element name="StartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Does order below matter? -->
+      <!-- SC had 3 lines below so I added in -->
+      <xs:element name="PlanDetail" type="plandetailtype" minOccurs="0" maxOccurs="2"/>
+      <xs:element name="PlanRes" type="planrestype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlanWBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PB" type="pbtype" minOccurs="0" maxOccurs="1"/>
+      <!-- SC had 2 lines below so I added in -->
+      <xs:element name="OA" type="oatype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="DP" type="dptype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="CeaseDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="CeaseReason" type="ceasereasontype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<!-- IS THIS NEEDED?? -->
+<!-- Need to check indentation for this section -->
+<xs:complexType name="plandetailtype">
+<xs:sequence>
+    <!-- I need to check section below -->
+      <xs:element name="URN" type="urnnumber" minOccurs="0" maxOccurs="1"/>
+      <!-- SC had 3 lines below so added in -->
+      <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
+      <!-- SC had 2 lines below so added in -->
+      <!-- Below 2 lines also not in LBWF live file -->
+      <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<!-- Need to check indentation for this section -->
+<xs:complexType name="activeplanstype">
+<xs:sequence>
+<!-- SC has maxoccurs as unbounded on line below-->
+      <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="1"/>
+      <!-- SC had the following lines too so added in - PlacementDetail is on 2nd line in SC's record -->
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="TransferLA" type="leatype" minOccurs="0" maxOccurs="1"/>
+      <!-- In LBWF live file, Res is in PlacementDetail section under ActivePlans - so should it be in section below (only)??-->
+      <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
+      <!-- In LBWF live file, Res is in PlacementDetail section under ActivePlans - so should it be in section below (only)??-->
+      <xs:element name="WBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
+      <!-- Previous conversations that up to 2 SEN need types can be mentioned in the return -->
+      <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="LastReview" type="xs:date" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<!-- Need to check indentation for this section -->
+<xs:complexType name="placementdetailtype">
+<xs:sequence>
+      <xs:element name="URN" type-"urntype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- SC had the following lines so I added in too - does order matter as although URN is still at the top in SC's, PlacementRank is 5th and EntryDate is 6th-->
+      <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="LeavingDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="AttendancePattern" type="attendpatterntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <!-- Line below not in LBWF live file -->
+      <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <!-- Should we add WBP here as it's in LBWF live file? See above for more info. Are there any more? -->
+</xs:sequence>
+</xs:complexType>
+
+<!-- Need to check indentation for this section -->
+<xs:complexType name="senneedtype">
+<xs:sequence>
+      <xs:element name="SENtype" type="sentype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENtypeRank" type="sentyperanktype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
 
 
 <!-- Need to finish below - if changes are made to wording above, they'll need changing here too -->
-
-  <xs:complexType name="persondetailstype">
-    <xs:sequence>
-      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-    </xs:sequence>
-  </xs:complexType>
 
 <xs:complexType name="requestsforehcneedsassessmenttype">
     <xs:sequence>
@@ -140,65 +317,140 @@
     </xs:sequence>
   </xs:complexType>
 
-<xs:complexType name="namedplantype">
-    <xs:sequence>
-      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-    </xs:sequence>
-  </xs:complexType>
-
 <xs:complexType name="placementstype">
     <xs:sequence>
       <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
     </xs:sequence>
   </xs:complexType>
 
-<!-- Commented out the following -->
-  <!-- <xs:complexType name="vacancytype"> -->
-    <!-- <xs:sequence> -->
-      <!-- <xs:element name="NumberOfVacancies" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="RecruitmentBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="RetentionBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="PerformanceAward" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="CarAllowance" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="RelocationPackage" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="RegionalWeighting" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="CostSWE" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="CostDBS" type="noallsometype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="OtherAllowances" type="xs:string" minOccurs="1" maxOccurs="1"/> -->
-    <!-- </xs:sequence> -->
-  <!-- </xs:complexType> -->
 
-  <!-- <xs:complexType name="workertype"> -->
-    <!-- <xs:sequence> -->
-      <!-- <xs:element name="AgencyWorker" type="agencyworkertype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/> -->
-      <!-- <xs:element name="FTE" type="ftedecimal" minOccurs="0" maxOccurs="1"/> -->
-	    <!-- <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="QualLevel" type="qualtype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/> -->
-	    <!-- <xs:element name="OrgRole" type="roletype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="RoleStartDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="StartOrigin" type="origintype" minOccurs="0" maxOccurs="1"/> -->
-	    <!-- <xs:element name="RoleEndDate" type="xs:date" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="LeaverDestination" type="leavertype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="ReasonLeave" type="reasontype" minOccurs="0" maxOccurs="1"/> -->
-	    <!-- <xs:element name="FTE30" type="ftedecimal" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="Cases30" type="xs:integer" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="WorkingDaysLost" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
-	    <!-- <xs:element name="ContractWeeks" type="onedecimalplace" minOccurs="0" maxOccurs="unbounded"/> -->
-      <!-- <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="unbounded"/> -->
-	    <!-- <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="unbounded"/> -->
-      <!-- <xs:element name="BaseSalary" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="RRPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
-      <!-- <xs:element name="OtherPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/> -->
-    <!-- </xs:sequence> -->
-  <!-- </xs:complexType> -->
-  
+
+
+
+
+
+
+
+
+<!-- Types defined below -->
+<!-- FINISH! Then check against SC's -->
+
+<!-- Module 1 starts here -->
+  <xs:simpleType name="gendercurrenttype">
+  <!-- Use nonEmptyString or xs:string? In CSWW we had nonEmptyString -->
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>Not known</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Specified (intermediate; unable to be classified as either male or female)</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ethnicitytype">
+  <!-- Finish using school census - below taken from school census -->
+    <!-- <xs:restriction base="nonEmptyString"> -->
+      <!-- <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White British</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="WIRI"><xs:annotation><xs:documentation>White Irish</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="WOTH"><xs:annotation><xs:documentation>Any Other White Background</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="MWBC"><xs:annotation><xs:documentation>White and Black Caribbean</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="MWBA"><xs:annotation><xs:documentation>White and Black African</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="MWAS"><xs:annotation><xs:documentation>White and Asian</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="MOTH"><xs:annotation><xs:documentation>Any Other Mixed Background</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="AIND"><xs:annotation><xs:documentation>Indian</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="APKN"><xs:annotation><xs:documentation>Pakistani</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="ABAN"><xs:annotation><xs:documentation>Bangladeshi</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="AOTH"><xs:annotation><xs:documentation>Any Other Asian Background</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="BCRB"><xs:annotation><xs:documentation>Black Caribbean</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="BAFR"><xs:annotation><xs:documentation>Black African</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="BOTH"><xs:annotation><xs:documentation>Any Other Black Background</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="CHNE"><xs:annotation><xs:documentation>Chinese</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="OOTH"><xs:annotation><xs:documentation>Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="REFU"><xs:annotation><xs:documentation>Declared not stated or Refused</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Information Not Yet Obtained</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- Added 2 lines below using guide for LAs -->
+      <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Not received ethnicity information or do not currently hold</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="REFU"><xs:annotation><xs:documentation>A parent or child/young person refuses to record or return their ethnicity</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upntype">
+    <xs:restriction base="xs:string">
+    <!-- Amend below so we have a 13 character format Annnnnnnnnnnn with AnnnnnnnnnnnA for a temp UPN where A is a character and n is numeric -->
+    <!-- Further info available in UPN policy and practice guidance -->
+      <!-- <xs:pattern value="[A-Za-z]{2}\d{1,10}$"/> -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="uniquelearnernumbertype">
+    <xs:restriction base="xs:string">
+    <!-- Finish below - use Individualised Learner Record info for more -->
+      <!-- <xs:... -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upnunknowntype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="UN1"><xs:annotation><xs:documentation>Child is aged under 6 years old and is not yet assigned a UPN</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN2"><xs:annotation><xs:documentation>Child has never attended a state-funded school in England and has not been assigned a UPN</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN3"><xs:annotation><xs:documentation>Child is educated outside of England and has not been assigned a UPN</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN5"><xs:annotation><xs:documentation>Sources collating UPNs reflect discrepancy/ies for the child’s name and/or surname and/or date of birth therefore prevent reliable matching (for example duplicated UPN)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN8"><xs:annotation><xs:documentation>Person is new to LA (within one week of the end of the collection period only) and the UPN or ULN is not yet known at the time of the SEN2 return</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN9"><xs:annotation><xs:documentation>Young person has never attended a state-funded school or further education setting in England and has not been assigned a UPN or ULN</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="UN10"><xs:annotation><xs:documentation>Request for assessment resulted in no further action before UPN or ULN known</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+<!-- SC had a line with requeststype - is this still needed? Bit from code above pasted below for ease -->
+<!-- SC has Requests line which I've added below - I have it as a section only?? -->
+<xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/>
+
+
+<!-- Module 2 starts here -->
+<!-- Below to do with RYA - if yesnotype comes up elsewhere but has different definitions then we'll need to amend above wherever it comes up and also below this section looking at RYA -->
+  <xs:simpleType name="yesnotype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+
+
+
+
+<!-- START HERE -->
+      <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Added following lines as SC has them - does order matter as I've left RequestOutcome as first line but he has it on 3rd line? -->
+      <!-- Item 2.5 in guide for LAs -->
+        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/> YES
+      <!-- Item 2.6 in guide for LAs -->
+        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/> YES
+        <!-- I can't find below in LBWF live file however in guide for LAs -->
+      <!-- Item 2.7 in guide for LAs -->
+        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/> YES
+        <!-- Why does below have to be here when it's made into a section below? -->
+        <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
+        <!-- Why does below have to be here when it's made into a section below? -->
+        <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!-- Below taken from CSWW - use as examples -->
   <xs:simpleType name="onedecimalplace">
     <xs:restriction base="xs:decimal">
         <xs:fractionDigits fixed="true" value="1"/>
