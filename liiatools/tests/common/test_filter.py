@@ -1,9 +1,10 @@
 from datetime import datetime
 
-import pytest
 from sfdata_stream_parser import events
 from sfdata_stream_parser.filters import generic
 
+from liiatools.cans_pipeline.spec import load_pipeline_config as cans_config
+from liiatools.cans_pipeline.spec import load_schema as cans_schema
 from liiatools.common import stream_filters
 from liiatools.common.spec.__data_schema import Column
 from liiatools.ssda903_pipeline.spec import load_schema as s903_schema
@@ -65,12 +66,12 @@ def test_collect_tables():
     ]
 
 
-def test_add_table_name():
+def test_add_table_name_from_headers():
     schema = s903_schema(2040)
 
     def get_table_name(headers):
         stream = [events.StartTable(headers=headers)]
-        stream = stream_filters.add_table_name(stream, schema=schema)
+        stream = stream_filters.add_table_name_from_headers(stream, schema=schema)
         event = list(stream)[0]
         table_name = getattr(event, "table_name", None)
         errors = getattr(event, "errors", None)
@@ -399,3 +400,68 @@ def test_clean_regex():
     cleaned_event = list(stream_filters.conform_cell_types(event))[0]
     assert cleaned_event.cell == "A12345678901B"
     assert_errors(cleaned_event)
+
+
+def test_table_spec_from_filename():
+    schema = cans_schema()
+    output_config = cans_config()
+
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="0940569457_0_5_2024.csv",
+            output_config=output_config,
+        )["table_name"]
+        == "0_5"
+    )
+
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["error_message"]
+        == "Multiple tables matched the filename, file name: 8937598475_0_5_6_21_2025.csv"
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )["sheetname"]
+        is None
+    )
+
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )["error_message"]
+        == "Failed to identify table based on filename, file name: 0835708574_2026.csv"
+    )
+
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="", output_config=output_config
+        )["table_name"]
+        is None
+    )
+    assert (
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="", output_config=output_config
+        )["error_message"]
+        == "Failed to identify table based on filename, file name: "
+    )
