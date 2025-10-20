@@ -21,14 +21,14 @@ region_config = load_region_env()
 def load_pipeline_config():
     try:
         with importlib.resources.open_text(
-            f"{region_config}_pipeline_config", "csww_pipeline.json"
+            f"{region_config}_pipeline_config", "csww_census_pipeline.json"
         ) as f:
             return parse_yaml_file_as(PipelineConfig, f)
     except ModuleNotFoundError:
         logger.info(f"Configuration region '{region_config}' not found.")
     except FileNotFoundError:
         logger.info(
-            f"Configuration file 'csww_pipeline.json' not found in '{region_config}'."
+            f"Configuration file 'csww_census_pipeline.json' not found in '{region_config}'."
         )
 
 
@@ -40,7 +40,7 @@ def load_schema(year: int) -> (xmlschema.XMLSchema, Path):
     )
 
 
-@lru_cache
-def load_reports():
-    with open(SCHEMA_DIR / "reports.yml", "rt") as FILE:
-        return yaml.load(FILE, Loader=yaml.FullLoader)
+# @lru_cache
+# def load_reports():
+#     with open(SCHEMA_DIR / "reports.yml", "rt") as FILE:
+#         return yaml.load(FILE, Loader=yaml.FullLoader)

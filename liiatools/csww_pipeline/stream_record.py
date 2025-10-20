@@ -48,7 +48,7 @@ def message_collector(stream):
             header_record = text_collector(stream)
             if header_record:
                 yield HeaderEvent(record=header_record)
-        elif event.get("tag") == "LALevelVacancies" | event.get("tag") == "LALevel":
+        elif event.get("tag") == "LALevelVacancies" or event.get("tag") == "LALevel":
             lalevel_record = text_collector(stream)
             if lalevel_record:
                 yield LALevelEvent(record=lalevel_record)

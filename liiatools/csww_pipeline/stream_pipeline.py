@@ -25,7 +25,6 @@ log = get_dagster_logger(__name__)
 def task_cleanfile(
     src_file: FileLocator,
     schema: (XMLSchema, Path),
-    output_config: PipelineConfig,
     logger: Optional[logging.Logger] = None,
 ) -> ProcessResult:
     """
@@ -65,7 +64,7 @@ def task_cleanfile(
         log.info("Stream errors collected")
         stream = stream_record.message_collector(stream)
         log.info("Stream messages collected")
-        dataset_holder, stream = stream_record.export_table(stream, output_config)
+        dataset_holder, stream = stream_record.export_table(stream)
         log.info("Stream dataset exported")
 
         # Consume stream so we know it's been processed
