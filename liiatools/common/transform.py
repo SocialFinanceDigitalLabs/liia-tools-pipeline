@@ -121,7 +121,7 @@ def enrich_data(
     if metadata is None:
         metadata = {}
 
-    return data_transforms(data, config, metadata, "enrich", enrich_functions, "enrich_extra")
+    return data_transforms(data, config, metadata, "enrich", enrich_functions, "enrich_input")
 
 
 def degrade_data(
