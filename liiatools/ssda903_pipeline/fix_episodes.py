@@ -15,6 +15,7 @@ __COLUMNS = [
     "REASON_PLACE_CHANGE",
     "HOME_POST",
     "PL_POST",
+    "PL_HOST",
     "URN",
     "YEAR",
 ]
@@ -42,6 +43,7 @@ __COLUMNS_TO_KEEP = [
     "REASON_PLACE_CHANGE",
     "HOME_POST",
     "PL_POST",
+    "PL_HOST",
     "URN",
     "YEAR",
     "YEAR_latest",
