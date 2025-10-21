@@ -89,39 +89,8 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
 
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
-    table_name = params.pop("table_name", None)
-    table_spec = params.pop("table_spec", None)
-    error_message = params.pop("error_message", None)
     yield events.StartContainer(**params)
-
-    if table_name or table_spec:
-        if not error_message:
-            yield events.StartTable(
-                headers=dataset.headers,
-                sheetname=dataset.title,
-                table_name=table_name,
-                table_spec=table_spec,
-            )
-        else:
-            yield EventErrors.add_to_event(
-                events.StartTable(
-                    headers=dataset.headers,
-                    sheetname=dataset.title,
-                    table_name=table_name,
-                    table_spec=table_spec,
-                ),
-                type="SheetIdentificationError",
-                message=error_message,
-            )
-    elif error_message:
-        yield EventErrors.add_to_event(
-            events.StartTable(headers=dataset.headers, sheetname=dataset.title),
-            type="UnidentifiedTable",
-            message=error_message,
-        )
-    else:
-        yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
-
+    yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
@@ -178,7 +147,6 @@ def tablib_to_stream(
         if table_info:
             # table_info is a dictionary created when filename is used to identify sheet and schema to process within an xlsx workbook
             sheetname = table_info.get("sheetname")
-            error_message = table_info.get("error_message")
             if sheetname:
                 # Check that there is a matching sheet to process within the input file
                 sheet_names = [s.title for s in data.sheets()]
@@ -189,28 +157,13 @@ def tablib_to_stream(
                                 sheet,
                                 filename=filename,
                                 sheetname=sheet.title,
-                                table_spec=table_info["table_spec"],
-                                table_name=table_info["table_name"],
                             )
                 else:
                     # In the instance of sheetname existing in table info but not found in file
-                    error_message = (
-                        f"Sheet {table_info['sheetname']} not found in {filename}"
-                    )
-                    yield from _tablib_dataset_to_stream(
-                        tablib.Dataset(),
-                        table_spec=table_info["table_spec"],
-                        table_name=table_info["table_name"],
-                        filename=filename,
-                        error_message=error_message,
-                    )
+                    raise StreamError(f"Sheet {table_info['sheetname']} not found")
             else:
-                # If sheetname has not been found but error_message is not set, error is unknown
-                if not error_message:
-                    error_message = f"Matching sheetname not found for {filename} due to unknown error"
-                yield from _tablib_dataset_to_stream(
-                    tablib.Dataset(), filename=filename, error_message=error_message
-                )
+                # If sheetname has not been found error is unknown
+                raise StreamError("Matching sheetname not found due to unknown error")
 
         else:
             # if table_info does not exist, we want to yield all sheets
@@ -221,6 +174,98 @@ def tablib_to_stream(
 
     elif isinstance(data, pd.DataFrame):
         yield from _pandas_dataframe_to_stream(data, filename=filename)
+
+
+def _match_headers(input_headers: pd.Series, schema_headers: List[str]):
+    """
+    Given a series of input headers and a list of schema headers, checks that all schema headers are present in the input headers.
+    If a match is found, the header is removed from the input headers to prevent duplicate matches.
+
+    :param input_headers: Series of input headers
+    :param schema_headers: List of schema headers
+    :return: None
+    """
+    regex = r"([a-zA-Z\s\-\–\*\/\(\)]*)\s\([a-zA-Z\s\-\*\/]*\*?"
+    matched_headers = []
+
+    for header in schema_headers:
+        # Direct match
+        mask = input_headers.str.fullmatch(re.escape(header))
+        if mask.any():
+            first_true_idx = mask[mask].index[0]
+            input_headers = input_headers.drop(first_true_idx)
+            matched_headers.append(header)
+
+        # Regex match
+        m = re.match(regex, header)
+        if m:
+            mask = input_headers.str.fullmatch(re.escape(m.group(1)))
+            if mask.any():
+                first_true_idx = mask[mask].index[0]
+                input_headers = input_headers.drop(first_true_idx)
+                matched_headers.append(header)
+    
+    if matched_headers != schema_headers:
+        raise StreamError("Could not find all expected headers")
+
+
+def _align_headers(input_headers: pd.Series, schema_headers: List[str]) -> pd.Series:
+    """
+    Replace matching input_headers with schema_headers in order.
+    Input headers are expected to be checked with _match_headers first.
+    If no match or schema_headers are exhausted, leave as is.
+    """
+    aligned_headers = input_headers.copy()
+    regex = r"([a-zA-Z\s\-\–\*\/\(\)]*)\s\([a-zA-Z\s\-\*\/]*\*?"
+    schema_iter = iter(schema_headers)
+
+    for idx, val in aligned_headers.items():
+        try:
+            schema_header = next(schema_iter)
+        except StopIteration:
+            # No more schema headers, leave the rest as is
+            break
+
+        # Direct match
+        if pd.isna(val):
+            continue
+        if isinstance(val, str) and re.fullmatch(re.escape(schema_header), val):
+            aligned_headers.at[idx] = schema_header
+            continue
+
+        # Regex match
+        m = re.match(regex, schema_header)
+        if m and isinstance(val, str) and re.fullmatch(re.escape(m.group(1)), val):
+            aligned_headers.at[idx] = schema_header
+            continue
+
+        # If no match, leave as is and do not advance schema_header
+        schema_iter = iter([schema_header] + list(schema_iter))
+
+    return aligned_headers
+
+
+def transform_input(source: FileLocator, table_info: dict) -> pd.DataFrame:
+    with source.open("rb") as f:
+        try:
+            data = pd.read_excel(f, sheet_name=table_info["sheetname"])
+        except ValueError:
+            raise StreamError(f"Sheet {table_info['sheetname']} not found")
+
+    if not {"Unnamed: 1", "Unnamed: 2"}.issubset(data.columns):
+        raise StreamError("Could not find Unnamed: 1 and Unnamed: 2 columns")
+    
+    data["Unnamed: 1"] = data["Unnamed: 1"].str.strip()
+    data = data.dropna(subset=["Unnamed: 1"])
+    
+
+    schema_headers = list(table_info["table_spec"].keys())
+    _match_headers(data["Unnamed: 1"], schema_headers)
+    data["Unnamed: 1"] = _align_headers(data["Unnamed: 1"], schema_headers)
+    data = data[data["Unnamed: 1"].isin(schema_headers)]
+
+    transposed_data = data[["Unnamed: 1", "Unnamed: 2"]].set_index("Unnamed: 1").T
+    return transposed_data
 
 
 def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=False):
@@ -793,7 +838,6 @@ def table_spec_from_filename(
     sheetname = None
     table_spec = None
     table_name = None
-    error_message = None
     if filename:
         for table in table_names:
             pattern = re.compile(re.escape(table))
@@ -809,18 +853,15 @@ def table_spec_from_filename(
                 sheetname = table_config.sheetname
 
     elif len(matched_tables) > 1:
-        error_message = f"Multiple tables matched the filename, file name: {filename}"
+        raise StreamError("Multiple tables matched the filename")
 
     else:
-        error_message = (
-            f"Failed to identify table based on filename, file name: {filename}"
-        )
+        raise StreamError("Failed to identify table based on filename")
 
     table_info = {
         "sheetname": sheetname,
         "table_spec": table_spec,
         "table_name": table_name,
-        "error_message": error_message,
     }
 
     return table_info
