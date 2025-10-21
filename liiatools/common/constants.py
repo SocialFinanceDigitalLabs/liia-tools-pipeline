@@ -47,3 +47,8 @@ class Term(StrEnum):
     OCT = "autumn"
     JAN = "spring"
     MAY = "summer"
+
+class SessionNamesCINReports(StrEnum):
+    """Enum for CIN Reports session folders."""
+
+    INCOMING_FOLDER = "incoming"

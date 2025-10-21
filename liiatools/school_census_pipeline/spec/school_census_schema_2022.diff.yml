@@ -562,7 +562,7 @@ summer:
       learnerfamhours:
         *int-blank
       learnerfamtype:
-        *learn-fam-type
+        *learner-fam-type
       learnerfamcode:
         *learner-fam-code
   column_map.pupilonroll.senprovision:

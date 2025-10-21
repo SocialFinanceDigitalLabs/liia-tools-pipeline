@@ -64,46 +64,72 @@ def load_schema(year: int, term: str) -> DataSchema:
     # We load the full schema
     logger.debug("Loading schema from %s", schema_lookup[0][0])
     full_schema = yaml.safe_load(schema_lookup[0][0].read_text())
-    term_schema = full_schema[term]
+    print(f"Loaded schema from {schema_lookup[0][0]}")
+    try:
+        term_schema = full_schema[term]
+    except KeyError as e:
+        print(f"{term} not found in {full_schema}: {repr(e)}")
+        raise KeyError(f"{term} not found in {full_schema}") from e
 
     # Now loop over diff files and apply them
     for fn, _, _ in schema_lookup[1:]:
         logger.debug("Loading partial schema from %s", fn)
         try:
             diff = yaml.safe_load(fn.read_text())
-            diff = diff[term]
-        except KeyError:
-            break
         except yaml.YAMLError as e:
             raise ValueError(f"Error parsing diff file {fn}") from e
 
+        # If term not in diff file, continue to next, otherwise load term
+        if term not in diff:
+            logger.debug(f"{term} not present in {fn}")
+            print(f"{term} not present in {fn}")
+            continue
+        diff = diff[term]
+
         for key, diff_obj in diff.items():
             diff_type = diff_obj["type"]
-            assert diff_type in (
-                "add",
-                "modify",
-                "rename",
-                "remove",
-            ), f"Unknown diff type {diff_type}"
+            if diff_type not in ("add", "modify", "rename", "remove"):
+                print(f"Unknown diff type {diff_type} for {key} in {fn}")
+                raise ValueError(f"Unknown diff type {diff_type} in {fn}")
             path = key.split(".")
             parent = term_schema
 
             if diff_type in ["add", "modify"]:
-                for item in path[:-1]:
-                    parent = parent[item]
-                parent[path[-1]] = diff_obj["value"]
+                try:
+                    for item in path[:-1]:
+                        parent = parent[item]
+                    parent[path[-1]] = diff_obj["value"]
+                except KeyError as e:
+                    print(f"problem {diff_type} for {key} in {fn}: {repr(e)}")
+                    raise KeyError(f"while applying {diff_type} in {fn} for {key}: {repr(e)}") from e
 
             elif diff_type == "rename":
-                dict = parent[path[0]][path[1]]
-                dict[diff_obj["value"]] = dict.pop(path[-1])
+                try:
+                    for item in path[:-1]:
+                        parent = parent[item]
+                    parent[diff_obj["value"]] = parent.pop(path[-1])
+                except KeyError as e:
+                    print(f"while renaming {key} in {fn}: {repr(e)}")
+                    raise KeyError(f"while renaming {key} in {fn}: {repr(e)}") from e
 
             elif diff_type == "remove":
                 if len(path) == 2:  # Remove columns
-                    dict = parent[path[0]][path[1]]
-                    [dict.pop(key) for key in diff_obj["value"]]
+                    try:
+                        parent = parent[path[0]][path[1]]
+                        [parent.pop(key) for key in diff_obj["value"]]
+                    except KeyError as e:
+                        print(f"while removing columns at {key} in {fn}: {repr(e)}")
+                        raise KeyError(f"while removing columns at {key} in {fn}: {repr(e)}") from e
                 elif len(path) == 1:  # Remove files
-                    dict = parent[path[0]]
-                    [dict.pop(key) for key in diff_obj["value"]]
+                    try:
+                        parent = parent[path[0]]
+                        [parent.pop(key) for key in diff_obj["value"]]
+                    except KeyError as e:
+                        print(f"While removing file at {key} in {fn}: {repr(e)}")
+                        raise KeyError(f"While removing file at {key} in {fn}: {repr(e)}") from e
+                else:
+                    print(f"remove diff {key} has length {len(path)}")
+                    logger.debug(f"remove diff {key} has length {len(path)}")
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**term_schema)

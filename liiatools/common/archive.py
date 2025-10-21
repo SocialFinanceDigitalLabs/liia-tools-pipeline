@@ -195,11 +195,13 @@ class DataframeArchive:
 
         for table_spec in self.config.table_list:
             if table_spec.id in data:
-                sort_keys = table_spec.sort_keys
+                sort_tuples = table_spec.sort_keys
 
                 df = data[table_spec.id]
-                if sort_keys:
-                    df = df.sort_values(by=sort_keys, ascending=False)
+                if sort_tuples:
+                    by = [col_id for col_id, _ in sort_tuples]
+                    asc = [asc for _, asc in sort_tuples]
+                    df = df.sort_values(by=by, ascending=asc)
 
                 subset = [c.id for c in table_spec.columns if c.unique_key]
                 duplicate_mask = df.duplicated(
@@ -211,15 +213,26 @@ class DataframeArchive:
 
                 df = df[~duplicate_mask]
 
-                for row in duplicate_rows:
-                    errors.append(
-                        dict(
-                            type="DuplicateError",
-                            message=f"Row {row} removed as it was a duplicate",
-                            r_ix=row,
-                            table_name=table_spec.id,
+                for index in duplicate_rows:
+                    # CIN xml file cannot give rows TO DO: add node information instead
+                    if self.dataset == "cin":
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row removed as it was a duplicate",
+                                table_name=table_spec.id,
+                            )
                         )
-                    )
+                    # For other csv files, row can be given as index + 2
+                    else:
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row {index + 2} removed as it was a duplicate",
+                                r_ix=index + 2,
+                                table_name=table_spec.id,
+                            )
+                        )
                 data[table_spec.id] = df
 
         return ProcessResult(data=data, errors=errors)

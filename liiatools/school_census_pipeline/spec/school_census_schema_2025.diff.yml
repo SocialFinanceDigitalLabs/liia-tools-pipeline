@@ -84,16 +84,6 @@ autumn:
     description: Update codes for 2025 schema
     value:
       *attendance-reason
-  column_map.annualsessiondetailsoffroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *attendance-reason
-  column_map.annualsessiondetailsonroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *attendance-reason
   column_map.termlysessiondetailsoffroll.attendancereason:
     type: modify
     description: Update codes for 2025 schema

@@ -4,6 +4,9 @@ from decouple import config as env_config
 from liiatools.annex_a_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_annex_a,
 )
+from liiatools.cans_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_cans,
+)
 from liiatools.cin_census_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_cin,
 )
