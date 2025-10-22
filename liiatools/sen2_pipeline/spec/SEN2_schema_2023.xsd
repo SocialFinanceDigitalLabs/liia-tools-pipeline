@@ -170,6 +170,7 @@
 <xs:complexType name="requeststype">
 <xs:sequence>
       <!-- Item 2.4 in guide for LAs -->
+      <!-- Guide for LAs says "When A, W or H is selected, no further information is required in this module" - that is, we can stop after ReceivedDate, RYA, RequestOutcomeDate, and RequestOutcome have been provided? Should we add something in the code about this? -->
       <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/> YES
       <!-- Added following lines as SC has them - does order matter as I've left RequestOutcome as first line but he has it on 3rd line? -->
       <!-- Item 2.1 in guide for LAs -->
@@ -183,11 +184,14 @@
       <!-- No date is required in certain cases - see guide for LAs for more info -->
         <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/> YES
       <!-- Item 2.5 in guide for LAs -->
+      <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
         <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/> YES
       <!-- Item 2.6 in guide for LAs -->
+      <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
         <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/> YES
         <!-- I can't find below in LBWF live file however in guide for LAs -->
       <!-- Item 2.7 in guide for LAs -->
+      <!-- Guide for LAs says "No further information is subsequently required from the exporting local authority." i.e. no more information for module 3 and onwards is required? Should we incorporate something into the code? -->
         <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/> YES
         <!-- Why does below have to be here when it's made into a section below? -->
         <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
@@ -197,37 +201,61 @@
 </xs:complexType>
 
 
+<!-- Module 3: EHC needs assessments <Assessment> -->
 <!-- Need to check indentation for this section -->
 <xs:complexType name="assessmenttype">
 <xs:sequence>
+<!-- Item 3.1 in guide for LAs -->
+<!-- Guide for LAs mentions "Where A or W is selected, no further information is required in this or subsequent modules." Could we incorporate this into our code? -->
       <xs:element name="AssessmentOutcome" type="assessmentoutcometype" minOccurs="0" maxOccurs="1"/>
       <!-- Added following lines as SC has them -->
+      <!-- Item 3.2 in guide for LAs -->
+      <!-- Guide for LAs says "The assessment outcome date is required where 3.1 is equal to ‘Y’ or ‘N’" - Can we add something to the code about this? -->
+      <!-- Guide for LAs says this will show either "Date on which EHC plan was issued" or "Date on which person was notified of decision not to issue a plan" -->
       <xs:element name="AssessmentOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 3.3 in guide for LAs -->
+      <!-- Guide for LAs says "For further information see Annex C – Mediation." -->
       <xs:element name="AssessmentMediation" type="assessmedtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 3.4 in guide for LAs -->
+      <!-- Guide for LAs says "For further information see Annex C – Mediation." -->
       <xs:element name="AssessmentTribunal" type="assesstribtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 3.5 in guide for LAs -->
+      <!-- Guide for LAs says "For further information see Annex C – Mediation." -->
       <xs:element name="OtherMediation" type="othermedtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 3.6 in guide for LAs -->
+      <!-- Guide for LAs says "For further information see Annex C – Mediation." -->
       <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 3.7 in guide for LAs -->
       <xs:element name="Week20" type="week20type" minOccurs="0" maxOccurs="1"/>
         <!-- Why does below have to be here when it's made into a section below? -->
       <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
-
+<!-- Module 4: Named plan <Namedplan> -->
 <!-- Need to check indentation for this section -->
 <xs:complexType name="namedplantype">
 <xs:sequence>
+      <!-- Item 4.1 in guide for LAs -->
       <xs:element name="StartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Does order below matter? -->
       <!-- SC had 3 lines below so I added in -->
+      <!-- This is in between item 4.6 and item 4.7 -->
       <xs:element name="PlanDetail" type="plandetailtype" minOccurs="0" maxOccurs="2"/>
+      <!-- Item 4.2 in guide for LAs -->
       <xs:element name="PlanRes" type="planrestype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.3 in guide for LAs -->
       <xs:element name="PlanWBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.4a in guide for LAs -->
       <xs:element name="PB" type="pbtype" minOccurs="0" maxOccurs="1"/>
       <!-- SC had 2 lines below so I added in -->
+      <!-- Item 4.4b in guide for LAs -->
       <xs:element name="OA" type="oatype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.4c in guide for LAs -->
       <xs:element name="DP" type="dptype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.5 in guide for LAs -->
       <xs:element name="CeaseDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.6 in guide for LAs -->
       <xs:element name="CeaseReason" type="ceasereasontype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
@@ -275,20 +303,32 @@
 <!-- Need to check indentation for this section -->
 <xs:complexType name="placementdetailtype">
 <xs:sequence>
+      <!-- Item 4.7a in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="URN" type-"urntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7d in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- SC had the following lines so I added in too - does order matter as although URN is still at the top in SC's, PlacementRank is 5th and EntryDate is 6th-->
+      <!-- Item 4.7b in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7c in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7c(i) in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
       <!-- Line below not in LBWF live file -->
       <xs:element name="LeavingDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Line below not in LBWF live file -->
       <xs:element name="AttendancePattern" type="attendpatterntype" minOccurs="0" maxOccurs="1"/>
       <!-- Line below not in LBWF live file -->
+      <!-- Item 4.7e in guide for LAs -->
       <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Line below not in LBWF live file -->
+      <!-- Item 4.7f in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Should we add WBP here as it's in LBWF live file? See above for more info. Are there any more? -->
 </xs:sequence>
@@ -415,31 +455,146 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="requestoutcometype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="Y"><xs:annotation><xs:documentation>LA proceeded with an assessment</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="N"><xs:annotation><xs:documentation>LA decided not to proceed with an assessment</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="A"><xs:annotation><xs:documentation>Decision yet to be made</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="W"><xs:annotation><xs:documentation>Request withdrawn or ceased before decision to assess was made</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="H"><xs:annotation><xs:documentation>Historical – Decision to assess was made before the latest collection period</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
+  <xs:simpleType name="requestmedtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="requesttribtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="exportedtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Guide for LAs says to refer to CBDS i.e. Common Basic Data Set, item N00216. Please note I have only included the London LAs below as we're only analysing across Lonodon? Is that okay or do we have to mention every one in the UK as mentioned in the CBDS? (See CS003 on CodeSets tab) -->
+      <xs:enumeration value="XXX"><xs:annotation><xs:documentation>Unknown local authority or outside of the UK</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="201"><xs:annotation><xs:documentation>COMMON COUNCIL OF THE CITY OF LONDON</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="202"><xs:annotation><xs:documentation>CAMDEN LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="203"><xs:annotation><xs:documentation>ROYAL BOROUGH OF GREENWICH</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="204"><xs:annotation><xs:documentation>HACKNEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="205"><xs:annotation><xs:documentation>HAMMERSMITH AND FULHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="206"><xs:annotation><xs:documentation>ISLINGTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="207"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KENSINGTON AND CHELSEA</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="208"><xs:annotation><xs:documentation>LAMBETH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="209"><xs:annotation><xs:documentation>LEWISHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="210"><xs:annotation><xs:documentation>SOUTHWARK LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="211"><xs:annotation><xs:documentation>TOWER HAMLETS LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="212"><xs:annotation><xs:documentation>WANDSWORTH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="213"><xs:annotation><xs:documentation>WESTMINSTER CITY COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING & DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="302"><xs:annotation><xs:documentation>BARNET LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="303"><xs:annotation><xs:documentation>BEXLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="304"><xs:annotation><xs:documentation>BRENT LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="305"><xs:annotation><xs:documentation>BROMLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="306"><xs:annotation><xs:documentation>CROYDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="307"><xs:annotation><xs:documentation>EALING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="308"><xs:annotation><xs:documentation>ENFIELD LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="309"><xs:annotation><xs:documentation>HARINGEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="310"><xs:annotation><xs:documentation>HARROW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="311"><xs:annotation><xs:documentation>HAVERING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="312"><xs:annotation><xs:documentation>HILLINGDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="313"><xs:annotation><xs:documentation>HOUNSLOW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="314"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KINGSTON UPON THAMES</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="315"><xs:annotation><xs:documentation>MERTON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="316"><xs:annotation><xs:documentation>NEWHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="317"><xs:annotation><xs:documentation>REDBRIDGE LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="318"><xs:annotation><xs:documentation>RICHMOND UPON THAMES LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="319"><xs:annotation><xs:documentation>SUTTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="320"><xs:annotation><xs:documentation>WALTHAM FOREST LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+<!-- Module 3 starts here -->
+  <xs:simpleType name="assessmentoutcometype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="Y"><xs:annotation><xs:documentation>It was decided an EHC plan would be issued</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="N"><xs:annotation><xs:documentation>It was decided an EHC plan would not be issued</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="A"><xs:annotation><xs:documentation>Decision has not yet been made</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="W"><xs:annotation><xs:documentation>Request withdrawn or ceased before decision whether to issue was made</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="H"><xs:annotation><xs:documentation>Historical – Decision to issue was made before the latest collection period</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="assessmedtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="assesstribtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="othermedtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="othertribtype">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="week20type">
+    <xs:restriction base="nonEmptyString">
+    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes, exceptions apply</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No, exceptions do not apply</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
 
 
 
 <!-- START HERE -->
-      <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/> YES
-      <!-- Added following lines as SC has them - does order matter as I've left RequestOutcome as first line but he has it on 3rd line? -->
-      <!-- Item 2.5 in guide for LAs -->
-        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/> YES
-      <!-- Item 2.6 in guide for LAs -->
-        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/> YES
-        <!-- I can't find below in LBWF live file however in guide for LAs -->
-      <!-- Item 2.7 in guide for LAs -->
-        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/> YES
+
+<!-- DO I NEED TO DO SOMETHING WITH ASSESSMENTTYPE AND ACTIVEPLANSTYPE? -->
+<!-- Module 2: Requests for EHC needs assessment <Requests> -->
+      <!-- I can't find below in LBWF live file however in guide for LAs -->
         <!-- Why does below have to be here when it's made into a section below? -->
         <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
         <!-- Why does below have to be here when it's made into a section below? -->
         <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
 
+<!-- Module 3: EHC needs assessments <Assessment> -->
+<!-- Need to check indentation for this section -->
+<xs:complexType name="assessmenttype">
+<xs:sequence>
+        <!-- Why does below have to be here when it's made into a section below? -->
+      <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
 
-
-
-
-
+<!-- START AT MODULE 4 - THIS HAS 2 PARTS ABOVE -->
 
 
 
