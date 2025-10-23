@@ -1,32 +1,20 @@
 autumn:
-  column_map.addressesoffroll.uniquepropertyreferencenumber:
+  column_map:
+    type: remove
+    description: Remove files for 2018 schema
+    value:
+      - annualsessiondetailsoffroll
+      - annualsessiondetailsonroll
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove columns from pupilnolongeronroll
+    value:
+      - annualsessionspossible
+      - annualsessionsauthorised
+      - annualsessionsunauthorised
+  column_map.pupilonroll.dafindicator:
     type: add
-    description: Adds new column for addressesoffroll
-    value:
-      &uprn
-      numeric:
-        type: "integer"
-        min_value: 1
-        max_value: 999999999999
-      canbeblank: yes
-  column_map.addressesonroll.uniquepropertyreferencenumber:
-    type: add
-    description: Adds new column for addressesonroll
-    value:
-      *uprn
-  column_map.learningaimsoffroll.disccode:
-    type: rename
-    description: Rename column in learningaimsoffroll
-    value:
-      scc
-  column_map.learningaimsoffroll.qan:
-    type: rename
-    description: Rename column in learningaimsoffroll
-    value:
-      qn
-  column_map.learningaimsoffroll.traineeship:
-    type: add
-    description: Adds new column for learningaimsoffroll
+    description: Adds new column for pupilonroll
     value:
       &true-false
       category:
@@ -35,21 +23,71 @@ autumn:
       - code: "1"
         name: "True"
       canbeblank: yes
-  column_map.learningaimsonroll.disccode:
-    type: rename
-    description: Rename column in learningaimsonroll
-    value:
-      scc
-  column_map.learningaimsonroll.qan:
-    type: rename
-    description: Rename column in learningaimsonroll
-    value:
-      qn
-  column_map.learningaimsonroll.traineeship:
+  column_map.pupilonroll.extendedhours:
     type: add
-    description: Adds new column for learningaimsonroll
+    description: Adds new column for pupilonroll
+    value:
+      &float
+      numeric:
+        type: "float"
+      canbeblank: yes
+  column_map.pupilonroll.fundedhours:
+    type: modify
+    description: Updated decimal places for 2018 schema
+    value:
+      &two-decimal-places
+      numeric:
+        type: "float"
+        decimal_places: 2
+      canbeblank: yes
+  column_map.pupilonroll.hoursatsetting:
+    type: modify
+    description: Updated decimal places for 2018 schema
+    value:
+      *two-decimal-places
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - proficiencyinenglish
+      - annualsessionspossible
+      - annualsessionsauthorised
+      - annualsessionsunauthorised
+  column_map.pupilonroll.resourcedprovisionindicator:
+    type: add
+    description: Adds new column for pupilonroll
     value:
       *true-false
+  column_map.pupilonroll.senunitindicator:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *true-false
+  column_map.pupilonroll.thirtyhourcode:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      &int-blank
+      numeric:
+        type: "integer"
+      canbeblank: yes
+  column_map.schoolcensus.urn:
+    type: add
+    description: Adds new column for schoolcensus
+    value:
+      *int-blank
+
+spring:
+  column_map.addresses.uniquepropertyreferencenumber:
+    type: add
+    description: Adds new column for addresses
+    value:
+      &uprn
+      numeric:
+        type: "integer"
+        min_value: 1
+        max_value: 999999999999
+      canbeblank: yes
   column_map.nationalitiesoffroll:
     type: add
     description: Adds new table for the 2017 return
@@ -675,33 +713,6 @@ autumn:
     description: Adds new column for pupilnolongeronroll
     value:
       *nationality
-  column_map.pupilnolongeronroll.ncyearleaving:
-    type: modify
-    description: Update ncyearleaving codes for 2017 schema
-    value:
-      category:
-      - code: "E1"
-      - code: "E2"
-      - code: "N1"
-      - code: "N2"
-      - code: "R"
-      - code: "1"
-      - code: "2"
-      - code: "3"
-      - code: "4"
-      - code: "5"
-      - code: "6"
-      - code: "7"
-      - code: "8"
-      - code: "9"
-      - code: "10"
-      - code: "11"
-      - code: "12"
-      - code: "13"
-      - code: "14"
-      - code: "M"
-      - code: "X"
-      canbeblank: yes
   column_map.pupilonroll.adoptedfromcare:
     type: rename
     description: Rename column in pupilonroll
@@ -731,75 +742,6 @@ autumn:
       - code: "N"
         name: "Not yet assessed"
       canbeblank: yes
-  column_map.termlyexclusionsoffroll:
-    type: remove
-    description: Remove column from termlyexclusionsoffroll
-    value:
-      - incare
-  column_map.termlyexclusionsonroll:
-    type: remove
-    description: Remove column from termlyexclusionsonroll
-    value:
-      - incare
-
-spring:
-  column_map.addresses.uniquepropertyreferencenumber:
-    type: add
-    description: Adds new column for addresses
-    value:
-      *uprn
-  column_map.nationalitiesoffroll:
-    type: add
-    description: Adds new table for the 2017 return
-    value:
-      nationalitiesoffrolltableid:
-        *alphanumeric-not-blank
-      NativeId:
-        *alphanumeric-not-blank
-      nationalitiesoffrollorderseqcolumn:
-        *alphanumeric-not-blank
-      sourceid:
-        *alphanumeric-not-blank
-      pupilnolongeronrolltableid:
-        *alphanumeric-not-blank
-      nationality:
-        *nationality
-  column_map.nationalitiesonroll:
-    type: add
-    description: Adds new table for the 2017 return
-    value:
-      nationalitiesonrolltableid:
-        *alphanumeric-not-blank
-      NativeId:
-        *alphanumeric-not-blank
-      nationalitiesonrollorderseqcolumn:
-        *alphanumeric-not-blank
-      sourceid:
-        *alphanumeric-not-blank
-      pupilonrolltableid:
-        *alphanumeric-not-blank
-      nationality:
-        *nationality
-  column_map.pupilnolongeronroll.countryofbirth:
-    type: add
-    description: Adds new column for pupilnolongeronroll
-    value:
-      *nationality
-  column_map.pupilonroll.adoptedfromcare:
-    type: rename
-    description: Rename column in pupilonroll
-    value:
-      plaa
-  column_map.pupilonroll.countryofbirth:
-    type: add
-    description: Adds new column for pupilonroll
-    value:
-      *nationality
-  column_map.pupilonroll.proficiencyinenglish:
-    type: add
-    description: Adds new column for pupilonroll
-    value:
-      *proficiency-in-english
   column_map.school:
     type: remove
     description: Remove columns from school

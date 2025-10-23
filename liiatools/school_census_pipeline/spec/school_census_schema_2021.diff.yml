@@ -1,162 +1,242 @@
 autumn:
-  column_map.learningaimsonroll.progtype:
+  column_map.approvisiondetailoffroll:
     type: add
-    description: Adds new column for learningaimsonroll
+    description: Adds new table for 2022 return
     value:
-      &prog-type
-      category:
-      - code: "30"
-      - code: "31"
-      - code: "01"
-      canbeblank: yes
-  column_map.programmeaimsonroll:
-    type: add
-    description: Adds new table for 2021 return
-    value:
-      programmeaimsonrolltableid:
+      approvisiondetailoffrolltableid:
         &alphanumeric-not-blank
         string: "alphanumeric"
         canbeblank: no
       NativeId:
         *alphanumeric-not-blank
-      programmeaimsonrollorderseqcolumn:
+      approvisiondetailoffrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilnolongeronrolltableid:
+        *alphanumeric-not-blank
+      prevurn:
+        &alphanumeric-blank
+        string: "alphanumeric"
+        canbeblank: yes
+      apreason:
+        &ap-reason
+        category:
+        - code: "ASP"
+        - code: "EHC"
+        - code: "MHN"
+        - code: "NEW"
+        - code: "OTH"
+        - code: "PEX"
+        - code: "PHN"
+        - code: "RHE"
+        canbeblank: yes
+      senprovisionentry:
+        &sen-provision
+        category:
+        - code: "N"
+        - code: "E"
+        - code: "K"
+        - code: "S"
+        - code: "A"
+        - code: "P"
+        canbeblank: yes
+  column_map.approvisiondetailonroll:
+    type: add
+    description: Adds new table for 2022 return
+    value:
+      approvisiondetailonrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      approvisiondetailonrollorderseqcolumn:
         *alphanumeric-not-blank
       sourceid:
         *alphanumeric-not-blank
       pupilonrolltableid:
         *alphanumeric-not-blank
-      qn:
-        string: "alphanumeric"
+      prevurn:
+        *alphanumeric-blank
+      apreason:
+        *ap-reason
+      senprovisionentry:
+        *sen-provision
+  column_map.learnerfamoffroll:
+    type: add
+    description: Adds new table for 2022 return
+    value:
+      learnerfamoffrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      learnerfamoffrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilnolongeronrolltableid:
+        *alphanumeric-not-blank
+      learnerfamtype:
+        &learner-fam-type
+        category:
+        - code: "NLM"
         canbeblank: yes
-      learningstartdate:
+      learnerfamcode:
+        &learner-fam-code
+        category:
+        - code: "01"
+        - code: "21"
+        - code: "22"
+        canbeblank: yes
+  column_map.learnerfamonroll:
+    type: add
+    description: Adds new table for 2022 return
+    value:
+      learnerfamonrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      learnerfamonrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilonrolltableid:
+        *alphanumeric-not-blank
+      learnerfamtype:
+        *learner-fam-type
+      learnerfamcode:
+        *learner-fam-code
+  column_map.learningaimsoffroll.pupilnolongeronrolltableid:
+    type: rename
+    description: Rename column in learningaimsoffroll
+    value:
+      programmeaimsoffrolltableid
+  column_map.learningaimsoffroll.progtype:
+    type: add
+    description: Adds new column for learningaimsoffroll
+    value:
+      category:
+        - code: "30"
+        - code: "31"
+        - code: "01"
+      canbeblank: yes
+  column_map.learningaimsonroll.pupilonrolltableid:
+    type: rename
+    description: Rename column in learningaimsonroll
+    value:
+      programmeaimsonrolltableid
+  column_map.programmeaimsoffroll:
+    type: add
+    description: Adds new table for 2022 return
+    value:
+      programmeaimsoffrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      programmeaimsoffrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilnolongeronrolltableid:
+        *alphanumeric-not-blank
+      qn:
+        *alphanumeric-blank
+      programmestartdate:
         &date
         date: "%Y-%b-%d %H:%M:%S"
         canbeblank: yes
-      learningplannedenddate:
+      programmeplannedenddate:
         *date
-      learningactualenddate:
+      programmeactualenddate:
         *date
-      learningaimstatus:
-        category:
-        - code: "1"
-        - code: "2"
-        - code: "3"
-        - code: "4"
-        canbeblank: yes
-      learningaimwithdrawalreason:
-        category:
-        - code: "1"
-        - code: "2"
-        - code: "3"
-        - code: "4"
-        - code: "44"
-        - code: "45"
-        - code: "97"
-        - code: "98"
-        canbeblank: yes
       traineeship:
         category:
-        - code: "0"
-          name: "False"
-        - code: "1"
-          name: "True"
+          - code: "0"
+            name: "False"
+          - code: "1"
+            name: "True"
+        canbeblank: yes
+      programmeaimstatus:
+        category:
+          - code: "1"
+          - code: "2"
+          - code: "3"
+          - code: "4"
+        canbeblank: yes
+      programmeaimwithdrawalreason:
+        category:
+          - code: "1"
+          - code: "2"
+          - code: "3"
+          - code: "4"
+          - code: "44"
+          - code: "45"
+          - code: "97"
+          - code: "98"
         canbeblank: yes
       progtype:
-        *prog-type
-  column_map.pupilnolongeronroll.tlevelnonqualhrs:
-    type: add
-    description: Adds new column for pupilnolongeronroll
-    value:
-      &int-blank
-      numeric:
-        type: "integer"
-      canbeblank: yes
-  column_map.pupilnolongeronroll.tlevelqualhrs:
-    type: add
-    description: Adds new column for pupilnolongeronroll
-    value:
-      *int-blank
-  column_map.pupilonroll.tlevelnonqualhrs:
-    type: add
-    description: Adds new column for pupilonroll
-    value:
-      *int-blank
-  column_map.pupilonroll.tlevelqualhrs:
-    type: add
-    description: Adds new column for pupilonroll
-    value:
-      *int-blank
-  column_map.summerhalfterm2sessiondetailsoffroll.absencesessions:
+        category:
+        - code: "30"
+        - code: "31"
+        - code: "01"
+        canbeblank: yes
+  column_map.programmeaimsonroll.learningstartdate:
     type: rename
-    description: Rename column in summerhalfterm2sessiondetailsoffroll
+    description: Rename column in programmeaimsonroll
     value:
-      sessions
-  column_map.summerhalfterm2sessiondetailsoffroll.attendancereason:
-    type: modify
-    description: Update codes for 2021 schema
-    value:
-      &attendance-reason
-      category:
-      - code: "/"
-      - code: "\\" # 2 backslashses as Python reads this as 1
-      - code: "B"
-      - code: "C"
-      - code: "D"
-      - code: "E"
-      - code: "G"
-      - code: "H"
-      - code: "I"
-      - code: "J"
-      - code: "L"
-      - code: "M"
-      - code: "N"
-      - code: "O"
-      - code: "P"
-      - code: "R"
-      - code: "S"
-      - code: "T"
-      - code: "U"
-      - code: "V"
-      - code: "W"
-      - code: "X"
-      - code: "Y"
-      - code: "Z"
-      - code: "#"
-      canbeblank: yes
-  column_map.summerhalfterm2sessiondetailsonroll.absencesessions:
+      programmestartdate
+  column_map.programmeaimsonroll.learningplannedenddate:
     type: rename
-    description: Rename column in summerhalfterm2sessiondetailsonroll
+    description: Rename column in programmeaimsonroll
     value:
-      sessions
-  column_map.summerhalfterm2sessiondetailsonroll.attendancereason:
-    type: modify
-    description: Update codes for 2021 schema
+      programmeplannedenddate
+  column_map.programmeaimsonroll.learningactualenddate:
+    type: rename
+    description: Rename column in programmeaimsonroll
     value:
-      *attendance-reason
-  column_map.termlysessiondetailsoffroll.attendancereason:
-    type: modify
-    description: Update codes for 2021 schema
+      programmeactualenddate
+  column_map.programmeaimsonroll.learningaimstatus:
+    type: rename
+    description: Rename column in programmeaimsonroll
     value:
-      *attendance-reason
-  column_map.termlysessiondetailsonroll.attendancereason:
-    type: modify
-    description: Update codes for 2021 schema
+      programmeaimstatus
+  column_map.programmeaimsonroll.learningaimwithdrawalreason:
+    type: rename
+    description: Rename column in programmeaimsonroll
     value:
-      *attendance-reason
-  column_map.termlyexclusionsoffroll.category:
-    type: modify
-    description: Update codes for 2021 schema
+      programmeaimwithdrawalreason
+  column_map.pupilnolongeronroll.englishgcsepriorattainmentyeargroup:
+    type: rename
+    description: Rename column in pupilnolongeronroll
     value:
-      &exclusion-category
-      category:
-      - code: "PERM"
-      - code: "LNCH"
-      - code: "SUSP"
-        name: "FIXD"
-      canbeblank: yes
-  column_map.termlyexclusionsoffroll.reason:
+      englishgcsepriorattainmentyear11
+  column_map.pupilnolongeronroll.mathsgcsepriorattainmentyeargroup:
+    type: rename
+    description: Rename column in pupilnolongeronroll
+    value:
+      mathsgcsepriorattainmentyear11
+  column_map.pupilonroll.englishgcsepriorattainmentyeargroup:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      englishgcsepriorattainmentyear11
+  column_map.pupilonroll.mathsgcsepriorattainmentyeargroup:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      mathsgcsepriorattainmentyear11
+  column_map.pupilonroll.senprovision:
     type: modify
-    description: Update codes for 2021 schema
+    description: Update codes for 2022 schema
+    value:
+      *sen-provision
+  column_map.termlyexclusionsoffroll:
+    type: remove
+    description: Remove column from termlyexclusionsoffroll
+    value:
+      - reason
+  column_map.termlyexclusionsoffroll.reason1:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
     value:
       &exclusion-reason
       category:
@@ -177,87 +257,56 @@ autumn:
       - code: "MT"
       - code: "PH"
       canbeblank: yes
-  column_map.termlyexclusionsonroll.reason:
-    type: modify
-    description: Update codes for 2021 schema
+  column_map.termlyexclusionsoffroll.reason2:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
     value:
       *exclusion-reason
-  column_map.termlyexclusionsonroll.category:
+  column_map.termlyexclusionsoffroll.reason3:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsoffroll.senprovision:
     type: modify
-    description: Update codes for 2021 schema
+    description: Update codes for 2022 schema
     value:
-      *exclusion-category
-  column_map.termlysessiondetailsoffroll.absencesessions:
-    type: rename
-    description: Rename column in termlysessiondetailsoffroll
+      *sen-provision
+  column_map.termlyexclusionsonroll:
+    type: remove
+    description: Remove column from termlyexclusionsonroll
     value:
-      sessions
-  column_map.termlysessiondetailsonroll.absencesessions:
-    type: rename
-    description: Rename column in termlysessiondetailsonroll
-    value:
-      sessions
-  column_map.workplaceentityoffroll:
+      - reason
+  column_map.termlyexclusionsonroll.reason1:
     type: add
-    description: Adds new table for 2021 return
+    description: Adds new column for termlyexclusionsonroll
     value:
-      workplaceentityoffrolltableid:
-        *alphanumeric-not-blank
-      NativeId:
-        *alphanumeric-not-blank
-      workplaceentityoffrollorderseqcolumn:
-        *alphanumeric-not-blank
-      sourceid:
-        *alphanumeric-not-blank
-      learningaimsoffrolltableid:
-        *alphanumeric-not-blank
-      wpstartdate:
-        *date
-      wpenddate:
-        *date
-      wphours:
-        *int-blank
-      wpmode:
-        &wp-mode
-        category:
-        - code: "1"
-          name: "internal"
-        - code: "2"
-          name: "external"
-        canbeblank: yes
-      wpemployerid:
-        *int-blank
-  column_map.workplaceentityonroll:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.reason2:
     type: add
-    description: Adds new table for 2021 return
+    description: Adds new column for termlyexclusionsonroll
     value:
-      workplaceentityonrolltableid:
-        *alphanumeric-not-blank
-      NativeId:
-        *alphanumeric-not-blank
-      workplaceentityonrollorderseqcolumn:
-        *alphanumeric-not-blank
-      sourceid:
-        *alphanumeric-not-blank
-      learningaimsonrolltableid:
-        *alphanumeric-not-blank
-      wpstartdate:
-        *date
-      wpenddate:
-        *date
-      wphours:
-        *int-blank
-      wpmode:
-        *wp-mode
-      wpemployerid:
-        *int-blank
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.reason3:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.senprovision:
+    type: modify
+    description: Update codes for 2022 schema
+    value:
+      *sen-provision
 
 spring:
   column_map.pupilnolongeronroll.termlysessionscoronavirus:
     type: add
     description: Adds new column for pupilnolongeronroll
     value:
-      *int-blank
+      &int-blank
+      numeric:
+        type: "integer"
+      canbeblank: yes
   column_map.pupilnolongeronroll.termlysessionseducational:
     type: add
     description: Adds new column for pupilnolongeronroll
@@ -287,7 +336,13 @@ spring:
     type: modify
     description: Update codes for 2021 schema
     value:
-      *exclusion-category
+      &exclusion-category
+      category:
+      - code: "PERM"
+      - code: "LNCH"
+      - code: "SUSP"
+        name: "FIXD"
+      canbeblank: yes
   column_map.termlyexclusionsoffroll:
     type: remove
     description: Remove column from termlyexclusionsoffroll
@@ -350,7 +405,34 @@ spring:
     type: modify
     description: Update codes for 2021 schema
     value:
-      *attendance-reason
+      &attendance-reason
+      category:
+      - code: "/"
+      - code: "\\" # 2 backslashses as Python reads this as 1
+      - code: "B"
+      - code: "C"
+      - code: "D"
+      - code: "E"
+      - code: "G"
+      - code: "H"
+      - code: "I"
+      - code: "J"
+      - code: "L"
+      - code: "M"
+      - code: "N"
+      - code: "O"
+      - code: "P"
+      - code: "R"
+      - code: "S"
+      - code: "T"
+      - code: "U"
+      - code: "V"
+      - code: "W"
+      - code: "X"
+      - code: "Y"
+      - code: "Z"
+      - code: "#"
+      canbeblank: yes
   column_map.termlysessiondetailsonroll.absencesessions:
     type: rename
     description: Rename column in termlysessiondetailsonroll

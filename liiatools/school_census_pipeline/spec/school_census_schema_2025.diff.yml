@@ -1,109 +1,24 @@
 autumn:
-  column_map.learnerfamonroll.learnerfamcode:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      &learner-fam-code
-      category:
-      - code: "01"
-      - code: "22"
-      canbeblank: yes
-  column_map.learnerfamoffroll.learnerfamcode:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *learner-fam-code
-    column_map.pupilonroll.thirtyhourcode:
-    type: rename
-    description: Rename column in pupilonroll
-    value:
-      eligibilitycode
-  column_map.pupilonroll.eyppr:
-    type: add
-    description: Adds new column for pupilonroll
-    value:
-      category:
-      - code: "Y"
-        name: "Yes"
-      - code: "N"
-        name: "No"
-      canbeblank: yes
-  column_map.pupilonroll.eyppbf:
-    type: add
-    description: Add new field for pupilonroll
-    value:
-      category:
-      - code: "RE"
-      - code: "RO"
-      - code: "RB"
-      - code: "RU"
-      canbeblank: yes
-  column_map.summerhalfterm2sessiondetailsoffroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      &attendance-reason
-      category:
-      - code: "/"
-      - code: "\\" # 2 backslashses as Python reads this as 1
-      - code: "B"
-      - code: "C"
-      - code: "C1"
-      - code: "C2"
-      - code: "D"
-      - code: "E"
-      - code: "G"
-      - code: "I"
-      - code: "J1"
-      - code: "K"
-      - code: "L"
-      - code: "M"
-      - code: "N"
-      - code: "O"
-      - code: "P"
-      - code: "Q"
-      - code: "R"
-      - code: "S"
-      - code: "T"
-      - code: "U"
-      - code: "V"
-      - code: "W"
-      - code: "X"
-      - code: "Y1"
-      - code: "Y2"
-      - code: "Y3"
-      - code: "Y4"
-      - code: "Y5"
-      - code: "Y6"
-      - code: "Y7"
-      - code: "Z"
-      - code: "#"
-      canbeblank: yes
-  column_map.summerhalfterm2sessiondetailsonroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *attendance-reason
-  column_map.termlysessiondetailsoffroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *attendance-reason
-  column_map.termlysessiondetailsonroll.attendancereason:
-    type: modify
-    description: Update codes for 2025 schema
-    value:
-      *attendance-reason
-  column_map.workplaceentityoffroll:
+  column_map.pupilnolongeronroll:
     type: remove
-    description: Remove column from workplaceentityoffroll
+    description: Remove column from pupilnolongeronroll
     value:
-      - wpemployerid
-  column_map.workplaceentityonroll:
+      - termlysessionsauthorised
+      - termlysessionsunauthorised
+      - summerhalfterm2sessionsauthorised
+      - summerhalfterm2sessionsunauthorised
+      - summerhalfterm2sessionseducational
+      - summerhalfterm2sessionsexceptional
+  column_map.pupilonroll:
     type: remove
-    description: Remove column from workplaceentityonroll
+    description: Remove column from pupilonroll
     value:
-      - wpemployerid
+      - termlysessionsauthorised
+      - termlysessionsunauthorised
+      - summerhalfterm2sessionsauthorised
+      - summerhalfterm2sessionsunauthorised
+      - summerhalfterm2sessionseducational
+      - summerhalfterm2sessionsexceptional
 
 spring:
   column_map.childcare.childcareplacesavailability:
@@ -169,7 +84,11 @@ spring:
     type: modify
     description: Update codes for 2025 schema
     value:
-      *learner-fam-code
+      &learner-fam-code
+      category:
+      - code: "01"
+      - code: "22"
+      canbeblank: yes
   column_map.learnerfamoffroll.learnerfamcode:
     type: modify
     description: Update codes for 2025 schema
@@ -179,7 +98,43 @@ spring:
     type: modify
     description: Update codes for 2025 schema
     value:
-      *attendance-reason
+      &attendance-reason
+      category:
+      - code: "/"
+      - code: "\\" # 2 backslashses as Python reads this as 1
+      - code: "B"
+      - code: "C"
+      - code: "C1"
+      - code: "C2"
+      - code: "D"
+      - code: "E"
+      - code: "G"
+      - code: "I"
+      - code: "J1"
+      - code: "K"
+      - code: "L"
+      - code: "M"
+      - code: "N"
+      - code: "O"
+      - code: "P"
+      - code: "Q"
+      - code: "R"
+      - code: "S"
+      - code: "T"
+      - code: "U"
+      - code: "V"
+      - code: "W"
+      - code: "X"
+      - code: "Y1"
+      - code: "Y2"
+      - code: "Y3"
+      - code: "Y4"
+      - code: "Y5"
+      - code: "Y6"
+      - code: "Y7"
+      - code: "Z"
+      - code: "#"
+      canbeblank: yes
   column_map.termlysessiondetailsonroll.attendancereason:
     type: modify
     description: Update codes for 2025 schema
