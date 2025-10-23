@@ -817,27 +817,27 @@ spring:
       - saon
       - street
       - town
-  column_map.school.adoptedfromcare.heard:
+  column_map.school.heard:
     type: rename
     description: Rename column in school
     value:
       secondaryheard
-  column_map.school.adoptedfromcare.lodged:
+  column_map.school.lodged:
     type: rename
     description: Rename column in school
     value:
       secondarylodged
-  column_map.school.adoptedfromcare.rejected:
+  column_map.school.rejected:
     type: rename
     description: Rename column in school
     value:
       secondaryrejected
-  column_map.school.adoptedfromcare.upheld:
+  column_map.school.upheld:
     type: rename
     description: Rename column in school
     value:
       secondaryupheld
-  column_map.school.adoptedfromcare.withdrawn:
+  column_map.school.withdrawn:
     type: rename
     description: Rename column in school
     value:

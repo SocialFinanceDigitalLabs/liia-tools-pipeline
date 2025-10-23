@@ -325,40 +325,16 @@ spring:
     description: Remove column from pupilnolongeronroll
     value:
       - termlysessionsauthorised
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionsunauthorised
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionseducational
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionsexceptional
   column_map.pupilonroll:
     type: remove
     description: Remove column from pupilonroll
     value:
       - termlysessionsauthorised
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionsunauthorised
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionseducational
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionsexceptional
 
 summer:
@@ -397,38 +373,14 @@ summer:
     description: Remove column from pupilnolongeronroll
     value:
       - termlysessionsauthorised
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionsunauthorised
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionseducational
-  column_map.pupilnolongeronroll:
-    type: remove
-    description: Remove column from pupilnolongeronroll
-    value:
       - termlysessionsexceptional
   column_map.pupilonroll:
     type: remove
     description: Remove column from pupilonroll
     value:
       - termlysessionsauthorised
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionsunauthorised
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionseducational
-  column_map.pupilonroll:
-    type: remove
-    description: Remove column from pupilonroll
-    value:
       - termlysessionsexceptional
