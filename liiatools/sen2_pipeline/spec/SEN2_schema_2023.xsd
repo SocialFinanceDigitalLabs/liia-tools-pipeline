@@ -1,6 +1,9 @@
-<!-- Below is from csww 2025 file -->
-
 <!-- It says utf not UTF in line below in LBWF live file - shall we update as well? Does it need updating for other returns?? -->
+<!-- Need to check indentation throughout this schema -->
+
+<!-- XSD CHECKER USED - https://www.liquid-technologies.com/online-xsd-validator -->
+
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
@@ -17,18 +20,6 @@
 </xs:sequence>
 </xs:complexType>
 
-  <!-- DON'T NEED BELOW? -->
-  <!-- I don't think RequestsforEHCNeedsAssessment is required as it's Requests which we've accounted for -->
-  <!-- Could we rename below 'RequestsforEHCNeedsAssessment' to 'Requests' and 'requestsforehcneedsassessmenttype' to 'requeststype' so it's similar to pg28 of 2023 doc?-->
-      <!-- <xs:element name="RequestsForEHCNeedsAssessment" type="requestsforehcneedsassessmenttype" minOccurs="0" maxOccurs="1"/> -->
-  <!-- I don't think EHCNeedsAssessment is required as it's Assessment which we've accounted for -->
-  <!-- Could we rename below 'EHCNeedsAssessments' to 'Assessment' and 'ehcneedsassessmentstype' to 'assessmenttype' so it's similar to pg28 of 2023 doc?-->
-  <!-- SC doesn't have the 3 lines I added below in his code... -->
-      <!-- <xs:element name="EHCNeedsAssessments" type="ehcneedsassessmentstype" minOccurs="0" maxOccurs="1"/> -->
-    <!-- </xs:sequence> -->
-  <!-- </xs:complexType> -->
-
-<!-- Within header it needs to mention DMO or DCO? Or is it enough being in the 2nd section below? -->
   <xs:complexType name="headertype">
     <xs:sequence>
     <!-- Should minoccurs be 1 on line below? -->
@@ -49,7 +40,7 @@
         </xs:simpleType>
       </xs:element>
       <!-- Should minoccurs be 1 on line below? -->
-      <!-- Even better - should we make it compulsory what value the year ought to be?? -->
+      <!-- Even better - should we make it compulsory what value the year ought to be, 2023?? -->
       <xs:element name="Year" type="xs:gYear" minOccurs="0" maxOccurs="1"/>
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="ReferenceDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
@@ -66,62 +57,30 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <!-- Added type bit as SC has -->
       <xs:element name="LEA" type = "leatype" minOccurs="1" maxOccurs="1"/>
-      <!-- Bits below commented out by SC - why? -->
-        <!-- <xs:simpleType> -->
-          <!-- <xs:restriction base="xs:string" > -->
-            <!-- <xs:pattern value="\d{3}"/> -->
-          <!-- </xs:restriction> -->
-        <!-- </xs:simpleType> -->
-      <!-- </xs:element> -->
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <!-- Is 'Release' bit below ok? - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this?-->
+      <!-- Is 'Release' bit below ok? - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this? Does this need defining below in simple types section?? -->
+      <!-- Could we use this somehow??: <xs:pattern value="\d+\.\d+ \d{4}-\d{2}-\d{2}"/> -->
       <xs:element name="Release" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <!-- I added 'SerialNo' below, using my original LEA addition -->
       <xs:element name="SerialNo" minOccurs="1" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
-          <!-- SC has \d{3}\d* on line below -->
             <xs:pattern value="\d{3}"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
       <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
-      <!-- I added 'DMO' below using SourceLevel example but changed minoccurs to 1 -->
-      <!-- SC had type bit so I added in too -->
-      <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1">
-      <!-- SC doesn't have lines below which I've commented out -->
-        <!-- <xs:simpleType> -->
-          <!-- <xs:restriction base="xs:string"> -->
-          <!-- Changed 'L' to 'Y' below-->
-            <!-- <xs:enumeration value="Y"/> -->
-          <!-- </xs:restriction> -->
-        <!-- </xs:simpleType> -->
-      <!-- </xs:element> -->
-      <!-- I added 'DCO' below using SourceLevel example but changed minoccurs to 1-->
-      <!-- SC had type bit so I added in too -->
-      <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1">
-      <!-- SC doesn't have lines below which I've commented out -->
-        <!-- <xs:simpleType> -->
-          <!-- <xs:restriction base="xs:string"> -->
-          <!-- Changed 'L' to 'Y' below-->
-            <!-- <xs:enumeration value="Y"/> -->
-          <!-- </xs:restriction> -->
-        <!-- </xs:simpleType> -->
-      <!-- </xs:element> -->
-      <!-- HOWEVER, SC has the following line instead <xs:element name="DCO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/> -->
+      <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
-
 
 <!-- Module 1: Person details <Person> -->
   <xs:complexType name="personstype">
     <xs:sequence>
     <!-- Should minoccurs be 1 on line below? If Person section exists then it ought to be filled in? -->
-    <!-- SC has maxoccurs unbounded so I changed from 1-->
       <xs:element name="Person" type="persondetailstype" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
@@ -130,31 +89,39 @@
 
 <xs:complexType name="persondetailstype">
 <xs:sequence>
-    <!-- I need to check section below -->
-    <!-- Should minoccurs be 1 on line below like SC has? -->
+      <!-- Item 1.1 in guide for LAs -->
+      <!-- Should minoccurs be 1 on line below like SC has? -->
       <xs:element name="Surname" type="xs:string" minOccurs="0" maxOccurs="1"/>
-    <!-- Should minoccurs be 1 on line below like SC has? -->
+      <!-- Item 1.2 in guide for LAs -->
+      <!-- Should minoccurs be 1 on line below like SC has? -->
       <xs:element name="Forename" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 1.3 in guide for LAs -->
       <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
       <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Need to change GenderCurrent and gendertype to Sex and sextype in a future xsd schema (LBWF live file mentions Sex) -->
       <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
+      <!-- Item 1.4 in guide for LAs -->
       <xs:element name="GenderCurrent" type="gendertype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 1.5 in guide for LAs -->
       <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
       <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 1.6 in guide for LAs -->
       <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
-      <!-- Should we put a condition (if so, how?) which shows format postcode must take? Guide for LAs says leave blank if not possible to get postcode but provide an explanatory note - where? In this same field?-->
+      <!-- Should we put a condition (if so, how?) which shows format postcode must take? Guide for LAs says leave blank if not possible to get postcode but provide an explanatory note - where? In this same field? -->
+      <!-- Could we use the following somehow??: ([A-Z]{1,2}[0-9][A-Z0-9]? [0-9][ABD-HJLNP-UW-Z]{2})|([A-Z]{1,2}[0-9]{2} [0-9][ABD-HJLNP-UW-Z]{2})|([A-Z]{1,2}[0-9][A-Z] [0-9][ABD-HJLNP-UW-Z]{2}) -->
       <xs:element name="PostCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 1.7a in guide for LAs -->
       <!-- Not compulsory for child to have UPN (hence UPNunknown need to be filled in) or to have ULN hence minoccurs 0 for next 2 lines -->
       <xs:element name="UPN" type="upntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 1.7b in guide for LAs -->
       <xs:element name="UniqueLearnerNumber" type="uniquelearnernumbertype" minOccurs="0" maxOccurs="1"/>
-      <!-- Is below even needed? Changed minoccurs to 0. However, it should be compusory if UPN not given above?? -->
+      <!-- Item 1.7c in guide for LAs -->
+      <!-- For below, changed minoccurs to 0. However, it should be compusory if UPN not given above?? -->
       <xs:element name="UPNunknown" type="upnunknowntype" minOccurs="0" maxOccurs="1"/>
-      <!-- SC has Requests line which I've added below - I have it as a section only?? Need line below so we can have section below! -->
+      <!-- Need line below so we can have section below! -->
       <xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
-
 
 <!-- Requests section has RequestOutcome, Assessment, and ActivePlans sections -->
 <!-- Assessment section has AssessmentOutcome and NamedPlan sections... -->
@@ -164,51 +131,52 @@
 <!-- ... where PlacementDetail section has URN, PlacementRank and EntryDate bits-->
 <!-- ... where SENneed section has SENtype and SENtypeRank bits -->
 
-
 <!-- Module 2: Requests for EHC needs assessment <Requests> -->
-<!-- Need to check indentation for this section -->
+<!-- Requests section has RequestOutcome, Assessment, and ActivePlans sections -->
 <xs:complexType name="requeststype">
 <xs:sequence>
       <!-- Item 2.4 in guide for LAs -->
       <!-- Guide for LAs says "When A, W or H is selected, no further information is required in this module" - that is, we can stop after ReceivedDate, RYA, RequestOutcomeDate, and RequestOutcome have been provided? Should we add something in the code about this? -->
-      <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/> YES
-      <!-- Added following lines as SC has them - does order matter as I've left RequestOutcome as first line but he has it on 3rd line? -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+      <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.1 in guide for LAs -->
       <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for ReceivedDate? Do we need to add further down?? -->
-        <xs:element name="ReceivedDate" type="xs:date" minOccurs="0" maxOccurs="1"/> YES
-      <!-- I can't find below in LBWF live file however in guide for LAs -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="ReceivedDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.2 in guide for LAs -->
       <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for RYA? Do we need to do something else further down?? -->
-        <xs:element name="RYA" type="yesnotype" minOccurs="0" maxOccurs="1"/> YES
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="RYA" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.3 in guide for LAs -->
       <!-- No date is required in certain cases - see guide for LAs for more info -->
-        <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/> YES
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.5 in guide for LAs -->
       <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
-        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/> YES
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.6 in guide for LAs -->
       <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
-        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/> YES
-        <!-- I can't find below in LBWF live file however in guide for LAs -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.7 in guide for LAs -->
       <!-- Guide for LAs says "No further information is subsequently required from the exporting local authority." i.e. no more information for module 3 and onwards is required? Should we incorporate something into the code? -->
-        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/> YES
-        <!-- Why does below have to be here when it's made into a section below? -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/>
+        <!-- Need line below so we can have section below! -->
         <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
-        <!-- Why does below have to be here when it's made into a section below? -->
+        <!-- Need line below so we can have section below! -->
         <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
-
 <!-- Module 3: EHC needs assessments <Assessment> -->
-<!-- Need to check indentation for this section -->
+<!-- Assessment section has AssessmentOutcome and NamedPlan sections... -->
 <xs:complexType name="assessmenttype">
 <xs:sequence>
 <!-- Item 3.1 in guide for LAs -->
 <!-- Guide for LAs mentions "Where A or W is selected, no further information is required in this or subsequent modules." Could we incorporate this into our code? -->
       <xs:element name="AssessmentOutcome" type="assessmentoutcometype" minOccurs="0" maxOccurs="1"/>
-      <!-- Added following lines as SC has them -->
       <!-- Item 3.2 in guide for LAs -->
       <!-- Guide for LAs says "The assessment outcome date is required where 3.1 is equal to ‘Y’ or ‘N’" - Can we add something to the code about this? -->
       <!-- Guide for LAs says this will show either "Date on which EHC plan was issued" or "Date on which person was notified of decision not to issue a plan" -->
@@ -227,19 +195,17 @@
       <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 3.7 in guide for LAs -->
       <xs:element name="Week20" type="week20type" minOccurs="0" maxOccurs="1"/>
-        <!-- Why does below have to be here when it's made into a section below? -->
+        <!-- Need line below so we can have section below! -->
       <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
 <!-- Module 4: Named plan <Namedplan> -->
-<!-- Need to check indentation for this section -->
+<!-- ... where NamedPlan section has StartDate, PlanDetail, PB, CeaseDate, and CeaseReason bits -->
 <xs:complexType name="namedplantype">
 <xs:sequence>
       <!-- Item 4.1 in guide for LAs -->
       <xs:element name="StartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- Does order below matter? -->
-      <!-- SC had 3 lines below so I added in -->
       <!-- This is in between item 4.6 and item 4.7 -->
       <xs:element name="PlanDetail" type="plandetailtype" minOccurs="0" maxOccurs="2"/>
       <!-- Item 4.2 in guide for LAs -->
@@ -248,7 +214,6 @@
       <xs:element name="PlanWBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.4a in guide for LAs -->
       <xs:element name="PB" type="pbtype" minOccurs="0" maxOccurs="1"/>
-      <!-- SC had 2 lines below so I added in -->
       <!-- Item 4.4b in guide for LAs -->
       <xs:element name="OA" type="oatype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.4c in guide for LAs -->
@@ -260,57 +225,70 @@
 </xs:sequence>
 </xs:complexType>
 
-
-<!-- IS THIS NEEDED?? -->
-<!-- Need to check indentation for this section -->
+<!-- ... where PlanDetail section has URN and PlacementRank bits -->
 <xs:complexType name="plandetailtype">
 <xs:sequence>
-    <!-- I need to check section below -->
-      <xs:element name="URN" type="urnnumber" minOccurs="0" maxOccurs="1"/>
-      <!-- SC had 3 lines below so added in -->
+      <!-- Item 4.7a in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Guide for LAs says "Please complete only one of 5.5a to 5.5c." -->
+      <!-- Item 5.5a in guide for LAs -->
+      <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7b in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Item 5.5b in guide for LAs -->
       <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7c in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Item 5.5c in guide for LAs -->
+      <!-- Item 5.5c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
       <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7c(i) in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7d in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Item 5.5d in guide for LAs -->
+      <!-- Guide for LAs says "Placement rank (primary or secondary placement) should also be completed (item 5.5d) for each placement." -->
       <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
-      <!-- SC had 2 lines below so added in -->
-      <!-- Below 2 lines also not in LBWF live file -->
+      <!-- Item 4.7e in guide for LAs -->
+      <!-- Item 5.5h in guide for LAs -->
       <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7f in guide for LAs -->
+      <!-- Item 5.5i in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
-
-<!-- Need to check indentation for this section -->
+<!-- Module 5: Placements <ActivePlans> -->
+<!-- ActivePlans section has PlacementDetail and SENneed sections... -->
 <xs:complexType name="activeplanstype">
 <xs:sequence>
 <!-- SC has maxoccurs as unbounded on line below-->
       <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="1"/>
-      <!-- SC had the following lines too so added in - PlacementDetail is on 2nd line in SC's record -->
-      <!-- Line below not in LBWF live file -->
+      <!-- Item 5.1 in guide for LAs -->
       <xs:element name="TransferLA" type="leatype" minOccurs="0" maxOccurs="1"/>
-      <!-- In LBWF live file, Res is in PlacementDetail section under ActivePlans - so should it be in section below (only)??-->
+      <!-- Item 5.2 in guide for LAs -->
       <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
-      <!-- In LBWF live file, Res is in PlacementDetail section under ActivePlans - so should it be in section below (only)??-->
+      <!-- Item 5.3 in guide for LAs -->
       <xs:element name="WBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
       <!-- Previous conversations that up to 2 SEN need types can be mentioned in the return -->
       <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
-      <!-- Line below not in LBWF live file -->
+      <!-- Item 5.4 in guide for LAs -->
       <xs:element name="LastReview" type="xs:date" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
-
-<!-- Need to check indentation for this section -->
+<!-- ... where PlacementDetail section has URN, PlacementRank and EntryDate bits-->
 <xs:complexType name="placementdetailtype">
 <xs:sequence>
       <!-- Item 4.7a in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <xs:element name="URN" type-"urntype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.5e in guide for LAs -->
       <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- SC had the following lines so I added in too - does order matter as although URN is still at the top in SC's, PlacementRank is 5th and EntryDate is 6th-->
       <!-- Item 4.7b in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
@@ -320,64 +298,56 @@
       <!-- Item 4.7c(i) in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-      <!-- Line below not in LBWF live file -->
+      <!-- Item 5.5f in guide for LAs -->
       <xs:element name="LeavingDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- Line below not in LBWF live file -->
+      <!-- Item 5.5g in guide for LAs -->
+      <!-- Guide for LAs says "Only pupils of compulsory school age must be completed." - Can we add a condition about this? -->
       <xs:element name="AttendancePattern" type="attendpatterntype" minOccurs="0" maxOccurs="1"/>
-      <!-- Line below not in LBWF live file -->
       <!-- Item 4.7e in guide for LAs -->
+      <!-- Item 5.5h in guide for LAs -->
       <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-      <!-- Line below not in LBWF live file -->
       <!-- Item 4.7f in guide for LAs -->
+      <!-- Item 5.5i in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-      <!-- Should we add WBP here as it's in LBWF live file? See above for more info. Are there any more? -->
+      <!-- Should we add WBP here as it's in LBWF live file (maybe affecting 2024 and later returns)? See above for more info. Are there any more? -->
 </xs:sequence>
 </xs:complexType>
 
-<!-- Need to check indentation for this section -->
+<!-- ... where SENneed section has SENtype and SENtypeRank bits -->
 <xs:complexType name="senneedtype">
 <xs:sequence>
+      <!-- Item 5.6 in guide for LAs -->
       <xs:element name="SENtype" type="sentype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.7 in guide for LAs -->
       <xs:element name="SENtypeRank" type="sentyperanktype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
-
-<!-- Need to finish below - if changes are made to wording above, they'll need changing here too -->
-
-<xs:complexType name="requestsforehcneedsassessmenttype">
-    <xs:sequence>
-      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-    </xs:sequence>
-  </xs:complexType>
-
-<xs:complexType name="ehcneedsassessmenttype">
-    <xs:sequence>
-      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-    </xs:sequence>
-  </xs:complexType>
-
-<xs:complexType name="placementstype">
-    <xs:sequence>
-      <!-- <xs:element name="..." type="twodecimalplaces" minOccurs="1" maxOccurs="1"/> -->
-    </xs:sequence>
-  </xs:complexType>
-
-
-
-
-
-
-
-
-
-
 <!-- Types defined below -->
-<!-- FINISH! Then check against SC's -->
+
+<!-- Below in SC's 2023 doc - what does it relate to? I can't find 'integer' anywhere else in SC's doc... -->
+  <xs:simpleType name="positiveintegertype">
+    <xs:restriction base="xs:integer">
+		<xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+    <xs:simpleType name="yesnorecruittype">
+    <xs:restriction base="nonEmptyString">
+	    <xs:enumeration value="Y"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
+	    <xs:enumeration value="N"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="R"><xs:annotation><xs:documentation>Recruitment in progress</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ulntype">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{10}"/>
+    </xs:restriction>
+  </xs:simpleType>
 
 <!-- Module 1 starts here -->
-  <xs:simpleType name="gendercurrenttype">
-  <!-- Use nonEmptyString or xs:string? In CSWW we had nonEmptyString -->
+  <xs:simpleType name="gendertype">
     <xs:restriction base="nonEmptyString">
       <xs:enumeration value="0"><xs:annotation><xs:documentation>Not known</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
@@ -387,44 +357,134 @@
   </xs:simpleType>
 
   <xs:simpleType name="ethnicitytype">
-  <!-- Finish using school census - below taken from school census -->
-    <!-- <xs:restriction base="nonEmptyString"> -->
-      <!-- <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White British</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="WIRI"><xs:annotation><xs:documentation>White Irish</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="WOTH"><xs:annotation><xs:documentation>Any Other White Background</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="MWBC"><xs:annotation><xs:documentation>White and Black Caribbean</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="MWBA"><xs:annotation><xs:documentation>White and Black African</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="MWAS"><xs:annotation><xs:documentation>White and Asian</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="MOTH"><xs:annotation><xs:documentation>Any Other Mixed Background</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="AIND"><xs:annotation><xs:documentation>Indian</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="APKN"><xs:annotation><xs:documentation>Pakistani</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="ABAN"><xs:annotation><xs:documentation>Bangladeshi</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="AOTH"><xs:annotation><xs:documentation>Any Other Asian Background</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="BCRB"><xs:annotation><xs:documentation>Black Caribbean</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="BAFR"><xs:annotation><xs:documentation>Black African</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="BOTH"><xs:annotation><xs:documentation>Any Other Black Background</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="CHNE"><xs:annotation><xs:documentation>Chinese</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="OOTH"><xs:annotation><xs:documentation>Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="REFU"><xs:annotation><xs:documentation>Declared not stated or Refused</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Information Not Yet Obtained</xs:documentation></xs:annotation></xs:enumeration> -->
-      <!-- Added 2 lines below using guide for LAs -->
-      <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Not received ethnicity information or do not currently hold</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="REFU"><xs:annotation><xs:documentation>A parent or child/young person refuses to record or return their ethnicity</xs:documentation></xs:annotation></xs:enumeration>
+  <!-- As per guide for LAs, below taken from school census and CBDS (both match) - However, ethnicities last updated 2024 as per CBDS, so how do you get older versions? Was ethnicity affected? May need to consider this for other simiilar simple types -->
+  <!-- (CBDS says extended category shouldn't be used if main code is used) -->
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White - British</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WCOR"><xs:annotation><xs:documentation>White - Cornish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WENG"><xs:annotation><xs:documentation>White - English</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WNIR"><xs:annotation><xs:documentation>White - Northern Irish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WSCO"><xs:annotation><xs:documentation>White - Scottish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WWEL"><xs:annotation><xs:documentation>White - Welsh</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WOWB"><xs:annotation><xs:documentation>Other White British</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WIRI"><xs:annotation><xs:documentation>White - Irish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WIRT"><xs:annotation><xs:documentation>White - Irish Traveller</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WOTH"><xs:annotation><xs:documentation>Any Other White Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WALB"><xs:annotation><xs:documentation>Albanian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WBOS"><xs:annotation><xs:documentation>Bosnian - Herzegovinian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WCRO"><xs:annotation><xs:documentation>Croatian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WGRE"><xs:annotation><xs:documentation>Greek/ Greek Cypriot</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WGRK"><xs:annotation><xs:documentation>Greek</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WGRC"><xs:annotation><xs:documentation>Greek Cypriot</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WITA"><xs:annotation><xs:documentation>Italian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WKOS"><xs:annotation><xs:documentation>Kosovan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WPOR"><xs:annotation><xs:documentation>Portuguese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WSER"><xs:annotation><xs:documentation>Serbian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WTUR"><xs:annotation><xs:documentation>Turkish/ Turkish Cypriot</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WTUK"><xs:annotation><xs:documentation>Turkish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WTUC"><xs:annotation><xs:documentation>Turkish Cypriot</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WEUR"><xs:annotation><xs:documentation>White European</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WEEU"><xs:annotation><xs:documentation>White Eastern European</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WWEU"><xs:annotation><xs:documentation>White Western European</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WOTW"><xs:annotation><xs:documentation>White Other</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WROM"><xs:annotation><xs:documentation>Gypsy / Roma</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WROG"><xs:annotation><xs:documentation>Gypsy</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WROR"><xs:annotation><xs:documentation>Roma</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="WROO"><xs:annotation><xs:documentation>Other Gypsy/Roma</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWBC"><xs:annotation><xs:documentation>White and Black Caribbean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWBA"><xs:annotation><xs:documentation>White and Black African</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWAS"><xs:annotation><xs:documentation>White and Asian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWAP"><xs:annotation><xs:documentation>White and Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWAI"><xs:annotation><xs:documentation>White and Indian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWAO"><xs:annotation><xs:documentation>White and Any Other Asian Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ABRI"><xs:annotation><xs:documentation>Asian - British</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AWEL"><xs:annotation><xs:documentation>Asian - Welsh</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MOTH"><xs:annotation><xs:documentation>Any Other Mixed Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MAOE"><xs:annotation><xs:documentation>Asian and Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MABL"><xs:annotation><xs:documentation>Asian and Black</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MACH"><xs:annotation><xs:documentation>Asian and Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MBOE"><xs:annotation><xs:documentation>Black and Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MBCH"><xs:annotation><xs:documentation>Black and Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MCOE"><xs:annotation><xs:documentation>Chinese and Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWOE"><xs:annotation><xs:documentation>White and Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MWCH"><xs:annotation><xs:documentation>White and Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MOTM"><xs:annotation><xs:documentation>Other Mixed Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AIND"><xs:annotation><xs:documentation>Indian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="APKN"><xs:annotation><xs:documentation>Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AMPK"><xs:annotation><xs:documentation>Mirpuri - Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AKPA"><xs:annotation><xs:documentation>Kashmiri Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AOPK"><xs:annotation><xs:documentation>Other Pakistani</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ABAN"><xs:annotation><xs:documentation>Bangladeshi</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AOTH"><xs:annotation><xs:documentation>Any Other Asian Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AAFR"><xs:annotation><xs:documentation>African Asian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AKAO"><xs:annotation><xs:documentation>Kashmiri Other</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ANEP"><xs:annotation><xs:documentation>Nepali</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ASNL"><xs:annotation><xs:documentation>Sri Lankan Sinhalese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ASLT"><xs:annotation><xs:documentation>Sri Lankan Tamil</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ASRO"><xs:annotation><xs:documentation>Sri Lankan Other</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="AOTA"><xs:annotation><xs:documentation>Other Asian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BBRI"><xs:annotation><xs:documentation>Black - British</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BWEL"><xs:annotation><xs:documentation>Black - Welsh</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BCRB"><xs:annotation><xs:documentation>Black Caribbean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BAFR"><xs:annotation><xs:documentation>Black - African</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BANN"><xs:annotation><xs:documentation>Black - Angolan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BCON"><xs:annotation><xs:documentation>Black - Congolese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BGHA"><xs:annotation><xs:documentation>Black - Ghanaian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BNGN"><xs:annotation><xs:documentation>Black - Nigerian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BSLN"><xs:annotation><xs:documentation>Black - Sierra Leonean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BSOM"><xs:annotation><xs:documentation>Black - Somali</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BSUD"><xs:annotation><xs:documentation>Black - Sudanese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BAOF"><xs:annotation><xs:documentation>Other Black African </xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BOTH"><xs:annotation><xs:documentation>Any Other Black Background</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BEUR"><xs:annotation><xs:documentation>Black European</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BNAM"><xs:annotation><xs:documentation>Black North American</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="BOTB"><xs:annotation><xs:documentation>Other Black</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CHNE"><xs:annotation><xs:documentation>Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CHKC"><xs:annotation><xs:documentation>Hong Kong Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CMAL"><xs:annotation><xs:documentation>Malaysian Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CSNG"><xs:annotation><xs:documentation>Singaporean Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="CTWN"><xs:annotation><xs:documentation>Taiwanese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="COCH"><xs:annotation><xs:documentation>Other Chinese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OOTH"><xs:annotation><xs:documentation>Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OAFG"><xs:annotation><xs:documentation>Afghan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ORAB"><xs:annotation><xs:documentation>Arab</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OARA"><xs:annotation><xs:documentation>Arab Other</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OEGY"><xs:annotation><xs:documentation>Egyptian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OFIL"><xs:annotation><xs:documentation>Filipino</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OIRN"><xs:annotation><xs:documentation>Iranian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OIRQ"><xs:annotation><xs:documentation>Iraqi</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OJPN"><xs:annotation><xs:documentation>Japanese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OKOR"><xs:annotation><xs:documentation>Korean</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OKRD"><xs:annotation><xs:documentation>Kurdish</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OLAM"><xs:annotation><xs:documentation>Latin/ South/ Central American</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OLEB"><xs:annotation><xs:documentation>Lebanese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OLIB"><xs:annotation><xs:documentation>Libyan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OMAL"><xs:annotation><xs:documentation>Malay</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OMRC"><xs:annotation><xs:documentation>Moroccan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OPOL"><xs:annotation><xs:documentation>Polynesian</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OTHA"><xs:annotation><xs:documentation>Thai</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OVIE"><xs:annotation><xs:documentation>Vietnamese</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OYEM"><xs:annotation><xs:documentation>Yemeni</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OOEG"><xs:annotation><xs:documentation>Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
+      <!-- Next 2 come from CBDS and guide for LAs -->
+      <xs:enumeration value="REFU"><xs:annotation><xs:documentation>Refused OR A parent or child/young person refuses to record or return their ethnicity</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Information Not Yet Obtained OR Not received ethnicity information or do not currently hold</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="upntype">
     <xs:restriction base="xs:string">
-    <!-- Amend below so we have a 13 character format Annnnnnnnnnnn with AnnnnnnnnnnnA for a temp UPN where A is a character and n is numeric -->
-    <!-- Further info available in UPN policy and practice guidance -->
-      <!-- <xs:pattern value="[A-Za-z]{2}\d{1,10}$"/> -->
+    <!-- We need to have a 13 character format Annnnnnnnnnnn with AnnnnnnnnnnnA for a temp UPN where A is a character and n is numeric. Further info available in UPN policy and practice guidance -->
+        <!-- SC's doc has the following: <xs:pattern value="[A-Za-z]\d{11}(\d|[A-Za-z])"/> -->
+        <xs:pattern value="([A-Za-z]\d{12}|[A-Za-z]\d{11}[A-Za-z])"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="uniquelearnernumbertype">
     <xs:restriction base="xs:string">
-    <!-- Finish below - use Individualised Learner Record info for more -->
-      <!-- <xs:... -->
+    <!-- Used link in guide for LAs and saw pattern for Learner Reference Number is [A-Za-z0-9 ]{1,12} (any combination of up to 12 alphabetic characters, numeric digits or spaces) -->
+      <!-- SC has the following: <xs:pattern value="\d{10}"/> -->
+      <xs:pattern value="[A-Za-z0-9]{1,12}"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -440,16 +500,10 @@
     </xs:restriction>
   </xs:simpleType>
 
-<!-- SC had a line with requeststype - is this still needed? Bit from code above pasted below for ease -->
-<!-- SC has Requests line which I've added below - I have it as a section only?? -->
-<xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/>
-
-
 <!-- Module 2 starts here -->
-<!-- Below to do with RYA - if yesnotype comes up elsewhere but has different definitions then we'll need to amend above wherever it comes up and also below this section looking at RYA -->
   <xs:simpleType name="yesnotype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
+    <!-- SC has 1 is True and 0 is False -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -467,7 +521,6 @@
 
   <xs:simpleType name="requestmedtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -475,7 +528,6 @@
 
   <xs:simpleType name="requesttribtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -498,6 +550,7 @@
       <xs:enumeration value="211"><xs:annotation><xs:documentation>TOWER HAMLETS LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="212"><xs:annotation><xs:documentation>WANDSWORTH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="213"><xs:annotation><xs:documentation>WESTMINSTER CITY COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
       <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING & DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="302"><xs:annotation><xs:documentation>BARNET LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="303"><xs:annotation><xs:documentation>BEXLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
@@ -520,6 +573,13 @@
       <xs:enumeration value="320"><xs:annotation><xs:documentation>WALTHAM FOREST LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
+<!-- For above, however, would it be better to say it ought to be a 3 digit LA code OR XXX? -->
+<!-- SC has the following I've commented out... Should | be OR?? Could we do something like I did for upntype? -->
+  <!-- <xs:simpleType name="exportedtype"> -->
+    <!-- <xs:restriction base="xs:string"> -->
+      <!-- <xs:pattern value="(\d{3}|XXX)"/> -->
+    <!-- </xs:restriction> -->
+  <!-- </xs:simpleType> -->
 
 <!-- Module 3 starts here -->
   <xs:simpleType name="assessmentoutcometype">
@@ -534,7 +594,6 @@
 
   <xs:simpleType name="assessmedtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -542,7 +601,6 @@
 
   <xs:simpleType name="assesstribtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -550,7 +608,6 @@
 
   <xs:simpleType name="othermedtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -558,7 +615,6 @@
 
   <xs:simpleType name="othertribtype">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -566,203 +622,198 @@
 
   <xs:simpleType name="week20type">
     <xs:restriction base="nonEmptyString">
-    <!-- Is it ok to have 1 then 0 or does it have to go in numerical order? -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes, exceptions apply</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No, exceptions do not apply</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
-
-
-
-<!-- START HERE -->
-
-<!-- DO I NEED TO DO SOMETHING WITH ASSESSMENTTYPE AND ACTIVEPLANSTYPE? -->
-<!-- Module 2: Requests for EHC needs assessment <Requests> -->
-      <!-- I can't find below in LBWF live file however in guide for LAs -->
-        <!-- Why does below have to be here when it's made into a section below? -->
-        <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
-        <!-- Why does below have to be here when it's made into a section below? -->
-        <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
-
-<!-- Module 3: EHC needs assessments <Assessment> -->
-<!-- Need to check indentation for this section -->
-<xs:complexType name="assessmenttype">
-<xs:sequence>
-        <!-- Why does below have to be here when it's made into a section below? -->
-      <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
-</xs:sequence>
-</xs:complexType>
-
-<!-- START AT MODULE 4 - THIS HAS 2 PARTS ABOVE -->
-
-
-
-
-
-
-
-
-
-
- <!-- Below taken from CSWW - use as examples -->
-  <xs:simpleType name="onedecimalplace">
-    <xs:restriction base="xs:decimal">
-        <xs:fractionDigits fixed="true" value="1"/>
+<!-- Module 4 starts here -->
+  <xs:simpleType name="planrestype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="A"><xs:annotation><xs:documentation>38 to 51 weeks</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="B"><xs:annotation><xs:documentation>52 weeks</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-  
-  <xs:simpleType name="twodecimalplaces">
-    <xs:restriction base="xs:decimal">
-        <xs:fractionDigits fixed="true" value="2"/>
+
+  <xs:simpleType name="planwbptype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="A"><xs:annotation><xs:documentation>Apprenticeships</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="T"><xs:annotation><xs:documentation>Traineeships</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="S"><xs:annotation><xs:documentation>Supported internships</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-  
+
+  <xs:simpleType name="pbtype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>A personal budget has been taken up</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>A personal budget has not been taken up</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="oatype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Organised arrangements are in place</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>Organised arrangements are not in place</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="dptype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="E"><xs:annotation><xs:documentation>Education only</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="S"><xs:annotation><xs:documentation>Social care only</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="H"><xs:annotation><xs:documentation>Health only</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="I"><xs:annotation><xs:documentation>Integrated payment for a combination of the above</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ceasereasontype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Reached maximum age (this is the end of the academic year during which the young person turned 25)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>Ongoing educational or training needs being met without an EHC plan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="3"><xs:annotation><xs:documentation>Moved on to higher education</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="4"><xs:annotation><xs:documentation>Moved on to paid employment, excluding apprenticeships</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="5"><xs:annotation><xs:documentation>Transferred to another LA</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="6"><xs:annotation><xs:documentation>Young person no longer wishes to engage in education or training</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="7"><xs:annotation><xs:documentation>Child or young person has moved outside England</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="8"><xs:annotation><xs:documentation>Child or young person deceased</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="9"><xs:annotation><xs:documentation> Other - Where a large number of cases are recorded as other, the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+<!-- Looked at link in guide for LAs and URN for London establishments appearing on page 1 of the search could be 5 or 6 digits -->
+<!-- Would it be better to leave as a string if urn starts with 0, is this possible? But if we have as a string then would we need to give every possibility? This would be unrealistic as there are many establishments (even just looking at London) which probably change frequently? -->
+<!-- Took inspiration from PT's doc -->
+<xs:simpleType name="urntype">
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+  <xs:restriction base="xs:string">
+  <!-- SC has the following line instead: <xs:pattern value="\d{6}"/> -->
+    <xs:pattern value="\d{5,6}"/>
+    <!-- What does the line below mean? I've commented out -->
+        <!-- <xs:minInclusive value="0"/> -->
+  </xs:restriction>
+</xs:simpleType>
+<!-- The following commented out is from PT's doc -->
+<!-- <xs:simpleType name="urntype"> -->
+    <!-- <xs:restriction base="xs:integer"> -->
+    <!-- What does the line below mean? -->
+        <!-- <xs:minInclusive value="0"/> -->
+    <!-- </xs:restriction> -->
+<!-- </xs:simpleType> -->
+
+<!-- Link in guide for LAs wasn't very useful so referred to LBWF's live file -->
+<!-- LBWF live file seems to have UKPRN numbers which are 8 digits long - how to put this condition below (^\d{8}$)? $ makes it strict so has to be exactly 8 characters -->
+<xs:simpleType name="ukprntype">
+  <xs:restriction base="xs:string">
+    <!-- What does the line below mean? Must be a positive number? I've commented it out because SC doesn't have it in his version -->
+    <!-- <xs:minInclusive value="0"/> -->
+    <xs:pattern value="\d{8}"/>
+  </xs:restriction>
+</xs:simpleType>
+
+  <xs:simpleType name="sensettingtype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="OLA"><xs:annotation><xs:documentation>Other – arrangements made by the local authority in accordance with section 61 of the Children and Families Act 2014 (“education otherwise than at a school or post-16 institution etc”)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OPA"><xs:annotation><xs:documentation>Other – alternative arrangements made by parents or young person in accordance with section 42(5) of the Children and Families Act 2014, excluding those who are subject to elective home education</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="EHE"><xs:annotation><xs:documentation>elective home education - alternative arrangements made by parents or young person in accordance with section 42(5) of the Children and Families Act 2014, for elective home education</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="EYP"><xs:annotation><xs:documentation>Early years provider with no GIAS URN (for example private nursery, independent early years providers and childminders)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other – Includes where a type of setting is specified in the EHC plan (e.g.,special school for ASD) but no setting is named. Where this is used, the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="nonEmptyString">
     <xs:restriction base="xs:string">
+    <!-- What does the line below mean? Must be at least 1 character long? -->
       <xs:minLength value="1"/>
     </xs:restriction>
   </xs:simpleType>
-  
-  <xs:simpleType name="agencyworkertype">
+
+  <xs:simpleType name="placementranktype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>Not an Agency Worker</xs:documentation></xs:annotation></xs:enumeration>
-	  <xs:enumeration value="1"><xs:annotation><xs:documentation>Agency Worker</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Primary placement</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>Secondary placement</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="swetype">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Za-z]{2}\d{1,10}$"/>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="ftedecimal">
-    <xs:restriction base="xs:decimal">
-        <xs:fractionDigits fixed="true" value="6"/>
-		<xs:minInclusive value="0"/>
-		<xs:maxInclusive value="1"/>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="sextype">
+<!-- Module 5 starts here -->
+<!-- For below would it be better to say it ought to be a 3 digit LA code OR XXX? -->
+<xs:simpleType name="leatype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="M"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="F"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="ethnicitytype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White British</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="WIRI"><xs:annotation><xs:documentation>White Irish</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="WOTH"><xs:annotation><xs:documentation>Any Other White Background</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="MWBC"><xs:annotation><xs:documentation>White and Black Caribbean</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="MWBA"><xs:annotation><xs:documentation>White and Black African</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="MWAS"><xs:annotation><xs:documentation>White and Asian</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="MOTH"><xs:annotation><xs:documentation>Any Other Mixed Background</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="AIND"><xs:annotation><xs:documentation>Indian</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="APKN"><xs:annotation><xs:documentation>Pakistani</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="ABAN"><xs:annotation><xs:documentation>Bangladeshi</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="AOTH"><xs:annotation><xs:documentation>Any Other Asian Background</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="BCRB"><xs:annotation><xs:documentation>Black Caribbean</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="BAFR"><xs:annotation><xs:documentation>Black African</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="BOTH"><xs:annotation><xs:documentation>Any Other Black Background</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="CHNE"><xs:annotation><xs:documentation>Chinese</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="OOTH"><xs:annotation><xs:documentation>Any Other Ethnic Group</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="REFU"><xs:annotation><xs:documentation>Declared not stated or Refused</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="NOBT"><xs:annotation><xs:documentation>Information Not Yet Obtained</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="qualtype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Under-graduate</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Post-graduate</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="3"><xs:annotation><xs:documentation>Other</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="yesnotype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
+    <!-- Guide for LAs says to refer to CBDS i.e. Common Basic Data Set, item N00216. Please note I have only included the London LAs below as we're only analysing across Lonodon? Is that okay or do we have to mention every one in the UK as mentioned in the CBDS? (See CS003 on CodeSets tab) -->
+      <xs:enumeration value="XXX"><xs:annotation><xs:documentation>Unknown local authority or outside of the UK</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="201"><xs:annotation><xs:documentation>COMMON COUNCIL OF THE CITY OF LONDON</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="202"><xs:annotation><xs:documentation>CAMDEN LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="203"><xs:annotation><xs:documentation>ROYAL BOROUGH OF GREENWICH</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="204"><xs:annotation><xs:documentation>HACKNEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="205"><xs:annotation><xs:documentation>HAMMERSMITH AND FULHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="206"><xs:annotation><xs:documentation>ISLINGTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="207"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KENSINGTON AND CHELSEA</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="208"><xs:annotation><xs:documentation>LAMBETH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="209"><xs:annotation><xs:documentation>LEWISHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="210"><xs:annotation><xs:documentation>SOUTHWARK LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="211"><xs:annotation><xs:documentation>TOWER HAMLETS LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="212"><xs:annotation><xs:documentation>WANDSWORTH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="213"><xs:annotation><xs:documentation>WESTMINSTER CITY COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+      <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING & DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="302"><xs:annotation><xs:documentation>BARNET LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="303"><xs:annotation><xs:documentation>BEXLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="304"><xs:annotation><xs:documentation>BRENT LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="305"><xs:annotation><xs:documentation>BROMLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="306"><xs:annotation><xs:documentation>CROYDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="307"><xs:annotation><xs:documentation>EALING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="308"><xs:annotation><xs:documentation>ENFIELD LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="309"><xs:annotation><xs:documentation>HARINGEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="310"><xs:annotation><xs:documentation>HARROW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="311"><xs:annotation><xs:documentation>HAVERING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="312"><xs:annotation><xs:documentation>HILLINGDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="313"><xs:annotation><xs:documentation>HOUNSLOW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="314"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KINGSTON UPON THAMES</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="315"><xs:annotation><xs:documentation>MERTON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="316"><xs:annotation><xs:documentation>NEWHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="317"><xs:annotation><xs:documentation>REDBRIDGE LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="318"><xs:annotation><xs:documentation>RICHMOND UPON THAMES LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="319"><xs:annotation><xs:documentation>SUTTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="320"><xs:annotation><xs:documentation>WALTHAM FOREST LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <!-- SC has the following which I've commented out below... Should there be mention of XXX since that is also possible? -->
+  <!-- <xs:simpleType name="leatype"> -->
+    <!-- <xs:restriction base="xs:string"> -->
+      <!-- <xs:pattern value="\d{3}"/> -->
+    <!-- </xs:restriction> -->
+  <!-- </xs:simpleType> -->
     </xs:restriction>
   </xs:simpleType>
 
-    <xs:simpleType name="noallsometype">
+  <xs:simpleType name="attendpatterntype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes, all LA-employed social workers are eligible</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Yes, some LA-employed social workers are eligible</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="roletype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Senior Manager</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Middle Manager</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="3"><xs:annotation><xs:documentation>First Line Manager</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="4"><xs:annotation><xs:documentation>Senior Practicioner</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="5"><xs:annotation><xs:documentation>Case Holder</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="6"><xs:annotation><xs:documentation>Qualified Without Cases</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="origintype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Newly Qualified Social Workers</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Social Worker Role in a Different Local Authority in England</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="3"><xs:annotation><xs:documentation>Social Worker Role Outside England</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="4"><xs:annotation><xs:documentation>Agency or Consultancy in Social Work (in England)</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="5"><xs:annotation><xs:documentation>Other Social Work Role Non-local Authority (in England)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="6"><xs:annotation><xs:documentation>Other Social Care Role in Local Authority/Non-local Authority (in England)</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="7"><xs:annotation><xs:documentation>Non-social Care Role/Any Role Outside England/No Employment/Career Break</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="8"><xs:annotation><xs:documentation>Other</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Known</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="10"><xs:annotation><xs:documentation>Not Yet Collected</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="leavertype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Social Worker Role in a Different Local Authority in England</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="2"><xs:annotation><xs:documentation>Social Worker Role Outside England</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="3"><xs:annotation><xs:documentation>Agency or Consultancy in Social Work (in England)</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="4"><xs:annotation><xs:documentation>Other Social Work Role Non-local Authority (in England)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="5"><xs:annotation><xs:documentation>Other Social Care Role in Local Authority/Non-local Authority (in England)</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="6"><xs:annotation><xs:documentation>Non-social Care Role/Any Role Outside England/No Employment/Career Break</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="7"><xs:annotation><xs:documentation>Other</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="8"><xs:annotation><xs:documentation>Not Known</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Yet Collected</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="reasontype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Resignation</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Voluntary Redundancy</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="3"><xs:annotation><xs:documentation>Compulsory Redundancy</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="4"><xs:annotation><xs:documentation>Dismissed</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="5"><xs:annotation><xs:documentation>Retired</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="6"><xs:annotation><xs:documentation>Deceased</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="7"><xs:annotation><xs:documentation>Moved to a Non-child and Family Social Work Role Within LA</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="8"><xs:annotation><xs:documentation>Other</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Known</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="10"><xs:annotation><xs:documentation>Not Yet Collected</xs:documentation></xs:annotation></xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="absencetype">
-    <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="MAT"><xs:annotation><xs:documentation>Maternity/Paternity leave</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other Paid Authorised Absence, Such As: Compassionate Leave, Annual Leave Requiring Reallocation Of Cases</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="PUB"><xs:annotation><xs:documentation>Paid Absence For Public Duties, Such As: Jury Duty</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="SIC"><xs:annotation><xs:documentation>Sick Leave</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="TRN"><xs:annotation><xs:documentation>Training</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="UNA"><xs:annotation><xs:documentation>Unauthorised Absence</xs:documentation></xs:annotation></xs:enumeration>
-	    <xs:enumeration value="UNP"><xs:annotation><xs:documentation>Unpaid Authorised Absence</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="FT"><xs:annotation><xs:documentation>if a person attends full-time</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="PT"><xs:annotation><xs:documentation>if a person attends the placement part-time</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="sentype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="SPLD"><xs:annotation><xs:documentation>Specific learning difficulty</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MLD"><xs:annotation><xs:documentation>Moderate learning difficulty</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="SLD"><xs:annotation><xs:documentation>Severe learning difficulty</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="PMLD"><xs:annotation><xs:documentation>Profound and multiple learning difficulty</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="SEMH"><xs:annotation><xs:documentation>Social, emotional and mental health</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="SLCN"><xs:annotation><xs:documentation>Speech, language and communication needs</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="HI"><xs:annotation><xs:documentation>Hearing impairment</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="VI"><xs:annotation><xs:documentation>Vision impairment</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="MSI"><xs:annotation><xs:documentation>Multi-sensory impairment</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="PD"><xs:annotation><xs:documentation>Physical disability</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="ASD"><xs:annotation><xs:documentation>Autistic spectrum disorder</xs:documentation></xs:annotation></xs:enumeration>
+      <!-- SC has the following line, but this isn't in the guide for LAs?: <xs:enumeration value="DS"><xs:annotation><xs:documentation>Down Syndrome</xs:documentation></xs:annotation></xs:enumeration> -->
+      <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other difficulty</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="sentyperanktype">
+    <xs:restriction base="nonEmptyString">
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>PRIMARY TYPE OF NEED OR ONLY NEED</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>SECONDARY TYPE OF NEED</xs:documentation></xs:annotation></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
 </xs:schema>
