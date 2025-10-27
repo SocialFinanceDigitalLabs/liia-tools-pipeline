@@ -2267,8 +2267,8 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"
-reference = "school-census-config"
-resolved_reference = "95db21236fe2dfbcce55b9ba7d87d6222d10a813"
+reference = "HEAD"
+resolved_reference = "fc5da5b1ceeaf31bac5d951cdcc526a0a96f0a99"
 
 [[package]]
 name = "lxml"
@@ -5841,4 +5841,4 @@ s3 = ["fs-s3fs"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11, <3.13"
-content-hash = "37358282fd3123c9323f54b44716deed4283e35a3116957d83ecaf46169a2bb2"
+content-hash = "aac033c1f4ebf0082f7a9db68acf1c8a096d2c746e4ee50a7b5b2c535ae2bb43"
