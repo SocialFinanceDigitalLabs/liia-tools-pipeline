@@ -323,6 +323,11 @@ summer:
     description: Remove column from learnerfamonroll
     value:
       - learnerfamhours
+  column_map.pupilonroll.thirtyhourcode:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      eligibilitycode
   column_map.pupilnolongeronroll:
     type: remove
     description: Remove column from pupilnolongeronroll

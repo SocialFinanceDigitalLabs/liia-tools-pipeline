@@ -13,7 +13,7 @@ autumn:
     description: Update codes for 2025 schema
     value:
       *learner-fam-code
-    column_map.pupilonroll.thirtyhourcode:
+  column_map.pupilonroll.thirtyhourcode:
     type: rename
     description: Rename column in pupilonroll
     value:
@@ -150,11 +150,6 @@ summer:
     description: Rename column in pupilonroll
     value:
       sex
-  column_map.pupilonroll.thirtyhourcode:
-    type: rename
-    description: Rename column in pupilonroll
-    value:
-      eligibilitycode
   column_map.pupilonroll.eyppr:
     type: add
     description: Adds new column for pupilonroll
