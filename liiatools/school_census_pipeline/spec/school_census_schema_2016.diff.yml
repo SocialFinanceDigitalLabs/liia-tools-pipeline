@@ -1109,7 +1109,7 @@ spring:
         termlysessionsunauthorised:
             *int-blank
         uniquelearnernumber:
-            *int-blank
+            *alphanumeric-blank
         gender:
             &gender
             category:
@@ -2546,7 +2546,7 @@ summer:
         termlysessionsunauthorised:
             *int-blank
         uniquelearnernumber:
-            *int-blank
+            *alphanumeric-blank
         moveonrollflag:
             *alphanumeric-blank # couldn't find
         gender:
