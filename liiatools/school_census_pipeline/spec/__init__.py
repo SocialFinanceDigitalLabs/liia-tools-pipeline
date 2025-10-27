@@ -64,11 +64,9 @@ def load_schema(year: int, term: str) -> DataSchema:
     # We load the full schema
     logger.debug("Loading schema from %s", schema_lookup[0][0])
     full_schema = yaml.safe_load(schema_lookup[0][0].read_text())
-    print(f"Loaded schema from {schema_lookup[0][0]}")
     try:
         term_schema = full_schema[term]
     except KeyError as e:
-        print(f"{term} not found in {full_schema}: {repr(e)}")
         raise KeyError(f"{term} not found in {full_schema}") from e
 
     # Now loop over diff files and apply them
@@ -82,14 +80,12 @@ def load_schema(year: int, term: str) -> DataSchema:
         # If term not in diff file, continue to next, otherwise load term
         if term not in diff:
             logger.debug(f"{term} not present in {fn}")
-            print(f"{term} not present in {fn}")
             continue
         diff = diff[term]
 
         for key, diff_obj in diff.items():
             diff_type = diff_obj["type"]
             if diff_type not in ("add", "modify", "rename", "remove"):
-                print(f"Unknown diff type {diff_type} for {key} in {fn}")
                 raise ValueError(f"Unknown diff type {diff_type} in {fn}")
             path = key.split(".")
             parent = term_schema
@@ -100,7 +96,6 @@ def load_schema(year: int, term: str) -> DataSchema:
                         parent = parent[item]
                     parent[path[-1]] = diff_obj["value"]
                 except KeyError as e:
-                    print(f"problem {diff_type} for {key} in {fn}: {repr(e)}")
                     raise KeyError(f"while applying {diff_type} in {fn} for {key}: {repr(e)}") from e
 
             elif diff_type == "rename":
@@ -109,26 +104,30 @@ def load_schema(year: int, term: str) -> DataSchema:
                         parent = parent[item]
                     parent[diff_obj["value"]] = parent.pop(path[-1])
                 except KeyError as e:
-                    print(f"while renaming {key} in {fn}: {repr(e)}")
                     raise KeyError(f"while renaming {key} in {fn}: {repr(e)}") from e
 
             elif diff_type == "remove":
                 if len(path) == 2:  # Remove columns
                     try:
                         parent = parent[path[0]][path[1]]
-                        [parent.pop(key) for key in diff_obj["value"]]
+                        for k in diff_obj["value"]:
+                            if k in parent:
+                                parent.pop(k)
+                            else:
+                                logger.debug(f"{k} not found under path")
                     except KeyError as e:
-                        print(f"while removing columns at {key} in {fn}: {repr(e)}")
                         raise KeyError(f"while removing columns at {key} in {fn}: {repr(e)}") from e
                 elif len(path) == 1:  # Remove files
                     try:
                         parent = parent[path[0]]
-                        [parent.pop(key) for key in diff_obj["value"]]
+                        for k in diff_obj["value"]:
+                            if k in parent:
+                                parent.pop(k)
+                            else:
+                                logger.debug(f"{k} not found under path")
                     except KeyError as e:
-                        print(f"While removing file at {key} in {fn}: {repr(e)}")
                         raise KeyError(f"While removing file at {key} in {fn}: {repr(e)}") from e
                 else:
-                    print(f"remove diff {key} has length {len(path)}")
                     logger.debug(f"remove diff {key} has length {len(path)}")
 
     # Now we can parse the full schema into a DataSchema object from the dict
