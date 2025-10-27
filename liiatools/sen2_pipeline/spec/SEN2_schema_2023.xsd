@@ -1,37 +1,24 @@
-<!-- It says utf not UTF in line below in LBWF live file - shall we update as well? Does it need updating for other returns?? -->
-<!-- Need to check indentation throughout this schema -->
-
-<!-- XSD CHECKER USED - https://www.liquid-technologies.com/online-xsd-validator -->
-
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:element name="Message" type="messagetype"/>
 
-<!-- Sections listed below -->
   <xs:complexType name="messagetype">
     <xs:sequence>
-      <!-- N.B. 2023 technical spec not very helpful...-->
-      <!-- Changed min from 0 in line below as it must be compulsory, right? -->
-      <xs:element name="Header" type="headertype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Header" type="headertype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Persons" type="personstype" minOccurs="0" maxOccurs="1"/>
-      <!-- Stop 2 lines below being comments if section below is removed -->
 </xs:sequence>
 </xs:complexType>
 
   <xs:complexType name="headertype">
     <xs:sequence>
-    <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="CollectionDetails" type="collectiondetailstype" minOccurs="0" maxOccurs="1"/>
-      <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="Source" type="sourcetype" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="collectiondetailstype">
     <xs:sequence>
-    <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="Collection" minOccurs="0" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -39,17 +26,13 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <!-- Should minoccurs be 1 on line below? -->
-      <!-- Even better - should we make it compulsory what value the year ought to be, 2023?? -->
       <xs:element name="Year" type="xs:gYear" minOccurs="0" maxOccurs="1"/>
-      <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="ReferenceDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="sourcetype">
     <xs:sequence>
-    <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="SourceLevel" minOccurs="0" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -57,20 +40,16 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="LEA" type = "leatype" minOccurs="1" maxOccurs="1"/>
-      <!-- Should minoccurs be 1 on line below? -->
+      <xs:element name="LEA" type = "exportedandleatype" minOccurs="0" maxOccurs="1"/>
       <xs:element name="SoftwareCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <!-- Is 'Release' bit below ok? - example is '1.4 2022-06-06'- this seems to be a mix of decimal number and date, how to do this? Does this need defining below in simple types section?? -->
-      <!-- Could we use this somehow??: <xs:pattern value="\d+\.\d+ \d{4}-\d{2}-\d{2}"/> -->
       <xs:element name="Release" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="SerialNo" minOccurs="1" maxOccurs="1">
+      <xs:element name="SerialNo" minOccurs="0" maxOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
             <xs:pattern value="\d{3}"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <!-- Should minoccurs be 1 on line below? -->
       <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
       <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
@@ -80,43 +59,30 @@
 <!-- Module 1: Person details <Person> -->
   <xs:complexType name="personstype">
     <xs:sequence>
-    <!-- Should minoccurs be 1 on line below? If Person section exists then it ought to be filled in? -->
-      <xs:element name="Person" type="persondetailstype" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Person" type="persondetailstype" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-
-<!-- Need to have a think about which bits/sections are compulsory e.g. if linked to another bit/section - how does this affect minoccurs and maxoccurs? -->
 
 <xs:complexType name="persondetailstype">
 <xs:sequence>
       <!-- Item 1.1 in guide for LAs -->
-      <!-- Should minoccurs be 1 on line below like SC has? -->
-      <xs:element name="Surname" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Surname" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.2 in guide for LAs -->
-      <!-- Should minoccurs be 1 on line below like SC has? -->
-      <xs:element name="Forename" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Forename" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.3 in guide for LAs -->
-      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
-      <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PersonBirthDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
       <!-- Need to change GenderCurrent and gendertype to Sex and sextype in a future xsd schema (LBWF live file mentions Sex) -->
-      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
       <!-- Item 1.4 in guide for LAs -->
-      <xs:element name="GenderCurrent" type="gendertype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="GenderCurrent" type="gendertype" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.5 in guide for LAs -->
-      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
-      <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.6 in guide for LAs -->
-      <!-- Should minoccurs be 1 below if we're going with 1 in most other bits in this section? -->
-      <!-- Should we put a condition (if so, how?) which shows format postcode must take? Guide for LAs says leave blank if not possible to get postcode but provide an explanatory note - where? In this same field? -->
-      <!-- Could we use the following somehow??: ([A-Z]{1,2}[0-9][A-Z0-9]? [0-9][ABD-HJLNP-UW-Z]{2})|([A-Z]{1,2}[0-9]{2} [0-9][ABD-HJLNP-UW-Z]{2})|([A-Z]{1,2}[0-9][A-Z] [0-9][ABD-HJLNP-UW-Z]{2}) -->
       <xs:element name="PostCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <!-- Item 1.7a in guide for LAs -->
-      <!-- Not compulsory for child to have UPN (hence UPNunknown need to be filled in) or to have ULN hence minoccurs 0 for next 2 lines -->
       <xs:element name="UPN" type="upntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 1.7b in guide for LAs -->
       <xs:element name="UniqueLearnerNumber" type="uniquelearnernumbertype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 1.7c in guide for LAs -->
-      <!-- For below, changed minoccurs to 0. However, it should be compusory if UPN not given above?? -->
       <xs:element name="UPNunknown" type="upnunknowntype" minOccurs="0" maxOccurs="1"/>
       <!-- Need line below so we can have section below! -->
       <xs:element name="Requests" type="requeststype" minOccurs="0" maxOccurs="unbounded"/>
@@ -162,7 +128,7 @@
       <!-- Item 2.7 in guide for LAs -->
       <!-- Guide for LAs says "No further information is subsequently required from the exporting local authority." i.e. no more information for module 3 and onwards is required? Should we incorporate something into the code? -->
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="Exported" type="exportedtype" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Exported" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
         <!-- Need line below so we can have section below! -->
         <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
         <!-- Need line below so we can have section below! -->
@@ -263,10 +229,9 @@
 <!-- ActivePlans section has PlacementDetail and SENneed sections... -->
 <xs:complexType name="activeplanstype">
 <xs:sequence>
-<!-- SC has maxoccurs as unbounded on line below-->
-      <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="unbounded"/>
       <!-- Item 5.1 in guide for LAs -->
-      <xs:element name="TransferLA" type="leatype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="TransferLA" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.2 in guide for LAs -->
       <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.3 in guide for LAs -->
@@ -325,13 +290,6 @@
 
 <!-- Types defined below -->
 
-<!-- Below in SC's 2023 doc - what does it relate to? I can't find 'integer' anywhere else in SC's doc... -->
-  <xs:simpleType name="positiveintegertype">
-    <xs:restriction base="xs:integer">
-		<xs:minInclusive value="0"/>
-    </xs:restriction>
-  </xs:simpleType>
-
     <xs:simpleType name="yesnorecruittype">
     <xs:restriction base="nonEmptyString">
 	    <xs:enumeration value="Y"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
@@ -357,8 +315,8 @@
   </xs:simpleType>
 
   <xs:simpleType name="ethnicitytype">
-  <!-- As per guide for LAs, below taken from school census and CBDS (both match) - However, ethnicities last updated 2024 as per CBDS, so how do you get older versions? Was ethnicity affected? May need to consider this for other simiilar simple types -->
-  <!-- (CBDS says extended category shouldn't be used if main code is used) -->
+  <!-- As per guide for LAs, below taken from school census and CBDS (both match) - ethnicities last updated 2024 as per CBDS -->
+  <!-- CBDS says extended category shouldn't be used if main code is used -->
     <xs:restriction base="nonEmptyString">
       <xs:enumeration value="WBRI"><xs:annotation><xs:documentation>White - British</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="WCOR"><xs:annotation><xs:documentation>White - Cornish</xs:documentation></xs:annotation></xs:enumeration>
@@ -475,16 +433,14 @@
   <xs:simpleType name="upntype">
     <xs:restriction base="xs:string">
     <!-- We need to have a 13 character format Annnnnnnnnnnn with AnnnnnnnnnnnA for a temp UPN where A is a character and n is numeric. Further info available in UPN policy and practice guidance -->
-        <!-- SC's doc has the following: <xs:pattern value="[A-Za-z]\d{11}(\d|[A-Za-z])"/> -->
         <xs:pattern value="([A-Za-z]\d{12}|[A-Za-z]\d{11}[A-Za-z])"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="uniquelearnernumbertype">
     <xs:restriction base="xs:string">
-    <!-- Used link in guide for LAs and saw pattern for Learner Reference Number is [A-Za-z0-9 ]{1,12} (any combination of up to 12 alphabetic characters, numeric digits or spaces) -->
-      <!-- SC has the following: <xs:pattern value="\d{10}"/> -->
-      <xs:pattern value="[A-Za-z0-9]{1,12}"/>
+      <!-- First digit can't be a 0 but whole string has to be 8 characters long -->
+      <xs:pattern value="^[1-9][0-9]{7}$"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -503,7 +459,6 @@
 <!-- Module 2 starts here -->
   <xs:simpleType name="yesnotype">
     <xs:restriction base="nonEmptyString">
-    <!-- SC has 1 is True and 0 is False -->
       <xs:enumeration value="1"><xs:annotation><xs:documentation>Yes</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="0"><xs:annotation><xs:documentation>No</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
@@ -533,10 +488,9 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="exportedtype">
+  <xs:simpleType name="exportedandleatype">
     <xs:restriction base="nonEmptyString">
-    <!-- Guide for LAs says to refer to CBDS i.e. Common Basic Data Set, item N00216. Please note I have only included the London LAs below as we're only analysing across Lonodon? Is that okay or do we have to mention every one in the UK as mentioned in the CBDS? (See CS003 on CodeSets tab) -->
-      <xs:enumeration value="XXX"><xs:annotation><xs:documentation>Unknown local authority or outside of the UK</xs:documentation></xs:annotation></xs:enumeration>
+    <!-- Guide for LAs says to refer to CBDS i.e. Common Basic Data Set, item N00216. Please note I have only included the London LAs below (See CS003 on CodeSets tab) -->
       <xs:enumeration value="201"><xs:annotation><xs:documentation>COMMON COUNCIL OF THE CITY OF LONDON</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="202"><xs:annotation><xs:documentation>CAMDEN LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="203"><xs:annotation><xs:documentation>ROYAL BOROUGH OF GREENWICH</xs:documentation></xs:annotation></xs:enumeration>
@@ -550,8 +504,7 @@
       <xs:enumeration value="211"><xs:annotation><xs:documentation>TOWER HAMLETS LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="212"><xs:annotation><xs:documentation>WANDSWORTH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="213"><xs:annotation><xs:documentation>WESTMINSTER CITY COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-      <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING & DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING AND DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="302"><xs:annotation><xs:documentation>BARNET LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="303"><xs:annotation><xs:documentation>BEXLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="304"><xs:annotation><xs:documentation>BRENT LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
@@ -571,15 +524,9 @@
       <xs:enumeration value="318"><xs:annotation><xs:documentation>RICHMOND UPON THAMES LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="319"><xs:annotation><xs:documentation>SUTTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="320"><xs:annotation><xs:documentation>WALTHAM FOREST LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="XXX"><xs:annotation><xs:documentation>Unknown local authority or outside of the UK</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-<!-- For above, however, would it be better to say it ought to be a 3 digit LA code OR XXX? -->
-<!-- SC has the following I've commented out... Should | be OR?? Could we do something like I did for upntype? -->
-  <!-- <xs:simpleType name="exportedtype"> -->
-    <!-- <xs:restriction base="xs:string"> -->
-      <!-- <xs:pattern value="(\d{3}|XXX)"/> -->
-    <!-- </xs:restriction> -->
-  <!-- </xs:simpleType> -->
 
 <!-- Module 3 starts here -->
   <xs:simpleType name="assessmentoutcometype">
@@ -681,32 +628,18 @@
   </xs:simpleType>
 
 <!-- Looked at link in guide for LAs and URN for London establishments appearing on page 1 of the search could be 5 or 6 digits -->
-<!-- Would it be better to leave as a string if urn starts with 0, is this possible? But if we have as a string then would we need to give every possibility? This would be unrealistic as there are many establishments (even just looking at London) which probably change frequently? -->
-<!-- Took inspiration from PT's doc -->
 <xs:simpleType name="urntype">
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
   <xs:restriction base="xs:string">
-  <!-- SC has the following line instead: <xs:pattern value="\d{6}"/> -->
-    <xs:pattern value="\d{5,6}"/>
-    <!-- What does the line below mean? I've commented out -->
-        <!-- <xs:minInclusive value="0"/> -->
+  <!-- Below says can be up to 6 digits long -->
+    <xs:pattern value="^\d{1,6}$"/>
   </xs:restriction>
 </xs:simpleType>
-<!-- The following commented out is from PT's doc -->
-<!-- <xs:simpleType name="urntype"> -->
-    <!-- <xs:restriction base="xs:integer"> -->
-    <!-- What does the line below mean? -->
-        <!-- <xs:minInclusive value="0"/> -->
-    <!-- </xs:restriction> -->
-<!-- </xs:simpleType> -->
 
-<!-- Link in guide for LAs wasn't very useful so referred to LBWF's live file -->
-<!-- LBWF live file seems to have UKPRN numbers which are 8 digits long - how to put this condition below (^\d{8}$)? $ makes it strict so has to be exactly 8 characters -->
 <xs:simpleType name="ukprntype">
   <xs:restriction base="xs:string">
-    <!-- What does the line below mean? Must be a positive number? I've commented it out because SC doesn't have it in his version -->
-    <!-- <xs:minInclusive value="0"/> -->
-    <xs:pattern value="\d{8}"/>
+  <!-- Below says has to be exactly 8 characters long -->
+    <xs:pattern value="^\d{8}$"/>
   </xs:restriction>
 </xs:simpleType>
 
@@ -722,7 +655,6 @@
 
   <xs:simpleType name="nonEmptyString">
     <xs:restriction base="xs:string">
-    <!-- What does the line below mean? Must be at least 1 character long? -->
       <xs:minLength value="1"/>
     </xs:restriction>
   </xs:simpleType>
@@ -735,54 +667,6 @@
   </xs:simpleType>
 
 <!-- Module 5 starts here -->
-<!-- For below would it be better to say it ought to be a 3 digit LA code OR XXX? -->
-<xs:simpleType name="leatype">
-    <xs:restriction base="nonEmptyString">
-    <!-- Guide for LAs says to refer to CBDS i.e. Common Basic Data Set, item N00216. Please note I have only included the London LAs below as we're only analysing across Lonodon? Is that okay or do we have to mention every one in the UK as mentioned in the CBDS? (See CS003 on CodeSets tab) -->
-      <xs:enumeration value="XXX"><xs:annotation><xs:documentation>Unknown local authority or outside of the UK</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="201"><xs:annotation><xs:documentation>COMMON COUNCIL OF THE CITY OF LONDON</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="202"><xs:annotation><xs:documentation>CAMDEN LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="203"><xs:annotation><xs:documentation>ROYAL BOROUGH OF GREENWICH</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="204"><xs:annotation><xs:documentation>HACKNEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="205"><xs:annotation><xs:documentation>HAMMERSMITH AND FULHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="206"><xs:annotation><xs:documentation>ISLINGTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="207"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KENSINGTON AND CHELSEA</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="208"><xs:annotation><xs:documentation>LAMBETH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="209"><xs:annotation><xs:documentation>LEWISHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="210"><xs:annotation><xs:documentation>SOUTHWARK LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="211"><xs:annotation><xs:documentation>TOWER HAMLETS LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="212"><xs:annotation><xs:documentation>WANDSWORTH LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="213"><xs:annotation><xs:documentation>WESTMINSTER CITY COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-      <xs:enumeration value="301"><xs:annotation><xs:documentation>BARKING & DAGENHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="302"><xs:annotation><xs:documentation>BARNET LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="303"><xs:annotation><xs:documentation>BEXLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="304"><xs:annotation><xs:documentation>BRENT LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="305"><xs:annotation><xs:documentation>BROMLEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="306"><xs:annotation><xs:documentation>CROYDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="307"><xs:annotation><xs:documentation>EALING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="308"><xs:annotation><xs:documentation>ENFIELD LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="309"><xs:annotation><xs:documentation>HARINGEY LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="310"><xs:annotation><xs:documentation>HARROW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="311"><xs:annotation><xs:documentation>HAVERING LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="312"><xs:annotation><xs:documentation>HILLINGDON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="313"><xs:annotation><xs:documentation>HOUNSLOW LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="314"><xs:annotation><xs:documentation>ROYAL BOROUGH OF KINGSTON UPON THAMES</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="315"><xs:annotation><xs:documentation>MERTON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="316"><xs:annotation><xs:documentation>NEWHAM LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="317"><xs:annotation><xs:documentation>REDBRIDGE LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="318"><xs:annotation><xs:documentation>RICHMOND UPON THAMES LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="319"><xs:annotation><xs:documentation>SUTTON LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="320"><xs:annotation><xs:documentation>WALTHAM FOREST LONDON BOROUGH COUNCIL</xs:documentation></xs:annotation></xs:enumeration>
-      <!-- SC has the following which I've commented out below... Should there be mention of XXX since that is also possible? -->
-  <!-- <xs:simpleType name="leatype"> -->
-    <!-- <xs:restriction base="xs:string"> -->
-      <!-- <xs:pattern value="\d{3}"/> -->
-    <!-- </xs:restriction> -->
-  <!-- </xs:simpleType> -->
-    </xs:restriction>
-  </xs:simpleType>
-
   <xs:simpleType name="attendpatterntype">
     <xs:restriction base="nonEmptyString">
       <xs:enumeration value="FT"><xs:annotation><xs:documentation>if a person attends full-time</xs:documentation></xs:annotation></xs:enumeration>
@@ -803,7 +687,7 @@
       <xs:enumeration value="MSI"><xs:annotation><xs:documentation>Multi-sensory impairment</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="PD"><xs:annotation><xs:documentation>Physical disability</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="ASD"><xs:annotation><xs:documentation>Autistic spectrum disorder</xs:documentation></xs:annotation></xs:enumeration>
-      <!-- SC has the following line, but this isn't in the guide for LAs?: <xs:enumeration value="DS"><xs:annotation><xs:documentation>Down Syndrome</xs:documentation></xs:annotation></xs:enumeration> -->
+      <!-- SC has the following line, but this isn't in the guide for LAs? Add in a later year: <xs:enumeration value="DS"><xs:annotation><xs:documentation>Down Syndrome</xs:documentation></xs:annotation></xs:enumeration> -->
       <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other difficulty</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
