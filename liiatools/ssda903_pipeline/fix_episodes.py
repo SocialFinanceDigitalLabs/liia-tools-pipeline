@@ -3,23 +3,6 @@ from datetime import date, datetime, timedelta
 import numpy as np
 import pandas as pd
 
-__COLUMNS = [
-    "DECOM",
-    "RNE",
-    "LS",
-    "CIN",
-    "PLACE",
-    "PLACE_PROVIDER",
-    "DEC",
-    "REC",
-    "REASON_PLACE_CHANGE",
-    "HOME_POST",
-    "PL_POST",
-    "PL_HOST",
-    "URN",
-    "YEAR",
-]
-
 __DATES = [
     "DECOM",
     "DEC",
@@ -27,27 +10,6 @@ __DATES = [
     "DEC_previous",
     "DECOM_next",
     "DEC_next",
-]
-
-__COLUMNS_TO_KEEP = [
-    "CHILD",
-    "LA",
-    "DECOM",
-    "RNE",
-    "LS",
-    "CIN",
-    "PLACE",
-    "PLACE_PROVIDER",
-    "DEC",
-    "REC",
-    "REASON_PLACE_CHANGE",
-    "HOME_POST",
-    "PL_POST",
-    "PL_HOST",
-    "URN",
-    "YEAR",
-    "YEAR_latest",
-    "Episode_source",
 ]
 
 
@@ -416,7 +378,7 @@ def apply_stage2_rules(dataframe: pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 
-def stage_1(ssda903_df: pd.DataFrame) -> pd.DataFrame:
+def stage_1(ssda903_df: pd.DataFrame, columns: list) -> pd.DataFrame:
     """
     Accept an ssda903 episodes dataframe and apply the stage 1 rules
 
@@ -425,7 +387,7 @@ def stage_1(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     """
     # Add columns to dataframe to identify which rules should be applied at stage 1
     ssda903_df = ssda903_df.sort_values(["CHILD", "DECOM"], ignore_index=True)
-    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, __COLUMNS)
+    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, columns)
     ssda903_df_stage1 = format_datetime(ssda903_df_stage1, __DATES)
     ssda903_df_stage1 = add_latest_year_and_source_for_la(ssda903_df_stage1)
     ssda903_df_stage1 = add_stage1_rule_identifier_columns(ssda903_df_stage1)
@@ -436,15 +398,15 @@ def stage_1(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     return ssda903_df_stage1_applied
 
 
-def stage_2(ssda903_df: pd.DataFrame) -> pd.DataFrame:
+def stage_2(ssda903_df: pd.DataFrame, columns_to_keep: list, columns: list) -> pd.DataFrame:
     """
     Accept an ssda903 episodes dataframe and apply the stage 2 rules
 
     :param ssda903_df: Dataframe with SSDA903 Episodes data
     :return: Dataframe with stage 2 rules identified and applied
     """
-    ssda903_df_stage2 = ssda903_df[__COLUMNS_TO_KEEP]
-    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, __COLUMNS)
+    ssda903_df_stage2 = ssda903_df[columns_to_keep]
+    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, columns)
     ssda903_df_stage2 = format_datetime(ssda903_df_stage2, __DATES)
     ssda903_df_stage2 = add_stage2_rule_identifier_columns(ssda903_df_stage2)
     ssda903_df_stage2 = identify_stage2_rule_to_apply(ssda903_df_stage2)
@@ -452,7 +414,7 @@ def stage_2(ssda903_df: pd.DataFrame) -> pd.DataFrame:
     # Apply the stage 2 rules
     ssda903_df_stage2_applied = apply_stage2_rules(ssda903_df_stage2)
 
-    ssda903_df_final = ssda903_df_stage2_applied[__COLUMNS_TO_KEEP]
+    ssda903_df_final = ssda903_df_stage2_applied[columns_to_keep]
     ssda903_df_final = ssda903_df_final.sort_values(
         ["CHILD", "DECOM"], ignore_index=True
     )
