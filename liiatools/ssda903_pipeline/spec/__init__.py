@@ -85,21 +85,44 @@ def load_schema(year: int) -> DataSchema:
             parent = full_schema
 
             if diff_type in ["add", "modify"]:
-                for item in path[:-1]:
-                    parent = parent[item]
-                parent[path[-1]] = diff_obj["value"]
+                try:
+                    for item in path[:-1]:
+                        parent = parent[item]
+                    parent[path[-1]] = diff_obj["value"]
+                except KeyError as e:
+                    raise KeyError(f"while applying {diff_type} in {fn} for {key}: {repr(e)}") from e
 
             elif diff_type == "rename":
-                dict = parent[path[0]][path[1]]
-                dict[diff_obj["value"]] = dict.pop(path[-1])
+                try:
+                    for item in path[:-1]:
+                        parent = parent[item]
+                    parent[diff_obj["value"]] = parent.pop(path[-1])
+                except KeyError as e:
+                    raise KeyError(f"while renaming {key} in {fn}: {repr(e)}") from e
 
             elif diff_type == "remove":
                 if len(path) == 2:  # Remove columns
-                    dict = parent[path[0]][path[1]]
-                    [dict.pop(key) for key in diff_obj["value"]]
+                    try:
+                        parent = parent[path[0]][path[1]]
+                        for k in diff_obj["value"]:
+                            if k in parent:
+                                parent.pop(k)
+                            else:
+                                logger.debug(f"{k} not found under path")
+                    except KeyError as e:
+                        raise KeyError(f"while removing columns at {key} in {fn}: {repr(e)}") from e
                 elif len(path) == 1:  # Remove files
-                    dict = parent[path[0]]
-                    [dict.pop(key) for key in diff_obj["value"]]
+                    try:
+                        parent = parent[path[0]]
+                        for k in diff_obj["value"]:
+                            if k in parent:
+                                parent.pop(k)
+                            else:
+                                logger.debug(f"{k} not found under path")
+                    except KeyError as e:
+                        raise KeyError(f"While removing file at {key} in {fn}: {repr(e)}") from e
+                else:
+                    logger.debug(f"remove diff {key} has length {len(path)}")
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)
