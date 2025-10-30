@@ -71,9 +71,8 @@
       <xs:element name="Forename" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.3 in guide for LAs -->
       <xs:element name="PersonBirthDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
-      <!-- Need to change GenderCurrent and gendertype to Sex and sextype in a future xsd schema (LBWF live file mentions Sex) -->
       <!-- Item 1.4 in guide for LAs -->
-      <xs:element name="GenderCurrent" type="gendertype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Sex" type="sextype" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.5 in guide for LAs -->
       <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="1" maxOccurs="1"/>
       <!-- Item 1.6 in guide for LAs -->
@@ -166,7 +165,7 @@
 </xs:sequence>
 </xs:complexType>
 
-<!-- Module 4: Named plan <Namedplan> -->
+<!-- Module 4: Named plan <NamedPlan> -->
 <!-- ... where NamedPlan section has StartDate, PlanDetail, PB, CeaseDate, and CeaseReason bits -->
 <xs:complexType name="namedplantype">
 <xs:sequence>
@@ -177,7 +176,7 @@
       <!-- Item 4.2 in guide for LAs -->
       <xs:element name="PlanRes" type="planrestype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.3 in guide for LAs -->
-      <xs:element name="PlanWBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlanWBP" type="wbptype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.4a in guide for LAs -->
       <xs:element name="PB" type="pbtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.4b in guide for LAs -->
@@ -197,21 +196,21 @@
       <!-- Item 4.7a in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <!-- Guide for LAs says "Please complete only one of 5.5a to 5.5c." -->
-      <!-- Item 5.5a in guide for LAs -->
+      <!-- Item 5.7a in guide for LAs -->
       <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7b in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <!-- Item 5.5b in guide for LAs -->
+      <!-- Item 5.7b in guide for LAs -->
       <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7c in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <!-- Item 5.5c in guide for LAs -->
-      <!-- Item 5.5c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
-      <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 4.7c(i) in guide for LAs -->
+      <!-- Item 5.7c in guide for LAs -->
+      <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
+      <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.7c(i) in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 4.7d in guide for LAs -->
+      <!-- Item 5.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <!-- Item 5.5d in guide for LAs -->
       <!-- Guide for LAs says "Placement rank (primary or secondary placement) should also be completed (item 5.5d) for each placement." -->
@@ -235,10 +234,16 @@
       <!-- Item 5.2 in guide for LAs -->
       <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.3 in guide for LAs -->
-      <xs:element name="WBP" type="planwbptype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="WBP" type="wbptype" minOccurs="0" maxOccurs="1"/>
       <!-- Previous conversations that up to 2 SEN need types can be mentioned in the return -->
       <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
       <!-- Item 5.4 in guide for LAs -->
+      <!-- Following is a new voluntary data item added -->
+      <xs:element name="ReviewMeeting" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.5 -->
+      <!-- Following is a new voluntary data item added -->
+      <xs:element name="ReviewOutcome" type="reviewoutcometype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.6 in guide for LAs -->
       <xs:element name="LastReview" type="xs:date" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
@@ -252,7 +257,7 @@
       <!-- Item 4.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.5e in guide for LAs -->
+      <!-- Item 5.7e in guide for LAs -->
       <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7b in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
@@ -263,16 +268,13 @@
       <!-- Item 4.7c(i) in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.5f in guide for LAs -->
+      <!-- Item 5.7f in guide for LAs -->
       <xs:element name="LeavingDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.5g in guide for LAs -->
-      <!-- Guide for LAs says "Only pupils of compulsory school age must be completed." - Can we add a condition about this? -->
-      <xs:element name="AttendancePattern" type="attendpatterntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7e in guide for LAs -->
-      <!-- Item 5.5h in guide for LAs -->
+      <!-- Item 5.7g in guide for LAs -->
       <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7f in guide for LAs -->
-      <!-- Item 5.5i in guide for LAs -->
+      <!-- Item 5.7h in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Should we add WBP here as it's in LBWF live file (maybe affecting 2024 and later returns)? See above for more info. Are there any more? -->
 </xs:sequence>
@@ -281,9 +283,9 @@
 <!-- ... where SENneed section has SENtype and SENtypeRank bits -->
 <xs:complexType name="senneedtype">
 <xs:sequence>
-      <!-- Item 5.6 in guide for LAs -->
+      <!-- Item 5.8a in guide for LAs -->
       <xs:element name="SENtype" type="sentype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.7 in guide for LAs -->
+      <!-- Item 5.8b in guide for LAs -->
       <xs:element name="SENtypeRank" type="sentyperanktype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
@@ -305,12 +307,10 @@
   </xs:simpleType>
 
 <!-- Module 1 starts here -->
-  <xs:simpleType name="gendertype">
+  <xs:simpleType name="sextype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>Not known</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="9"><xs:annotation><xs:documentation>Not Specified (intermediate; unable to be classified as either male or female)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="M"><xs:annotation><xs:documentation>Male</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="F"><xs:annotation><xs:documentation>Female</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -476,15 +476,15 @@
 
   <xs:simpleType name="requestmedtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting about decision to assess has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation about decision to assess</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="requesttribtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal about decision to assess</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal about decision to assess</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -535,35 +535,35 @@
       <xs:enumeration value="N"><xs:annotation><xs:documentation>It was decided an EHC plan would not be issued</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="A"><xs:annotation><xs:documentation>Decision has not yet been made</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="W"><xs:annotation><xs:documentation>Request withdrawn or ceased before decision whether to issue was made</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="H"><xs:annotation><xs:documentation>Historical – Decision to issue was made before the latest collection period</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="H"><xs:annotation><xs:documentation>Historical – Decision to issue was made before the latest collection period or plan has been transferred from another local authority</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="assessmedtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred about the decision to issue a plan, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation about the decision to issue a plan</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="assesstribtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal about decision not to issue a plan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal about the decision not to issue a plan</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="othermedtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Mediation meeting has occurred in relation to other appealable decisions, irrespective of outcome</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No mediation in relation to other matters</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="othertribtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Appeal to tribunal in relation to other matters</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="0"><xs:annotation><xs:documentation>No appeal to tribunal in relation to others matters</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -582,7 +582,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="planwbptype">
+  <xs:simpleType name="wbptype">
     <xs:restriction base="nonEmptyString">
       <xs:enumeration value="A"><xs:annotation><xs:documentation>Apprenticeships</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="T"><xs:annotation><xs:documentation>Traineeships</xs:documentation></xs:annotation></xs:enumeration>
@@ -615,15 +615,15 @@
 
   <xs:simpleType name="ceasereasontype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="1"><xs:annotation><xs:documentation>Reached maximum age (this is the end of the academic year during which the young person turned 25)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="2"><xs:annotation><xs:documentation>Ongoing educational or training needs being met without an EHC plan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="1"><xs:annotation><xs:documentation>Reached maximum age (this is the end of the academic year during which the young person turned 25, or turns 19 if the young person enters the adult estate)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="2"><xs:annotation><xs:documentation>Ongoing educational or training needs being met without an EHC plan - this should only be used where there is ongoing education and training</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="3"><xs:annotation><xs:documentation>Moved on to higher education</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="4"><xs:annotation><xs:documentation>Moved on to paid employment, excluding apprenticeships</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="5"><xs:annotation><xs:documentation>Transferred to another LA</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="6"><xs:annotation><xs:documentation>Young person no longer wishes to engage in education or training</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="7"><xs:annotation><xs:documentation>Child or young person has moved outside England</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="8"><xs:annotation><xs:documentation>Child or young person deceased</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="9"><xs:annotation><xs:documentation>Other - Where a large number of cases are recorded as other, the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="6"><xs:annotation><xs:documentation>Young person no longer wishes to engage in education or training - this should include where the young person has reached their 18th birthday and is no longer under a statutory duty to participate in education or training, and where a young person has yet to reach their 18th birthday but is not complying with their statutory duty to participate in education or training</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="7"><xs:annotation><xs:documentation>Person has moved outside England</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="8"><xs:annotation><xs:documentation>Person deceased</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="9"><xs:annotation><xs:documentation>Other - Where a large number of cases are recorded as 'other', the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -645,11 +645,15 @@
 
   <xs:simpleType name="sensettingtype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="OLA"><xs:annotation><xs:documentation>Other – arrangements made by the local authority in accordance with section 61 of the Children and Families Act 2014 (“education otherwise than at a school or post-16 institution etc”)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="OPA"><xs:annotation><xs:documentation>Other – alternative arrangements made by parents or young person in accordance with section 42(5) of the Children and Families Act 2014, excluding those who are subject to elective home education</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="EHE"><xs:annotation><xs:documentation>elective home education - alternative arrangements made by parents or young person in accordance with section 42(5) of the Children and Families Act 2014, for elective home education</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OLA"><xs:annotation><xs:documentation>Other – arrangements made by the local authority in accordance with section 61 of the 2014 Act (“Special educational provision otherwise than in schools, post-16 institution etc”, commonly referred to as EOTAS) - for example therapy that is special educational provision for a child and where it would be inappropriate to provide this in a school</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OPA"><xs:annotation><xs:documentation>Other – alternative arrangements made by parents or young person in accordance with section 42(5) of the 2014 Act, excluding those who are subject to elective home education (for example where parents have chosen to arrange and pay for an independent school placement)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="EHE"><xs:annotation><xs:documentation>Elective home education - alternative arrangements made by parents or young person in accordance with section 42(5) of the 2014 Act for elective home education</xs:documentation></xs:annotation></xs:enumeration>
       <xs:enumeration value="EYP"><xs:annotation><xs:documentation>Early years provider with no GIAS URN (for example private nursery, independent early years providers and childminders)</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other – Includes where a type of setting is specified in the EHC plan (e.g.,special school for ASD) but no setting is named. Where this is used, the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="OTH"><xs:annotation><xs:documentation>Other – Includes where a type of setting is specified in the EHC plan (e.g.,special school) but no specific setting is named. Where this is used, the local authority will be prompted for further information in COLLECT</xs:documentation></xs:annotation></xs:enumeration>
+  <!-- The following 3 are specific for item 5.7c <SENsetting> when compared to item 4.7c <SENsetting> - Shall we separate into 2 different 'types'? -->
+      <xs:enumeration value="NEET"><xs:annotation><xs:documentation>Not in education, employment, or training (aged 16-25)</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="NIEC"><xs:annotation><xs:documentation>Not in education or training – Notice to cease issued</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="NIEO"><xs:annotation><xs:documentation>Not in education or training – Other – Where this is used, the local authority will be prompted for further information in COLLECT, for example, transferred into the local authority with an EHC plan and awaiting placement</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -667,10 +671,11 @@
   </xs:simpleType>
 
 <!-- Module 5 starts here -->
-  <xs:simpleType name="attendpatterntype">
+  <xs:simpleType name="reviewoutcometype">
     <xs:restriction base="nonEmptyString">
-      <xs:enumeration value="FT"><xs:annotation><xs:documentation>if a person attends full-time</xs:documentation></xs:annotation></xs:enumeration>
-      <xs:enumeration value="PT"><xs:annotation><xs:documentation>if a person attends the placement part-time</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="A"><xs:annotation><xs:documentation>amend the EHC plan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="C"><xs:annotation><xs:documentation>cease the EHC plan</xs:documentation></xs:annotation></xs:enumeration>
+      <xs:enumeration value="M"><xs:annotation><xs:documentation>maintain the EHC plan</xs:documentation></xs:annotation></xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
