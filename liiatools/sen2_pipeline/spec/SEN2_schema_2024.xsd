@@ -231,10 +231,6 @@
       <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="unbounded"/>
       <!-- Item 5.1 in guide for LAs -->
       <xs:element name="TransferLA" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.2 in guide for LAs -->
-      <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.3 in guide for LAs -->
-      <xs:element name="WBP" type="wbptype" minOccurs="0" maxOccurs="1"/>
       <!-- Previous conversations that up to 2 SEN need types can be mentioned in the return -->
       <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
       <!-- Item 5.4 in guide for LAs -->
@@ -277,6 +273,11 @@
       <!-- Item 5.7h in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Should we add WBP here as it's in LBWF live file (maybe affecting 2024 and later returns)? See above for more info. Are there any more? -->
+<!-- Is position of below okay? "Data items ‘residential settings’ and ‘work based learning activity’ have been moved from <ActivePlans> into the <PlacementDetail> module in the XML structure. Please see paragraphs 2.5 and 3.2.2." as per technical spec, however in guide for LAs it still seems to be under ActivePlans (for former please see page 11 and for latter please see page 31)?? -->
+      <!-- Item 5.2 in guide for LAs -->
+      <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.3 in guide for LAs -->
+      <xs:element name="WBP" type="wbptype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
