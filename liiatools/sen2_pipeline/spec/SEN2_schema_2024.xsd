@@ -100,38 +100,38 @@
 <!-- Requests section has RequestOutcome, Assessment, and ActivePlans sections -->
 <xs:complexType name="requeststype">
 <xs:sequence>
+      <!-- Item 2.1 in guide for LAs -->
+      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for ReceivedDate? Do we need to add further down?? -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+      <xs:element name="ReceivedDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 2.2 in guide for LAs -->
+      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for RYA? Do we need to do something else further down?? -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+      <xs:element name="RYA" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 2.3 in guide for LAs -->
+      <!-- No date is required in certain cases - see guide for LAs for more info -->
+<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
+      <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.4 in guide for LAs -->
       <!-- Guide for LAs says "When A, W or H is selected, no further information is required in this module" - that is, we can stop after ReceivedDate, RYA, RequestOutcomeDate, and RequestOutcome have been provided? Should we add something in the code about this? -->
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
       <xs:element name="RequestOutcome" type="requestoutcometype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 2.1 in guide for LAs -->
-      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for ReceivedDate? Do we need to add further down?? -->
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="ReceivedDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 2.2 in guide for LAs -->
-      <!-- LA guide says "Not required if request outcome is historical (H)." Does this affect simpletype for RYA? Do we need to do something else further down?? -->
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="RYA" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 2.3 in guide for LAs -->
-      <!-- No date is required in certain cases - see guide for LAs for more info -->
-<!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="RequestOutcomeDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.5 in guide for LAs -->
       <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RequestMediation" type="requestmedtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.6 in guide for LAs -->
       <!-- Guide for LAs mentions looking at Annex C - Mediation for further information -->
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RequestTribunal" type="requesttribtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 2.7 in guide for LAs -->
       <!-- Guide for LAs says "No further information is subsequently required from the exporting local authority." i.e. no more information for module 3 and onwards is required? Should we incorporate something into the code? -->
 <!-- XSD CHECKER CAME UP WITH AN ERROR IN LINE BELOW -->
-        <xs:element name="Exported" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
-        <!-- Need line below so we can have section below! -->
-        <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
-        <!-- Need line below so we can have section below! -->
-        <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Exported" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
+      <!-- Need line below so we can have section below! -->
+      <xs:element name="Assessment" type="assessmenttype" minOccurs="0" maxOccurs="1"/>
+      <!-- Need line below so we can have section below! -->
+      <xs:element name="ActivePlans" type="activeplanstype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -139,8 +139,8 @@
 <!-- Assessment section has AssessmentOutcome and NamedPlan sections... -->
 <xs:complexType name="assessmenttype">
 <xs:sequence>
-<!-- Item 3.1 in guide for LAs -->
-<!-- Guide for LAs mentions "Where A or W is selected, no further information is required in this or subsequent modules." Could we incorporate this into our code? -->
+      <!-- Item 3.1 in guide for LAs -->
+      <!-- Guide for LAs mentions "Where A or W is selected, no further information is required in this or subsequent modules." Could we incorporate this into our code? -->
       <xs:element name="AssessmentOutcome" type="assessmentoutcometype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 3.2 in guide for LAs -->
       <!-- Guide for LAs says "The assessment outcome date is required where 3.1 is equal to ‘Y’ or ‘N’" - Can we add something to the code about this? -->
@@ -160,7 +160,7 @@
       <xs:element name="OtherTribunal" type="othertribtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 3.7 in guide for LAs -->
       <xs:element name="Week20" type="week20type" minOccurs="0" maxOccurs="1"/>
-        <!-- Need line below so we can have section below! -->
+      <!-- Need line below so we can have section below! -->
       <xs:element name="NamedPlan" type="namedplantype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
@@ -171,7 +171,7 @@
 <xs:sequence>
       <!-- Item 4.1 in guide for LAs -->
       <xs:element name="StartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- This is in between item 4.6 and item 4.7 -->
+      <!-- Item 4.7 in guide below has a subset mentioned below -->
       <xs:element name="PlanDetail" type="plandetailtype" minOccurs="0" maxOccurs="2"/>
       <!-- Item 4.2 in guide for LAs -->
       <xs:element name="PlanRes" type="planrestype" minOccurs="0" maxOccurs="1"/>
@@ -195,7 +195,7 @@
 <xs:sequence>
       <!-- Item 4.7a in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <!-- Guide for LAs says "Please complete only one of 5.5a to 5.5c." -->
+      <!-- Guide for LAs says "Please complete only one of 5.7a to 5.7c." -->
       <!-- Item 5.7a in guide for LAs -->
       <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7b in guide for LAs -->
@@ -205,21 +205,22 @@
       <!-- Item 4.7c in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <!-- Item 5.7c in guide for LAs -->
-      <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
-      <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7c(i) in guide for LAs -->
       <!-- Item 5.7c(i) in guide for LAs -->
+      <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7d in guide for LAs -->
       <!-- Item 5.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <!-- Item 5.5d in guide for LAs -->
       <!-- Guide for LAs says "Placement rank (primary or secondary placement) should also be completed (item 5.5d) for each placement." -->
       <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7e in guide for LAs -->
-      <!-- Item 5.5h in guide for LAs -->
+      <!-- Item 5.7g in guide for LAs -->
       <xs:element name="SENunitIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7f in guide for LAs -->
-      <!-- Item 5.5i in guide for LAs -->
+      <!-- Item 5.7h in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
 </xs:sequence>
 </xs:complexType>
@@ -228,15 +229,16 @@
 <!-- ActivePlans section has PlacementDetail and SENneed sections... -->
 <xs:complexType name="activeplanstype">
 <xs:sequence>
-      <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="unbounded"/>
       <!-- Item 5.1 in guide for LAs -->
       <xs:element name="TransferLA" type="exportedandleatype" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PlacementDetail" type="placementdetailtype" minOccurs="0" maxOccurs="unbounded"/>
+      <!-- Item 5.8 in guide for LAs (has subsets mentioned below)-->
       <!-- Previous conversations that up to 2 SEN need types can be mentioned in the return -->
       <xs:element name="SENneed" type="senneedtype" minOccurs="0" maxOccurs="2"/>
       <!-- Item 5.4 in guide for LAs -->
       <!-- Following is a new voluntary data item added -->
       <xs:element name="ReviewMeeting" type="xs:date" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.5 -->
+      <!-- Item 5.5 in guide for LAs -->
       <!-- Following is a new voluntary data item added -->
       <xs:element name="ReviewOutcome" type="reviewoutcometype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.6 in guide for LAs -->
@@ -249,21 +251,29 @@
 <xs:sequence>
       <!-- Item 4.7a in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Guide for LAs says "Please complete only one of 5.7a to 5.7c." -->
+      <!-- Item 5.7a in guide for LAs -->
       <xs:element name="URN" type="urntype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 4.7d in guide for LAs -->
-      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
-      <!-- Item 5.7e in guide for LAs -->
-      <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7b in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Item 5.7b in guide for LAs -->
       <xs:element name="UKPRN" type="ukprntype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7c in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <xs:element name="SENsetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.7c in guide for LAs -->
+      <xs:element name="SENSetting" type="sensettingtype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7c(i) in guide for LAs -->
+      <!-- Item 5.7c(i) in guide for LAs -->
+      <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
       <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 4.7d in guide for LAs -->
+      <!-- Item 5.7d in guide for LAs -->
+      <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
+      <!-- Guide for LAs says "Placement rank (primary or secondary placement) should also be completed (item 5.5d) for each placement." -->
+      <xs:element name="PlacementRank" type="placementranktype" minOccurs="0" maxOccurs="1"/>
+      <!-- Item 5.7e in guide for LAs -->
+      <xs:element name="EntryDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.7f in guide for LAs -->
       <xs:element name="LeavingDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7e in guide for LAs -->
@@ -272,8 +282,7 @@
       <!-- Item 4.7f in guide for LAs -->
       <!-- Item 5.7h in guide for LAs -->
       <xs:element name="ResourcedProvisionIndicator" type="yesnotype" minOccurs="0" maxOccurs="1"/>
-      <!-- Should we add WBP here as it's in LBWF live file (maybe affecting 2024 and later returns)? See above for more info. Are there any more? -->
-<!-- Is position of below okay? "Data items ‘residential settings’ and ‘work based learning activity’ have been moved from <ActivePlans> into the <PlacementDetail> module in the XML structure. Please see paragraphs 2.5 and 3.2.2." as per technical spec, however in guide for LAs it still seems to be under ActivePlans (for former please see page 11 and for latter please see page 31)?? -->
+<!-- Guide for LAs says "Data items ‘residential settings’ and ‘work based learning activity’ have been moved from <ActivePlans> into the <PlacementDetail> module in the XML structure. Please see paragraphs 2.5 and 3.2.2." as per technical spec, however in guide for LAs it still seems to be under ActivePlans (for former please see page 11 and for latter please see page 31)?? -->
       <!-- Item 5.2 in guide for LAs -->
       <xs:element name="Res" type="planrestype" minOccurs="0" maxOccurs="1"/>
       <!-- Item 5.3 in guide for LAs -->
