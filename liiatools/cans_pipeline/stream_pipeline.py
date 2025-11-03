@@ -39,7 +39,7 @@ def task_cleanfile(
 
     # Open & Parse file
     stream = stream_functions.transform_input(src_file, table_info)
-    stream = stream_functions._pandas_dataframe_to_stream(stream, filename=src_file.name, sheetname=table_info["sheetname"])
+    stream = stream_functions.pandas_dataframe_to_stream(stream, filename=src_file.name, sheetname=table_info["sheetname"])
     logger.info("File %s opened and parsed, beginning processing", src_file.name)
 
     # Configure stream
