@@ -378,7 +378,7 @@ def apply_stage2_rules(dataframe: pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 
-def stage_1(ssda903_df: pd.DataFrame, columns: list) -> pd.DataFrame:
+def stage_1(ssda903_df: pd.DataFrame, transform_cols: list) -> pd.DataFrame:
     """
     Accept an ssda903 episodes dataframe and apply the stage 1 rules
 
@@ -387,7 +387,7 @@ def stage_1(ssda903_df: pd.DataFrame, columns: list) -> pd.DataFrame:
     """
     # Add columns to dataframe to identify which rules should be applied at stage 1
     ssda903_df = ssda903_df.sort_values(["CHILD", "DECOM"], ignore_index=True)
-    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, columns)
+    ssda903_df_stage1 = create_previous_and_next_episode(ssda903_df, transform_cols)
     ssda903_df_stage1 = format_datetime(ssda903_df_stage1, __DATES)
     ssda903_df_stage1 = add_latest_year_and_source_for_la(ssda903_df_stage1)
     ssda903_df_stage1 = add_stage1_rule_identifier_columns(ssda903_df_stage1)
@@ -398,7 +398,7 @@ def stage_1(ssda903_df: pd.DataFrame, columns: list) -> pd.DataFrame:
     return ssda903_df_stage1_applied
 
 
-def stage_2(ssda903_df: pd.DataFrame, columns_to_keep: list, columns: list) -> pd.DataFrame:
+def stage_2(ssda903_df: pd.DataFrame, columns_to_keep: list, transform_cols: list) -> pd.DataFrame:
     """
     Accept an ssda903 episodes dataframe and apply the stage 2 rules
 
@@ -406,7 +406,7 @@ def stage_2(ssda903_df: pd.DataFrame, columns_to_keep: list, columns: list) -> p
     :return: Dataframe with stage 2 rules identified and applied
     """
     ssda903_df_stage2 = ssda903_df[columns_to_keep]
-    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, columns)
+    ssda903_df_stage2 = create_previous_and_next_episode(ssda903_df_stage2, transform_cols)
     ssda903_df_stage2 = format_datetime(ssda903_df_stage2, __DATES)
     ssda903_df_stage2 = add_stage2_rule_identifier_columns(ssda903_df_stage2)
     ssda903_df_stage2 = identify_stage2_rule_to_apply(ssda903_df_stage2)

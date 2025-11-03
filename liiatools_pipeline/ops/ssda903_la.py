@@ -49,7 +49,7 @@ def fix_episodes(
     pipeline_config = load_pipeline_config()
     episodes_config = pipeline_config["episodes"]
     episode_cols = [c.id for c in episodes_config.columns]
-    __COLUMNS = [x for x in episode_cols if x not in ["CHILD", "LA", "Year_latest", "Episode_source"]]
+    transform_cols = [x for x in episode_cols if x not in ["CHILD", "LA", "Year_latest", "Episode_source"]]
 
     for file in files:
         log.info(f"Fixing episodes for {file}")
@@ -61,8 +61,8 @@ def fix_episodes(
             with session_folder.open(file, "r") as f:
                 try:
                     df = pd.read_csv(f)
-                    df = stage_1(df, __COLUMNS)
-                    df = stage_2(df, episode_cols, __COLUMNS)
+                    df = stage_1(df, transform_cols)
+                    df = stage_2(df, episode_cols, transform_cols)
                     data[episode_table.group(0)] = df
                 except TypeError as err:
                     log.error(f"Fixing episodes table failed: {err}")
