@@ -11,7 +11,13 @@ from decouple import config as env_config
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.cin_org import cin_reports
-from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
+from liiatools_pipeline.jobs.common_la import (
+    clean,
+    concatenate,
+    move_current_la,
+    no_op_job,
+    start_clean_dataset,
+)
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
@@ -404,3 +410,29 @@ def cin_reports_sensor(context):
         yield RunRequest(
             run_key=latest_run_id,
         )
+
+
+@sensor(
+    job=clean,
+    description="Runs clean across dataset",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def full_clean_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=start_clean_dataset.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if not run_records:
+        context.log.info(f"No previous run records found for start_clean_dataset job")
+        return
+
+    dataset = run_records[0].dagster_run.tags["dataset"]
+    context.log.info(f"Dataset found: {dataset}")
+    # This is where the RunRequests for clean would be generated
