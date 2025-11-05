@@ -29,3 +29,8 @@ def concatenate():
 @job
 def no_op_job():
     pass
+
+
+@job
+def start_clean_dataset():
+    log.info("Recording trigger for clean dataset")
