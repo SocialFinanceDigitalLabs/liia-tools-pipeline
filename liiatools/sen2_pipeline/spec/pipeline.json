@@ -1,0 +1,323 @@
+// Following taken from csww pipeline json in shared drive
+
+{
+  "sensor_trigger": {
+    "move_current_org_sensor": false,
+    "move_concat_sensor": false
+  },
+  "retention_columns": {
+    "year_column": "Year",
+    "la_column": "LA"
+  },
+  "retention_period": {
+    "PAN": 12
+  },
+  "la_signed": {
+    "Barking and Dagenham": {
+      "PAN": "Yes"
+    },
+    "Barnet": {
+      "PAN": "Yes"
+    },
+    "Bexley": {
+      "PAN": "Yes"
+    },
+    "Brent": {
+      "PAN": "Yes"
+    },
+    "Bromley": {
+      "PAN": "Yes"
+    },
+    "Camden": {
+      "PAN": "Yes"
+    },
+    "City of London": {
+      "PAN": "Yes"
+    },
+    "Croydon": {
+      "PAN": "Yes"
+    },
+    "Ealing": {
+      "PAN": "Yes"
+    },
+    "Enfield": {
+      "PAN": "Yes"
+    },
+    "Greenwich": {
+      "PAN": "Yes"
+    },
+    "Hackney": {
+      "PAN": "Yes"
+    },
+    "Hammersmith and Fulham": {
+      "PAN": "Yes"
+    },
+    "Haringey": {
+      "PAN": "Yes"
+    },
+    "Harrow": {
+      "PAN": "Yes"
+    },
+    "Havering": {
+      "PAN": "Yes"
+    },
+    "Hillingdon": {
+      "PAN": "Yes"
+    },
+    "Hounslow": {
+      "PAN": "Yes"
+    },
+    "Islington": {
+      "PAN": "Yes"
+    },
+    "Kensington and Chelsea": {
+      "PAN": "Yes"
+    },
+    "Kingston upon Thames": {
+      "PAN": "Yes"
+    },
+    "Lambeth": {
+      "PAN": "Yes"
+    },
+    "Lewisham": {
+      "PAN": "Yes"
+    },
+    "Merton": {
+      "PAN": "Yes"
+    },
+    "Newham": {
+      "PAN": "Yes"
+    },
+    "Redbridge": {
+      "PAN": "Yes"
+    },
+    "Richmond upon Thames": {
+      "PAN": "Yes"
+    },
+    "Southwark": {
+      "PAN": "Yes"
+    },
+    "Sutton": {
+      "PAN": "Yes"
+    },
+    "Tower Hamlets": {
+      "PAN": "Yes"
+    },
+    "Waltham Forest": {
+      "PAN": "Yes"
+    },
+    "Wandsworth": {
+      "PAN": "Yes"
+    },
+    "Westminster": {
+      "PAN": "Yes"
+    }
+  },
+// START HERE
+  "table_list": [
+    {
+      "id": "la_level_vacancies",
+      "retain": [
+        "PAN"
+      ],
+      "columns": [
+        {
+          "id": "NumberOfVacancies",
+          "type": "numeric"
+        },
+        {
+          "id": "NoAgencyFTE",
+          "type": "numeric"
+        },
+        {
+          "id": "NoAgencyHeadcount",
+          "type": "numeric",
+          "enrich": [
+            "integer"
+        ]
+        },
+        {
+          "id": "RecruitmentBonus",
+          "type": "category"
+        },
+        {
+          "id": "RetentionBonus",
+          "type": "category"
+        },
+        {
+          "id": "PerformanceAward",
+          "type": "category"
+        },
+        {
+          "id": "CarAllowance",
+          "type": "category"
+        },
+        {
+          "id": "RelocationPackage",
+          "type": "category"
+        },
+        {
+          "id": "RegionalWeighting",
+          "type": "category"
+        },
+        {
+          "id": "CostSWE",
+          "type": "category"
+        },
+        {
+          "id": "CostDBS",
+          "type": "category"
+        },
+        {
+          "id": "OtherAllowances",
+          "type": "string"
+        },
+// THEN DO THIS SECTION
+        {
+          "id": "LA",
+          "type": "string",
+          "enrich": "la_name"
+        },
+        {
+          "id": "Year",
+          "type": "numeric",
+          "enrich": "year",
+          "sort": 0
+        }
+      ]
+    },
+// THEN DO THIS SECTION
+    {
+      "id": "csww_workers",
+      "retain": [
+        "PAN"
+      ],
+      "columns": [
+        {
+          "id": "AgencyWorker",
+          "type": "category"
+        },
+        {
+          "id": "SWENo",
+          "type": "string",
+          "unique_key": true,
+          "degrade": "hash_sha256"
+        },
+        {
+          "id": "FTE",
+          "type": "numeric"
+        },
+        {
+          "id": "PersonBirthDate",
+          "type": "date",
+          "degrade": "first_of_month"
+        },
+        {
+          "id": "GenderCurrent",
+          "type": "category"
+        },
+        {
+          "id": "Sex",
+          "type": "category"
+        },
+        {
+          "id": "Ethnicity",
+          "type": "category"
+        },
+        {
+          "id": "QualInst",
+          "type": "string"
+        },
+{
+          "id": "QualLevel",
+          "type": "category"
+        },
+        {
+          "id": "StepUpGrad",
+          "type": "category"
+        },
+        {
+          "id": "OrgRole",
+          "type": "category"
+        },
+        {
+          "id": "RoleStartDate",
+          "type": "date",
+          "unique_key": true
+        },
+        {
+          "id": "StartOrigin",
+          "type": "category"
+        },
+        {
+          "id": "RoleEndDate",
+          "type": "date"
+        },
+        {
+          "id": "LeaverDestination",
+          "type": "category"
+        },
+        {
+          "id": "ReasonLeave",
+          "type": "category"
+        },
+        {
+          "id": "FTE30",
+          "type": "numeric"
+        },
+        {
+          "id": "Cases30",
+          "type": "numeric"
+        },
+        {
+          "id": "WorkingDaysLost",
+          "type": "numeric"
+        },
+        {
+          "id": "ContractWeeks",
+          "type": "numeric"
+        },
+        {
+          "id": "FrontlineGrad",
+          "type": "category"
+        },
+        {
+          "id": "Absat30Sept",
+          "type": "category"
+        },
+        {
+          "id": "ReasonAbsence",
+          "type": "category"
+        },
+        {
+          "id": "CFKSSstatus",
+          "type": "category"
+        },
+        {
+          "id": "BaseSalary",
+          "type": "numeric"
+        },
+        {
+          "id": "RRPayments",
+          "type": "numeric"
+        },
+        {
+          "id": "OtherPayments",
+          "type": "numeric"
+        },    
+// THEN DO THIS SECTION    
+        {
+          "id": "LA",
+          "type": "string",
+          "enrich": "la_name"
+        },
+        {
+          "id": "Year",
+          "type": "numeric",
+          "enrich": "year",
+          "sort": 0
+        }
+      ]
+    }
+  ] 
+}
