@@ -1,4 +1,4 @@
-// Following taken from csww pipeline json in shared drive
+{ "_comment": "Following taken from csww pipeline json in shared drive" }
 
 {
   "sensor_trigger": {
@@ -113,7 +113,26 @@
       "PAN": "Yes"
     }
   },
-// START HERE
+
+
+{ "_comment": "START HERE" }
+{ "_comment": "I think we need to include all element names over all xsd's here - does order matter? What about sections within sections?? What if things have moved places??" }
+{ "_comment": "I think you have type to be numeric if a number (maybe with integer), category if complextype, or string for string" }
+{ "_comment": "Have unique_key true if compulsory??" }
+{ "_comment": "Date needs more info like degrade??" }
+{ "_comment": "Do we need to include about what yesnorecruittype and ulntype are types for as they appear before the modules when the types are defined in the xsd??" }
+  "table_list": [
+    {
+      "id": "persons",
+      "retain": [
+        "PAN"
+      ],
+
+
+
+
+
+{ "_comment": "Following from csww json file" }
   "table_list": [
     {
       "id": "la_level_vacancies",
@@ -172,7 +191,25 @@
           "id": "OtherAllowances",
           "type": "string"
         },
-// THEN DO THIS SECTION
+
+
+{ "_comment": "From 2025 csww xsd schema:" }
+// <xs:element name="NumberOfVacancies" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="NoAgencyFTE" type="twodecimalplaces" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="NoAgencyHeadcount" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="RecruitmentBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="RetentionBonus" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="PerformanceAward" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="CarAllowance" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="RelocationPackage" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="RegionalWeighting" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="CostSWE" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="CostDBS" type="noallsometype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="OtherAllowances" type="xs:string" minOccurs="1" maxOccurs="1"/>
+
+
+
+{ "_comment": "I assume this section doesn't need changing? It seems to always 'tag on' at the end of each section?" }
         {
           "id": "LA",
           "type": "string",
@@ -186,7 +223,10 @@
         }
       ]
     },
-// THEN DO THIS SECTION
+
+
+{ "_comment": "THEN DO THIS SECTION" }
+{ "_comment": "I think we need to include all element names over all xsd's here - does order matter? What about sections within sections?? What if things have moved places??" }
     {
       "id": "csww_workers",
       "retain": [
@@ -305,7 +345,38 @@
           "id": "OtherPayments",
           "type": "numeric"
         },    
-// THEN DO THIS SECTION    
+
+
+{ "_comment": "From 2025 csww xsd schema:" }
+// <xs:element name="AgencyWorker" type="agencyworkertype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="SWENo" type="swetype" minOccurs="1" maxOccurs="1"/>
+// <xs:element name="FTE" type="ftetype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="PersonBirthDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="Sex" type="sextype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="Ethnicity" type="ethnicitytype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="QualLevel" type="qualtype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="StepUpGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="OrgRole" type="roletype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="RoleStartDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="StartOrigin" type="origintype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="RoleEndDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="LeaverDestination" type="leavertype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="ReasonLeave" type="reasontype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="FTE30" type="ftetype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="Cases30" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="WorkingDaysLost" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="ContractWeeks" type="onedecimalplace" minOccurs="0" maxOccurs="unbounded"/>
+// <xs:element name="FrontlineGrad" type="yesnotype" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="Absat30Sept" type="yesnotype" minOccurs="0" maxOccurs="unbounded"/>
+// <xs:element name="ReasonAbsence" type="absencetype" minOccurs="0" maxOccurs="unbounded"/>
+// <xs:element name="BaseSalary" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="RRPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+// <xs:element name="OtherPayments" type="twodecimalplaces" minOccurs="0" maxOccurs="1"/>
+
+
+
+
+{ "_comment": "I assume this section doesn't need changing? It seems to always 'tag on' at the end of each section?" }
         {
           "id": "LA",
           "type": "string",
