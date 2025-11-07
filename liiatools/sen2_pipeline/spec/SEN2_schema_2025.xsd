@@ -54,7 +54,7 @@
       <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
       <!-- The following is a new voluntary data item for 2025 sen2 census -->
-      <xs:element name="DSCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="DSCO" type="yesnorecruittype" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
