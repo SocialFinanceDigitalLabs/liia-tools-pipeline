@@ -1,7 +1,9 @@
 import hashlib
 from typing import Dict
-
 import pandas as pd
+from fs.base import FS
+
+from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 from liiatools.common.converters import to_nth_of_month, to_short_postcode
 from liiatools.common.reference import authorities
@@ -83,6 +85,19 @@ def add_school_year(
     return school_year
 
 
+def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: str) -> pd.DataFrame:
+    # Load postcode lookup
+    ext_folder = external_data_folder()
+    mapping_file = "postcode_la_lookup.parquet"
+    with ext_folder.open(mapping_file, "rb") as f:
+        mapping_df = pd.read_parquet(f)
+
+    # Merge LA name into data
+    merged = data.merge(mapping_df, left_on=mapping_field, right_on="pcds", how="left")
+    data[output_field] = merged["lad25cd"]
+    return data
+
+
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
     "la_code": add_la_code,
@@ -92,6 +107,7 @@ enrich_functions = {
     "term": add_term,
     "integer": to_integer,
     "school_year": add_school_year,
+    "postcode_la_lookup": add_la_from_postcode
 }
 
 

@@ -219,7 +219,7 @@ def process_files(
                 globals()[f"task_cleanfile_{config.dataset}"](
                     file_locator, schema, output_config, logger=log
                 )
-                if config.dataset == "cin"
+                if config.dataset in ["cin", "cans"]
                 else globals()[f"task_cleanfile_{config.dataset}"](
                     file_locator, schema, logger=log
                 )
