@@ -1,0 +1,407 @@
+autumn:
+  column_map.learningaimsonroll.progtype:
+    type: add
+    description: Adds new column for learningaimsonroll
+    value:
+      &prog-type
+      category:
+      - code: "30"
+      - code: "31"
+      - code: "01"
+      canbeblank: yes
+  column_map.programmeaimsonroll:
+    type: add
+    description: Adds new table for 2021 return
+    value:
+      programmeaimsonrolltableid:
+        &alphanumeric-not-blank
+        string: "alphanumeric"
+        canbeblank: no
+      NativeId:
+        *alphanumeric-not-blank
+      programmeaimsonrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      pupilonrolltableid:
+        *alphanumeric-not-blank
+      qn:
+        string: "alphanumeric"
+        canbeblank: yes
+      learningstartdate:
+        &date
+        date: "%Y-%b-%d %H:%M:%S"
+        canbeblank: yes
+      learningplannedenddate:
+        *date
+      learningactualenddate:
+        *date
+      learningaimstatus:
+        category:
+        - code: "1"
+        - code: "2"
+        - code: "3"
+        - code: "4"
+        canbeblank: yes
+      learningaimwithdrawalreason:
+        category:
+        - code: "1"
+        - code: "2"
+        - code: "3"
+        - code: "4"
+        - code: "44"
+        - code: "45"
+        - code: "97"
+        - code: "98"
+        canbeblank: yes
+      traineeship:
+        category:
+        - code: "0"
+          name: "False"
+        - code: "1"
+          name: "True"
+        canbeblank: yes
+      progtype:
+        *prog-type
+  column_map.pupilnolongeronroll.tlevelnonqualhrs:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      &int-blank
+      numeric:
+        type: "integer"
+      canbeblank: yes
+  column_map.pupilnolongeronroll.tlevelqualhrs:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      *int-blank
+  column_map.pupilonroll.tlevelnonqualhrs:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *int-blank
+  column_map.pupilonroll.tlevelqualhrs:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *int-blank
+  column_map.summerhalfterm2sessiondetailsoffroll.absencesessions:
+    type: rename
+    description: Rename column in summerhalfterm2sessiondetailsoffroll
+    value:
+      sessions
+  column_map.summerhalfterm2sessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      &attendance-reason
+      category:
+      - code: "/"
+      - code: "\\" # 2 backslashses as Python reads this as 1
+      - code: "B"
+      - code: "C"
+      - code: "D"
+      - code: "E"
+      - code: "G"
+      - code: "H"
+      - code: "I"
+      - code: "J"
+      - code: "L"
+      - code: "M"
+      - code: "N"
+      - code: "O"
+      - code: "P"
+      - code: "R"
+      - code: "S"
+      - code: "T"
+      - code: "U"
+      - code: "V"
+      - code: "W"
+      - code: "X"
+      - code: "Y"
+      - code: "Z"
+      - code: "#"
+      canbeblank: yes
+  column_map.summerhalfterm2sessiondetailsonroll.absencesessions:
+    type: rename
+    description: Rename column in summerhalfterm2sessiondetailsonroll
+    value:
+      sessions
+  column_map.summerhalfterm2sessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsoffroll.attendancereason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      *attendance-reason
+  column_map.termlysessiondetailsonroll.attendancereason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      *attendance-reason
+  column_map.termlyexclusionsoffroll.category:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      &exclusion-category
+      category:
+      - code: "PERM"
+      - code: "LNCH"
+      - code: "SUSP"
+        name: "FIXD"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.reason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      &exclusion-reason
+      category:
+      - code: "PP"
+      - code: "PA"
+      - code: "VP"
+      - code: "VA"
+      - code: "OW"
+      - code: "BU"
+      - code: "RA"
+      - code: "LG"
+      - code: "DS"
+      - code: "SM"
+      - code: "DA"
+      - code: "DM"
+      - code: "TH"
+      - code: "DB"
+      - code: "MT"
+      - code: "PH"
+      canbeblank: yes
+  column_map.termlyexclusionsonroll.reason:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.category:
+    type: modify
+    description: Update codes for 2021 schema
+    value:
+      *exclusion-category
+  column_map.termlysessiondetailsoffroll.absencesessions:
+    type: rename
+    description: Rename column in termlysessiondetailsoffroll
+    value:
+      sessions
+  column_map.termlysessiondetailsonroll.absencesessions:
+    type: rename
+    description: Rename column in termlysessiondetailsonroll
+    value:
+      sessions
+  column_map.workplaceentityoffroll:
+    type: add
+    description: Adds new table for 2021 return
+    value:
+      workplaceentityoffrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      workplaceentityoffrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      learningaimsoffrolltableid:
+        *alphanumeric-not-blank
+      wpstartdate:
+        *date
+      wpenddate:
+        *date
+      wphours:
+        *int-blank
+      wpmode:
+        &wp-mode
+        category:
+        - code: "1"
+          name: "internal"
+        - code: "2"
+          name: "external"
+        canbeblank: yes
+      wpemployerid:
+        *int-blank
+  column_map.workplaceentityonroll:
+    type: add
+    description: Adds new table for 2021 return
+    value:
+      workplaceentityonrolltableid:
+        *alphanumeric-not-blank
+      NativeId:
+        *alphanumeric-not-blank
+      workplaceentityonrollorderseqcolumn:
+        *alphanumeric-not-blank
+      sourceid:
+        *alphanumeric-not-blank
+      learningaimsonrolltableid:
+        *alphanumeric-not-blank
+      wpstartdate:
+        *date
+      wpenddate:
+        *date
+      wphours:
+        *int-blank
+      wpmode:
+        *wp-mode
+      wpemployerid:
+        *int-blank
+
+spring:
+  column_map.classes.ppa:
+    type: rename
+    description: Rename column in classes
+    value:
+      ppateachers
+  column_map.pupilonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      &sen-provision
+      category:
+      - code: "N"
+      - code: "E"
+      - code: "K"
+      - code: "A"
+      - code: "P"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.reinstatementdate:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *date
+  column_map.termlyexclusionsoffroll.reviewdate:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *date
+  column_map.termlyexclusionsoffroll.reviewresult:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      &review-result
+      category:
+      - code: "A"
+        name: "Exclusion upheld by initial governor review (confirmed)"
+      - code: "B"
+        name: "Exclusion upheld by governing body after independent review panel recommended governing board to reconsider reinstatement"
+      - code: "C"
+        name: "Exclusion upheld by governing body after independent review panel directed governing board to reconsider reinstatement"
+      - code: "D"
+        name: "Exclusion upheld by independent review panel (confirmed)"
+      - code: "E"
+        name: "Pupil accepted reinstatement after initial governor review"
+      - code: "F"
+        name: "Pupil accepted offer of reinstatement after independent review panel recommended governing board to reconsider reinstatement"
+      - code: "G"
+        name: "Pupil accepted offer of reinstatement after independent review panel directed governing board to reconsider reinstatement"
+      - code: "H"
+        name: "Pupil declined reinstatement after initial governor review"
+      - code: "J"
+        name: "Pupil declined offer of reinstatement after independent review panel recommended governing board to reconsider reinstatement"
+      - code: "K"
+        name: "Pupil declined offer of reinstatement after independent review panel directed governing board to reconsider reinstatement"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.senexpert:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      &sen-expert
+      category:
+      - code: "Y"
+        name: "Yes"
+      - code: "N"
+        name: "No"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+  column_map.termlyexclusionsonroll.reinstatementdate:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *date
+  column_map.termlyexclusionsonroll.reviewdate:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *date
+  column_map.termlyexclusionsonroll.reviewresult:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *review-result
+  column_map.termlyexclusionsonroll.senexpert:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *sen-expert
+  column_map.termlyexclusionsonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+
+summer:
+  column_map.pupilonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+  column_map.termlyexclusionsoffroll.reinstatementdate:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *date
+  column_map.termlyexclusionsoffroll.reviewdate:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *date
+  column_map.termlyexclusionsoffroll.reviewresult:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *review-result
+  column_map.termlyexclusionsoffroll.senexpert:
+    type: add
+    description: Adds new column for termlyexclusionsoffroll
+    value:
+      *sen-expert
+  column_map.termlyexclusionsoffroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+  column_map.termlyexclusionsonroll.reinstatementdate:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *date
+  column_map.termlyexclusionsonroll.reviewdate:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *date
+  column_map.termlyexclusionsonroll.reviewresult:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *review-result
+  column_map.termlyexclusionsonroll.senexpert:
+    type: add
+    description: Adds new column for termlyexclusionsonroll
+    value:
+      *sen-expert
+  column_map.termlyexclusionsonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision

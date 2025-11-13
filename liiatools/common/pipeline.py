@@ -15,7 +15,7 @@ from fs.base import FS
 from fs.info import Info
 from fs.move import copy_file
 
-from liiatools.common.checks import check_la, check_month, check_year
+from liiatools.common.checks import check_la, check_month, check_year, check_term
 from liiatools.common.constants import ProcessNames, SessionNames
 
 from .data import FileLocator
@@ -258,6 +258,26 @@ def discover_month(file_locator: FileLocator) -> str:
     except ValueError:
         pass
 
+
+def discover_term(file_locator: FileLocator) -> str:
+    """
+    Try to discover the term for a file.
+    This function will try to find the term in the path, and if that fails,
+    it will try to find a term in the full filename.
+    If the term is found, it will be added to the file metadata.
+    """
+    file_dir = dirname(file_locator.name)
+    file_name = basename(file_locator.name)
+
+    try:
+        return check_term(file_dir)
+    except ValueError:
+        pass
+
+    try:
+        return check_term(file_name)
+    except ValueError:
+        pass
 
 class DataType(Enum):
     EMPTY_COLUMN = "empty_column"

@@ -43,6 +43,10 @@ class SessionNamesPNWCensusJoins(StrEnum):
 
     INCOMING_FOLDER = "incoming"
 
+class Term(StrEnum):
+    OCT = "autumn"
+    JAN = "spring"
+    MAY = "summer"
 
 class SessionNamesCINReports(StrEnum):
     """Enum for CIN Reports session folders."""
