@@ -181,19 +181,20 @@ def process_files(
             log.info(f"Month found in {basename(str(file_locator.name))}")
 
         term = None
+        school_type = None
         if config.dataset == "school_census":
-            term = pl.discover_term(file_locator)
+            (term, school_type) = pl.discover_school_census(file_locator)
             if term is None:
                 error_report.append(
                     dict(
                         type="MissingTerm",
-                        message="Could not find a term in the filename or path",
+                        message="Could not find a term and school type (acad/lA) in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
                 continue
-            log.info(f"Term found in {basename(file_locator.name)}")
+            log.info(f"Term and school type found in {basename(file_locator.name)}")
 
         try:
             schema = (
@@ -211,7 +212,7 @@ def process_files(
         log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
         metadata = dict(
-            year=year, month=month, term=term, schema=schema, la_code=config.input_la_code
+            year=year, month=month, term=term, schema=schema, la_code=config.input_la_code, school_type=school_type
         )
 
         try:

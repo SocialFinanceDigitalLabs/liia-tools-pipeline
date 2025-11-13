@@ -23,7 +23,7 @@ def task_cleanfile(
     stream = stream_functions.tablib_parse(src_file)
 
     # Configure stream
-    stream = stream_functions.add_table_name(stream, schema=schema)
+    stream = stream_functions.add_table_name_from_headers(stream, schema=schema)
     stream = stream_functions.inherit_property(stream, ["table_name", "table_spec"])
     stream = stream_functions.match_config_to_cell(stream, schema=schema)
 
