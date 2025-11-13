@@ -188,24 +188,13 @@ def process_files(
                 error_report.append(
                     dict(
                         type="MissingTerm",
-                        message="Could not find a term in the filename or path",
+                        message="Could not find a term and school type (acad/lA) in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
                 continue
-            log.info(f"Term found in {basename(file_locator.name)}")
-            if school_type is None:
-                error_report.append(
-                    dict(
-                        type="MissingSchoolType",
-                        message="Could not find a school type (acad or la) in the filename or path",
-                        filename=file_locator.name,
-                        uuid=uuid,
-                    )
-                )
-                continue
-            log.info(f"School type found in {basename(file_locator.name)}")
+            log.info(f"Term and school type found in {basename(file_locator.name)}")
 
         try:
             schema = (

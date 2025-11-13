@@ -291,7 +291,7 @@ def discover_school_census(file_locator: FileLocator) -> Tuple:
     try:
         return check_school_census(file_name)
     except ValueError:
-        pass
+        return (None, None)
 
 
 class DataType(Enum):

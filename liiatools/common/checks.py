@@ -129,7 +129,7 @@ def check_school_census(filename) -> Tuple:
     :return: A tuple with the two components found
     :raises ValueError: If no corresponding string is found
     """
-    pattern = r'\b(?:autumn|summer|spring)_(?:acad|la)\b'
+    pattern = r'(autumn|summer|spring)_(acad|la)'
 
     match = re.search(pattern, filename, re.IGNORECASE)
 
