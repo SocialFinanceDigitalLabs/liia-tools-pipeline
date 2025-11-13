@@ -28,6 +28,10 @@ from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.sensors.location_schedule import (
+    input_directory_walker,
+    check_la,
+)
 
 
 def find_previous_matching_dataset_run(run_records, dataset):
@@ -435,4 +439,51 @@ def full_clean_sensor(context):
 
     dataset = run_records[0].dagster_run.tags["dataset"]
     context.log.info(f"Dataset found: {dataset}")
-    # This is where the RunRequests for clean would be generated
+    
+    folder_location = env_config("INPUT_LOCATION")
+    context.log.info(f"Opening folder location: {folder_location}")
+
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Allowed datasets: {allowed_datasets}")
+
+    if dataset not in allowed_datasets:
+        context.log.info(
+            f"Dataset {dataset} not in allowed datasets, skipping clean sensor"
+        )
+        return
+
+
+    context.log.info("Analysing folder contents")
+    directory_contents = input_directory_walker(folder_location, context, dataset)
+
+    latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+    context.log.info(f"Run key: {latest_run_id}")
+
+    for la_path, files in directory_contents.items():
+        try:
+            la = check_la(la_path)
+        except ValueError:
+            context.log.error(
+                f"LA code not found in the directory path: {folder_location}/{la_path.split('-')[-1]}/{dataset}"
+            )
+            continue
+
+        clean_config = CleanConfig(
+            dataset_folder=f"{folder_location}/{la_path}/{dataset}",
+            la_folder=f"{folder_location}/{la_path}",
+            input_la_code=la,
+            dataset=dataset,
+        )
+        
+        yield RunRequest(
+            run_key=latest_run_id,
+            tags={"dataset": dataset},
+            run_config=RunConfig(
+                ops={
+                    "create_session_folder": clean_config,
+                    "open_current": clean_config,
+                    "process_files": clean_config,
+                }
+            ),
+        )
+
