@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from datetime import datetime
 from unittest import mock
@@ -8,6 +9,7 @@ from liiatools.common.checks import (
     check_month,
     check_year,
     check_year_within_range,
+    check_identifier,
 )
 from liiatools.common.reference import LACodeLookup
 
@@ -90,3 +92,12 @@ def test_check_la_signature():
     assert check_la_signature(pipeline_config, "SUFFICIENCY") == ["BAR"]
     assert check_la_signature(pipeline_config, None) == []
     assert check_la_signature(pipeline_config, "") == []
+
+
+def test_check_identifier():
+    assert check_identifier("cans_a821f_0_5_2024_jan") == "a821f"
+    assert check_identifier("04cd3_6_21_2025_feb") == "04cd3"
+    assert check_identifier("0fg93_6_21_2022_aug") == "0fg93"
+
+    with pytest.raises(ValueError):
+        check_identifier("cans_0_5_2024_jan")
