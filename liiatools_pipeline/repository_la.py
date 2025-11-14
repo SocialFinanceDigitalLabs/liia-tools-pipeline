@@ -1,11 +1,17 @@
 from dagster import repository
 
 from liiatools.common._fs_serializer import register
-from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
+from liiatools_pipeline.jobs.common_la import (
+    clean,
+    concatenate,
+    move_current_la,
+    start_clean_dataset,
+)
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     concatenate_sensor,
+    full_clean_sensor,
     move_current_la_sensor,
     ssda903_fix_episodes_sensor,
 )
@@ -27,6 +33,7 @@ def sync():
         move_current_la,
         concatenate,
         ssda903_fix_episodes,
+        start_clean_dataset,
     ]
     schedules = [
         clean_schedule,
@@ -36,6 +43,7 @@ def sync():
         move_current_la_sensor,
         concatenate_sensor,
         ssda903_fix_episodes_sensor,
+        full_clean_sensor,
     ]
 
     return jobs + schedules + sensors
