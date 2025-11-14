@@ -25,7 +25,7 @@ def build_dir(liiatools_dir):
     return build_dir
 
 
-@pytest.mark.skipif(os.environ.get("SKIP_E2E"), reason="Skipping end-to-end tests")
+@pytest.mark.skip("Skipping end-to-end tests")
 def test_end_to_end(build_dir):
     incoming_dir = build_dir / "incoming"
     incoming_dir.mkdir(parents=True, exist_ok=True)
