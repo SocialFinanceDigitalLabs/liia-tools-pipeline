@@ -1,12 +1,11 @@
 column_map:
     "6_21":
-        Assessor Name: &string_not_blank
-            string: "alphanumeric"
-            canbeblank: false
         Assessment Date: &date_not_blank
             date: "%d/%m/%Y"
             canbeblank: false
-        Youth Unique ID: *string_not_blank
+        Youth Unique ID: &string_not_blank
+            string: "alphanumeric"
+            canbeblank: false
         Youth Last Name: *string_not_blank
         Youth First Name: *string_not_blank
         DOB: *date_not_blank
@@ -247,7 +246,6 @@ column_map:
         Intimate Relationships: *0_3_can_be_blank
         Transportation: *0_3_can_be_blank
     "0_5":
-        Assessor Name: *string_not_blank
         Assessment Date: *date_not_blank
         Child Unique ID: *string_not_blank
         Child Last Name: *string_not_blank
