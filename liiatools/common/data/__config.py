@@ -40,8 +40,11 @@ class TableConfig(BaseModel):
         sort_tuples.sort(key=lambda x: x[2])
         return [(col_id, asc) for col_id, asc, _ in sort_tuples]
 
-    def columns_for_profile(self, profile: str) -> List[ColumnConfig]:
-        return [c for c in self.columns if profile not in c.exclude]
+    def columns_for_profile(self, profile: str = None) -> List[ColumnConfig]:
+        if profile:
+            return [c for c in self.columns if profile not in c.exclude]
+        else:
+            return [c for c in self.columns if set(getattr(c, "exclude", [])) != set(self.retain)]
 
 
 class PipelineConfig(BaseModel):
@@ -58,5 +61,8 @@ class PipelineConfig(BaseModel):
         ix = {t.id: t for t in self.table_list}
         return ix[value]
 
-    def tables_for_profile(self, profile: str) -> List[TableConfig]:
-        return [t for t in self.table_list if profile in t.retain]
+    def tables_for_profile(self, profile: str = None) -> List[TableConfig]:
+        if profile:
+            return [t for t in self.table_list if profile in t.retain]
+        else:
+            return [t for t in self.table_list if t.retain]

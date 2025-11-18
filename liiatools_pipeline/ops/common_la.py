@@ -106,10 +106,10 @@ def process_files(
             current.fs.remove(f"{current_path}/{file}")
 
     output_config = pipeline_config(config)
-    la_signed = output_config.la_signed[la_name]["PAN"]
-    if la_signed == "No":
+    la_signed_dict = output_config.la_signed[la_name]
+    if "Yes" not in la_signed_dict.values():
         log.info(
-            f"{la_name} is not signed up for PAN {config.dataset} data processing."
+            f"{la_name} is not signed up for {config.dataset} data processing."
         )
         error_report.append(
             dict(
@@ -117,8 +117,9 @@ def process_files(
                 message=f"{la_name} is not signed up for data processing.",
             )
         )
+        return
     else:
-        log.info(f"{la_name} is signed for PAN {config.dataset} data processing.")
+        log.info(f"{la_name} is signed for {config.dataset} data processing.")
 
     for file_locator in incoming_files:
         log.info(f"Processing file {basename(file_locator.name)}")
@@ -238,7 +239,7 @@ def process_files(
         log.info(f"Cleanfile task completed for {basename(str(file_locator.name))}")
 
         cleanfile_result.data = prepare_export(
-            cleanfile_result.data, output_config, profile="PAN"
+            cleanfile_result.data, output_config
         )
 
         cleanfile_result.data.export(
