@@ -1,7 +1,9 @@
 import pandas as pd
 
 
-def add_summary_sheet_columns(data: pd.DataFrame, mapping: dict) -> pd.DataFrame:
+def add_summary_sheet_columns(
+    data: pd.DataFrame, mapping: dict, column_order: list
+) -> pd.DataFrame:
     """
     Add summary sheet columns to a dataframe based on a mapping dictionary.
     :param data: The dataframe to add the columns to
@@ -13,7 +15,7 @@ def add_summary_sheet_columns(data: pd.DataFrame, mapping: dict) -> pd.DataFrame
         new_columns.update(field_map.values())
     new_columns = list(new_columns)
 
-    for col in new_columns:
+    for col in column_order:
         data[col] = ""
 
     for idx, row in data.iterrows():
