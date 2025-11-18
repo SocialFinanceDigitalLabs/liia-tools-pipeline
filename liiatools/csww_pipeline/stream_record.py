@@ -32,7 +32,6 @@ class LALevelEvent(events.ParseEvent):
     pass
 
 
-@xml_collector
 def message_collector(stream):
     """
     Collect messages from XML elements and yield events
