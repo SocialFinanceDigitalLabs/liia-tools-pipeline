@@ -1,7 +1,5 @@
 from importlib import resources
-from pathlib import Path
 
-import pandas as pd
 from ruamel.yaml import YAML
 
 yaml = YAML()
@@ -16,10 +14,10 @@ def load_top_level_keys(package: str, *path_parts: str):
 
 def test_top_level_keys_match():
     keys_a = load_top_level_keys(
-        "liiatools", "cans", "spec", "summary_sheet_mapping.yml"
+        "liiatools", "cans_pipeline", "spec", "summary_sheet_mapping.yml"
     )
     keys_b = load_top_level_keys(
-        "liiatools", "cans", "spec", "summary_column_order.yml"
+        "liiatools", "cans_pipeline", "spec", "summary_column_order.yml"
     )
 
     assert (
