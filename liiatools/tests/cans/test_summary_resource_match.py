@@ -41,7 +41,7 @@ def test_values_match():
     for table_name in mapping.keys():
         column_order_list = column_order[table_name]
         summary_columns_a = set()
-        for field_map in mapping.values():
+        for field_map in mapping[table_name].values():
             summary_columns_a.update(field_map.values())
         summary_columns_b = set(column_order_list)
         assert (
