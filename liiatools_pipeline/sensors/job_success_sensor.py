@@ -74,7 +74,11 @@ def concatenate_sensor(context):
     context.log.info(f"Concatenate allowed datasets: {allowed_datasets}")
 
     run_records = context.instance.get_run_records(
-        filters=RunsFilter(job_name=clean.name, statuses=[DagsterRunStatus.SUCCESS]),
+        filters=RunsFilter(
+            job_name=clean.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": allowed_datasets},
+        ),
         order_by="update_timestamp",
         ascending=False,
         limit=1000,
@@ -83,9 +87,10 @@ def concatenate_sensor(context):
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for move_current_la job")
         for dataset in allowed_datasets:
-            latest_run_id = run_records[
-                0
-            ].dagster_run.run_id  # Get the most recent run id
+            latest_run_id = find_previous_matching_dataset_run(
+                run_records,
+                dataset,
+            )  # Get the most recent dataset run id
             context.log.info(f"Run key: {latest_run_id}, dataset: {dataset}")
             concat_config = CleanConfig(
                 dataset=dataset,
