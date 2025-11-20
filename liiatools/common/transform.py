@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional
 
 import pandas as pd
 
@@ -25,6 +25,7 @@ def _transform(
     metadata: Metadata,
     property: str,
     functions: Dict[str, Callable],
+    additional_property: Optional[str] = None
 ):
     """Performs a transform on a table"""
     for column_config in table_config.columns:
@@ -35,20 +36,30 @@ def _transform(
                     assert (
                         transform_name in functions
                     ), f"Unknown transform for property '{property}': {transform_name}"
-                    data[column_config.id] = data.apply(
-                        lambda row: functions[transform_name](
-                            row, column_config, metadata
-                        ),
-                        axis=1,
-                    )
+                    if transform_name == "postcode_la_lookup":
+                        mapping_field = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, mapping_field, column_config.id)
+                    else:
+                        data[column_config.id] = data.apply(
+                            lambda row: functions[transform_name](
+                                row, column_config, metadata
+                            ),
+                            axis=1,
+                        )
             else:
                 assert (
                     transform_name in functions
                 ), f"Unknown transform for property '{property}': {transform_name}"
-                data[column_config.id] = data.apply(
-                    lambda row: functions[transform_name](row, column_config, metadata),
-                    axis=1,
-                )
+                if transform_name == "postcode_la_lookup":
+                    mapping_field = getattr(column_config, additional_property)
+                    mapping_function = functions[transform_name]
+                    data = mapping_function(data, mapping_field, column_config.id)
+                else:
+                    data[column_config.id] = data.apply(
+                        lambda row: functions[transform_name](row, column_config, metadata),
+                        axis=1,
+                    )
 
 
 def data_transforms(
@@ -57,6 +68,7 @@ def data_transforms(
     metadata: Metadata,
     property: str,
     functions: Dict[str, Callable],
+    additional_property: Optional[str] = None
 ) -> ProcessResult:
     """Pipelines can have a set of data transforms that are applied to the data after it has been cleaned.
 
@@ -74,7 +86,7 @@ def data_transforms(
         for table_config in config.table_list:
             if table_config.id in data:
                 _transform(
-                    data[table_config.id], table_config, metadata, property, functions
+                    data[table_config.id], table_config, metadata, property, functions, additional_property
                 )
                 remove_row_mask = (
                     ~data[table_config.id].isin(["remove_row"]).any(axis=1)
@@ -109,7 +121,7 @@ def enrich_data(
     if metadata is None:
         metadata = {}
 
-    return data_transforms(data, config, metadata, "enrich", enrich_functions)
+    return data_transforms(data, config, metadata, "enrich", enrich_functions, "enrich_input")
 
 
 def degrade_data(
