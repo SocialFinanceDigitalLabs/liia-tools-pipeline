@@ -42,13 +42,13 @@ def test_match_headers_all_direct_match():
     input_headers = pd.Series(["Assessment Date", "Developmental/Intellectual*"])
     schema_headers = ["Assessment Date", "Developmental/Intellectual*"]
     # Should not raise
-    _match_headers(input_headers, schema_headers)
+    assert _match_headers(input_headers, schema_headers) is None
 
 def test_match_headers_regex_match():
     input_headers = pd.Series(["Assessment Date", "Developmental/Intellectual*", "Cognitive", "Sleep"])
     schema_headers = ["Assessment Date", "Developmental/Intellectual*", "Cognitive (Developmental/Intellectual*)", "Sleep"]
     # Should not raise
-    _match_headers(input_headers, schema_headers)
+    assert _match_headers(input_headers, schema_headers) is None
 
 def test_match_headers_partial_match():
     input_headers = pd.Series(["Assessment Date", "Developmental/Intellectual*", "Some Other Header"])
@@ -66,7 +66,7 @@ def test_match_headers_duplicate_match():
     input_headers = pd.Series(["Assessment Date", "Cognitive", "Developmental"])
     schema_headers = ["Assessment Date", "Cognitive (Developmental/Intellectual*)", "Developmental (Developmental/Intellectual*)"]
     # Should not raise
-    _match_headers(input_headers, schema_headers)
+    assert _match_headers(input_headers, schema_headers) is None
 
 
 class DummyFileLocator:
