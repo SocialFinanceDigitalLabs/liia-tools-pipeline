@@ -261,16 +261,22 @@ def process_files(
 
             log.info(f"Enrichfile exported for {basename(file_locator.name)}")
 
-            degraded_result = degrade_data(enrich_result.data, output_config, metadata)
-            degraded_result.data.export(
-                session_folder.opendir(SessionNames.DEGRADED_FOLDER),
-                file_locator.meta["uuid"] + "_",
-                "parquet",
-            )
-            error_report.extend(degraded_result.errors)
-            current.add(degraded_result.data, config.input_la_code, year, month, term)
+            # Evaluate whether degrade step should occur
+            degrade_flag = all(output_config.reports_degrade.values())
+            if degrade_flag:
+                degraded_result = degrade_data(enrich_result.data, output_config, metadata)
+                degraded_result.data.export(
+                    session_folder.opendir(SessionNames.DEGRADED_FOLDER),
+                    file_locator.meta["uuid"] + "_",
+                    "parquet",
+                )
+                error_report.extend(degraded_result.errors)
+                current.add(degraded_result.data, config.input_la_code, year, month, term)
 
-            log.info(f"Degraded file exported for {basename(file_locator.name)}")
+                log.info(f"Degraded file exported for {basename(file_locator.name)}")
+            else:
+                log.info(f"Skipping degrade step for {basename(file_locator.name)}")
+                current.add(enrich_result.data, config.input_la_code, year, month, term)
 
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
