@@ -84,7 +84,9 @@ def transform_input(source: FileLocator, table_info: dict) -> pd.DataFrame:
             raise StreamError(f"Sheet {table_info['sheetname']} not found")
 
     if not {"Unnamed: 1", "Unnamed: 2"}.issubset(data.columns):
-        raise StreamError("Could not find Unnamed: 1 and Unnamed: 2 columns")
+        raise StreamError("Could not find Unnamed: 1 and Unnamed: 2 columns. "
+                          "These the names of the 2nd and 3rd columns in CANS files "
+                          "containing the assessment criteria and data.")
     
     data["Unnamed: 1"] = data["Unnamed: 1"].str.strip()
     data = data.dropna(subset=["Unnamed: 1"])
