@@ -6,6 +6,10 @@ from dagster import In, Out, get_dagster_logger, op
 from fs.base import FS
 from ruamel.yaml import YAML
 
+from liiatools.cans_pipeline.spec import (
+    load_summary_sheet_column_order,
+    load_summary_sheet_mapping,
+)
 from liiatools.cans_pipeline.summary_sheet_mapping import add_summary_sheet_columns
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesCANSMapping
@@ -58,15 +62,8 @@ def cans_summary_sheet_mapping(
     files = session_folder.listdir("/")
     log.info(f"Files in session folder: {files}")
 
-    with resources.files("liiatools").joinpath(
-        "cans_pipeline", "spec", "summary_sheet_mapping.yml"
-    ).open("r") as f:
-        mapping = yaml.load(f)
-
-    with resources.files("liiatools").joinpath(
-        "cans_pipeline", "spec", "summary_column_order.yml"
-    ).open("r") as f:
-        column_order = yaml.load(f)
+    mapping = load_summary_sheet_mapping()
+    column_order = load_summary_sheet_column_order()
 
     for file in files:
         log.info(f"Adding Summary Sheet mapping for {file}")

@@ -2,23 +2,21 @@ from importlib import resources
 
 from ruamel.yaml import YAML
 
+from liiatools.cans_pipeline.spec import (
+    load_summary_sheet_column_order,
+    load_summary_sheet_mapping,
+)
+
 yaml = YAML()
 
 
-def load_top_level_keys(package: str, *path_parts: str):
-    resource = resources.files(package).joinpath(*path_parts)
-    with resource.open("r") as f:
-        data = yaml.load(f)
+def load_top_level_keys(data):
     return set(data.keys())
 
 
 def test_top_level_keys_match():
-    keys_a = load_top_level_keys(
-        "liiatools", "cans_pipeline", "spec", "summary_sheet_mapping.yml"
-    )
-    keys_b = load_top_level_keys(
-        "liiatools", "cans_pipeline", "spec", "summary_column_order.yml"
-    )
+    keys_a = load_top_level_keys(load_summary_sheet_mapping())
+    keys_b = load_top_level_keys(load_summary_sheet_column_order())
 
     assert (
         keys_a == keys_b
@@ -26,15 +24,8 @@ def test_top_level_keys_match():
 
 
 def test_values_match():
-    with resources.files("liiatools").joinpath(
-        "cans_pipeline", "spec", "summary_sheet_mapping.yml"
-    ).open("r") as f:
-        mapping = yaml.load(f)
-
-    with resources.files("liiatools").joinpath(
-        "cans_pipeline", "spec", "summary_column_order.yml"
-    ).open("r") as f:
-        column_order = yaml.load(f)
+    mapping = load_summary_sheet_mapping()
+    column_order = load_summary_sheet_column_order()
 
     for table_name in mapping.keys():
         column_order_list = column_order[table_name]

@@ -10,11 +10,6 @@ def add_summary_sheet_columns(
     :param mapping: The mapping dictionary
     :return: The dataframe with the new columns added
     """
-    new_columns = set()
-    for field_map in mapping.values():
-        new_columns.update(field_map.values())
-    new_columns = list(new_columns)
-
     for col in column_order:
         data[col] = ""
 
