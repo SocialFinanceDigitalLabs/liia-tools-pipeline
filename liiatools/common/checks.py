@@ -153,3 +153,23 @@ def check_la_signature(pipeline_config, report):
             continue
 
     return signed_las
+
+
+def check_identifier(filename):
+    """
+    Check a filename to see if it contains an identifier, if it does, return that identifier
+    Expected identifier formats within string:
+        123456_0_5_2024_jan
+        CANS_123456_0_5_2024_feb
+        123456_6_21_2024_jan
+
+    :param filename: Filename that probably contains an identifier
+    :return: Identifier within the string
+    :raises ValueError: If no identifier is found
+    """
+    match = re.search(r"([[a-zA-Z0-9]*)_\d_\d{1,2}_\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)", filename)
+    if match:
+        if str.lower(match.group(1)) != "cans":
+            return match.group(1)
+
+    raise ValueError

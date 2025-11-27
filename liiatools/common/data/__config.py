@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,6 +10,7 @@ class ColumnConfig(BaseModel):
     type: str
     unique_key: bool = False
     enrich: str | list = None
+    enrich_input: str = None
     degrade: str = None
     sort: int = None
     asc: bool = False
@@ -20,6 +21,7 @@ class TableConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
+    sheetname: Optional[str] = None
     retain: List[str] = []
     columns: List[ColumnConfig]
 
@@ -33,9 +35,7 @@ class TableConfig(BaseModel):
         Returns a list of (column id, ascending) tuples that should be used to sort the table in order of priority
         """
         sort_tuples = [
-            (c.id, c.asc, c.sort)
-            for c in self.columns
-            if c.sort is not None
+            (c.id, c.asc, c.sort) for c in self.columns if c.sort is not None
         ]
         sort_tuples.sort(key=lambda x: x[2])
         return [(col_id, asc) for col_id, asc, _ in sort_tuples]

@@ -7,6 +7,8 @@ from fs.base import FS
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesFixEpisodes
 from liiatools.common.data import DataContainer
+from liiatools.ssda903_pipeline.spec import load_pipeline_config
+
 from liiatools.ssda903_pipeline.fix_episodes import stage_1, stage_2
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 
@@ -44,6 +46,11 @@ def fix_episodes(
     concat_folder = shared_folder().opendir("concatenated/ssda903")
     files = session_folder.listdir("/")
 
+    pipeline_config = load_pipeline_config()
+    episodes_config = pipeline_config["episodes"]
+    episode_cols = [c.id for c in episodes_config.columns]
+    transform_cols = [x for x in episode_cols if x not in ["CHILD", "LA", "Year_latest", "Episode_source"]]
+
     for file in files:
         log.info(f"Fixing episodes for {file}")
         data = DataContainer()
@@ -54,8 +61,8 @@ def fix_episodes(
             with session_folder.open(file, "r") as f:
                 try:
                     df = pd.read_csv(f)
-                    df = stage_1(df)
-                    df = stage_2(df)
+                    df = stage_1(df, transform_cols)
+                    df = stage_2(df, episode_cols, transform_cols)
                     data[episode_table.group(0)] = df
                 except TypeError as err:
                     log.error(f"Fixing episodes table failed: {err}")

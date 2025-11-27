@@ -162,7 +162,7 @@ def process_files(
         log.info(f"Local authority code found in {basename(str(file_locator.name))}")
 
         month = None
-        if config.dataset in ["annex_a", "pnw_census"]:
+        if config.dataset in ["annex_a", "pnw_census", "cans"]:
             month = pl.discover_month(file_locator)
             if month is None:
                 error_report.append(
@@ -175,6 +175,21 @@ def process_files(
                 )
                 continue
             log.info(f"Month found in {basename(str(file_locator.name))}")
+
+        identifier = None
+        if config.dataset in ["cans"]:
+            identifier = pl.discover_identifier(file_locator)
+            if identifier is None:
+                error_report.append(
+                    dict(
+                        type="MissingIdentifier",
+                        message="Could not find an identifier in the filename or path",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
+                continue
+            log.info(f"Identifier found in {basename(str(file_locator.name))}")
 
         try:
             schema = (
@@ -198,7 +213,7 @@ def process_files(
                 globals()[f"task_cleanfile_{config.dataset}"](
                     file_locator, schema, output_config, logger=log
                 )
-                if config.dataset == "cin"
+                if config.dataset in ["cin", "cans"]
                 else globals()[f"task_cleanfile_{config.dataset}"](
                     file_locator, schema, logger=log
                 )
@@ -245,7 +260,7 @@ def process_files(
             "parquet",
         )
         error_report.extend(degraded_result.errors)
-        current.add(degraded_result.data, config.input_la_code, year, month)
+        current.add(degraded_result.data, config.input_la_code, year, month, identifier)
 
         log.info(f"Degraded file exported for {basename(file_locator.name)}")
 
