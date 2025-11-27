@@ -19,6 +19,9 @@ from liiatools.pnw_census_pipeline.spec import (
 from liiatools.ssda903_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_ssda903,
 )
+from liiatools.csww_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_csww,
+)
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 logger = logging.getLogger(__name__)

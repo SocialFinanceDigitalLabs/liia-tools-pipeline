@@ -34,6 +34,10 @@ from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
+from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
+from liiatools.csww_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_csww,
+)
 from liiatools_pipeline.assets.common import (
     pipeline_config,
     shared_folder,
