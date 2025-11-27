@@ -61,10 +61,10 @@ def load_schema() -> DataSchema:
 
 
 @lru_cache
-def load_summary_sheet_mapping() -> DataSchema:
+def load_summary_sheet_mapping() -> dict:
     """
     Load the summary sheet mapping file
-    :return: The summary sheet mapping dict and column order list
+    :return: A dictionary of summary sheet mapping
     """
     with Path(SCHEMA_DIR, "summary_sheet_mapping.yml") as f:
         mapping = yaml.load(f)
@@ -72,10 +72,10 @@ def load_summary_sheet_mapping() -> DataSchema:
 
 
 @lru_cache
-def load_summary_sheet_column_order() -> DataSchema:
+def load_summary_sheet_column_order() -> dict:
     """
     Load the summary sheet column order file
-    :return: The summary sheet column order list
+    :return: A dictionary of summary sheet column order lists
     """
     with Path(SCHEMA_DIR, "summary_column_order.yml") as f:
         column_order = yaml.load(f)
