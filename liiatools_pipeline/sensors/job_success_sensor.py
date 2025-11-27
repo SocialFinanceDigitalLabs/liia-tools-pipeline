@@ -10,6 +10,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cans_org import cans_summary_columns
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
@@ -55,6 +56,7 @@ def move_current_la_sensor(context):
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for clean job")
         latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
@@ -63,7 +65,7 @@ def move_current_la_sensor(context):
 
 @sensor(
     job=concatenate,
-    description="Runs concatenate job once move_current job is complete",
+    description="Runs concatenate job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
@@ -400,6 +402,33 @@ def cin_reports_sensor(context):
         "cin",
     )  # Get the most recent cin run id
     if latest_run_id:  # Ensure there is at least one cin run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+@sensor(
+    job=cans_summary_columns,
+    description="Runs cans_summary_columns job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cans_summary_columns_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cans"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for CANS reports job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
