@@ -393,9 +393,6 @@ def join_cans_data(
     # Remove any CANS assessments after the snapshot date
     cans = cans[cans["Assessment Date"] <= pnw_census["snapshot_date"].max()]
 
-    # Reindex to ensure all wanted columns are present - add any missing columns as blank
-    cans = cans.reindex(columns=["Child Unique ID"] + cans_columns, fill_value="")
-
     # Sort so latest are first
     cans = cans.sort_values(
         ["Child Unique ID", "Assessment Date"], ascending=[True, False]
@@ -417,6 +414,8 @@ def join_cans_data(
     # Flatten multi-level columns
     wide_cans.columns = [f"{var} {int(rank)}" for rank, var in wide_cans.columns]
     wide_cans = wide_cans.reset_index()
+
+    cans_columns = ["Assessment Date"] + cans_columns
 
     wide_cans = add_missing_cans_columns(wide_cans, cans_columns)
 

@@ -2,10 +2,12 @@ import re
 
 import pandas as pd
 from dagster import In, Out, get_dagster_logger, op
+from decouple import config as env_config
 from fs import errors
 from fs.base import FS
 from pandas.tseries.offsets import MonthEnd
 
+from liiatools.cans_pipeline.spec import load_summary_sheet_column_order
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesPNWCensusJoins
 from liiatools.common.data import DataContainer
@@ -50,7 +52,7 @@ def create_join_session_folder() -> FS:
     pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
     pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    cans_reports_folder = workspace_folder().opendir("current/cans/PAN")
+    cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
     pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     return session_folder
@@ -65,6 +67,7 @@ def joins_pnw_census(
     session_folder: FS,
 ):
     log.info("Checking necessary files are present...")
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
     # SSDA903 file patterns
     episodes_pattern = re.compile(r"episodes")
     header_pattern = re.compile(r"header")
@@ -200,44 +203,33 @@ def joins_pnw_census(
         for col in empty_missing_cols:
             pnw_census[col] = None
 
-    # Check and process CANS files
-    if any(pattern.search(f) for pattern in cans_patterns for f in files):
-        cans_columns = [
-            "Assessment Date",
-            "Assessment Type",
-            "Centerpiece of the Plan",
-            "Strength used in the Plan",
-            "Consider Strength Development",
-            "No Strength, Consider Building",
-            "Action Needed (Caregiver)",
-            "Trauma Experience (Over Lifetime)",
-            "Action Needed (Youth)",
-            "Immediate/Intensive Action Needed (Youth)",
-            "Immediate/Intensive Action Needed (Caregiver)",
-            "Transition Age Action Needed",
-            "Immediate/Intensive Transition Age Action Needed",
-        ]
-        child_cans = None
-        youth_cans = None
-        log.info("Joining CANS data with PNW Census data")
-        if any(child_pattern.search(f) for f in files):
-            child_file = next(f for f in files if child_pattern.search(f))
-            child_cans = open_file(session_folder, child_file)
-        if any(youth_pattern.search(f) for f in files):
-            youth_file = next(f for f in files if youth_pattern.search(f))
-            youth_cans = open_file(session_folder, youth_file)
-            # Align Youth Unique ID with Child Unique ID for merging
-            youth_cans["Child Unique ID"] = youth_cans["Youth Unique ID"]
+    # Load CANS summary sheet column order, use 6 -21 as it has superset of columns
+    cans_columns = load_summary_sheet_column_order()["6_21"]
 
-        if child_cans is not None and youth_cans is not None:
-            cans_data = pd.concat([child_cans, youth_cans], ignore_index=True)
+    if "cans" in allowed_datasets:
+        # Check and process CANS files
+        if any(pattern.search(f) for pattern in cans_patterns for f in files):
+            child_cans = None
+            youth_cans = None
+            log.info("Joining CANS data with PNW Census data")
+            if any(child_pattern.search(f) for f in files):
+                child_file = next(f for f in files if child_pattern.search(f))
+                child_cans = open_file(session_folder, child_file)
+            if any(youth_pattern.search(f) for f in files):
+                youth_file = next(f for f in files if youth_pattern.search(f))
+                youth_cans = open_file(session_folder, youth_file)
+                # Align Youth Unique ID with Child Unique ID for merging
+                youth_cans["Child Unique ID"] = youth_cans["Youth Unique ID"]
+
+            if child_cans is not None and youth_cans is not None:
+                cans_data = pd.concat([child_cans, youth_cans], ignore_index=True)
+            else:
+                cans_data = child_cans if child_cans is not None else youth_cans
+            pnw_census = join_cans_data(cans_data, pnw_census, cans_columns)
+
         else:
-            cans_data = child_cans if child_cans is not None else youth_cans
-        pnw_census = join_cans_data(cans_data, pnw_census, cans_columns)
-
-    else:
-        log.error("No CANS data to join")
-        pnw_census = add_missing_cans_columns(pnw_census, cans_columns)
+            log.error("No CANS data to join")
+            pnw_census = add_missing_cans_columns(pnw_census, cans_columns)
 
     # Drop snapshot date field
     pnw_census = pnw_census.drop(columns="snapshot_date")
