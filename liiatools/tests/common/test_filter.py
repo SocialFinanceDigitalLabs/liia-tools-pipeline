@@ -1,3 +1,4 @@
+import pytest
 from datetime import datetime
 
 from sfdata_stream_parser import events
@@ -418,50 +419,25 @@ def test_table_spec_from_filename():
     assert (
         stream_filters.table_spec_from_filename(
             schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
-            output_config=output_config,
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
-            output_config=output_config,
-        )["error_message"]
-        == "Multiple tables matched the filename, file name: 8937598475_0_5_6_21_2025.csv"
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
+            filename="0940569457_0_5_2024.csv",
             output_config=output_config,
         )["sheetname"]
-        is None
+        == "TCOM UK 0-5 CANS"
     )
 
-    assert (
+    with pytest.raises(stream_filters.StreamError, match="Multiple tables matched the filename"):
         stream_filters.table_spec_from_filename(
-            schema=schema, filename="0835708574_2026.csv", output_config=output_config
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema, filename="0835708574_2026.csv", output_config=output_config
-        )["error_message"]
-        == "Failed to identify table based on filename, file name: 0835708574_2026.csv"
-    )
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )
 
-    assert (
+    with pytest.raises(stream_filters.StreamError, match="Failed to identify table based on filename"):
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )
+
+    with pytest.raises(stream_filters.StreamError, match="Failed to identify table based on filename"):
         stream_filters.table_spec_from_filename(
             schema=schema, filename="", output_config=output_config
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema, filename="", output_config=output_config
-        )["error_message"]
-        == "Failed to identify table based on filename, file name: "
-    )
+        )
