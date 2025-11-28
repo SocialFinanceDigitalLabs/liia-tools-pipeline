@@ -345,7 +345,7 @@ def deduplicate_annex_a_sensor(context):
 
 @sensor(
     job=pnw_census_joins,
-    description="Runs pnw_census_ssda903_join job once reports job is complete",
+    description="Runs pnw_census_joins job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
@@ -354,14 +354,14 @@ def pnw_census_joins_sensor(context):
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": ["ssda903", "pnw_census"]},
+            tags={"dataset": ["ssda903", "pnw_census", "cans"]},
         ),
         order_by="update_timestamp",
         ascending=False,
         limit=1000,
     )
 
-    # Get the most recent ssda903 & pnw_census run ids
+    # Get the most recent ssda903, CANS & pnw_census run ids
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
         run_records,
         "ssda903",
@@ -370,9 +370,13 @@ def pnw_census_joins_sensor(context):
         run_records,
         "pnw_census",
     )
+    latest_run_id_cans = find_previous_matching_dataset_run(
+        run_records,
+        "cans",
+    )
     # Ensure there is at least one of each record
-    if latest_run_id_ssda903 and latest_run_id_pnw:
-        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}"
+    if (latest_run_id_ssda903 or latest_run_id_cans) and latest_run_id_pnw:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_cans}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
