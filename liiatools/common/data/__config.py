@@ -59,6 +59,7 @@ class PipelineConfig(BaseModel):
     sensor_trigger: Dict
     retention_columns: Dict
     retention_period: Dict
+    reports_degrade: Dict
     reports_to_shared: Dict
     la_signed: Dict
     table_list: List[TableConfig]
