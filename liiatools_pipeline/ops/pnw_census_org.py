@@ -204,7 +204,7 @@ def joins_pnw_census(
             pnw_census[col] = None
 
     # Load CANS summary sheet column order, use 6 -21 as it has superset of columns
-    cans_columns = load_summary_sheet_column_order()["6_21"]
+    cans_columns = ["Assessment Date"] + load_summary_sheet_column_order()["6_21"]
 
     if "cans" in allowed_datasets:
         # Check and process CANS files

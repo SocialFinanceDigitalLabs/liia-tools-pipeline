@@ -415,8 +415,6 @@ def join_cans_data(
     wide_cans.columns = [f"{var} {int(rank)}" for rank, var in wide_cans.columns]
     wide_cans = wide_cans.reset_index()
 
-    cans_columns = ["Assessment Date"] + cans_columns
-
     wide_cans = add_missing_cans_columns(wide_cans, cans_columns)
 
     # Reorder columns
