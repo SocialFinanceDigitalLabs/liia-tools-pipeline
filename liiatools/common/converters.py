@@ -6,6 +6,7 @@ value as the correct type / with correct format if it is.
 import logging
 import math
 import re
+import pandas as pd
 from datetime import date, datetime
 
 from .spec.__data_schema import Column
@@ -192,10 +193,12 @@ def to_nth_of_month(value: date, n: int = 1):
     :param n: Number of the day of the month to convert to
     :return: A date of birth datetime object with the month rounded to the nth day
     """
-    try:
-        return value.replace(day=n)
-    except Exception as e:
-        raise ValueError(f"Invalid date: {value}") from e
+    if not isinstance(value, date):
+        try:
+            value = pd.to_datetime(value).date()
+        except Exception as e:
+            raise ValueError(f"Invalid date: {value}") from e
+    return value.replace(day=n)
 
 
 @allow_blank

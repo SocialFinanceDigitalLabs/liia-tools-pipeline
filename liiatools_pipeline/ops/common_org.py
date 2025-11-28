@@ -122,6 +122,7 @@ def create_reports(
         # Evaluate whether to degrade report contents
         degrade_flag = any(not v for v in output_config.reports_degrade.values()) and output_config.reports_degrade[report]
         if degrade_flag:
+            log.info(f"Degrading report {report}...")
             degraded_data = degrade_data(aggregate_data, output_config)
             aggregate_data = degraded_data.data
 
