@@ -371,8 +371,8 @@ def add_missing_cans_columns(data: pd.DataFrame, cans_columns: list) -> pd.DataF
     """
     Ensures all all 4 columns exist for each variable - add missing ones as blank
     """
-    for var in cans_columns:
-        for i in range(1, 5):
+    for i in range(1, 5):
+        for var in cans_columns:
             col_name = f"{var} {i}"
             if col_name not in data.columns:
                 data[col_name] = pd.NA
