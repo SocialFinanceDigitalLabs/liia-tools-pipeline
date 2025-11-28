@@ -183,18 +183,38 @@ def process_files(
         term = None
         school_type = None
         if config.dataset == "school_census":
-            (term, school_type) = pl.discover_school_census(file_locator)
+            term = pl.discover_term(file_locator)
             if term is None:
                 error_report.append(
                     dict(
                         type="MissingTerm",
-                        message="Could not find a term and school type (acad/lA) in the filename or path",
+                        message="Could not find a term in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
                 continue
-            log.info(f"Term and school type found in {basename(file_locator.name)}")
+            log.info(f"Term found in {basename(file_locator.name)}")
+
+            # Optionally look for acad/la within filename based on config
+            school_type_flag = any(
+                col.enrich == "school_type"
+                for table in output_config.table_list
+                for col in table.columns
+            )
+            if school_type_flag:
+                school_type = pl.discover_school_type(file_locator)
+                if school_type is None:
+                    error_report.append(
+                        dict(
+                            type="MissingSchoolType",
+                            message="Could not find a school type (acad or la) in the filename",
+                            filename=file_locator.name,
+                            uuid=uuid,
+                        )
+                    )
+                else:
+                    log.info(f"School type found in {basename(file_locator.name)}")
 
         try:
             schema = (
