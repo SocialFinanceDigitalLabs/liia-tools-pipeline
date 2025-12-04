@@ -58,3 +58,25 @@ def load_schema() -> DataSchema:
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)
+
+
+@lru_cache
+def load_summary_sheet_mapping() -> dict:
+    """
+    Load the summary sheet mapping file
+    :return: A dictionary of summary sheet mapping
+    """
+    with Path(SCHEMA_DIR, "summary_sheet_mapping.yml") as f:
+        mapping = yaml.load(f)
+    return mapping
+
+
+@lru_cache
+def load_summary_sheet_column_order() -> dict:
+    """
+    Load the summary sheet column order file
+    :return: A dictionary of summary sheet column order lists
+    """
+    with Path(SCHEMA_DIR, "summary_column_order.yml") as f:
+        column_order = yaml.load(f)
+    return column_order
