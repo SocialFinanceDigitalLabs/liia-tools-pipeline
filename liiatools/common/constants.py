@@ -52,3 +52,13 @@ class SessionNamesCINReports(StrEnum):
     """Enum for CIN Reports session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+class SessionNamesSCCross(StrEnum):
+    """Enum for School Census cross border outputs session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesSCRegion(StrEnum):
+    """Enum for School Census region outputs session folders."""
+
+    INCOMING_FOLDER = "incoming"
