@@ -181,6 +181,7 @@ def process_files(
             log.info(f"Month found in {basename(str(file_locator.name))}")
 
         term = None
+        school_type = None
         if config.dataset == "school_census":
             term = pl.discover_term(file_locator)
             if term is None:
@@ -195,6 +196,26 @@ def process_files(
                 continue
             log.info(f"Term found in {basename(file_locator.name)}")
 
+            # Optionally look for acad/la within filename based on config
+            school_type_flag = any(
+                col.enrich == "school_type"
+                for table in output_config.table_list
+                for col in table.columns
+            )
+            if school_type_flag:
+                school_type = pl.discover_school_type(file_locator)
+                if school_type is None:
+                    error_report.append(
+                        dict(
+                            type="MissingSchoolType",
+                            message="Could not find a school type (acad or la) in the filename",
+                            filename=file_locator.name,
+                            uuid=uuid,
+                        )
+                    )
+                else:
+                    log.info(f"School type found in {basename(file_locator.name)}")
+                    
         identifier = None
         if config.dataset in ["cans"]:
             identifier = pl.discover_identifier(file_locator)
@@ -226,7 +247,7 @@ def process_files(
         log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
 
         metadata = dict(
-            year=year, month=month, term=term, schema=schema, la_code=config.input_la_code
+            year=year, month=month, term=term, schema=schema, la_code=config.input_la_code, school_type=school_type
         )
 
         try:

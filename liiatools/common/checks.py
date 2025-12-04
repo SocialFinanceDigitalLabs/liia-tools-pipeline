@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import Tuple
 
 from liiatools.common.constants import Term
 from liiatools.common.reference import authorities
@@ -114,6 +115,27 @@ def check_term(filename):
 
     if match_long:
         return match_long.group(0).lower()
+
+    raise ValueError
+
+
+def check_school_type(filename) -> str:
+    """
+    Check a filename to see if it contains a string with school type in it
+    School type must occur with no numbers or digits either side to avoid partial capture in longer words
+    Acceptable filename formats:
+        2025_summer_acad_addressesonroll.csv
+        2024_autumn_la.csv
+    :param filename: Filename that contains a string with school type
+    :return: The string for the school type to be added to metadata
+    :raises ValueError: If no corresponding string is found
+    """
+    pattern = r'(?<![A-Za-z0-9])(acad|la)(?![A-Za-z0-9])'
+
+    match = re.search(pattern, filename, re.IGNORECASE)
+
+    if match:
+        return match.group()
 
     raise ValueError
 
