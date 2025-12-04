@@ -119,22 +119,23 @@ def check_term(filename):
     raise ValueError
 
 
-def check_school_census(filename) -> Tuple:
+def check_school_type(filename) -> str:
     """
-    Check a filename to see if it contains a string with both term and school type in it
-    Expected filename formats:
+    Check a filename to see if it contains a string with school type in it
+    School type must occur with no numbers or digits either side to avoid partial capture in longer words
+    Acceptable filename formats:
         2025_summer_acad_addressesonroll.csv
-        2024_autumn_la_addressesoffroll.csv
-    :param filename: Filename that contains a string with term and school type
-    :return: A tuple with the two components found
+        2024_autumn_la.csv
+    :param filename: Filename that contains a string with school type
+    :return: The string for the school type to be added to metadata
     :raises ValueError: If no corresponding string is found
     """
-    pattern = r'(autumn|summer|spring)_(acad|la)'
+    pattern = r'(?<![A-Za-z0-9])(acad|la)(?![A-Za-z0-9])'
 
     match = re.search(pattern, filename, re.IGNORECASE)
 
     if match:
-        return match.groups()
+        return match.group()
 
     raise ValueError
 
@@ -206,3 +207,23 @@ def check_la_signature(pipeline_config, report):
             continue
 
     return signed_las
+
+
+def check_identifier(filename):
+    """
+    Check a filename to see if it contains an identifier, if it does, return that identifier
+    Expected identifier formats within string:
+        123456_0_5_2024_jan
+        CANS_123456_0_5_2024_feb
+        123456_6_21_2024_jan
+
+    :param filename: Filename that probably contains an identifier
+    :return: Identifier within the string
+    :raises ValueError: If no identifier is found
+    """
+    match = re.search(r"([[a-zA-Z0-9]*)_\d_\d{1,2}_\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)", filename)
+    if match:
+        if str.lower(match.group(1)) != "cans":
+            return match.group(1)
+
+    raise ValueError

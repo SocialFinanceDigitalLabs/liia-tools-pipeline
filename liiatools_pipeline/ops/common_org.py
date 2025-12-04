@@ -41,8 +41,8 @@ def move_current_view_org(config: CleanConfig):
         file_name_list = [table.id for table in pipeline_config(config).table_list]
         file_regex = "|".join(file_name_list)
 
-        # Regex to match year and optional month filename format
-        current_files_regex = f"({authority_regex})_\d{{4}}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)?_?({file_regex})"
+        # Regex to match year and optional id and month filename format
+        current_files_regex = f"({authority_regex})_([a-zA-Z0-9]*)_?\d{{4}}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)?_?({file_regex})"
         pl.remove_files(current_files_regex, existing_files, destination_folder)
 
         log.info(f"Moving current {config.dataset} files to destination...")

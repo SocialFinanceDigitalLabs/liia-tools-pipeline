@@ -15,7 +15,7 @@ from fs.base import FS
 from fs.info import Info
 from fs.move import copy_file
 
-from liiatools.common.checks import check_la, check_month, check_year, check_term, check_school_census
+from liiatools.common.checks import check_la, check_month, check_year, check_term, check_school_type, check_identifier
 from liiatools.common.constants import ProcessNames, SessionNames
 
 from .data import FileLocator
@@ -280,18 +280,33 @@ def discover_term(file_locator: FileLocator) -> str:
         pass
 
 
-def discover_school_census(file_locator: FileLocator) -> Tuple:
+def discover_school_type(file_locator: FileLocator) -> str:
     """
-    Try to discover the term and school type (acad or la) for a school census file.
-    This function will try to find the term and school type in the full filename.
+    Try to discover the school type (acad or la) for a school census file.
+    This function will try to find the school type in the full filename.
     If the school type is found, it will be added to the file metadata.
     """
     file_name = basename(file_locator.name)
 
     try:
-        return check_school_census(file_name)
+        return check_school_type(file_name)
     except ValueError:
-        return (None, None)
+        return None
+
+def discover_identifier(file_locator: FileLocator) -> str:
+    """
+    Try to discover the identifier for a file.
+
+    This function will try to find an identifier in the filename.
+
+    If the identifier is found, it will be added to the file metadata.
+    """
+    file_name = basename(file_locator.name)
+
+    try:
+        return check_identifier(file_name)
+    except ValueError:
+        pass
 
 
 class DataType(Enum):
