@@ -262,7 +262,7 @@ def process_files(
             log.info(f"Enrichfile exported for {basename(file_locator.name)}")
 
             # Evaluate whether degrade step should occur
-            degrade_flag = all(output_config.reports_degrade.values())
+            degrade_flag = all(output_config.degrade_at_clean.values())
             if degrade_flag:
                 degraded_result = degrade_data(enrich_result.data, output_config, metadata)
                 degraded_result.data.export(

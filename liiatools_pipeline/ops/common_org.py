@@ -120,7 +120,7 @@ def create_reports(
         report_folder = export_folder.makedirs(report, recreate=True)
         
         # Evaluate whether to degrade report contents
-        degrade_flag = any(not v for v in output_config.reports_degrade.values()) and output_config.reports_degrade[report]
+        degrade_flag = any(not v for v in output_config.degrade_at_clean.values()) and output_config.degrade_at_clean[report]
         if degrade_flag:
             log.info(f"Degrading report {report}...")
             degraded_data = degrade_data(aggregate_data, output_config)
