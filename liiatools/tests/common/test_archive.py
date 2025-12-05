@@ -12,6 +12,7 @@ def cfg():
         sensor_trigger={"move_current_org_sensor": True},
         retention_columns={"year_column": "Year", "la_column": "LA"},
         retention_period={"PAN": 12, "SUFFICIENCY": 7},
+        degrade_at_clean={"PAN": True, "SUFFICIENCY": True},
         reports_to_shared={"PAN": True, "SUFFICIENCY": False},
         la_signed={
             "BAR": "Yes",
