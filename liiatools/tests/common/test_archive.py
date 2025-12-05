@@ -61,7 +61,7 @@ def test_archive(archive: DataframeArchive):
             ]
         ),
     }
-    archive.add(dataset, la_code, year, month=None, term=None)
+    archive.add(dataset, la_code, year, month=None, term=None, identifier=None)
 
     snapshots = archive.list_snapshots()
     assert snapshots == {
@@ -79,7 +79,7 @@ def test_combine(archive: DataframeArchive):
     dataset = {
         "table1": pd.DataFrame([{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]),
     }
-    archive.add(dataset, la_code, year, month=None, term=None)
+    archive.add(dataset, la_code, year, month=None, term=None, identifier=None)
     current = archive.current(la_code)
     table_1 = current["table1"]
 
@@ -89,7 +89,7 @@ def test_combine(archive: DataframeArchive):
     dataset = {
         "table1": pd.DataFrame([{"id": 4, "name": "SNAFU"}]),
     }
-    archive.add(dataset, la_code, year, month=None, term=None)
+    archive.add(dataset, la_code, year, month=None, term=None, identifier=None)
     current = archive.current(la_code)
     table_1 = current["table1"]
 
