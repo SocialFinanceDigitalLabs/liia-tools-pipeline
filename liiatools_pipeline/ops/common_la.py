@@ -306,12 +306,12 @@ def process_files(
                     "parquet",
                 )
                 error_report.extend(degraded_result.errors)
-                current.add(degraded_result.data, config.input_la_code, year, month, term, identifier)
+                current.add(degraded_result.data, config.input_la_code, year, month, term, school_type, identifier)
 
                 log.info(f"Degraded file exported for {basename(file_locator.name)}")
             else:
                 log.info(f"Skipping degrade step for {basename(file_locator.name)}")
-                current.add(enrich_result.data, config.input_la_code, year, month, term, identifier)
+                current.add(enrich_result.data, config.input_la_code, year, month, term, school_type, identifier)
 
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
