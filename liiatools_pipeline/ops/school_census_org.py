@@ -20,6 +20,18 @@ from liiatools_pipeline.assets.external_dataset import external_data_folder
 log = get_dagster_logger(__name__)
 
 def open_and_concat_patterns(files: List[str], patterns: List[re.Pattern[str]], session_folder: FS) -> pd.DataFrame:
+    '''
+    Function to receive a list of one or more files. If one, the function opens the file and returns this. If multiple, the function opens each and returns the concatenated output
+    
+    :param files: List of filenames as strings
+    :type files: List[str]
+    :param patterns: Regex pattern/s to find relevant files
+    :type patterns: List[re.Pattern[str]]
+    :param session_folder: session folder with all files in
+    :type session_folder: FS
+    :return: a single dataframe for the relevant file/s
+    :rtype: DataFrame
+    '''
     matches = [
     f for f in files
     if any(pattern.search(f) for pattern in patterns)
