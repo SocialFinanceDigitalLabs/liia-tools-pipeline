@@ -61,6 +61,8 @@ class SessionNamesSCCross(StrEnum):
 class SessionNamesSCRegion(StrEnum):
     """Enum for School Census region outputs session folders."""
 
+    INCOMING_FOLDER = "incoming"
+
 class SessionNamesCANSMapping(StrEnum):
     """Enum for CANS Mapping session folders."""
 
