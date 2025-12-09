@@ -148,6 +148,7 @@ def to_numeric(
             raise ValueError(f"Invalid age: {value}") from e
 
     try:
+        value = value.replace(",", "") if isinstance(value, str) else value
         value = float(value)
         if _type == "float":
             value = round(value, decimal_places) if decimal_places else value

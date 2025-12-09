@@ -2,19 +2,22 @@ from dagster import repository
 
 from liiatools.common._fs_serializer import register
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
     move_error_reports,
     reports,
 )
-from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
+    cans_summary_columns_sensor,
+    cin_reports_sensor,
     deduplicate_annex_a_sensor,
     move_concat_sensor,
     move_current_org_sensor,
@@ -50,6 +53,7 @@ def sync():
         cin_reports,
         school_census_cross,
         school_census_region,
+        cans_summary_columns,
     ]
     schedules = [
         reports_schedule,
@@ -65,6 +69,7 @@ def sync():
         cin_reports_sensor,
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
+        cans_summary_columns_sensor,
     ]
 
     return jobs + schedules + sensors

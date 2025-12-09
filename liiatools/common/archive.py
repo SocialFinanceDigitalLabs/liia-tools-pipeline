@@ -55,7 +55,7 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int, month: str | None, term: str | None):
+    def add(self, data: DataContainer, la_code: str, year: int, month: str | None, term: str | None, school_type: str | None, identifier: str | None):
         """
         Add a new snapshot to the archive.
         """
@@ -64,7 +64,7 @@ class DataframeArchive:
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 self._add_table(
-                    la_dir, la_code, year, month, term, table_spec, data[table_spec.id]
+                    la_dir, la_code, year, month, term, school_type, identifier, table_spec, data[table_spec.id]
                 )
 
     def _add_table(
@@ -72,21 +72,27 @@ class DataframeArchive:
         la_dir: FS,
         la_code: str,
         year: int,
-        month: str,
-        term: str,
+        month: str | None,
+        term: str | None,
+        school_type: str | None, 
+        identifier: str | None,
         table_spec: TableConfig,
         df: pd.DataFrame,
     ):
         """
         Add a table to the archive.
         """
-        path = (
-            f"{la_code}_{year}_{table_spec.id}.csv"
-            if month is None and term is None
-            else f"{la_code}_{year}_{month}_{table_spec.id}.csv"
-            if term is None
-            else f"{la_code}_{year}_{term}_{table_spec.id}.csv"
-        )
+        if identifier is not None and month is not None:
+            path = f"{la_code}_{identifier}_{year}_{month}_{table_spec.id}.csv"
+        elif term is not None and school_type is not None:
+            path = f"{la_code}_{year}_{term}_{school_type}_{table_spec.id}.csv"
+        elif term is not None and school_type is None:
+            path = f"{la_code}_{year}_{term}_{table_spec.id}.csv"
+        elif month is not None:
+            path = f"{la_code}_{year}_{month}_{table_spec.id}.csv"
+        else:
+            path = f"{la_code}_{year}_{table_spec.id}.csv"
+
         with la_dir.open(path, "w") as f:
             df = _normalise_table(df, table_spec)
             df.to_csv(f, index=False)
@@ -144,12 +150,12 @@ class DataframeArchive:
         """
         data = DataContainer()
         table_id = re.search(
-            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|autumn|spring|summer)*_*([a-zA-Z0-9_]*)\.",
+            r"_(?:\d{4}_)?\d{4}(?:_(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|autumn|spring|summer))?(?:_(?:acad|la))?_([a-zA-Z0-9_]+)\.",
             snap_id,
         )
 
         for table_spec in self.config.table_list:
-            if table_id and table_id.group(2) == table_spec.id:
+            if table_id and table_id.group(1) == table_spec.id:
                 log.info(f"table id match: {table_spec.id}")
                 with self.fs.open(snap_id, "r") as f:
                     df = pd.read_csv(f)
