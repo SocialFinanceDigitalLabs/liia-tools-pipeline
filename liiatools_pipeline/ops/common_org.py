@@ -5,7 +5,7 @@ from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.reference import authorities
-from liiatools.common.transform import apply_retention, prepare_export
+from liiatools.common.transform import apply_retention, prepare_export, degrade_data
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     pipeline_config,
@@ -109,24 +109,33 @@ def create_reports(
         f"current/{config.dataset}", recreate=True
     )
     log.info("Aggregating Data Frames...")
+    output_config = pipeline_config(config)
     aggregate = DataframeAggregator(
-        session_folder, pipeline_config(config), config.dataset
+        session_folder, output_config, config.dataset
     )
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
-    for report in pipeline_config(config).retention_period.keys():
+    for report in output_config.retention_period.keys():
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
+        
+        # Evaluate whether to degrade report contents
+        degrade_flag = any(not v for v in output_config.degrade_at_clean.values()) and output_config.degrade_at_clean[report]
+        if degrade_flag:
+            log.info(f"Degrading report {report}...")
+            degraded_data = degrade_data(aggregate_data, output_config)
+            aggregate_data = degraded_data.data
+
         report_data = prepare_export(
-            aggregate_data, pipeline_config(config), profile=report
+            aggregate_data, output_config, profile=report
         )
         log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
             report_data,
-            pipeline_config(config),
+            output_config,
             profile=report,
-            year_column=pipeline_config(config).retention_columns["year_column"],
-            la_column=pipeline_config(config).retention_columns["la_column"],
+            year_column=output_config.retention_columns["year_column"],
+            la_column=output_config.retention_columns["la_column"],
         )
 
         existing_report_files = report_folder.listdir("/")
@@ -135,7 +144,7 @@ def create_reports(
         report_data.export(report_folder, f"{config.dataset}_", "csv")
 
         # Follow permission for sharing to shared folder from config
-        if pipeline_config(config).reports_to_shared[report]:
+        if output_config.reports_to_shared[report]:
             existing_shared_files = shared_folder().listdir("/")
             log.info(f"Exporting report {report} to shared folder...")
             pl.remove_files(

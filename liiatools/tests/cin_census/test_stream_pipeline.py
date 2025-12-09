@@ -13,6 +13,7 @@ output_config = PipelineConfig(
     sensor_trigger={"move_current_org_sensor": False, "move_concat_sensor": False},
     retention_columns={"year_column": "Year", "la_column": "LA"},
     retention_period={"PAN": 12},
+    degrade_at_clean={"PAN": True},
     reports_to_shared={"PAN": True},
     la_signed={
         "Barking and Dagenham": {"PAN": "Yes"},
