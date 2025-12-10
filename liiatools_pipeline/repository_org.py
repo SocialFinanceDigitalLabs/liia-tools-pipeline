@@ -13,6 +13,7 @@ from liiatools_pipeline.jobs.common_org import (
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
+from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     cans_summary_columns_sensor,
@@ -23,6 +24,9 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     move_error_reports_sensor,
     pnw_census_joins_sensor,
     sufficiency_sensor,
+    cin_reports_sensor,
+    sc_cross_reports_sensor,
+    sc_region_reports_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
 
@@ -47,6 +51,8 @@ def sync():
         deduplicate_annex_a,
         pnw_census_joins,
         cin_reports,
+        school_census_cross,
+        school_census_region,
         cans_summary_columns,
     ]
     schedules = [
@@ -61,6 +67,8 @@ def sync():
         deduplicate_annex_a_sensor,
         pnw_census_joins_sensor,
         cin_reports_sensor,
+        sc_cross_reports_sensor,
+        sc_region_reports_sensor,
         cans_summary_columns_sensor,
     ]
 
