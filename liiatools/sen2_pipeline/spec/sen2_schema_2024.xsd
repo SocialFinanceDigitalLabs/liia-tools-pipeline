@@ -310,12 +310,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ulntype">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="\d{10}"/>
-    </xs:restriction>
-  </xs:simpleType>
-
 <!-- Module 1 starts here -->
   <xs:simpleType name="sextype">
     <xs:restriction base="nonEmptyString">
