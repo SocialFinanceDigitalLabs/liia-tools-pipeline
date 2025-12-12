@@ -324,11 +324,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ulntype">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="\d{10}"/>
-    </xs:restriction>
-  </xs:simpleType>
 
 <!-- Module 1 starts here -->
   <xs:simpleType name="sextype">
@@ -464,7 +459,7 @@
   <xs:simpleType name="uniquelearnernumbertype">
     <xs:restriction base="xs:string">
       <!-- First digit can't be a 0 but whole string has to be 8 characters long -->
-      <xs:pattern value="^[1-9][0-9]{7}$"/>
+      <xs:pattern value="\d{10}"/>
     </xs:restriction>
   </xs:simpleType>
 
