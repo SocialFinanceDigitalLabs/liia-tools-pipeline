@@ -78,8 +78,8 @@ def school_census_cross_outputs(
 
     output_folder = shared_folder()
     existing_files = output_folder.listdir("/")
-    concat_files_regex = f"^CROSS_"
-    pl.remove_files(concat_files_regex, existing_files, output_folder)
+    cross_files_regex = f"^CROSS_"
+    pl.remove_files(cross_files_regex, existing_files, output_folder)
 
     log.info("Checking necessary files are present...")
 
@@ -288,8 +288,8 @@ def school_census_region_outputs(
 
     output_folder = shared_folder()
     existing_files = output_folder.listdir("/")
-    concat_files_regex = f"^REGION_"
-    pl.remove_files(concat_files_regex, existing_files, output_folder)
+    region_files_regex = f"^REGION_"
+    pl.remove_files(region_files_regex, existing_files, output_folder)
 
     log.info("Checking necessary files are present...")
     address_pattern = re.compile(r"addresses")
