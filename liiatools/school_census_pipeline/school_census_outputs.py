@@ -1,9 +1,16 @@
 import pandas as pd
 
-def create_demographics_output(pupil: pd.DataFrame, identifier: str, addresses: pd.DataFrame, fsm: pd.DataFrame | None, sen: pd.DataFrame | None) -> pd.DataFrame:
-    '''
+
+def create_demographics_output(
+    pupil: pd.DataFrame,
+    identifier: str,
+    addresses: pd.DataFrame,
+    fsm: pd.DataFrame | None,
+    sen: pd.DataFrame | None,
+) -> pd.DataFrame:
+    """
     Makes a demographic output using a pupil, addresses, fsm and, optionally, a sen file
-    
+
     :param pupil: A dataframe corresponding to the pupilonroll table from the School Census
     :type pupil: pd.DataFrame
     :param identifier: A string corresponding to the name of the primary key to the pupil table
@@ -16,12 +23,12 @@ def create_demographics_output(pupil: pd.DataFrame, identifier: str, addresses: 
     :type sen: pd.DataFrame | None
     :return: A dataframe for the demographics output for the School Census
     :rtype: DataFrame
-    '''
+    """
     # Join addresses to pupil
     pupil = pupil.copy().merge(
         right=addresses.copy(),
         on=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
-        how="left"
+        how="left",
     )
 
     # Join fsm (if it exists) after filtering to only open periods
@@ -30,35 +37,52 @@ def create_demographics_output(pupil: pd.DataFrame, identifier: str, addresses: 
         pupil = pupil.merge(
             right=fsm,
             on=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
-            how="left"
+            how="left",
         )
 
     # Join sen if it exists
     if sen is not None:
         sen = sen[sen["sentyperank"].isin([1, 2])].copy()
+        sen = sen[
+            [
+                identifier,
+                "NativeId",
+                "Year",
+                "Term",
+                "LA",
+                "Acad/LA",
+                "sentyperank",
+                "sentype",
+            ]
+        ]
         sen = (
             sen.pivot(
                 index=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
                 columns="sentyperank",
-                values="sentype"
+                values="sentype",
             )
-            .rename(columns={1:"sentype1", 2:"sentype2"})
+            .rename(columns={1: "sentype1", 2: "sentype2"})
             .reset_index()
         )
 
         pupil = pupil.merge(
             right=sen,
             on=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
-            how="left"
+            how="left",
         )
 
     return pupil
 
 
-def create_sessions_output(pupil: pd.DataFrame, identifier: str, session_identifier: str, sessions: pd.DataFrame) -> pd.DataFrame:
-    '''
+def create_sessions_output(
+    pupil: pd.DataFrame,
+    identifier: str,
+    session_identifier: str,
+    sessions: pd.DataFrame,
+) -> pd.DataFrame:
+    """
     Makes a sessions output using a pupil and sessions file
-    
+
     :param pupil: A dataframe corresponding to a pupil level dataset, including relevant possible sessions
     :type pupil: pd.DataFrame
     :param identifier: A string corresponding to the name of the primary key to the pupil table
@@ -67,16 +91,14 @@ def create_sessions_output(pupil: pd.DataFrame, identifier: str, session_identif
     :type sessions: pd.DataFrame
     :return: a sessions output with pupil details and pivoted attendance values
     :rtype: DataFrame
-    '''
+    """
 
     # Pivot sessions table
     sessions = sessions.copy()
-    sessions = (
-        sessions.pivot(
-            index=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
-            columns="attendancereason",
-            values="sessions"
-        )
+    sessions = sessions.pivot(
+        index=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
+        columns="attendancereason",
+        values="sessions",
     )
     sessions = sessions.rename(columns=lambda x: f"attendancereason {x}").reset_index()
 
@@ -84,7 +106,7 @@ def create_sessions_output(pupil: pd.DataFrame, identifier: str, session_identif
     pupil = pupil.merge(
         right=sessions,
         on=[identifier, "NativeId", "Year", "Term", "LA", "Acad/LA"],
-        how="left"
+        how="left",
     )
 
     return pupil
