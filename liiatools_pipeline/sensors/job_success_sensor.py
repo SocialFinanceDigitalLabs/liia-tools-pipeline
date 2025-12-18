@@ -12,8 +12,14 @@ from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.cans_org import cans_summary_columns
 from liiatools_pipeline.jobs.cin_org import cin_reports
+from liiatools_pipeline.jobs.common_la import (
+    clean,
+    concatenate,
+    move_current_la,
+    no_op_job,
+    start_clean_dataset,
+)
 from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
-from liiatools_pipeline.jobs.common_la import clean, concatenate, move_current_la
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
@@ -24,6 +30,10 @@ from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.sensors.location_schedule import (
+    check_la,
+    input_directory_walker,
+)
 
 
 def find_previous_matching_dataset_run(run_records, dataset):
@@ -414,6 +424,76 @@ def cin_reports_sensor(context):
 
 
 @sensor(
+    job=clean,
+    description="Runs clean across dataset",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def full_clean_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=start_clean_dataset.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    if not run_records:
+        context.log.info(f"No previous run records found for start_clean_dataset job")
+        return
+
+    dataset = run_records[0].dagster_run.tags["dataset"]
+    context.log.info(f"Dataset found: {dataset}")
+
+    folder_location = env_config("INPUT_LOCATION")
+    context.log.info(f"Opening folder location: {folder_location}")
+
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+    context.log.info(f"Allowed datasets: {allowed_datasets}")
+
+    if dataset not in allowed_datasets:
+        context.log.info(
+            f"Dataset {dataset} not in allowed datasets, skipping clean sensor"
+        )
+        return
+
+    context.log.info("Analysing folder contents")
+    directory_contents = input_directory_walker(folder_location, context, dataset)
+
+    latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+    context.log.info(f"Run key: {latest_run_id}")
+
+    for la_path, files in directory_contents.items():
+        try:
+            la = check_la(la_path)
+        except ValueError:
+            context.log.error(
+                f"LA code not found in the directory path: {folder_location}/{la_path.split('-')[-1]}/{dataset}"
+            )
+            continue
+
+        clean_config = CleanConfig(
+            dataset_folder=f"{folder_location}/{la_path}/{dataset}",
+            la_folder=f"{folder_location}/{la_path}",
+            input_la_code=la,
+            dataset=dataset,
+        )
+
+        yield RunRequest(
+            run_key=f"{latest_run_id}{la}",
+            tags={"dataset": dataset},
+            run_config=RunConfig(
+                ops={
+                    "create_session_folder": clean_config,
+                    "open_current": clean_config,
+                    "process_files": clean_config,
+                }
+            ),
+        )
+
+@sensor(
     job=cans_summary_columns,
     description="Runs cans_summary_columns job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
@@ -497,3 +577,4 @@ def sc_region_reports_sensor(context):
         yield RunRequest(
             run_key=latest_run_id,
         )
+        
