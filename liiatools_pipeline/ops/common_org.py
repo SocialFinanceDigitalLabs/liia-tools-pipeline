@@ -5,7 +5,7 @@ from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.reference import authorities
-from liiatools.common.transform import apply_retention, prepare_export
+from liiatools.common.transform import apply_retention, prepare_export, degrade_data
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     pipeline_config,
@@ -41,8 +41,8 @@ def move_current_view_org(config: CleanConfig):
         file_name_list = [table.id for table in pipeline_config(config).table_list]
         file_regex = "|".join(file_name_list)
 
-        # Regex to match year and optional month filename format
-        current_files_regex = f"({authority_regex})_\d{{4}}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)?_?({file_regex})"
+        # Regex to match year and optional id and month filename format
+        current_files_regex = f"({authority_regex})_([a-zA-Z0-9]*)_?\d{{4}}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)?_?({file_regex})"
         pl.remove_files(current_files_regex, existing_files, destination_folder)
 
         log.info(f"Moving current {config.dataset} files to destination...")
@@ -109,24 +109,33 @@ def create_reports(
         f"current/{config.dataset}", recreate=True
     )
     log.info("Aggregating Data Frames...")
+    output_config = pipeline_config(config)
     aggregate = DataframeAggregator(
-        session_folder, pipeline_config(config), config.dataset
+        session_folder, output_config, config.dataset
     )
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
-    for report in pipeline_config(config).retention_period.keys():
+    for report in output_config.retention_period.keys():
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
+        
+        # Evaluate whether to degrade report contents
+        degrade_flag = any(not v for v in output_config.degrade_at_clean.values()) and output_config.degrade_at_clean[report]
+        if degrade_flag:
+            log.info(f"Degrading report {report}...")
+            degraded_data = degrade_data(aggregate_data, output_config)
+            aggregate_data = degraded_data.data
+
         report_data = prepare_export(
-            aggregate_data, pipeline_config(config), profile=report
+            aggregate_data, output_config, profile=report
         )
         log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
             report_data,
-            pipeline_config(config),
+            output_config,
             profile=report,
-            year_column=pipeline_config(config).retention_columns["year_column"],
-            la_column=pipeline_config(config).retention_columns["la_column"],
+            year_column=output_config.retention_columns["year_column"],
+            la_column=output_config.retention_columns["la_column"],
         )
 
         existing_report_files = report_folder.listdir("/")
@@ -134,9 +143,11 @@ def create_reports(
         log.info(f"Exporting report {report} to report folder...")
         report_data.export(report_folder, f"{config.dataset}_", "csv")
 
-        existing_shared_files = shared_folder().listdir("/")
-        log.info(f"Exporting report {report} to shared folder...")
-        pl.remove_files(
-            f"{report}_{config.dataset}", existing_shared_files, shared_folder()
-        )
-        report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
+        # Follow permission for sharing to shared folder from config
+        if output_config.reports_to_shared[report]:
+            existing_shared_files = shared_folder().listdir("/")
+            log.info(f"Exporting report {report} to shared folder...")
+            pl.remove_files(
+                f"{report}_{config.dataset}", existing_shared_files, shared_folder()
+            )
+            report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")

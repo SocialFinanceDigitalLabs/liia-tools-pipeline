@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
+from typing import Tuple
 
+from liiatools.common.constants import Term
 from liiatools.common.reference import authorities
 
 
@@ -86,6 +88,60 @@ def check_month(filename):
     raise ValueError
 
 
+def check_term(filename):
+    """
+    Check a filename to see if it contains the term information: Autumn/Spring/Summer, if it does, return that term
+    Expected filename formats:
+        2023_October_acad_addressesonroll.csv
+        addressesoffroll_2023_January_acad.csv
+    :param filename: Filename that contains a term
+    :return: A term within the string
+    :raises ValueError: If no term is found
+    """
+    pattern = rf"(?<![A-Za-z0-9])({Term.OCT.name}|{Term.JAN.name}|{Term.MAY.name})(?![A-Za-z0-9])"
+    match_short = re.search(
+        pattern,
+        filename,
+        re.IGNORECASE,
+    )
+
+    if match_short:
+        return Term[match_short.group(0).upper()].value
+
+    pattern = rf"(?<![A-Za-z0-9])({Term.OCT.value}|{Term.JAN.value}|{Term.MAY.value})(?![A-Za-z0-9])"
+    match_long = re.search(
+        pattern,
+        filename,
+        re.IGNORECASE,
+    )
+
+    if match_long:
+        return match_long.group(0).lower()
+
+    raise ValueError
+
+
+def check_school_type(filename) -> str:
+    """
+    Check a filename to see if it contains a string with school type in it
+    School type must occur with no numbers or digits either side to avoid partial capture in longer words
+    Acceptable filename formats:
+        2025_summer_acad_addressesonroll.csv
+        2024_autumn_la.csv
+    :param filename: Filename that contains a string with school type
+    :return: The string for the school type to be added to metadata
+    :raises ValueError: If no corresponding string is found
+    """
+    pattern = r"(?<![A-Za-z0-9])(acad|la)(?![A-Za-z0-9])"
+
+    match = re.search(pattern, filename, re.IGNORECASE)
+
+    if match:
+        return match.group()
+
+    raise ValueError
+
+
 def check_la(directory):
     """
     Check a directory to see if it contains the three-digit code associated with an LA, if it does, return that code
@@ -153,3 +209,26 @@ def check_la_signature(pipeline_config, report):
             continue
 
     return signed_las
+
+
+def check_identifier(filename):
+    """
+    Check a filename to see if it contains an identifier, if it does, return that identifier
+    Expected identifier formats within string:
+        123456_0_5_2024_jan
+        CANS_123456_0_5_2024_feb
+        123456_6_21_2024_jan
+
+    :param filename: Filename that probably contains an identifier
+    :return: Identifier within the string
+    :raises ValueError: If no identifier is found
+    """
+    match = re.search(
+        r"([[a-zA-Z0-9]*)_\d_\d{1,2}_\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)",
+        filename,
+    )
+    if match:
+        if str.lower(match.group(1)) != "cans":
+            return match.group(1)
+
+    raise ValueError

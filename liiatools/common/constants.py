@@ -43,8 +43,27 @@ class SessionNamesPNWCensusJoins(StrEnum):
 
     INCOMING_FOLDER = "incoming"
 
+class Term(StrEnum):
+    OCT = "autumn"
+    JAN = "spring"
+    MAY = "summer"
 
 class SessionNamesCINReports(StrEnum):
     """Enum for CIN Reports session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesSCCross(StrEnum):
+    """Enum for School Census cross border outputs session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesSCRegion(StrEnum):
+    """Enum for School Census region outputs session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesCANSMapping(StrEnum):
+    """Enum for CANS Mapping session folders."""
 
     INCOMING_FOLDER = "incoming"

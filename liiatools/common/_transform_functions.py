@@ -54,6 +54,14 @@ def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -
     return month_map[metadata["month"]]
 
 
+def add_term(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    return metadata["term"]
+
+
+def add_school_type(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    return metadata["school_type"]
+
+
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
@@ -100,8 +108,10 @@ enrich_functions = {
     "la_name": add_la_name,
     "year": add_year,
     "month": add_month,
+    "term": add_term,
     "integer": to_integer,
     "school_year": add_school_year,
+    "school_type": add_school_type,
     "postcode_la_lookup": add_la_from_postcode
 }
 

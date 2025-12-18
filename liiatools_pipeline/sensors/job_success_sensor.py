@@ -10,6 +10,7 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
+from liiatools_pipeline.jobs.cans_org import cans_summary_columns
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import (
     clean,
@@ -18,6 +19,7 @@ from liiatools_pipeline.jobs.common_la import (
     no_op_job,
     start_clean_dataset,
 )
+from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
@@ -65,6 +67,7 @@ def move_current_la_sensor(context):
     if run_records:  # Ensure there is at least one run record
         context.log.info(f"Run records found for clean job")
         latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+
         context.log.info(f"Run key: {latest_run_id}")
         yield RunRequest(
             run_key=latest_run_id,
@@ -73,7 +76,7 @@ def move_current_la_sensor(context):
 
 @sensor(
     job=concatenate,
-    description="Runs concatenate job once move_current job is complete",
+    description="Runs concatenate job once clean job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
@@ -353,7 +356,7 @@ def deduplicate_annex_a_sensor(context):
 
 @sensor(
     job=pnw_census_joins,
-    description="Runs pnw_census_ssda903_join job once reports job is complete",
+    description="Runs pnw_census_joins job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
@@ -362,14 +365,14 @@ def pnw_census_joins_sensor(context):
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": ["ssda903", "pnw_census"]},
+            tags={"dataset": ["ssda903", "pnw_census", "cans"]},
         ),
         order_by="update_timestamp",
         ascending=False,
         limit=1000,
     )
 
-    # Get the most recent ssda903 & pnw_census run ids
+    # Get the most recent ssda903, CANS & pnw_census run ids
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
         run_records,
         "ssda903",
@@ -378,9 +381,13 @@ def pnw_census_joins_sensor(context):
         run_records,
         "pnw_census",
     )
+    latest_run_id_cans = find_previous_matching_dataset_run(
+        run_records,
+        "cans",
+    )
     # Ensure there is at least one of each record
-    if latest_run_id_ssda903 and latest_run_id_pnw:
-        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}"
+    if (latest_run_id_ssda903 or latest_run_id_cans) and latest_run_id_pnw:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_cans}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
@@ -427,12 +434,12 @@ def full_clean_sensor(context):
         filters=RunsFilter(
             job_name=start_clean_dataset.name,
             statuses=[DagsterRunStatus.SUCCESS],
+
         ),
         order_by="update_timestamp",
         ascending=False,
         limit=1000,
     )
-
     if not run_records:
         context.log.info(f"No previous run records found for start_clean_dataset job")
         return
@@ -485,3 +492,89 @@ def full_clean_sensor(context):
                 }
             ),
         )
+
+@sensor(
+    job=cans_summary_columns,
+    description="Runs cans_summary_columns job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cans_summary_columns_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cans"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for CANS reports job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+
+@sensor(
+    job=school_census_cross,
+    description="Runs school_census_cross job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def sc_cross_reports_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "school_census"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    latest_run_id = find_previous_matching_dataset_run(
+        run_records,
+        "school_census",
+    )  # Get the most recent school census run id
+    if latest_run_id:  # Ensure there is at least one school census run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+@sensor(
+    job=school_census_region,
+    description="Runs school_census_region job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def sc_region_reports_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "school_census"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    latest_run_id = find_previous_matching_dataset_run(
+        run_records,
+        "school_census",
+    )  # Get the most recent school census run id
+    if latest_run_id:  # Ensure there is at least one school census run record
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+        

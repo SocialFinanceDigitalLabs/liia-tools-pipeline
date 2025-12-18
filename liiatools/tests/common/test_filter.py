@@ -1,11 +1,12 @@
+import pytest
 from datetime import datetime
 
 from sfdata_stream_parser import events
 from sfdata_stream_parser.filters import generic
 
-from liiatools.cans_pipeline.spec import load_pipeline_config as cans_config
 from liiatools.cans_pipeline.spec import load_schema as cans_schema
 from liiatools.common import stream_filters
+from liiatools.common.data import ColumnConfig, PipelineConfig, TableConfig
 from liiatools.common.spec.__data_schema import Column
 from liiatools.ssda903_pipeline.spec import load_schema as s903_schema
 
@@ -403,8 +404,40 @@ def test_clean_regex():
 
 
 def test_table_spec_from_filename():
+    def cans_config_test():
+        cans_config_test = PipelineConfig(
+            sensor_trigger={"move_current_org_sensor": True},
+            retention_columns={"year_column": "Year", "la_column": "LA"},
+            retention_period={"PAN": 12},
+            degrade_at_clean={"PAN": True},
+            reports_to_shared={"PAN": False},
+            la_signed={
+                "BAR": "Yes",
+                "CAM": "No",
+            },
+            table_list=[
+                TableConfig(
+                    id="0_5",
+                    sheetname="TCOM UK 0-5 CANS",
+                    columns=[
+                        ColumnConfig(id="id", type="integer", unique_key=True),
+                        ColumnConfig(id="name", type="string"),
+                    ],
+                ),
+                TableConfig(
+                    id="6_21",
+                    sheetname="TCOM UK 6-21 CANS",
+                    columns=[
+                        ColumnConfig(id="id", type="integer", unique_key=True),
+                        ColumnConfig(id="date", type="date"),
+                    ],
+                ),
+            ],
+        )
+        return cans_config_test
+
     schema = cans_schema()
-    output_config = cans_config()
+    output_config = cans_config_test()
 
     assert (
         stream_filters.table_spec_from_filename(
@@ -418,50 +451,25 @@ def test_table_spec_from_filename():
     assert (
         stream_filters.table_spec_from_filename(
             schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
-            output_config=output_config,
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
-            output_config=output_config,
-        )["error_message"]
-        == "Multiple tables matched the filename, file name: 8937598475_0_5_6_21_2025.csv"
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema,
-            filename="8937598475_0_5_6_21_2025.csv",
+            filename="0940569457_0_5_2024.csv",
             output_config=output_config,
         )["sheetname"]
-        is None
+        == "TCOM UK 0-5 CANS"
     )
 
-    assert (
+    with pytest.raises(stream_filters.StreamError, match="Multiple tables matched the filename"):
         stream_filters.table_spec_from_filename(
-            schema=schema, filename="0835708574_2026.csv", output_config=output_config
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema, filename="0835708574_2026.csv", output_config=output_config
-        )["error_message"]
-        == "Failed to identify table based on filename, file name: 0835708574_2026.csv"
-    )
+            schema=schema,
+            filename="8937598475_0_5_6_21_2025.csv",
+            output_config=output_config,
+        )
 
-    assert (
+    with pytest.raises(stream_filters.StreamError, match="Failed to identify table based on filename"):
+        stream_filters.table_spec_from_filename(
+            schema=schema, filename="0835708574_2026.csv", output_config=output_config
+        )
+
+    with pytest.raises(stream_filters.StreamError, match="Failed to identify table based on filename"):
         stream_filters.table_spec_from_filename(
             schema=schema, filename="", output_config=output_config
-        )["table_name"]
-        is None
-    )
-    assert (
-        stream_filters.table_spec_from_filename(
-            schema=schema, filename="", output_config=output_config
-        )["error_message"]
-        == "Failed to identify table based on filename, file name: "
-    )
+        )
