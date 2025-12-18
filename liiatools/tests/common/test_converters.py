@@ -136,7 +136,7 @@ def test_to_short_postcode():
 
 
 def test_to_numeric():
-    assert to_numeric("3000", "integer") == 3000
+    assert to_numeric("3,000", "integer") == 3000
     assert to_numeric(123, "integer") == 123
     assert to_numeric("", "integer") == ""
     assert to_numeric(None, "integer") == ""
@@ -144,7 +144,7 @@ def test_to_numeric():
     assert to_numeric(0, "integer") == 0
 
     assert to_numeric(1.23, "float") == 1.23
-    assert to_numeric("1.23", "float") == 1.23
+    assert to_numeric("1,200,300.23", "float") == 1200300.23
     assert to_numeric("", "float") == ""
     assert to_numeric(None, "float") == ""
     assert to_numeric(0.5, "float", min_value=0, max_value=1) == 0.5

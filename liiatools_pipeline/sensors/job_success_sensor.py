@@ -29,8 +29,8 @@ from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
 from liiatools_pipeline.sensors.location_schedule import (
-    input_directory_walker,
     check_la,
+    input_directory_walker,
 )
 
 
@@ -439,7 +439,7 @@ def full_clean_sensor(context):
 
     dataset = run_records[0].dagster_run.tags["dataset"]
     context.log.info(f"Dataset found: {dataset}")
-    
+
     folder_location = env_config("INPUT_LOCATION")
     context.log.info(f"Opening folder location: {folder_location}")
 
@@ -451,7 +451,6 @@ def full_clean_sensor(context):
             f"Dataset {dataset} not in allowed datasets, skipping clean sensor"
         )
         return
-
 
     context.log.info("Analysing folder contents")
     directory_contents = input_directory_walker(folder_location, context, dataset)
@@ -474,9 +473,9 @@ def full_clean_sensor(context):
             input_la_code=la,
             dataset=dataset,
         )
-        
+
         yield RunRequest(
-            run_key=latest_run_id,
+            run_key=f"{latest_run_id}{la}",
             tags={"dataset": dataset},
             run_config=RunConfig(
                 ops={
@@ -486,4 +485,3 @@ def full_clean_sensor(context):
                 }
             ),
         )
-
