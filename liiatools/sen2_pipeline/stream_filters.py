@@ -49,12 +49,6 @@ def add_column_spec(event, schema_path: Path):
         if config_type in {"uniquelearnernumbertype","urntype", "ukprntype"}:
             column_spec.string = "regex"
             column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
-#        if config_type in ["urntype"]:
-#            column_spec.string = "regex"
-#            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
-#        if config_type in ["ukprntype"]:
-#            column_spec.string = "regex"
-#            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
         if config_type in [
             "{http://www.w3.org/2001/XMLSchema}integer",
             "{http://www.w3.org/2001/XMLSchema}gYear",
