@@ -46,15 +46,15 @@ def add_column_spec(event, schema_path: Path):
             column_spec.date = "%Y-%m-%d"
         if config_type == "{http://www.w3.org/2001/XMLSchema}dateTime":
             column_spec.date = "%Y-%m-%dT%H:%M:%S"
-        if config_type in ["uniquelearnernumbertype"]:
+        if config_type in {"uniquelearnernumbertype","urntype", "ukprntype"}:
             column_spec.string = "regex"
             column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
-        if config_type in ["urntype"]:
-            column_spec.string = "regex"
-            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
-        if config_type in ["ukprntype"]:
-            column_spec.string = "regex"
-            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
+#        if config_type in ["urntype"]:
+#            column_spec.string = "regex"
+#            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
+#        if config_type in ["ukprntype"]:
+#            column_spec.string = "regex"
+#            column_spec.cell_regex = _create_regex_spec(config_type, schema_path)
         if config_type in [
             "{http://www.w3.org/2001/XMLSchema}integer",
             "{http://www.w3.org/2001/XMLSchema}gYear",
