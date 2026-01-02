@@ -1,3 +1,6 @@
+<!-- Need to inc ceased plans - is it separate or sit in NamedPlans which isn't in my version below? -->
+<!-- May need to add ActivePlans - TB expects this to be in NamedPlans -->
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
@@ -51,6 +54,7 @@
         </xs:simpleType>
       </xs:element>
       <xs:element name="DateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+      <!-- Remove DMO and DCO below since in module 6? -->
       <xs:element name="DMO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
       <xs:element name="DCO" type="yesnorecruittype" minOccurs="1" maxOccurs="1"/>
     </xs:sequence>
@@ -201,6 +205,7 @@
 </xs:sequence>
 </xs:complexType>
 
+<!-- Check ceased plans bit - is it needed? -->
 <!-- Module 5: Ceased plans -->
 <xs:complexType name="ceasedplanstype">
 <xs:sequence>
@@ -214,6 +219,7 @@
 </xs:sequence>
 </xs:complexType>
 
+<!-- Does this module need removing if DMO/DCO bit is further up in header section? -->
 <!-- Module 6: LA details -->
 <xs:complexType name="ladetailstype">
 <xs:sequence>
