@@ -6,8 +6,9 @@ value as the correct type / with correct format if it is.
 import logging
 import math
 import re
-import pandas as pd
 from datetime import date, datetime
+
+import pandas as pd
 
 from .spec.__data_schema import Column
 
@@ -27,7 +28,11 @@ def allow_blank(func):
     """
 
     def wrapper(value, *args, allow_blank=True, **kwargs):
-        is_blank = value is None or (isinstance(value, str) and value.strip() == "")
+        is_blank = (
+            value is None
+            or (isinstance(value, str) and value.strip() == "")
+            or pd.isna(value)
+        )
         if is_blank:
             if allow_blank:
                 return ""
