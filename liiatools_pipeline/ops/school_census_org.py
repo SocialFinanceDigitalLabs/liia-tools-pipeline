@@ -294,7 +294,7 @@ def school_census_region_outputs(
     log.info("Checking necessary files are present...")
     address_pattern = re.compile(r"addresses")
     fsm_pattern = re.compile(r"fsm")
-    pupil_pattern = re.compile(r"pupil")
+    pupil_pattern = re.compile(r"pupilonroll")
     exclusions_pattern = re.compile(r"exclusions")
     session_pattern = re.compile(r"termlysession")
 
@@ -409,45 +409,48 @@ def school_census_region_outputs(
 
     # Off roll tables
     # Make demographics output
-    pupil_off = open_file(session_folder, "school_census_pupilnolongeronroll.csv")
-    addresses_off = None
-    if "school_census_addressesoffroll.csv" in files:
-        addresses_off = open_file(session_folder, "school_census_addressesoffroll.csv")
+    if "school_census_pupilnolongeronroll.csv" in files:
+        pupil_off = open_file(session_folder, "school_census_pupilnolongeronroll.csv")
+        addresses_off = None
+        if "school_census_addressesoffroll.csv" in files:
+            addresses_off = open_file(
+                session_folder, "school_census_addressesoffroll.csv"
+            )
 
-    fsm_off = None
-    sen_off = None
+        fsm_off = None
+        sen_off = None
 
-    # Create demographics output if addresses exists
-    if addresses_off is not None:
-        demographics_off = create_demographics_output(
-            pupil_off, "pupilnolongeronrolltableid", addresses_off, fsm_off, sen_off
+        # Create demographics output if addresses exists
+        if addresses_off is not None:
+            demographics_off = create_demographics_output(
+                pupil_off, "pupilnolongeronrolltableid", addresses_off, fsm_off, sen_off
+            )
+            outputs["REGION_offroll_children"] = demographics_off
+        else:
+            outputs["REGION_offroll_children"] = pupil_off
+
+        # Create sessions outputs
+        pupil_off_termly_sessions = pupil_off[
+            [
+                "pupilnolongeronrolltableid",
+                "NativeId",
+                "termlysessionspossible",
+                "LA",
+                "Year",
+                "Term",
+                "Acad/LA",
+            ]
+        ].copy()
+        termly_sessions_off = open_file(
+            session_folder, "school_census_termlysessiondetailsoffroll.csv"
         )
-        outputs["REGION_offroll_children"] = demographics_off
-    else:
-        outputs["REGION_offroll_children"] = pupil_off
-
-    # Create sessions outputs
-    pupil_off_termly_sessions = pupil_off[
-        [
-            "pupilnolongeronrolltableid",
-            "NativeId",
-            "termlysessionspossible",
-            "LA",
-            "Year",
-            "Term",
-            "Acad/LA",
-        ]
-    ].copy()
-    termly_sessions_off = open_file(
-        session_folder, "school_census_termlysessiondetailsoffroll.csv"
-    )
-    termly_sessions_off = create_sessions_output(
-        pupil=pupil_off_termly_sessions,
-        identifier="pupilnolongeronrolltableid",
-        session_identifier="termlysessionspossible",
-        sessions=termly_sessions_off,
-    )
-    outputs["REGION_offroll_termly_attendance"] = termly_sessions_off
+        termly_sessions_off = create_sessions_output(
+            pupil=pupil_off_termly_sessions,
+            identifier="pupilnolongeronrolltableid",
+            session_identifier="termlysessionspossible",
+            sessions=termly_sessions_off,
+        )
+        outputs["REGION_offroll_termly_attendance"] = termly_sessions_off
 
     if "school_census_summerhalfterm2sessiondetailsoffroll.csv" in files:
         pupil_off_summer_sessions = pupil_off[
