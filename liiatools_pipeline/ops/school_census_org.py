@@ -235,6 +235,7 @@ def school_census_cross_outputs(
     for key, df in outputs.items():
         # Filter the dfs to rows with different GIAS codes
         df = df[df["child_home_GIAS"].notna()]
+        df = df[df["NativeId"].notna()]
         df["child_home_GIAS"] = df["child_home_GIAS"].astype(int).astype(str)
         before_count = len(df)
         filtered = df[
