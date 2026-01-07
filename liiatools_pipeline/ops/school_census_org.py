@@ -452,34 +452,37 @@ def school_census_region_outputs(
         )
         outputs["REGION_offroll_termly_attendance"] = termly_sessions_off
 
-    if "school_census_summerhalfterm2sessiondetailsoffroll.csv" in files:
-        pupil_off_summer_sessions = pupil_off[
-            [
-                "pupilnolongeronrolltableid",
-                "NativeId",
-                "summerhalfterm2sessionspossible",
-                "LA",
-                "Year",
-                "Term",
-                "Acad/LA",
-            ]
-        ].copy()
-        summer_sessions_off = open_file(
-            session_folder, "school_census_summerhalfterm2sessiondetailsoffroll.csv"
-        )
-        summer_sessions_off = create_sessions_output(
-            pupil=pupil_off_summer_sessions,
-            identifier="pupilnolongeronrolltableid",
-            session_identifier="summerhalfterm2sessionspossible",
-            sessions=summer_sessions_off,
-        )
-        outputs["REGION_offroll_summer_attendance"] = summer_sessions_off
+        if "school_census_summerhalfterm2sessiondetailsoffroll.csv" in files:
+            pupil_off_summer_sessions = pupil_off[
+                [
+                    "pupilnolongeronrolltableid",
+                    "NativeId",
+                    "summerhalfterm2sessionspossible",
+                    "LA",
+                    "Year",
+                    "Term",
+                    "Acad/LA",
+                ]
+            ].copy()
+            summer_sessions_off = open_file(
+                session_folder, "school_census_summerhalfterm2sessiondetailsoffroll.csv"
+            )
+            summer_sessions_off = create_sessions_output(
+                pupil=pupil_off_summer_sessions,
+                identifier="pupilnolongeronrolltableid",
+                session_identifier="summerhalfterm2sessionspossible",
+                sessions=summer_sessions_off,
+            )
+            outputs["REGION_offroll_summer_attendance"] = summer_sessions_off
 
-    # Create exclusions output
-    exclusions_off = open_file(
-        session_folder, "school_census_termlyexclusionsoffroll.csv"
-    )
-    outputs["REGION_offroll_exclusions"] = exclusions_off
+        # Create exclusions output
+        exclusions_off = open_file(
+            session_folder, "school_census_termlyexclusionsoffroll.csv"
+        )
+        outputs["REGION_offroll_exclusions"] = exclusions_off
+
+    else:
+        log.info("No pupilnolongeronroll file found; skipping off roll outputs")
 
     # Export outputs
     region_dc = DataContainer(outputs)
