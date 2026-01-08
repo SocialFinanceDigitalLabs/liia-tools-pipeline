@@ -137,7 +137,7 @@ def check_school_type(filename) -> str:
     match = re.search(pattern, filename, re.IGNORECASE)
 
     if match:
-        return match.group()
+        return match.group().lower()
 
     raise ValueError
 
