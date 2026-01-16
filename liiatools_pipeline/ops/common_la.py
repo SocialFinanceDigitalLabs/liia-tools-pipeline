@@ -18,6 +18,10 @@ from liiatools.cin_census_pipeline.spec import load_schema as load_schema_cin
 from liiatools.cin_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_cin,
 )
+from liiatools.sen2_pipeline.spec import load_schema as load_schema_sen2 
+from liiatools.sen2_pipeline.stream_pipeline import ( 
+    task_cleanfile as task_cleanfile_sen2, 
+) 
 from liiatools.common import pipeline as pl
 from liiatools.common.archive import DataframeArchive
 from liiatools.common.checks import check_year_within_range
