@@ -6,7 +6,7 @@ from dagster import get_dagster_logger
 from sfdata_stream_parser.filters import generic
 from xmlschema import XMLSchema
 
-from liiatools.cin_census_pipeline import stream_record
+from liiatools.sen2_pipeline import stream_record
 from liiatools.common import stream_filters as stream_functions
 from liiatools.common.data import (
     DataContainer,
