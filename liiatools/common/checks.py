@@ -92,14 +92,15 @@ def check_term(filename):
     """
     Check a filename to see if it contains the term information: Autumn/Spring/Summer, if it does, return that term
     Expected filename formats:
-        October_2023_addressesonroll.csv
-        January_2023_addressesoffroll.csv
+        2023_October_acad_addressesonroll.csv
+        addressesoffroll_2023_January_acad.csv
     :param filename: Filename that contains a term
     :return: A term within the string
     :raises ValueError: If no term is found
     """
+    pattern = rf"(?<![A-Za-z0-9])({Term.OCT.name}|{Term.JAN.name}|{Term.MAY.name})(?![A-Za-z0-9])"
     match_short = re.search(
-        f"{Term.OCT.name}|{Term.JAN.name}|{Term.MAY.name}",
+        pattern,
         filename,
         re.IGNORECASE,
     )
@@ -107,8 +108,9 @@ def check_term(filename):
     if match_short:
         return Term[match_short.group(0).upper()].value
 
+    pattern = rf"(?<![A-Za-z0-9])({Term.OCT.value}|{Term.JAN.value}|{Term.MAY.value})(?![A-Za-z0-9])"
     match_long = re.search(
-        f"{Term.OCT.value}|{Term.JAN.value}|{Term.MAY.value}",
+        pattern,
         filename,
         re.IGNORECASE,
     )
@@ -130,12 +132,12 @@ def check_school_type(filename) -> str:
     :return: The string for the school type to be added to metadata
     :raises ValueError: If no corresponding string is found
     """
-    pattern = r'(?<![A-Za-z0-9])(acad|la)(?![A-Za-z0-9])'
+    pattern = r"(?<![A-Za-z0-9])(acad|la)(?![A-Za-z0-9])"
 
     match = re.search(pattern, filename, re.IGNORECASE)
 
     if match:
-        return match.group()
+        return match.group().lower()
 
     raise ValueError
 
@@ -221,7 +223,10 @@ def check_identifier(filename):
     :return: Identifier within the string
     :raises ValueError: If no identifier is found
     """
-    match = re.search(r"([[a-zA-Z0-9]*)_\d_\d{1,2}_\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)", filename)
+    match = re.search(
+        r"([[a-zA-Z0-9]*)_\d_\d{1,2}_\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)",
+        filename,
+    )
     if match:
         if str.lower(match.group(1)) != "cans":
             return match.group(1)
