@@ -18,6 +18,17 @@ column_map.pnw_census.Establishment registration URN:
     canbeblank: true
     header_regex:
       - /.*establishment registration URN.*/i
+column_map.pnw_census:
+  type: remove
+  description: Remove columns from pnw_census
+  value:
+    - Establishment
+column_map.pnw_census.Establishment:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: False
 column_map.pnw_census.Primary Placing at Distance Reason:
   type: add
   description: Adds new column for pnw_census
