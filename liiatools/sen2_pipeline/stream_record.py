@@ -41,35 +41,35 @@ class AssessmentEvent(events.ParseEvent):
 class NamedPlanEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "named_plan"
+        return "NamedPlan"
 
     pass
 
 class PlanDetailEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "plan_detail"
+        return "PlanDetail"
 
     pass
 
 class ActivePlansEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "active_plan"
+        return "ActivePlans"
 
     pass
 
 class PlacementDetailEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "placement_detail"
+        return "PlacementDetail"
 
     pass
 
 class SENneedEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "sen_need"
+        return "SENneed"
 
     pass
 
