@@ -1,0 +1,146 @@
+column_map.pnw_census.Looked after child?.category:
+  type: modify
+  description: Updated Looked after child? codes for 2025 schema
+  value:
+    - code: "Looked after child (under 18)"
+    - code: "Post 18 (CSC placement)"
+
+column_map.pnw_census.How the placement was sourced.category:
+  type: modify
+  description: Updated How the placement was sourced codes for 2025 schema
+  value:
+    - code: "NW Contract - Supported Accommodation DPS or previous"
+    - code: "NW Contract - Residential FPS or previous"
+    - code: "NW Contract - Fostering FPS or previous"
+    - code: "NW Contract - SEND FPS"
+    - code: "Sub Regional Contract - LCR PPA"
+    - code: "Sub Regional Contract - Other"
+    - code: "Direct Award / Off Framework"
+    - code: "Local Contract or Framework"
+    - code: "Block Contract - Local"
+    - code: "Block Contract - Collaborative"
+    - code: "GM RCC Flexi Block"
+    - code: "Remand"
+    - code: "Secure Welfare Hub"
+
+column_map.pnw_census:
+  type: remove
+  description: Remove columns from pnw_census
+  value:
+    - Registration type
+    - Primary Placing at Distance Reason
+    - Host Authority
+    - SEND
+    - Primary SEND category
+    - Primary SEND need 
+
+column_map.pnw_census.Primary registration type:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*registration type.*/i
+    category:
+    - code: "Ofsted"
+    - code: "CQC only"
+    - code: "Unregistered"
+    - code: "Care Inspectorate Scotland"
+    - code: "Care Inspectorate Wales"
+    canbeblank: False
+
+column_map.pnw_census.Placing at Distance Reason:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*placing at distance reason.*/i
+    category:
+    - code: "CYP/Parental preference"
+    - code: "Safeguarding requirement"
+    - code: "Provision within distance exists but is not available"
+    - code: "Provision within distance does not exist"
+    - code: "Carer moving out of area"
+    - code: "Legal reasons"
+    - code: "Not applicable"
+    canbeblank: True
+
+column_map.pnw_census.Type of provision.category:
+  type: modify
+  description: Updated Type of provision codes for 2025 schema
+  value:
+    - code: "Fostering - Mainstream"
+    - code: "Fostering - Enhanced"
+    - code: "Fostering - Parent and child"
+    - code: "Fostering - Short breaks"
+    - code: "Residential - Mainstream"
+    - code: "Residential - With Education"
+    - code: "Residential - Parent and Child"
+    - code: "Residential - 38 week Residential School/College"
+    - code: "Residential - 52 week Residential School/College"
+    - code: "Supported Accommodation - Category 1: Self contained solo accommodation "
+    - code: "Supported Accommodation - Category 2: Shared or group living for LAC and care leavers"
+    - code: "Supported Accommodation - Category 3: Shared or group living not limited to LAC or care leavers"
+    - code: "Supported Accommodation - Category 4: Supported Lodgings"
+    - code: "Secure Welfare"
+    - code: "Student accommodation"
+    - code: "Unregistered (where it should be registered)"
+    - code: "Youth Offending Institution"
+    - code: "Remand"
+    - code: "CQC"
+
+column_map.pnw_census.Provider ID:
+  type: rename
+  description: Rename column in pnw_census
+  value:
+    Provider Ofsted (or equivalent) URN
+
+column_map.pnw_census.Establishment registration URN:
+  type: rename
+  description: Rename column in pnw_census
+  value:
+    Establishment URN
+
+column_map.pnw_census.Provider Company number:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*provider company number.*/i
+    string: "alphanumeric"
+    canbeblank: False
+
+column_map.pnw_census.Does this placement cost include additional packages?:
+  type: add 
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*does this placement cost include additional packages.*/i
+    category:
+    - code: "Yes"
+    - code: "No"
+    canbeblank: False
+
+column_map.pnw_census.Deprivation of Liberty Safeguards in place?:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*deprivation of liberty safeguards in place.*/i
+    category:
+    - code: "DoLS (current)"
+    - code: "DoLS (previous)"
+    - code: "No"
+    canbeblank: False
+
+column_map.pnw_census.Does this CYP require a solo placement?:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    header_regex: 
+        - /.*does this cyp require a solo placement.*/i
+    category:
+    - code: "Yes, and is in a solo placement"
+    - code: "Yes, but is not in a solo placement"
+    - code: "No, but is in a solo placement"
+    - code: "No, and is not in a solo placement"
+    canbeblank: False
