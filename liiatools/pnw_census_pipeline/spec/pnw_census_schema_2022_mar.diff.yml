@@ -17,7 +17,7 @@ column_map.pnw_census.Establishment registration URN:
     string: "alphanumeric"
     canbeblank: true
     header_regex:
-      - /.*establishment registration URN.*/i
+      - /.*establishment URN.*/i
 column_map.pnw_census:
   type: remove
   description: Remove columns from pnw_census

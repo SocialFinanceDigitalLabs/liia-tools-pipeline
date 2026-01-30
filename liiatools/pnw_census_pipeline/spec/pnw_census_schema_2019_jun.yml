@@ -35,7 +35,7 @@ column_map:
           min_value: 0
           age: True
         header_regex:
-          - /.*age.*/i
+          - /age.*/i
       Gender:
         header_regex:
           - /.*gender.*/i
