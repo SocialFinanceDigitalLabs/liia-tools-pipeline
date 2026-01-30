@@ -24,6 +24,8 @@ column_map.pnw_census.Ethnic Group:
       - code: "Any other ethnic group (Other ethnic group)"
       - code: "Unknown"
     canbeblank: False
+    header_regex:
+      - /.*ethnic.*/i
 column_map.pnw_census.Placement start date:
   type: add
   description: Adds new column for pnw_census

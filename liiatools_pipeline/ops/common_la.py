@@ -235,9 +235,11 @@ def process_files(
             try:
                 schema = (
                     globals()[f"load_schema_{config.dataset}"]()
-                    if config.dataset in ["annex_a", "pnw_census", "cans"]
+                    if config.dataset in ["annex_a", "cans"]
                     else globals()[f"load_schema_{config.dataset}"](year, term)
                     if config.dataset == "school_census"
+                    else globals()[f"load_schema_{config.dataset}"](year, month)
+                    if config.dataset == "pnw_census"
                     else globals()[f"load_schema_{config.dataset}"](year)
                 )
             except KeyError:
