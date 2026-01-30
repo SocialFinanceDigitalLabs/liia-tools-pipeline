@@ -1,0 +1,16 @@
+column_map.pnw_census.Primary SEND category:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: true
+    header_regex:
+      - /.*send category.*/i
+column_map.pnw_census.Primary SEND need:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: true
+    header_regex:
+      - /.*send need.*/i

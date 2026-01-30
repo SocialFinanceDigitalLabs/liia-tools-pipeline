@@ -1,0 +1,51 @@
+column_map.pnw_census.Registration type:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    category:
+      - code: "Ofsted"
+      - code: "CQC"
+      - code: "Unregistered"
+      - code: "Care Inspectorate Scotland"
+      - code: "Care Inspectorate Wales"
+      - code: "Unknown"
+    canbeblank: False
+column_map.pnw_census.Establishment registration URN:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: true
+    header_regex:
+      - /.*establishment URN.*/i
+column_map.pnw_census:
+  type: remove
+  description: Remove columns from pnw_census
+  value:
+    - Establishment
+column_map.pnw_census.Establishment:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: False
+column_map.pnw_census.Primary Placing at Distance Reason:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    category:
+      - code: Placement available locally but provider refused due to need
+      - code: Placement available locally but provider refused due to matching
+      - code: Requirement for DOLS or LPS placement
+      - code: Requirement for specialist SEND provision
+      - code: Requirement for other specialist provision
+      - code: Requirement to place quickly
+      - code: Requirement to place at distance (eg CSE/CCE/Parental choice/move to near family or support)
+      - code: No placement available locally
+      - code: Other (please specify)
+      - code: Unknown
+      - code: Not applicable
+      - code: N/A
+    canbeblank: True
+    header_regex:
+      - /.*placing at distance reason.*/i

@@ -35,7 +35,7 @@ column_map:
           min_value: 0
           age: True
         header_regex:
-          - /.*age.*/i
+          - /age.*/i
       Gender:
         header_regex:
           - /.*gender.*/i
@@ -53,31 +53,6 @@ column_map:
           - code: "Non-binary"
           - code: "Other"
         canbeblank: False
-      Ethnic Group:
-        category:
-          - code: "Indian (Asian or Asian British)"
-          - code: "Pakistani (Asian or Asian British)"
-          - code: "Bangladeshi (Asian or Asian British)"
-          - code: "Chinese (Asian or Asian British)"
-          - code: "Any other Asian background (Asian or Asian British)"
-          - code: "Caribbean (Black, Black British, Caribbean or African)"
-          - code: "African (Black, Black British, Caribbean or African)"
-          - code: "Any other Black, Black British, African or Caribbean background (Black, Black British, Caribbean or African)"
-          - code: "White and Black Caribbean (Mixed or multiple ethnic groups)"
-          - code: "White and Black African (Mixed or multiple ethnic groups)"
-          - code: "White and Asian (Mixed or multiple ethnic groups)"
-          - code: "Any other Mixed or multiple ethnic background (Mixed or multiple ethnic groups)"
-          - code: "English, Welsh, Scottish, Northern Irish or British (White)"
-          - code: "Irish (White)"
-          - code: "Gypsy or Irish Traveller (White)"
-          - code: "Roma (White)"
-          - code: "Any other White background (White)"
-          - code: "Arab (Other ethnic group)"
-          - code: "Any other ethnic group (Other ethnic group)"
-          - code: "Unknown"
-        canbeblank: False
-        header_regex:
-          - /.*ethnic.*/i
       How the placement was sourced:
         category:
           - code: "NW Contract - SaILS DPS or previous"
@@ -94,11 +69,6 @@ column_map:
         canbeblank: False
         header_regex:
           - /.*placement was sourced.*/i
-      Placement start date:
-        date: "%d/%m/%Y"
-        canbeblank: False
-        header_regex:
-          - /.*placement start.*/i
       Organisation:
         string: "alphanumeric"
         canbeblank: False
@@ -112,20 +82,6 @@ column_map:
         canbeblank: False
         header_regex:
           - /\bestablishment\b(?!\s+registration\s+URN)/i
-      Registration type:
-        category:
-          - code: "Ofsted"
-          - code: "CQC"
-          - code: "Unregistered"
-          - code: "Care Inspectorate Scotland"
-          - code: "Care Inspectorate Wales"
-          - code: "Unknown"
-        canbeblank: False
-      Establishment registration URN:
-        string: "alphanumeric"
-        canbeblank: true
-        header_regex:
-          - /.*establishment registration URN.*/i
       Host Authority:
         category:
           - code: Barking and Dagenham
@@ -518,23 +474,6 @@ column_map:
         canbeblank: False
         header_regex:
           - /.*host authority.*/i
-      Primary Placing at Distance Reason:
-        category:
-          - code: Placement available locally but provider refused due to need
-          - code: Placement available locally but provider refused due to matching
-          - code: Requirement for DOLS or LPS placement
-          - code: Requirement for specialist SEND provision
-          - code: Requirement for other specialist provision
-          - code: Requirement to place quickly
-          - code: Requirement to place at distance (eg CSE/CCE/Parental choice/move to near family or support)
-          - code: No placement available locally
-          - code: Other (please specify)
-          - code: Unknown
-          - code: Not applicable
-          - code: N/A
-        canbeblank: True
-        header_regex:
-          - /.*placing at distance reason.*/i
       Type of provision:
         category:
           - code: "Fostering - Independent Foster Care (IFA)"
@@ -631,18 +570,3 @@ column_map:
         canbeblank: False
         header_regex:
           - /.*health.*/i
-      SEND:
-        string: "alphanumeric"
-        canbeblank: true
-        header_regex:
-          - /^send\b.*/i
-      Primary SEND category:
-        string: "alphanumeric"
-        canbeblank: true
-        header_regex:
-          - /.*send category.*/i
-      Primary SEND need:
-        string: "alphanumeric"
-        canbeblank: true
-        header_regex:
-          - /.*send need.*/i
