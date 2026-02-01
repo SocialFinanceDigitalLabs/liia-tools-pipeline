@@ -215,7 +215,7 @@
       <!-- Item 5.7c(i) in guide for LAs -->
       <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSettingOther" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7d in guide for LAs -->
       <!-- Item 5.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
@@ -283,7 +283,7 @@
       <!-- Item 5.7c(i) in guide for LAs -->
       <!-- Item 5.7c(i) - Please note guide for LAs says "Where 5.5c is ‘Not in education – other’ please provide further information, e.g.,permanently excluded." - Should this be another simpletype??-->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
-      <xs:element name="SENSettingOther" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="SENSettingOther" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <!-- Item 4.7d in guide for LAs -->
       <!-- Item 5.7d in guide for LAs -->
       <!-- Guide for LAs mentions only completing one of 4.7a to 4.7c. Item 4.7d (Placement rank) should also be completed -->
