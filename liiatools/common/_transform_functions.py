@@ -119,7 +119,10 @@ enrich_functions = {
 def degrade_to_first_of_month(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str:
-    return to_nth_of_month(row[column_config.id], 1)
+    val = to_nth_of_month(row[column_config.id], 1)
+    if val == "":
+        return pd.NaT
+    return val
 
 
 def degrade_to_short_postcode(
