@@ -42,7 +42,7 @@ dagster-postgres = "^0.22.11"
 alembic = "^1.13.1"
 python-dateutil = "^2.9.0.post0"
 chardet = "^5.2.0"
-liia-tools-pipeline-config = {git = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"}
+liia-tools-pipeline-config = {git = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git", rev = "9b983a283d3c0bef05efe4d80005ade30f7667a5"}
 pre-commit = "^4.2.0"
 pyarrow = "^21.0.0"
 
