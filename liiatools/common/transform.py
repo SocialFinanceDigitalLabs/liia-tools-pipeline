@@ -110,7 +110,7 @@ def data_transforms(
                             type="InvalidMandatoryField",
                             message=f"Row {r_ix} removed due to invalid mandatory field",
                             table_name=table_config.id,
-                            r_ix=r_ix,
+                            row_number=r_ix,
                         )
                     )
     except Exception as e:

@@ -55,7 +55,16 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int, month: str | None, term: str | None, school_type: str | None, identifier: str | None):
+    def add(
+        self,
+        data: DataContainer,
+        la_code: str,
+        year: int,
+        month: str | None,
+        term: str | None,
+        school_type: str | None,
+        identifier: str | None,
+    ):
         """
         Add a new snapshot to the archive.
         """
@@ -64,7 +73,15 @@ class DataframeArchive:
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 self._add_table(
-                    la_dir, la_code, year, month, term, school_type, identifier, table_spec, data[table_spec.id]
+                    la_dir,
+                    la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                    table_spec,
+                    data[table_spec.id],
                 )
 
     def _add_table(
@@ -74,7 +91,7 @@ class DataframeArchive:
         year: int,
         month: str | None,
         term: str | None,
-        school_type: str | None, 
+        school_type: str | None,
         identifier: str | None,
         table_spec: TableConfig,
         df: pd.DataFrame,
@@ -235,7 +252,7 @@ class DataframeArchive:
                             dict(
                                 type="DuplicateRemoval",
                                 message=f"Row {index + 2} removed as it was a duplicate",
-                                r_ix=index + 2,
+                                row_number=index + 2,
                                 table_name=table_spec.id,
                             )
                         )
