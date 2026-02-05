@@ -94,8 +94,8 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # tablib rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.headers[c_ix],
                 cell=cell,
             )
@@ -115,8 +115,8 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
                 if np.isnan(cell):
                     cell = ""
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # pandas rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
@@ -483,8 +483,8 @@ def collect_errors(stream):
                     event,
                     error_entry,
                     "filename",
-                    "r_ix",
-                    "c_ix",
+                    "row_number",
+                    "column_number",
                     "table_name",
                     "header",
                     "xml_row",
