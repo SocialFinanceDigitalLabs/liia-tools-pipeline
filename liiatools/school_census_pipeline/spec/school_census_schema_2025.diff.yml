@@ -134,6 +134,8 @@ spring:
       - code: "Y7"
       - code: "Z"
       - code: "#"
+      - code: "H" # London request to allow outdated code
+      - code: "J" # London request to allow outdated code
       canbeblank: yes
   column_map.termlysessiondetailsonroll.attendancereason:
     type: modify
