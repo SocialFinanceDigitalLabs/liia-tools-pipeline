@@ -100,7 +100,11 @@ def create_sessions_output(
         columns="attendancereason",
         values="sessions",
     )
-    sessions = sessions.rename(columns=lambda x: f"attendancereason {x}").reset_index()
+    sessions = sessions.rename(
+        columns=lambda x: "attendancereason BLANK"
+        if pd.isna(x) or x == ""
+        else f"attendancereason {x}"
+    ).reset_index()
 
     # Join to pupil table
     pupil = pupil.merge(
