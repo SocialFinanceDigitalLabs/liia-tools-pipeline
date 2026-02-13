@@ -54,7 +54,7 @@ def add_column_spec(event, schema_path: Path):
             "{http://www.w3.org/2001/XMLSchema}gYear",
         ]:
             column_spec.numeric = Numeric(type="integer")
-        if config_type == "{http://www.w3.org/2001/XMLSchema}string":
+        if config_type in {"{http://www.w3.org/2001/XMLSchema}string","nonEmptyString"}:
             column_spec.string = "alphanumeric"
     else:
         column_spec.string = "alphanumeric"

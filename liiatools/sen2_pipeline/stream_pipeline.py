@@ -65,7 +65,7 @@ def task_cleanfile(
         log.info("Stream errors collected")
         stream = stream_record.message_collector(stream)
         log.info("Stream messages collected")
-        dataset_holder, stream = stream_record.export_table(stream)
+        dataset_holder, stream = stream_record.export_table(stream, output_config)
         log.info("Stream dataset exported")
 
 
