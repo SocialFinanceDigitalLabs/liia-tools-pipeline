@@ -1,3 +1,7 @@
+import os
+import time
+
+import psutil
 from dagster import In, Out, get_dagster_logger, op
 from fs.base import FS
 
@@ -5,7 +9,7 @@ from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.reference import authorities
-from liiatools.common.transform import apply_retention, prepare_export, degrade_data
+from liiatools.common.transform import apply_retention, degrade_data, prepare_export
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     pipeline_config,
@@ -14,6 +18,8 @@ from liiatools_pipeline.assets.common import (
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
 from liiatools_pipeline.util.utility import opendir_location
+
+p = psutil.Process(os.getpid())
 
 log = get_dagster_logger()
 
@@ -104,31 +110,38 @@ def create_reports(
     session_folder: FS,
     config: CleanConfig,
 ):
+    def snap(msg):
+        rss = p.memory_info().rss / (1024**2)
+        log.info(f"[create_reports] {msg} | rss_mb={rss:.1f}")
+
+    snap("start")
     log.info("Creating Export Directories...")
     export_folder = workspace_folder().makedirs(
         f"current/{config.dataset}", recreate=True
     )
+    snap("loading input")
     log.info("Aggregating Data Frames...")
     output_config = pipeline_config(config)
-    aggregate = DataframeAggregator(
-        session_folder, output_config, config.dataset
-    )
+    aggregate = DataframeAggregator(session_folder, output_config, config.dataset)
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
     for report in output_config.retention_period.keys():
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
-        
+        snap(f"processing report {report}")
         # Evaluate whether to degrade report contents
-        degrade_flag = any(not v for v in output_config.degrade_at_clean.values()) and output_config.degrade_at_clean[report]
+        degrade_flag = (
+            any(not v for v in output_config.degrade_at_clean.values())
+            and output_config.degrade_at_clean[report]
+        )
         if degrade_flag:
+            snap(f"degrading report {report}")
             log.info(f"Degrading report {report}...")
             degraded_data = degrade_data(aggregate_data, output_config)
             aggregate_data = degraded_data.data
 
-        report_data = prepare_export(
-            aggregate_data, output_config, profile=report
-        )
+        report_data = prepare_export(aggregate_data, output_config, profile=report)
+        snap(f"applying retention for report {report}")
         log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
             report_data,
@@ -140,12 +153,14 @@ def create_reports(
 
         existing_report_files = report_folder.listdir("/")
         pl.remove_files(f"{config.dataset}", existing_report_files, report_folder)
+        snap(f"exporting report {report}")
         log.info(f"Exporting report {report} to report folder...")
         report_data.export(report_folder, f"{config.dataset}_", "csv")
 
         # Follow permission for sharing to shared folder from config
         if output_config.reports_to_shared[report]:
             existing_shared_files = shared_folder().listdir("/")
+            snap(f"exporting report {report} to shared folder")
             log.info(f"Exporting report {report} to shared folder...")
             pl.remove_files(
                 f"{report}_{config.dataset}", existing_shared_files, shared_folder()
