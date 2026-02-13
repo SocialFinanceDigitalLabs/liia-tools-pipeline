@@ -156,6 +156,7 @@ def create_reports(
         snap(f"exporting report {report}")
         log.info(f"Exporting report {report} to report folder...")
         report_data.export(report_folder, f"{config.dataset}_", "csv")
+        snap(f"export complete {report}")
 
         # Follow permission for sharing to shared folder from config
         if output_config.reports_to_shared[report]:
@@ -166,4 +167,4 @@ def create_reports(
                 f"{report}_{config.dataset}", existing_shared_files, shared_folder()
             )
             report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
-            snap(f"export complete {report}")
+            snap(f"export to shared complete {report}")
