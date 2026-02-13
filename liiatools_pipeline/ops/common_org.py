@@ -19,8 +19,6 @@ from liiatools_pipeline.assets.common import (
 from liiatools_pipeline.ops.common_config import CleanConfig
 from liiatools_pipeline.util.utility import opendir_location
 
-p = psutil.Process(os.getpid())
-
 log = get_dagster_logger()
 
 
@@ -110,6 +108,8 @@ def create_reports(
     session_folder: FS,
     config: CleanConfig,
 ):
+    p = psutil.Process(os.getpid())
+
     def snap(msg):
         rss = p.memory_info().rss / (1024**2)
         log.info(f"[create_reports] {msg} | rss_mb={rss:.1f}")
@@ -166,3 +166,4 @@ def create_reports(
                 f"{report}_{config.dataset}", existing_shared_files, shared_folder()
             )
             report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
+            snap(f"export complete {report}")
