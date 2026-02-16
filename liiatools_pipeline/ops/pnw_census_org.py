@@ -39,21 +39,25 @@ def create_join_session_folder() -> FS:
         workspace_folder(), SessionNamesPNWCensusJoins
     )
 
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPNWCensusJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
-    pl.move_files_for_sharing(
-        ssda903_reports_folder,
-        session_folder,
-        required_table_id=["episodes", "header", "uasc", "oc2", "missing"],
-    )
+    if "ssda903" in allowed_datasets:
+        ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["episodes", "header", "uasc", "oc2", "missing"],
+        )
 
     pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
     pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
-    pl.move_files_for_sharing(cans_reports_folder, session_folder)
+    if "cans" in allowed_datasets:
+        cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
+        pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     return session_folder
 
