@@ -1,7 +1,9 @@
+import os
 from os.path import basename
 from typing import List, Tuple
 
 import fs.errors
+import psutil
 from dagster import In, Out, get_dagster_logger, op
 from fs import open_fs
 from fs.base import FS
@@ -30,13 +32,15 @@ from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_ce
 from liiatools.pnw_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_pnw_census,
 )
+from liiatools.school_census_pipeline.spec import (
+    load_schema as load_schema_school_census,
+)
+from liiatools.school_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_school_census,
+)
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
-)
-from liiatools.school_census_pipeline.spec import load_schema as load_schema_school_census
-from liiatools.school_census_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_school_census,
 )
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -109,9 +113,7 @@ def process_files(
     la_signed_dict = output_config.la_signed[la_name]
     la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
     if len(la_profiles) == 0:
-        log.info(
-            f"{la_name} is not signed up for {config.dataset} data processing."
-        )
+        log.info(f"{la_name} is not signed up for {config.dataset} data processing.")
         error_report.append(
             dict(
                 type="NotSigned",
@@ -138,7 +140,9 @@ def process_files(
             log.info(f"Discovered year in {basename(file_locator.name)}")
 
             if (
-                check_year_within_range(year, max(output_config.retention_period.values()))
+                check_year_within_range(
+                    year, max(output_config.retention_period.values())
+                )
                 is False
             ):
                 error_report.append(
@@ -164,7 +168,9 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Local authority code found in {basename(str(file_locator.name))}")
+            log.info(
+                f"Local authority code found in {basename(str(file_locator.name))}"
+            )
 
             month = None
             if config.dataset in ["annex_a", "pnw_census", "cans"]:
@@ -247,10 +253,17 @@ def process_files(
                     f"Schema for dataset {config.dataset} not found. Skipping file {file_locator.name}"
                 )
                 continue
-            log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
+            log.info(
+                f"{config.dataset} schema loaded for {basename(file_locator.name)}"
+            )
 
             metadata = dict(
-                year=year, month=month, term=term, schema=schema, la_code=config.input_la_code, school_type=school_type
+                year=year,
+                month=month,
+                term=term,
+                schema=schema,
+                la_code=config.input_la_code,
+                school_type=school_type,
             )
 
             try:
@@ -301,19 +314,37 @@ def process_files(
             # Evaluate whether degrade step should occur
             degrade_flag = all(output_config.degrade_at_clean.values())
             if degrade_flag:
-                degraded_result = degrade_data(enrich_result.data, output_config, metadata)
+                degraded_result = degrade_data(
+                    enrich_result.data, output_config, metadata
+                )
                 degraded_result.data.export(
                     session_folder.opendir(SessionNames.DEGRADED_FOLDER),
                     file_locator.meta["uuid"] + "_",
                     "parquet",
                 )
                 error_report.extend(degraded_result.errors)
-                current.add(degraded_result.data, config.input_la_code, year, month, term, school_type, identifier)
+                current.add(
+                    degraded_result.data,
+                    config.input_la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                )
 
                 log.info(f"Degraded file exported for {basename(file_locator.name)}")
             else:
                 log.info(f"Skipping degrade step for {basename(file_locator.name)}")
-                current.add(enrich_result.data, config.input_la_code, year, month, term, school_type, identifier)
+                current.add(
+                    enrich_result.data,
+                    config.input_la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                )
 
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
@@ -357,22 +388,32 @@ def move_current_view_la():
     ins={"current": In(DataframeArchive)},
 )
 def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
+    p = psutil.Process(os.getpid())
+
+    def snap(msg):
+        rss = p.memory_info().rss / (1024**2)
+        log.info(f"[create_concatenated_view] {msg} | rss_mb={rss:.1f}")
+
     concat_folder = shared_folder().makedirs(
         f"concatenated/{config.dataset}", recreate=True
     )
     existing_files = concat_folder.listdir("/")
 
+    snap("creating concatenated view")
     for la_code in authorities.codes:
         la_files_regex = f"{la_code}_{config.dataset}_"
         log.info(f"Removing files with regex: {la_files_regex}")
         pl.remove_files(la_files_regex, existing_files, concat_folder)
         log.info(f"Successfully removed files")
+        snap(f"removed files for la_code {la_code}")
 
         if config.dataset == "annex_a":
             concat_data = current.current(la_code, deduplicate_mode="N")
         else:
             concat_data = current.current(la_code)
+        snap(f"loaded current data for concatenation for la_code {la_code}")
 
         if concat_data:
             log.info("Exporting concatenated data")
             concat_data.export(concat_folder, f"{la_code}_{config.dataset}_", "csv")
+            snap(f"exported concat data for la_code {la_code}")
