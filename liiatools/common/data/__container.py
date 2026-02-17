@@ -33,40 +33,54 @@ class DataContainer(Dict[str, pd.DataFrame]):
 
     def export(self, fs: FS, basename: str, format="csv"):
         """
-        Export the data to a filesystem. Supports any format supported by tablib, plus parquet.
+        Export the data to a filesystem. Supports csv, parquet and xlsx formats.
 
         If the format supports multiple sheets (e.g. xlsx), then each table will be exported to a separate sheet in the same file,
         otherwise each table will be exported to a separate file.
         """
         logger.debug("Exporting data to %s", basename)
-        if format == "parquet":
-            return self._export_parquet(fs, basename)
+        format = format.lower()
 
-        fmt = tablib_registry.get_format(format)
-        fmt_ext = fmt.extensions[0]
-
-        if hasattr(fmt, "export_book"):
-            book = self.to_databook()
-            data = book.export(format)
-            self._write(fs, f"{basename}.{fmt_ext}", data)
+        if format == "csv":
+            self._export_csv(fs, basename)
+        elif format == "parquet":
+            self._export_parquet(fs, basename)
+        elif format in {"xlsx", "excel"}:
+            self._export_xlsx(fs, basename)
         else:
-            for table_name in self:
-                dataset = self.to_dataset(table_name)
-                data = dataset.export(format)
-                self._write(fs, f"{basename}{table_name}.{fmt_ext}", data)
+            raise ValueError(f"Unsupported export format: {format}")
 
     def _export_parquet(self, fs: FS, basename: str):
-        for table_name in self:
-            df = self[table_name]
+        for table_name, df in self.items():
             with fs.open(f"{basename}{table_name}.parquet", "wb") as f:
                 df.to_parquet(f, index=False)
 
-    def _write(self, fs: FS, path: str, data: Any):
-        format = "wt" if isinstance(data, str) else "wb"
-        with fs.open(path, format) as f:
-            if isinstance(data, str):
-                data = data.replace("<NA>", "").replace("nan", "").replace("NaT", "")
-            f.write(data)
+    def _export_csv(self, fs: FS, basename: str):
+        for table_name, df in self.items():
+            path = f"{basename}{table_name}.csv"
+            df = df.replace({"<NA>": pd.NA, "nan": pd.NA, "NaT": pd.NA})
+            with fs.open(path, "wt") as f:
+                df.to_csv(
+                    f,
+                    index=False,
+                    na_rep="",
+                    chunksize=10_000,
+                )
+
+    def _export_xlsx(self, fs: FS, basename: str):
+        path = f"{basename}.xlsx"
+        with fs.open(path, "wb") as f:
+            with pd.ExcelWriter(f, engine="xlsxwriter") as writer:
+                for table_name, df in self.items():
+                    # Excel sheet name limit
+                    sheet_name = table_name[:31]
+                    df = df.replace({"<NA>": pd.NA, "nan": pd.NA, "NaT": pd.NA})
+                    df.to_excel(
+                        writer,
+                        sheet_name=sheet_name,
+                        index=False,
+                        na_rep="",
+                    )
 
 
 class ErrorContainer(List[Dict[str, Any]]):
