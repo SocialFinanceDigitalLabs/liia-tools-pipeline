@@ -81,7 +81,7 @@ column_map:
         string: "alphanumeric"
         canbeblank: False
         header_regex:
-          - /\bestablishment\b(?!\s+registration\s+URN)/i
+          - /establishment(?!.*URN)/i
       Host Authority:
         category:
           - code: Barking and Dagenham
