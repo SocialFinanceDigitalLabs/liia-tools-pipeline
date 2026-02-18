@@ -122,8 +122,12 @@ def create_reports(
     snap("loading input")
     log.info("Aggregating Data Frames...")
     output_config = pipeline_config(config)
+    snap("loaded pipeline config")
     aggregate = DataframeAggregator(session_folder, output_config, config.dataset)
+    snap("Initialised DataframeAggregator")
     aggregate_data = aggregate.current()
+    for name, df in aggregate_data.items():
+        log.info(f"Dataframe for table {name} has {df.info()}")
     log.debug(f"Using config: {config}")
     for report in output_config.retention_period.keys():
         log.info(f"Processing report {report}...")
