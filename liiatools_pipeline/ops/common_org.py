@@ -130,6 +130,7 @@ def create_reports(
         log.info(f"Dataframe for table {name} has {df.info()}")
     log.debug(f"Using config: {config}")
     for report in output_config.retention_period.keys():
+        snap("starting report processing loop")
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
         snap(f"processing report {report}")

@@ -1,11 +1,22 @@
+import os
 import re
 from typing import Iterable, List
 
 import pandas as pd
+import psutil
+from dagster import get_dagster_logger
 from fs.base import FS
 
 from liiatools.common.archive import _normalise_table
 from liiatools.common.data import DataContainer, PipelineConfig
+
+p = psutil.Process(os.getpid())
+logger = get_dagster_logger()
+
+
+def snap(msg):
+    rss = p.memory_info().rss / (1024**2)
+    logger.info(f"[create_reports] {msg} | rss_mb={rss:.1f}")
 
 
 class DataframeAggregator:
@@ -30,7 +41,9 @@ class DataframeAggregator:
         """
         Get the current session as a datacontainer.
         """
+        snap("start of running current")
         files = self.list_files()
+        snap("listed files")
         return self.combine_files(files, deduplicate)
 
     def load_file(self, file) -> DataContainer:
@@ -50,20 +63,30 @@ class DataframeAggregator:
         return data
 
     def combine_files(self, files: Iterable[str], deduplicate: bool) -> DataContainer:
-        """
-        Combine a list of files into a single dataframe.
-
-        """
-        combined = DataContainer()
+        """Combine a list of files into a single dataframe."""
+        tables: dict[str, list[pd.DataFrame]] = {}
+        snap("starting to combine files")
         for file in files:
-            combined = self._combine_files(
-                combined,
-                self.load_file(file),
-            )
+            loaded = self.load_file(file)
+            for table_id, df in loaded.items():
+                tables.setdefault(table_id, []).append(df)
 
+        snap("before final concat")
+        combined = DataContainer()
+        for table_id, dfs in tables.items():
+            if len(dfs) == 1:
+                combined[table_id] = dfs[0]
+            else:
+                combined[table_id] = pd.concat(dfs, ignore_index=True, copy=False)
+
+        # release list of inputs ASAP
+        tables.clear()
+
+        snap("before deduplication")
         if deduplicate:
             combined = self.deduplicate(combined)
 
+        snap("after deduplication")
         return combined
 
     def deduplicate(self, data: DataContainer) -> DataContainer:
@@ -88,27 +111,5 @@ class DataframeAggregator:
                     keep="last",
                 )
                 data[table_spec.id] = df
-
-        return data
-
-    def _combine_files(self, *sources: DataContainer) -> DataContainer:
-        """
-        Combine a new files into an existing set of dataframes.
-        """
-        data = DataContainer()
-
-        for table_spec in self.config.table_list:
-            table_id = table_spec.id
-            all_sources = []
-            for source in sources:
-                if table_id in source:
-                    all_sources.append(source[table_id])
-
-            if len(all_sources) == 0:
-                continue
-            elif len(all_sources) == 1:
-                data[table_id] = all_sources[0].copy()
-            else:
-                data[table_id] = pd.concat(all_sources, ignore_index=True)
 
         return data
