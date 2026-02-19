@@ -1,8 +1,11 @@
 import logging
+import os
 from datetime import datetime
 from typing import Callable, Dict, Optional
 
 import pandas as pd
+import psutil
+from dagster import get_dagster_logger
 
 from liiatools.common.checks import check_la_signature
 from liiatools.common.data import (
@@ -17,6 +20,14 @@ from liiatools.common.data import (
 from ._transform_functions import degrade_functions, enrich_functions
 
 logger = logging.getLogger(__name__)
+
+p = psutil.Process(os.getpid())
+dagster_logger = get_dagster_logger()
+
+
+def snap(msg):
+    rss = p.memory_info().rss / (1024**2)
+    dagster_logger.info(f"[transform] {msg} | rss_mb={rss:.1f}")
 
 
 def _transform(
@@ -161,7 +172,7 @@ def prepare_export(
     :return: The prepared data
     """
     data_container = DataContainer()
-
+    snap("prepare for export start")
     table_list = config.tables_for_profile(profile)
 
     # Loop over known tables
@@ -170,11 +181,11 @@ def prepare_export(
         table_config = table_config.columns_for_profile(profile)
         table_columns = [column.id for column in table_config]
         column_types = {col.id: col.type for col in table_config}
-
+        snap("prepare for export, starting loop")
         # Only export if the table is in the data
         if table_name in data:
             table = data[table_name].copy()
-
+            snap(f"prepare for export, copied data for {table_name}")
             for column_name, type in column_types.items():
                 # Create any missing columns
                 if column_name not in table.columns:
@@ -190,7 +201,9 @@ def prepare_export(
                     ).astype("Int64")
 
             # Return the subset
+            snap(f"prepare for export, assembled data for {table_name}")
             data_container[table_name] = table[table_columns].copy()
+            snap(f"prepare for export, added data to df for {table_name}")
 
     return data_container
 
