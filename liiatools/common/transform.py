@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import Callable, Dict, Optional
 
+import dask.dataframe as dd
 import pandas as pd
 import psutil
 from dagster import get_dagster_logger
@@ -197,6 +198,59 @@ def prepare_export(
                     )
                 elif type == "integer":
                     table[column_name] = pd.to_numeric(
+                        table[column_name], errors="coerce"
+                    ).astype("Int64")
+
+            # Return the subset
+            snap(f"prepare for export, assembled data for {table_name}")
+            data_container[table_name] = table[table_columns].copy()
+            snap(f"prepare for export, added data to df for {table_name}")
+
+    return data_container
+
+
+def prepare_export_dask(
+    data: DataContainer, config: PipelineConfig, profile: str | list[str]
+) -> DataContainer:
+    """
+    Prepare data for export by removing tables and columns that are not required
+    for the given profile or list of profiles provided.
+
+    The DataContainer will only hold tables and columns that are configured in the config,
+    and only tables that also exist in the data. If a configured column is missing from a table,
+    it will be created. The columns will also be in the order specified in the config.
+
+    :param data: The data to prepare for export
+    :param config: The pipeline config
+    :param profile: The profile or list of profiles to export for
+    :return: The prepared data
+    """
+    data_container = DataContainer()
+    snap("prepare for export start")
+    table_list = config.tables_for_profile(profile)
+
+    # Loop over known tables
+    for table_config in table_list:
+        table_name = table_config.id
+        table_config = table_config.columns_for_profile(profile)
+        table_columns = [column.id for column in table_config]
+        column_types = {col.id: col.type for col in table_config}
+        snap("prepare for export, starting loop")
+        # Only export if the table is in the data
+        if table_name in data:
+            table = data[table_name].copy()
+            snap(f"prepare for export, copied data for {table_name}")
+            for column_name, type in column_types.items():
+                # Create any missing columns
+                if column_name not in table.columns:
+                    table[column_name] = None
+                # If column is numeric, ensure blanks are converted to NaN
+                if type == "float":
+                    table[column_name] = dd.to_numeric(
+                        table[column_name], errors="coerce"
+                    )
+                elif type == "integer":
+                    table[column_name] = dd.to_numeric(
                         table[column_name], errors="coerce"
                     ).astype("Int64")
 

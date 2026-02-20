@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
+import dask.dataframe as dd
 import pandas as pd
 from fs.base import FS
 from tablib import Databook, Dataset, import_set
@@ -10,7 +11,7 @@ from tablib.formats import registry as tablib_registry
 logger = logging.getLogger(__name__)
 
 
-class DataContainer(Dict[str, pd.DataFrame]):
+class DataContainer(Dict[str, pd.DataFrame | dd.DataFrame]):
     """
     DataContainer is a dictionary of DataFrames, with some helper methods to convert to tablib objects and export to filesystems.
 

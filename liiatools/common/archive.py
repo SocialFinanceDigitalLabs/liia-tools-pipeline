@@ -1,6 +1,7 @@
 import re
 from typing import Dict, Iterable, Literal
 
+import dask.dataframe as dd
 import fs.errors
 import pandas as pd
 from dagster import get_dagster_logger
@@ -17,7 +18,9 @@ from liiatools.common.data import (
 log = get_dagster_logger(__name__)
 
 
-def _normalise_table(df: pd.DataFrame, table_spec: TableConfig) -> pd.DataFrame:
+def _normalise_table(
+    df: pd.DataFrame | dd.DataFrame, table_spec: TableConfig
+) -> pd.DataFrame | dd.DataFrame:
     """
     Normalise the dataframe to match the table spec.
     """

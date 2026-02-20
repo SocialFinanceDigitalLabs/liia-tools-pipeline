@@ -2,6 +2,7 @@ import os
 import re
 from typing import Iterable, List
 
+import dask.dataframe as dd
 import pandas as pd
 import psutil
 from dagster import get_dagster_logger
@@ -54,17 +55,20 @@ class DataframeAggregator:
         table_id = re.search(rf"{self.dataset}_([a-zA-Z0-9_]*)\.", file)
 
         for table_spec in self.config.table_list:
+            snap(f"starting to load file {file}")
             if table_id and table_id.group(1) == table_spec.id:
-                with self.fs.open(file, "r") as f:
-                    df = pd.read_csv(f)
-                    df = _normalise_table(df, table_spec)
-                    data[table_spec.id] = df
+                df = dd.read_csv(file)
+                snap(f"read csv {table_spec.id}")
+                df = _normalise_table(df, table_spec)
+                snap(f"normalised table {table_spec.id}")
+                data[table_spec.id] = df
+                snap(f"loaded file {table_spec.id}")
 
         return data
 
     def combine_files(self, files: Iterable[str], deduplicate: bool) -> DataContainer:
         """Combine a list of files into a single dataframe."""
-        tables: dict[str, list[pd.DataFrame]] = {}
+        tables: dict[str, list[dd.DataFrame]] = {}
         snap("starting to combine files")
         for file in files:
             loaded = self.load_file(file)
@@ -77,10 +81,7 @@ class DataframeAggregator:
             if len(dfs) == 1:
                 combined[table_id] = dfs[0]
             else:
-                combined[table_id] = pd.concat(dfs, ignore_index=True, copy=False)
-
-        # release list of inputs ASAP
-        tables.clear()
+                combined[table_id] = dd.concat(dfs, ignore_index=True, copy=False)
 
         snap("before deduplication")
         if deduplicate:

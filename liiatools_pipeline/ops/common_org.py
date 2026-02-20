@@ -9,7 +9,12 @@ from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.reference import authorities
-from liiatools.common.transform import apply_retention, degrade_data, prepare_export
+from liiatools.common.transform import (
+    apply_retention,
+    degrade_data,
+    prepare_export,
+    prepare_export_dask,
+)
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     pipeline_config,
@@ -145,7 +150,7 @@ def create_reports(
             degraded_data = degrade_data(aggregate_data, output_config)
             aggregate_data = degraded_data.data
 
-        report_data = prepare_export(aggregate_data, output_config, profile=report)
+        report_data = prepare_export_dask(aggregate_data, output_config, profile=report)
         snap(f"applying retention for report {report}")
         log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
