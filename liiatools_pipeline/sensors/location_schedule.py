@@ -155,7 +155,7 @@ def clean_schedule(context):
             run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
 
             context.log.info(
-                f"Run Key generated for {dataset} in {la_path.split('-')[-1]} folder"
+                f"Run Key: {run_key} generated for {dataset} in {la_path.split('-')[-1]} folder"
             )
 
             run_records = context.instance.get_run_records(
