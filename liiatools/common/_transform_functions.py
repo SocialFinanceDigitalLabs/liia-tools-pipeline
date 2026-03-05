@@ -65,7 +65,7 @@ def add_school_type(row: pd.Series, column_config: ColumnConfig, metadata: Metad
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
-    value = row[column_config.id]
+    value = row[column_config.id].strip() if isinstance(row[column_config.id], str) else row[column_config.id]
 
     if pd.isna(value):
         return ""
@@ -73,7 +73,7 @@ def to_integer(
     try:
         return int(float(value))
     except ValueError:
-        return value
+        return value.upper()
 
 
 def add_school_year(
