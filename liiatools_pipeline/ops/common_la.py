@@ -30,13 +30,15 @@ from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_ce
 from liiatools.pnw_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_pnw_census,
 )
+from liiatools.school_census_pipeline.spec import (
+    load_schema as load_schema_school_census,
+)
+from liiatools.school_census_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_school_census,
+)
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
-)
-from liiatools.school_census_pipeline.spec import load_schema as load_schema_school_census
-from liiatools.school_census_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_school_census,
 )
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -100,7 +102,7 @@ def process_files(
     error_report = ErrorContainer()
     current_path = f"{config.input_la_code}/{config.dataset}"
     if current.fs.isdir(current_path):
-        log.info("Removing existing LA data...")
+        log.info(f"Removing existing {la_name} {config.dataset} data...")
         current_files = current.fs.listdir(current_path)
         for file in current_files:
             current.fs.remove(f"{current_path}/{file}")
@@ -109,20 +111,18 @@ def process_files(
     la_signed_dict = output_config.la_signed[la_name]
     la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
     if len(la_profiles) == 0:
-        log.info(
-            f"{la_name} is not signed up for {config.dataset} data processing."
-        )
+        log.info(f"{la_name} is not signed up for {config.dataset} data processing.")
         error_report.append(
             dict(
                 type="NotSigned",
-                message=f"{la_name} is not signed up for data processing.",
+                message=f"{la_name} is not signed up for {config.dataset} data processing.",
             )
         )
     else:
         log.info(f"{la_name} is signed for {config.dataset} data processing.")
 
         for file_locator in incoming_files:
-            log.info(f"Processing file {basename(file_locator.name)}")
+            log.info(f"Processing file {la_name} {basename(file_locator.name)}")
             uuid = file_locator.meta["uuid"]
             year = pl.discover_year(file_locator)
             if year is None:
@@ -135,10 +135,12 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Discovered year in {basename(file_locator.name)}")
+            log.info(f"Discovered year in {la_name} {basename(file_locator.name)}")
 
             if (
-                check_year_within_range(year, max(output_config.retention_period.values()))
+                check_year_within_range(
+                    year, max(output_config.retention_period.values())
+                )
                 is False
             ):
                 error_report.append(
@@ -151,7 +153,7 @@ def process_files(
                 )
                 continue
             log.info(
-                f"Year in {basename(str(file_locator.name))} is within retention period"
+                f"Year in {la_name} {basename(str(file_locator.name))} is within retention period"
             )
 
             if config.input_la_code is None:
@@ -164,7 +166,9 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Local authority code found in {basename(str(file_locator.name))}")
+            log.info(
+                f"Local authority code found in {la_name} {basename(str(file_locator.name))}"
+            )
 
             month = None
             if config.dataset in ["annex_a", "pnw_census", "cans"]:
@@ -179,7 +183,7 @@ def process_files(
                         )
                     )
                     continue
-                log.info(f"Month found in {basename(str(file_locator.name))}")
+                log.info(f"Month found in {la_name} {basename(str(file_locator.name))}")
 
             term = None
             school_type = None
@@ -195,7 +199,7 @@ def process_files(
                         )
                     )
                     continue
-                log.info(f"Term found in {basename(file_locator.name)}")
+                log.info(f"Term found in {la_name} {basename(file_locator.name)}")
 
                 # Optionally look for acad/la within filename based on config
                 school_type_flag = any(
@@ -215,7 +219,9 @@ def process_files(
                             )
                         )
                     else:
-                        log.info(f"School type found in {basename(file_locator.name)}")
+                        log.info(
+                            f"School type found in {la_name} {basename(file_locator.name)}"
+                        )
 
             identifier = None
             if config.dataset in ["cans"]:
@@ -230,7 +236,9 @@ def process_files(
                         )
                     )
                     continue
-                log.info(f"Identifier found in {basename(str(file_locator.name))}")
+                log.info(
+                    f"Identifier found in {la_name} {basename(str(file_locator.name))}"
+                )
 
             try:
                 schema = (
@@ -244,13 +252,20 @@ def process_files(
                 )
             except KeyError:
                 log.error(
-                    f"Schema for dataset {config.dataset} not found. Skipping file {file_locator.name}"
+                    f"Schema for dataset {config.dataset} not found. Skipping file {la_name} {basename(file_locator.name)}"
                 )
                 continue
-            log.info(f"{config.dataset} schema loaded for {basename(file_locator.name)}")
+            log.info(
+                f"{config.dataset} schema loaded for {la_name} {basename(file_locator.name)}"
+            )
 
             metadata = dict(
-                year=year, month=month, term=term, schema=schema, la_code=config.input_la_code, school_type=school_type
+                year=year,
+                month=month,
+                term=term,
+                schema=schema,
+                la_code=config.input_la_code,
+                school_type=school_type,
             )
 
             try:
@@ -273,7 +288,9 @@ def process_files(
                     )
                 )
                 continue
-            log.info(f"Cleanfile task completed for {basename(str(file_locator.name))}")
+            log.info(
+                f"Cleanfile task completed for {la_name} {basename(str(file_locator.name))}"
+            )
 
             cleanfile_result.data = prepare_export(
                 cleanfile_result.data, output_config, la_profiles
@@ -286,7 +303,7 @@ def process_files(
             )
             error_report.extend(cleanfile_result.errors)
 
-            log.info(f"Cleanfile exported for {basename(file_locator.name)}")
+            log.info(f"Cleanfile exported for {la_name} {basename(file_locator.name)}")
 
             enrich_result = enrich_data(cleanfile_result.data, output_config, metadata)
             enrich_result.data.export(
@@ -296,30 +313,54 @@ def process_files(
             )
             error_report.extend(enrich_result.errors)
 
-            log.info(f"Enrichfile exported for {basename(file_locator.name)}")
+            log.info(f"Enrichfile exported for {la_name} {basename(file_locator.name)}")
 
             # Evaluate whether degrade step should occur
             degrade_flag = all(output_config.degrade_at_clean.values())
             if degrade_flag:
-                degraded_result = degrade_data(enrich_result.data, output_config, metadata)
+                degraded_result = degrade_data(
+                    enrich_result.data, output_config, metadata
+                )
                 degraded_result.data.export(
                     session_folder.opendir(SessionNames.DEGRADED_FOLDER),
                     file_locator.meta["uuid"] + "_",
                     "parquet",
                 )
                 error_report.extend(degraded_result.errors)
-                current.add(degraded_result.data, config.input_la_code, year, month, term, school_type, identifier)
+                current.add(
+                    degraded_result.data,
+                    config.input_la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                )
 
-                log.info(f"Degraded file exported for {basename(file_locator.name)}")
+                log.info(
+                    f"Degraded file exported for {la_name} {basename(file_locator.name)}"
+                )
             else:
-                log.info(f"Skipping degrade step for {basename(file_locator.name)}")
-                current.add(enrich_result.data, config.input_la_code, year, month, term, school_type, identifier)
+                log.info(
+                    f"Skipping degrade step for {la_name} {basename(file_locator.name)}"
+                )
+                current.add(
+                    enrich_result.data,
+                    config.input_la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                )
 
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
 
             error_report.set_property("filename", file_locator.name)
             error_report.set_property("uuid", uuid)
-            log.info(f"Finished processing {basename(file_locator.name)} errors")
+            log.info(
+                f"Finished processing {la_name} {basename(file_locator.name)} errors"
+            )
 
     log.info(f"Writing error report for {config.input_la_code} {config.dataset}")
     error_report.set_property("session_id", session_id)
