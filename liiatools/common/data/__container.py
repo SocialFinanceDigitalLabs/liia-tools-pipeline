@@ -1,4 +1,6 @@
 import logging
+import io
+import csv
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
@@ -31,7 +33,7 @@ class DataContainer(Dict[str, pd.DataFrame]):
         """
         return DataContainer({k: v.copy() for k, v in self.items()})
 
-    def export(self, fs: FS, basename: str, format="csv"):
+    def export(self, fs: FS, basename: str, format="csv", max_file_size_mb=None):
         """
         Export the data to a filesystem. Supports any format supported by tablib, plus parquet.
 
@@ -52,8 +54,12 @@ class DataContainer(Dict[str, pd.DataFrame]):
         else:
             for table_name in self:
                 dataset = self.to_dataset(table_name)
-                data = dataset.export(format)
-                self._write(fs, f"{basename}{table_name}.{fmt_ext}", data)
+
+                if max_file_size_mb and format=="csv":
+                    self._export_csv_chunked(fs, basename, table_name, dataset, max_file_size_mb)
+                else:
+                    data = dataset.export(format)
+                    self._write(fs, f"{basename}{table_name}.{fmt_ext}", data)
 
     def _export_parquet(self, fs: FS, basename: str):
         for table_name in self:
@@ -67,6 +73,47 @@ class DataContainer(Dict[str, pd.DataFrame]):
             if isinstance(data, str):
                 data = data.replace("<NA>", "").replace("nan", "").replace("NaT", "")
             f.write(data)
+
+    def _export_csv_chunked(self, fs, basename, table_name, dataset, max_file_size_mb):
+
+        max_bytes = max_file_size_mb * 1024 * 1024
+
+        part = 1
+        split_occurred = False
+
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+
+        # Write header
+        writer.writerow(dataset.headers)
+
+        for row in dataset:
+            row_buffer = io.StringIO()
+            row_writer = csv.writer(row_buffer)
+            row_writer.writerow(row)
+
+            row_data = row_buffer.getvalue()
+            row_size = len(row_data.encode("utf-8"))
+
+            # Flush current file if writing row would exceed max size
+            if buffer.tell() + row_size > max_bytes:
+                split_occurred = True
+                filename = f"{basename}{table_name}_part{part}.csv"
+                self._write(fs, filename, buffer.getvalue())
+
+                part += 1
+                buffer = io.StringIO()
+                writer = csv.writer(buffer)
+                writer.writerow(dataset.headers)
+
+            writer.writerow(row)
+
+        # Final write
+        if split_occurred:
+            filename = f"{basename}{table_name}_part{part}.csv"
+        else:
+            filename = f"{basename}{table_name}.csv"
+        self._write(fs, filename, buffer.getvalue())
 
 
 class ErrorContainer(List[Dict[str, Any]]):

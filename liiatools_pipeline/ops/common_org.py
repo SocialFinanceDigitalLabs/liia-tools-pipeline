@@ -150,4 +150,4 @@ def create_reports(
             pl.remove_files(
                 f"{report}_{config.dataset}", existing_shared_files, shared_folder()
             )
-            report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv")
+            report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv", max_file_size_mb=50)
