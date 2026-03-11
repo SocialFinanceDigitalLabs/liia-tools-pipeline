@@ -291,7 +291,7 @@ def school_census_region_outputs(
 
     output_folder = shared_folder()
     existing_files = output_folder.listdir("/")
-    region_files_regex = f"^REGION_"
+    region_files_regex = f"^REGION_OUTPUT"
     pl.remove_files(region_files_regex, existing_files, output_folder)
 
     log.info("Checking necessary files are present...")
@@ -356,7 +356,7 @@ def school_census_region_outputs(
     demographics_on = create_demographics_output(
         pupil_on, "pupilonrolltableid", addresses_on, fsm_on, sen_on
     )
-    outputs["REGION_onroll_children"] = demographics_on
+    outputs["REGION_OUTPUT_onroll_children"] = demographics_on
 
     # Create sessions outputs
     pupil_on_termly_sessions = pupil_on[
@@ -379,7 +379,7 @@ def school_census_region_outputs(
         session_identifier="termlysessionspossible",
         sessions=termly_sessions_on,
     )
-    outputs["REGION_onroll_termly_attendance"] = termly_sessions_on
+    outputs["REGION_OUTPUT_onroll_termly_attendance"] = termly_sessions_on
 
     if "school_census_summerhalfterm2sessiondetailsonroll.csv" in files:
         pupil_on_summer_sessions = pupil_on[
@@ -402,13 +402,13 @@ def school_census_region_outputs(
             session_identifier="summerhalfterm2sessionspossible",
             sessions=summer_sessions_on,
         )
-        outputs["REGION_onroll_summer_attendance"] = summer_sessions_on
+        outputs["REGION_OUTPUT_onroll_summer_attendance"] = summer_sessions_on
 
     # Create exclusions output
     exclusions_on = open_file(
         session_folder, "school_census_termlyexclusionsonroll.csv"
     )
-    outputs["REGION_onroll_exclusions"] = exclusions_on
+    outputs["REGION_OUTPUT_onroll_exclusions"] = exclusions_on
 
     # Off roll tables
     # Make demographics output
@@ -428,9 +428,9 @@ def school_census_region_outputs(
             demographics_off = create_demographics_output(
                 pupil_off, "pupilnolongeronrolltableid", addresses_off, fsm_off, sen_off
             )
-            outputs["REGION_offroll_children"] = demographics_off
+            outputs["REGION_OUTPUT_offroll_children"] = demographics_off
         else:
-            outputs["REGION_offroll_children"] = pupil_off
+            outputs["REGION_OUTPUT_offroll_children"] = pupil_off
 
         # Create sessions outputs
         pupil_off_termly_sessions = pupil_off[
@@ -453,7 +453,7 @@ def school_census_region_outputs(
             session_identifier="termlysessionspossible",
             sessions=termly_sessions_off,
         )
-        outputs["REGION_offroll_termly_attendance"] = termly_sessions_off
+        outputs["REGION_OUTPUT_offroll_termly_attendance"] = termly_sessions_off
 
         if "school_census_summerhalfterm2sessiondetailsoffroll.csv" in files:
             pupil_off_summer_sessions = pupil_off[
@@ -476,13 +476,13 @@ def school_census_region_outputs(
                 session_identifier="summerhalfterm2sessionspossible",
                 sessions=summer_sessions_off,
             )
-            outputs["REGION_offroll_summer_attendance"] = summer_sessions_off
+            outputs["REGION_OUTPUT_offroll_summer_attendance"] = summer_sessions_off
 
         # Create exclusions output
         exclusions_off = open_file(
             session_folder, "school_census_termlyexclusionsoffroll.csv"
         )
-        outputs["REGION_offroll_exclusions"] = exclusions_off
+        outputs["REGION_OUTPUT_offroll_exclusions"] = exclusions_off
 
     else:
         log.info("No pupilnolongeronroll file found; skipping off roll outputs")
