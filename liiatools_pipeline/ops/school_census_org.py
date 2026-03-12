@@ -490,4 +490,4 @@ def school_census_region_outputs(
     # Export outputs
     region_dc = DataContainer(outputs)
     log.info("Writing School Census REGION outputs to shared folder")
-    region_dc.export(output_folder, "", "csv")
+    region_dc.export(output_folder, "", "csv", max_file_size_mb=50)
