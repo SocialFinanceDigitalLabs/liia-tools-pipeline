@@ -15,9 +15,9 @@ class Category(BaseModel):
 
     code: str
     name: str | list = None
-    cell_regex: Any
+    cell_regex: Any | None = None
 
-    __values: str = Field("")
+    values: str = Field("")
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -81,8 +81,8 @@ class Column(BaseModel):
     dictionary: Dict = None
     category: List[Category] = None
 
-    header_regex: Any
-    cell_regex: Any
+    header_regex: Any | None = None
+    cell_regex: Any | None = None
 
     canbeblank: bool = True
 
