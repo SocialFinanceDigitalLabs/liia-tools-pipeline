@@ -75,6 +75,8 @@ def to_integer(
     except ValueError:
         if isinstance(value, str):
             return value.upper()
+        else:
+            return value
 
 
 def add_school_year(
