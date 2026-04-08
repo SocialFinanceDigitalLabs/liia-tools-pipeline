@@ -13,7 +13,6 @@ liia_tools/
 │  ├─ stream_record.py (only for xml)
 │  ├─ spec/
 │  │  ├─ __init__.py
-│  │  ├─ pipeline.json
 │  │  ├─ new_data_schema_2024.yml or new_data_schema_2024.xsd
 │  │  ├─ new_data_schema_2025.diff.yml or new_data_schema_2025.xsd
 │  │  ├─ samples/
@@ -204,6 +203,7 @@ String
 * Details of the different available values can be found in the PipelineConfig class in the [__config.py](/liiatools/common/data/__config.py) file.
 * Details of the different possible enrich and degrade functions can be found in the [_transform_functions.py](/liiatools/common/_transform_functions.py) file.
 * The retention columns should align with the columns created for year and LA in the table_list section of this pipeline.json file.
+* The JSON should be created in the liia-tools-pipeline-config repository, see the docs there for further information.
 
 ## 4. Create the new_pipeline/spec/_\_init__.py file which will load the schema and the pipeline
 
@@ -330,4 +330,12 @@ from liiatools.new_pipeline.spec import load_pipeline_config as load_pipeline_co
 ```python
 from liiatools.new_pipeline.spec import load_schema as load_schema_dataset
 from liiatools.new_pipeline.stream_pipeline import task_cleanfile as task_cleanfile_dataset
+```
+
+## 9. Adjust the [sensors/config_schedule.py](/liiatools_pipeline/sensors/config_schedule.py) file to include the new pipeline.json file you have created
+
+* You just need to add an import like so:
+
+```python
+from liiatools.new_pipeline.spec import load_pipeline_config as load_pipeline_config_dataset
 ```

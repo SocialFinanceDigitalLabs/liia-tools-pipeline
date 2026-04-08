@@ -33,7 +33,7 @@ def _filter_to_open_on_snapshot_date(
 ) -> pd.DataFrame:
     """
     Filters dataframe to episodes that are open on the snapshot date
-    Removes episodes that opened on the snapshot date to 
+    Removes episodes that opened on the snapshot date to
     avoid counting two episodes for the same child where:
     - One closed on the snapshot date
     - One opened on the snapshot date
@@ -363,5 +363,86 @@ def join_onspd_data(postcode: pd.DataFrame, pnw_census: pd.DataFrame) -> pd.Data
     log.info(f"{joins} joins made from ONSPD on placement postcode")
 
     pnw_census_merged = pnw_census_merged.drop(columns="pcd2")
+
+    return pnw_census_merged
+
+
+def add_missing_cans_columns(data: pd.DataFrame, cans_columns: list) -> pd.DataFrame:
+    """
+    Ensures all all 4 columns exist for each variable - add missing ones as blank
+    """
+    for i in range(1, 5):
+        for var in cans_columns:
+            col_name = f"{var} {i}"
+            if col_name not in data.columns:
+                data[col_name] = pd.NA
+    return data
+
+
+def join_cans_data(
+    cans: pd.DataFrame, pnw_census: pd.DataFrame, cans_columns: list
+) -> pd.DataFrame:
+    """
+    Merges data from CANS dataframe onto PNW census dataframe
+    Returns PNW census dataframe
+    """
+
+    # Make sure dates are datetime
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"])
+
+    # Remove any CANS assessments after the snapshot date
+    cans = cans[cans["Assessment Date"] <= pnw_census["snapshot_date"].max()]
+
+    # Sort so latest are first
+    cans = cans.sort_values(
+        ["Child Unique ID", "Assessment Date"], ascending=[True, False]
+    )
+
+    # Rank assessments for each child
+    cans["rank"] = cans.groupby("Child Unique ID")["Assessment Date"].rank(
+        method="first", ascending=False
+    )
+
+    # Keep only 4 most recent assessments
+    cans_top4 = cans[cans["rank"] <= 4]
+
+    # Pivot everything except Child Unique ID
+    wide_cans = cans_top4.melt(id_vars=["Child Unique ID", "rank"]).pivot(
+        index="Child Unique ID", columns=["rank", "variable"], values="value"
+    )
+
+    # Flatten multi-level columns
+    wide_cans.columns = [f"{var} {int(rank)}" for rank, var in wide_cans.columns]
+    wide_cans = wide_cans.reset_index()
+
+    wide_cans = add_missing_cans_columns(wide_cans, cans_columns)
+
+    # Reorder columns
+    cols_order = ["Child Unique ID"] + [
+        f"{var} {i}" for i in range(1, 5) for var in cans_columns
+    ]
+    wide_cans = wide_cans[cols_order]
+
+    # Merge with pnw_census
+    pnw_census_merged = pnw_census.merge(
+        wide_cans, left_on="Identifier", right_on="Child Unique ID", how="left"
+    )
+
+    # Row count in pnw_census should not have changed
+    try:
+        assert len(pnw_census) == len(pnw_census_merged)
+    except AssertionError:
+        log.error(
+            f"Join with CANS assessments results in incorrect row count: {len(pnw_census_merged)-len(pnw_census)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = pnw_census_merged[
+        pnw_census_merged["Child Unique ID"].notna()
+        & (pnw_census_merged["Child Unique ID"] != "")
+    ].shape[0]
+    log.info(f"{joins} joins made from CANS on Identifier")
+
+    pnw_census_merged = pnw_census_merged.drop(columns="Child Unique ID")
 
     return pnw_census_merged

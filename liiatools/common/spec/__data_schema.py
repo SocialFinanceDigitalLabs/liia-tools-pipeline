@@ -14,10 +14,10 @@ class Category(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     code: str
-    name: str | list = None
-    cell_regex: Any
+    name: str | list | None = None
+    cell_regex: Any = None
 
-    __values: str = Field("")
+    values: str = Field("")
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -62,9 +62,9 @@ class Numeric(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     type: Literal["integer", "float"]
-    min_value: int = None
-    max_value: int = None
-    decimal_places: int = None
+    min_value: int | None = None
+    max_value: int | None = None
+    decimal_places: int | None = None
     age: bool = False
 
     def __init__(self, **data):
@@ -74,15 +74,15 @@ class Numeric(BaseModel):
 class Column(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    string: Literal["alphanumeric", "postcode", "regex"] = None
-    numeric: Numeric = None
-    date: str = None
+    string: Literal["alphanumeric", "postcode", "regex"] | None = None
+    numeric: Numeric | None = None
+    date: str | None = None
 
-    dictionary: Dict = None
-    category: List[Category] = None
+    dictionary: Dict | None = None
+    category: List[Category] | None = None
 
-    header_regex: Any
-    cell_regex: Any
+    header_regex: Any = None
+    cell_regex: Any = None
 
     canbeblank: bool = True
 
@@ -159,6 +159,8 @@ class DataSchema(BaseModel):
         If no table is found, returns None
         """
         headers = set(headers)
+        # Strip out falsy values like None and ""
+        headers = {h for h in headers if h}
         for table_name, table_config in self.column_map.items():
             matched_columns = []
 
@@ -209,8 +211,6 @@ class DataSchema(BaseModel):
         :param expected_expressions: Optional list of (regex) expressions to test as well
         :return: The expected Value or None
         """
-        assert actual_value is not None, "Must test a value"
-        assert expected_value is not None, "Must test against a value"
 
         actual_value = actual_value.lower().strip()
         test_expected_value = expected_value.lower().strip()

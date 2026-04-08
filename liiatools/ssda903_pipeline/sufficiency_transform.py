@@ -118,6 +118,7 @@ dim_tables = {
             25,
             26,
             27,
+            28,
         ],
         "PlacementTypeCode": [
             "-1",
@@ -148,6 +149,7 @@ dim_tables = {
             "U5",
             "U6",
             "Z1",
+            "K3",
         ],
         "PlacementTypeDescription": [
             "Unknown",
@@ -178,6 +180,7 @@ dim_tables = {
             "Foster placement with other foster carer(s) who is/are also an approved adopter(s) - fostering for adoption /concurrent planning",
             "Foster placement with other foster carer(s) - not long term or fostering for adoption /concurrent planning",
             "Other placements (must be listed on a schedule sent to DfE with annual submission)",
+            "Registered supported accommodation",
         ],
     },
     "dimReasonEpisodeCeased": {

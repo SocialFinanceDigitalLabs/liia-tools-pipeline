@@ -55,7 +55,16 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int, month: str | None):
+    def add(
+        self,
+        data: DataContainer,
+        la_code: str,
+        year: int,
+        month: str | None,
+        term: str | None,
+        school_type: str | None,
+        identifier: str | None,
+    ):
         """
         Add a new snapshot to the archive.
         """
@@ -64,7 +73,15 @@ class DataframeArchive:
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 self._add_table(
-                    la_dir, la_code, year, month, table_spec, data[table_spec.id]
+                    la_dir,
+                    la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                    table_spec,
+                    data[table_spec.id],
                 )
 
     def _add_table(
@@ -72,18 +89,27 @@ class DataframeArchive:
         la_dir: FS,
         la_code: str,
         year: int,
-        month: str,
+        month: str | None,
+        term: str | None,
+        school_type: str | None,
+        identifier: str | None,
         table_spec: TableConfig,
         df: pd.DataFrame,
     ):
         """
         Add a table to the archive.
         """
-        path = (
-            f"{la_code}_{year}_{table_spec.id}.csv"
-            if month is None
-            else f"{la_code}_{year}_{month}_{table_spec.id}.csv"
-        )
+        if identifier is not None and month is not None:
+            path = f"{la_code}_{identifier}_{year}_{month}_{table_spec.id}.csv"
+        elif term is not None and school_type is not None:
+            path = f"{la_code}_{year}_{term}_{school_type}_{table_spec.id}.csv"
+        elif term is not None and school_type is None:
+            path = f"{la_code}_{year}_{term}_{table_spec.id}.csv"
+        elif month is not None:
+            path = f"{la_code}_{year}_{month}_{table_spec.id}.csv"
+        else:
+            path = f"{la_code}_{year}_{table_spec.id}.csv"
+
         with la_dir.open(path, "w") as f:
             df = _normalise_table(df, table_spec)
             df.to_csv(f, index=False)
@@ -141,12 +167,12 @@ class DataframeArchive:
         """
         data = DataContainer()
         table_id = re.search(
-            r"\d{4}_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*_*([a-zA-Z0-9_]*)\.",
+            r"_(?:\d{4}_)?\d{4}(?:_(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|autumn|spring|summer))?(?:_(?:acad|la))?_([a-zA-Z0-9_]+)\.",
             snap_id,
         )
 
         for table_spec in self.config.table_list:
-            if table_id and table_id.group(2) == table_spec.id:
+            if table_id and table_id.group(1) == table_spec.id:
                 log.info(f"table id match: {table_spec.id}")
                 with self.fs.open(snap_id, "r") as f:
                     df = pd.read_csv(f)
@@ -192,11 +218,13 @@ class DataframeArchive:
 
         for table_spec in self.config.table_list:
             if table_spec.id in data:
-                sort_keys = table_spec.sort_keys
+                sort_tuples = table_spec.sort_keys
 
                 df = data[table_spec.id]
-                if sort_keys:
-                    df = df.sort_values(by=sort_keys, ascending=False)
+                if sort_tuples:
+                    by = [col_id for col_id, _ in sort_tuples]
+                    asc = [asc for _, asc in sort_tuples]
+                    df = df.sort_values(by=by, ascending=asc)
 
                 subset = [c.id for c in table_spec.columns if c.unique_key]
                 duplicate_mask = df.duplicated(
@@ -208,15 +236,26 @@ class DataframeArchive:
 
                 df = df[~duplicate_mask]
 
-                for row in duplicate_rows:
-                    errors.append(
-                        dict(
-                            type="DuplicateError",
-                            message=f"Row {row} removed as it was a duplicate",
-                            r_ix=row,
-                            table_name=table_spec.id,
+                for index in duplicate_rows:
+                    # CIN xml file cannot give rows TO DO: add node information instead
+                    if self.dataset == "cin":
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row removed as it was a duplicate",
+                                table_name=table_spec.id,
+                            )
                         )
-                    )
+                    # For other csv files, row can be given as index + 2
+                    else:
+                        errors.append(
+                            dict(
+                                type="DuplicateRemoval",
+                                message=f"Row {index + 2} removed as it was a duplicate",
+                                row_number=index + 2,
+                                table_name=table_spec.id,
+                            )
+                        )
                 data[table_spec.id] = df
 
         return ProcessResult(data=data, errors=errors)

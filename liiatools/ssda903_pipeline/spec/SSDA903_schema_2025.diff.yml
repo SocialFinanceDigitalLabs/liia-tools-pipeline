@@ -13,9 +13,13 @@ column_map.uasc.SEX.category:
   description: Updated SEX codes for 2025 schema
   value:
     - code: "M"
-      name: "Male"
+      name: 
+        - "Male"
+        - "1"
     - code: "F"
-      name: "Female"
+      name: 
+        - "Female"
+        - "2"
     - code: "U"
       name: "Unknown"
 column_map.episodes.PLACE.category:

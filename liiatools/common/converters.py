@@ -8,6 +8,8 @@ import math
 import re
 from datetime import date, datetime
 
+import pandas as pd
+
 from .spec.__data_schema import Column
 
 log = logging.getLogger(__name__)
@@ -26,7 +28,11 @@ def allow_blank(func):
     """
 
     def wrapper(value, *args, allow_blank=True, **kwargs):
-        is_blank = value is None or (isinstance(value, str) and value.strip() == "")
+        is_blank = (
+            value is None
+            or (isinstance(value, str) and value.strip() == "")
+            or pd.isna(value)
+        )
         if is_blank:
             if allow_blank:
                 return ""
@@ -147,6 +153,7 @@ def to_numeric(
             raise ValueError(f"Invalid age: {value}") from e
 
     try:
+        value = value.replace(",", "") if isinstance(value, str) else value
         value = float(value)
         if _type == "float":
             value = round(value, decimal_places) if decimal_places else value
@@ -192,10 +199,12 @@ def to_nth_of_month(value: date, n: int = 1):
     :param n: Number of the day of the month to convert to
     :return: A date of birth datetime object with the month rounded to the nth day
     """
-    try:
-        return value.replace(day=n)
-    except Exception as e:
-        raise ValueError(f"Invalid date: {value}") from e
+    if not isinstance(value, date):
+        try:
+            value = pd.to_datetime(value).date()
+        except Exception as e:
+            raise ValueError(f"Invalid date: {value}") from e
+    return value.replace(day=n)
 
 
 @allow_blank

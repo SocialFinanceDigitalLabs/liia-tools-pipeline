@@ -7,6 +7,9 @@ from fs import open_fs
 from liiatools.annex_a_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_annex_a,
 )
+from liiatools.cans_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_cans,
+)
 from liiatools.cin_census_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_cin,
 )
@@ -18,6 +21,9 @@ from liiatools.ssda903_pipeline.spec import (
 )
 from liiatools.csww_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_csww,
+)
+from liiatools.school_census_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_school_census,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
 

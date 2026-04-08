@@ -1,7 +1,9 @@
 import hashlib
 from typing import Dict
-
 import pandas as pd
+from fs.base import FS
+
+from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 from liiatools.common.converters import to_nth_of_month, to_short_postcode
 from liiatools.common.reference import authorities
@@ -52,10 +54,18 @@ def add_month(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -
     return month_map[metadata["month"]]
 
 
+def add_term(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    return metadata["term"]
+
+
+def add_school_type(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    return metadata["school_type"]
+
+
 def to_integer(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str | int:
-    value = row[column_config.id]
+    value = row[column_config.id].strip() if isinstance(row[column_config.id], str) else row[column_config.id]
 
     if pd.isna(value):
         return ""
@@ -63,7 +73,10 @@ def to_integer(
     try:
         return int(float(value))
     except ValueError:
-        return value
+        if isinstance(value, str):
+            return value.upper()
+        else:
+            return value
 
 
 def add_school_year(
@@ -79,21 +92,40 @@ def add_school_year(
     return school_year
 
 
+def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: str) -> pd.DataFrame:
+    # Load postcode lookup
+    ext_folder = external_data_folder()
+    mapping_file = "postcode_la_lookup.parquet"
+    with ext_folder.open(mapping_file, "rb") as f:
+        mapping_df = pd.read_parquet(f)
+
+    # Merge LA name into data
+    merged = data.merge(mapping_df, left_on=mapping_field, right_on="pcds", how="left")
+    data[output_field] = merged["lad25cd"]
+    return data
+
+
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
     "la_code": add_la_code,
     "la_name": add_la_name,
     "year": add_year,
     "month": add_month,
+    "term": add_term,
     "integer": to_integer,
     "school_year": add_school_year,
+    "school_type": add_school_type,
+    "postcode_la_lookup": add_la_from_postcode
 }
 
 
 def degrade_to_first_of_month(
     row: pd.Series, column_config: ColumnConfig, metadata: Metadata
 ) -> str:
-    return to_nth_of_month(row[column_config.id], 1)
+    val = to_nth_of_month(row[column_config.id], 1)
+    if val == "":
+        return pd.NaT
+    return val
 
 
 def degrade_to_short_postcode(

@@ -1,8 +1,9 @@
 import logging
+import re
 import xml.etree.ElementTree as ET
 from io import BytesIO, StringIO
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -24,7 +25,7 @@ from liiatools.common.converters import (
     to_postcode,
     to_regex,
 )
-from liiatools.common.data import FileLocator
+from liiatools.common.data import FileLocator, PipelineConfig
 from liiatools.common.stream_errors import EventErrors, StreamError
 
 from .spec.__data_schema import Category, Column, DataSchema, Numeric
@@ -43,9 +44,11 @@ def _import_set_workaround(data):
         return pd.read_csv(data)
 
 
-def tablib_parse(source: FileLocator):
+def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     """
     Parse any of the tabular formats supported by TabLib
+
+    :param table_info: Information about the table being processed (output of table_spec_from_filename)
     """
     filename = source.name
     with source.open("rb") as f:
@@ -64,7 +67,10 @@ def tablib_parse(source: FileLocator):
             filename,
             [s.title for s in databook.sheets()],
         )
-        return tablib_to_stream(databook, filename=filename)
+        if table_info:
+            return tablib_to_stream(databook, filename=filename, table_info=table_info)
+        else:
+            return tablib_to_stream(databook, filename=filename)
     except Exception as e:
         logger.debug("Failed to open %s as a book", filename, exc_info=e)
         pass
@@ -88,8 +94,8 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # tablib rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.headers[c_ix],
                 cell=cell,
             )
@@ -98,7 +104,7 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     yield events.EndContainer()
 
 
-def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
+def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.columns.tolist())
@@ -109,8 +115,8 @@ def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
                 if np.isnan(cell):
                     cell = ""
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # pandas rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
@@ -120,12 +126,16 @@ def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
 
 
 def tablib_to_stream(
-    data: Union[tablib.Dataset, tablib.Databook], filename: str = None
+    data: Union[tablib.Dataset, tablib.Databook],
+    filename: str = None,
+    table_info: Optional[Dict] = None,
 ):
     """
     Parse the csv and return the row number, column number, header name and cell value
 
     :param input: Location of file to be cleaned
+    :param filename: Name of the file being processed
+    :param table_info: Information about the table being processed: contains sheetname, table_name, table_spec, error_message
     :return: List of event objects containing filename, header and cell information
     """
     if isinstance(data, tablib.Dataset):
@@ -133,13 +143,36 @@ def tablib_to_stream(
         yield from _tablib_dataset_to_stream(data, filename=filename)
 
     elif isinstance(data, tablib.Databook):
-        for sheet in data.sheets():
-            yield from _tablib_dataset_to_stream(
-                sheet, filename=filename, sheetname=sheet.title
-            )
+        if table_info:
+            # table_info is a dictionary created when filename is used to identify sheet and schema to process within an xlsx workbook
+            sheetname = table_info.get("sheetname")
+            if sheetname:
+                # Check that there is a matching sheet to process within the input file
+                sheet_names = [s.title for s in data.sheets()]
+                if sheetname in sheet_names:
+                    for sheet in data.sheets():
+                        if sheet.title == sheetname:
+                            yield from _tablib_dataset_to_stream(
+                                sheet,
+                                filename=filename,
+                                sheetname=sheet.title,
+                            )
+                else:
+                    # In the instance of sheetname existing in table info but not found in file
+                    raise StreamError(f"Sheet {table_info['sheetname']} not found")
+            else:
+                # If sheetname has not been found error is unknown
+                raise StreamError("Matching sheetname not found due to unknown error")
+
+        else:
+            # if table_info does not exist, we want to yield all sheets
+            for sheet in data.sheets():
+                yield from _tablib_dataset_to_stream(
+                    sheet, filename=filename, sheetname=sheet.title
+                )
 
     elif isinstance(data, pd.DataFrame):
-        yield from _pandas_dataframe_to_stream(data, filename=filename)
+        yield from pandas_dataframe_to_stream(data, filename=filename)
 
 
 def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=False):
@@ -175,9 +208,9 @@ def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=Fals
 
 
 @streamfilter(check=type_check(events.StartTable), fail_function=pass_event)
-def add_table_name(event, schema: DataSchema):
+def add_table_name_from_headers(event, schema: DataSchema):
     """
-    Match the loaded table name against one of the 10 903 file names
+    Matches headers against sets of expected values to match a table in the config.
 
     :param event: A filtered list of event objects of type StartTable
     :return: An updated list of event objects
@@ -450,10 +483,11 @@ def collect_errors(stream):
                     event,
                     error_entry,
                     "filename",
-                    "r_ix",
-                    "c_ix",
+                    "row_number",
+                    "column_number",
                     "table_name",
                     "header",
+                    "xml_row",
                 )
                 collected_errors.append(error_entry)
 
@@ -679,7 +713,7 @@ def convert_column_header_to_match(event, schema: DataSchema):
     :param schema: The data schema in a DataSchema class
     :return: An updated list of event objects
     """
-    if hasattr(event, "table_name") and hasattr(event, "header"):
+    if hasattr(event, "table_name") and getattr(event, "header", None):
         column_config = schema.table.get(event.table_name)
         for column in column_config:
             if column_config[column].header_regex is not None:
@@ -689,6 +723,52 @@ def convert_column_header_to_match(event, schema: DataSchema):
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
-            else:
-                logger.debug('No match found for header "%s"', event.header)
+        logger.debug(
+            'No match found for cell with header="%s" and table_name="%s"',
+            event.header,
+            event.table_name,
+        )
     return event
+
+
+def table_spec_from_filename(
+    schema: DataSchema, filename: str, output_config: PipelineConfig
+):
+    """
+    Match the loaded table to relevant schema table name using filename
+
+    :param event: A filtered list of event objects of type StartTable
+    :return: A dictionary of table information: sheetname, table_name, table_spec (relevant table yml schema), error_message
+    """
+    table_names = schema.column_map.keys()
+    matched_tables = []
+    sheetname = None
+    table_spec = None
+    table_name = None
+    if filename:
+        for table in table_names:
+            pattern = re.compile(re.escape(table))
+            if pattern.search(filename):
+                matched_tables.append(table)
+
+    # Only return table information if exactly one table is matched
+    if len(matched_tables) == 1:
+        table_name = matched_tables[0]
+        table_spec = schema.column_map[table_name]
+        for table_config in output_config.table_list:
+            if table_config.id == table_name:
+                sheetname = table_config.sheetname
+
+    elif len(matched_tables) > 1:
+        raise StreamError("Multiple tables matched the filename")
+
+    else:
+        raise StreamError("Failed to identify table based on filename")
+
+    table_info = {
+        "sheetname": sheetname,
+        "table_spec": table_spec,
+        "table_name": table_name,
+    }
+
+    return table_info
