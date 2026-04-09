@@ -38,9 +38,3 @@ def load_schema(year: int) -> (xmlschema.XMLSchema, Path):
         xmlschema.XMLSchema(SCHEMA_DIR / f"csww_schema_{year:04d}.xsd"),
         Path(SCHEMA_DIR, f"csww_schema_{year:04d}.xsd"),
     )
-
-
-# @lru_cache
-# def load_reports():
-#     with open(SCHEMA_DIR / "reports.yml", "rt") as FILE:
-#         return yaml.load(FILE, Loader=yaml.FullLoader)

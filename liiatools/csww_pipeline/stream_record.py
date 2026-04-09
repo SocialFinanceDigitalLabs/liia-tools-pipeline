@@ -59,28 +59,6 @@ def message_collector(stream):
             next(stream)
 
 
-# @generator_with_value
-# def export_table(stream, output_config):
-#     """
-#     Collects all the records into a dictionary of lists of rows
-
-#     This filter requires that the stream has been processed by `message_collector` first
-
-#     :param stream: An iterator of events from message_collector
-#     :param output_config: Configuration for the output, imported as a PipelineConfig class
-#     :yield: All events
-#     :return: A dictionary of lists of rows, keyed by record name
-#     """
-#     dataset = {}
-#     output_table = output_config[CINEvent.name()]
-#     output_columns = [column.id for column in output_table.columns]
-#     for event in stream:
-#         event_type = type(event)
-#         for record in event_to_records(event, output_columns):
-#             dataset.setdefault(event_type.name(), []).append(record)
-#         yield event
-#     return dataset
-
 @generator_with_value
 def export_table(stream):
     """
