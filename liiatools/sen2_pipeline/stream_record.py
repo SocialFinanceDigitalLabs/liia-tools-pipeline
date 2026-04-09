@@ -26,7 +26,7 @@ class HeaderEvent(events.ParseEvent):
 class PersonEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "person"
+        return "Person"
 
     pass
 
@@ -105,7 +105,7 @@ def sen2_collector(stream):
         event = stream.peek()
         last_tag = event.get("tag", last_tag)
         if event.get("tag") in (
-            "person",
+            "Person",
             "requests",
             "assessment",
             "NamedPlan",
@@ -133,10 +133,10 @@ def person_collector(stream):
     """
     data_dict = {}
     stream = peekable(stream)
-    assert stream.peek().tag == "person"
+    assert stream.peek().tag == "Person"
     while stream:
         event = stream.peek()
-        if event.get("tag") in ("person"):
+        if event.get("tag") in ("Person"):
             data_dict.setdefault(event.tag, []).append(text_collector(stream))
 #        elif event.get("tag") == "CINdetails":
 #            data_dict.setdefault(event.tag, []).append(cin_collector(stream))
@@ -146,6 +146,27 @@ def person_collector(stream):
     return _reduce_dict(data_dict)
 
 
+@xml_collector
+def source_collector(stream):
+    """
+    Create a dictionary of text values for each Child element; ChildIdentifiers, ChildCharacteristics and CINdetails
+
+    :param stream: An iterator of events from an XML parser
+    :return: Dictionary containing element name and text values
+    """
+    data_dict = {}
+    stream = peekable(stream)
+    assert stream.peek().tag == "source"
+    while stream:
+        event = stream.peek()
+        if event.get("tag") in ("source"):
+            data_dict.setdefault(event.tag, []).append(text_collector(stream))
+        # elif event.get("tag") == "Person":
+        #     data_dict.setdefault(event.tag, []).append(person_collector(stream))
+        else:
+            next(stream)
+
+    return _reduce_dict(data_dict)
 
 
 
@@ -161,15 +182,15 @@ def message_collector(stream):
     assert stream.peek().tag == "Message", f"Expected Message, got {stream.peek().tag}"
     while stream:
         event = stream.peek()
-        if event.get("tag") == "Header":
-            header_record = text_collector(stream)
+        if event.get("tag") == "source":
+            header_record = source_collector(stream)
             if header_record:
-                print(">>> Found header record")
+                print(">>>Found header record")
                 yield HeaderEvent(record=header_record)
-        elif event.get("tag") == "person":
+        elif event.get("tag") == "Person":
             person_record = person_collector(stream)
             if person_record:
-                print(">>> Found person record")
+                print(">>>Found person record")
                 yield PersonEvent(record=person_record)
         # elif event.get("tag") == "Requests":
         #     requests_record = text_collector(stream)
@@ -249,8 +270,11 @@ def sen2_event(record, export_headers, event_name: Optional[str] = None):
     - The reason this returns a tuple is that when called, it is used with 'yield from' which expects an iterable.
     An empty tuple results in no records being yielded.
     """
-    print(f">>> sen2_event {export_headers=}")
+    print(f">>>sen_event {export_headers=}")
     return ({k: record.get(k) for k in export_headers},)
+
+
+
 
 def event_to_records(event: PersonEvent, output_columns: list) -> Iterator[dict]:
     """
@@ -274,25 +298,25 @@ def event_to_records(event: PersonEvent, output_columns: list) -> Iterator[dict]
     """
     record = event.record
     person = {
-        **record.get("person", {}),
+        **record.get("Person", {})
     }
 
-    for person_item in _maybe_list(record.get("person")):
+    for person_item in _maybe_list(record.get("Person")):
         yield from sen2_event(
-            {**person, **person_item},
-            export_headers=output_columns,
+                {**person, **person_item},
+                export_headers=output_columns,
         )
 
     header = {
-        **record.get("Header", {}),
+        **record.get("header", {})
     }
 
-    for header_item in _maybe_list(record.get("Header")):
+    for header_item in _maybe_list(record.get("header")):
         yield from sen2_event(
-            {**header, **header_item},
-            export_headers=output_columns,
-        )   
-    
+                {**header, **header_item},
+                export_headers=output_columns,
+        )
+    print(f">>> event.record keys: {record.keys()}")
     # child["Disabilities"] = ",".join(_maybe_list(child.get("Disability")))
 
     # for cin_item in _maybe_list(record.get("CINdetails")):
@@ -375,14 +399,14 @@ def export_table(stream, output_config):
     dataset = {}
 
 
-    output_table = output_config[HeaderEvent.name()]
+    output_table = output_config[PersonEvent.name()]
     print(f">>> {output_table=}")
     output_columns = [column.id for column in output_table.columns]
-    print(f">>> {output_columns=}")
+    print(f">>>output_columns=")
     for event in stream:
-        print(">>> Looping through events in stream")
+        print(">>> looping through events in stream")
         event_type = type(event)
-        print(f"{event_type=}")
+        print(f">>> {event_type=}")
         for record in event_to_records(event, output_columns):
             dataset.setdefault(event_type.name(), []).append(record)
         yield event
