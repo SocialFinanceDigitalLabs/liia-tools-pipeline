@@ -106,7 +106,7 @@ def sen2_collector(stream):
         last_tag = event.get("tag", last_tag)
         if event.get("tag") in (
             "Person",
-            "requests",
+            "Requests",
             "assessment",
             "NamedPlan",
             "PlanDetail",
@@ -145,6 +145,25 @@ def person_collector(stream):
 
     return _reduce_dict(data_dict)
 
+@xml_collector
+def requests_collector(stream):
+    """
+    Create a dictionary of text values for each Child element; ChildIdentifiers, ChildCharacteristics and CINdetails
+
+    :param stream: An iterator of events from an XML parser
+    :return: Dictionary containing element name and text values
+    """
+    data_dict = {}
+    stream = peekable(stream)
+    assert stream.peek().tag == "Requests"
+    while stream:
+        event = stream.peek()
+        if event.get("tag") in ("Requests"):
+            data_dict.setdefault(event.tag, []).append(text_collector(stream))
+        else:
+            next(stream)
+
+    return _reduce_dict(data_dict)
 
 @xml_collector
 def source_collector(stream):
@@ -192,10 +211,10 @@ def message_collector(stream):
             if person_record:
                 print(">>>Found person record")
                 yield PersonEvent(record=person_record)
-        # elif event.get("tag") == "Requests":
-        #     requests_record = text_collector(stream)
-        #     if requests_record:
-        #         yield RequestsEvent(record=requests_record)
+        elif event.get("tag") == "Requests":
+            requests_record = requests_collector(stream)
+            if requests_record:
+                yield RequestsEvent(record=requests_record)
         # elif event.get("tag") == "Assessment":
         #     assessment_record = text_collector(stream)
         #     if assessment_record:
@@ -276,7 +295,7 @@ def sen2_event(record, export_headers, event_name: Optional[str] = None):
 
 
 
-def event_to_records(event: PersonEvent, output_columns: list) -> Iterator[dict]:
+def event_to_records(event: RequestsEvent, output_columns: list) -> Iterator[dict]:
     """
     Transforms a CINEvent into a series of event records.
 
@@ -306,6 +325,17 @@ def event_to_records(event: PersonEvent, output_columns: list) -> Iterator[dict]
                 {**person, **person_item},
                 export_headers=output_columns,
         )
+
+    requests = {
+        **record.get("Requests", {})
+    }
+
+    for requests_item in _maybe_list(record.get("Requests")):
+        yield from sen2_event(
+                {**requests, **requests_item},
+                export_headers=output_columns,
+        )
+
 
     header = {
         **record.get("header", {})
