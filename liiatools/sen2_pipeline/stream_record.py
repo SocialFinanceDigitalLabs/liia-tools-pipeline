@@ -18,7 +18,7 @@ from liiatools.common.stream_record import HeaderEvent, _reduce_dict, text_colle
 class HeaderEvent(events.ParseEvent):
     @staticmethod
     def name():
-        return "header"
+        return "header" # should change 'header' to 'Source' in  json config
 
     pass
 
@@ -175,10 +175,10 @@ def source_collector(stream):
     """
     data_dict = {}
     stream = peekable(stream)
-    assert stream.peek().tag == "source"
+    assert stream.peek().tag == "Source"
     while stream:
         event = stream.peek()
-        if event.get("tag") in ("source"):
+        if event.get("tag") in ("Source"):
             data_dict.setdefault(event.tag, []).append(text_collector(stream))
         # elif event.get("tag") == "Person":
         #     data_dict.setdefault(event.tag, []).append(person_collector(stream))
@@ -201,10 +201,11 @@ def message_collector(stream):
     assert stream.peek().tag == "Message", f"Expected Message, got {stream.peek().tag}"
     while stream:
         event = stream.peek()
-        if event.get("tag") == "source":
+        print(f">>>Identified tag = {event.get("tag")} in person_collector, type = {type(event)}")
+        if event.get("tag") == "Source":
             header_record = source_collector(stream)
             if header_record:
-                print(">>>Found header record")
+                print(f">>>Found header record (Source): {header_record=}")
                 yield HeaderEvent(record=header_record)
         elif event.get("tag") == "Person":
             person_record = person_collector(stream)
