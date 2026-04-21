@@ -115,7 +115,7 @@ def school_census_cross_outputs(
     # Check for GIAS lookup file
     ext_folder = external_data_folder()
     try:
-        GIAS_lookup = open_file(ext_folder, "gias_lad25cd_lookup.csv")
+        GIAS_lookup = open_file(ext_folder, "gias_ctyua25cd_lookup.csv")
     except errors.ResourceNotFound as err:
         log.error(f"No GIAS lookup file to open: {err}")
         log.info("Exiting run as external dataset resources not available")
@@ -139,9 +139,9 @@ def school_census_cross_outputs(
 
     # Join GIAS code to addresses
     addresses = addresses.merge(
-        right=GIAS_lookup[["GIAS code", "lad25cd"]],
+        right=GIAS_lookup[["GIAS code", "ctyua25cd"]],
         left_on="child_home_la",
-        right_on="lad25cd",
+        right_on="ctyua25cd",
     )
     addresses = addresses.rename(columns={"GIAS code": "child_home_GIAS"})
 

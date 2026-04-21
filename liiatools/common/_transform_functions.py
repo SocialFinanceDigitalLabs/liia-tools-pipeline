@@ -101,7 +101,7 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
 
     # Merge LA name into data
     merged = data.merge(mapping_df, left_on=mapping_field, right_on="pcds", how="left")
-    data[output_field] = merged["lad25cd"]
+    data[output_field] = merged["CTYUA25CD"]
     return data
 
 
