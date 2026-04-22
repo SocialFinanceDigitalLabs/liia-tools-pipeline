@@ -144,6 +144,7 @@ def school_census_cross_outputs(
         right_on="ctyua25cd",
     )
     addresses = addresses.rename(columns={"GIAS code": "child_home_GIAS"})
+    addresses = addresses.drop("ctyua25cd", axis=1)
 
     # Open fsm files, where there may be one or two files to open
     fsm_pattern = re.compile(r"school_census_fsmperiod\.csv$")
