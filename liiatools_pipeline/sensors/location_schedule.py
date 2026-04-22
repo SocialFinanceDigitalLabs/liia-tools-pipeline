@@ -168,8 +168,12 @@ def clean_schedule(context):
                 limit=1000,
             )
 
+            run_records_without_manual_trigger = [
+                run for run in run_records if run.dagster_run.tags.get("manual_trigger") != "true"
+            ]
+
             previous_matching_run_id = find_previous_matching_run(
-                run_records,
+                run_records_without_manual_trigger,
                 run_key,
                 la_path,
                 dataset,
