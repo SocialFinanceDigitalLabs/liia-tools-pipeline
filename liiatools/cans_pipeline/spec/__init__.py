@@ -66,9 +66,9 @@ def load_summary_sheet_mapping() -> dict:
     Load the summary sheet mapping file
     :return: A dictionary of summary sheet mapping
     """
-    summary_shet_mapping_path = Path(SCHEMA_DIR, "summary_sheet_mapping.yml")
+    summary_sheet_mapping_path = Path(SCHEMA_DIR, "summary_sheet_mapping.yml")
 
-    with open(summary_shet_mapping_path, "r", encoding="utf-8") as f:
+    with open(summary_sheet_mapping_path, "r", encoding="utf-8") as f:
         mapping = yaml.load(f)
     return mapping
 
