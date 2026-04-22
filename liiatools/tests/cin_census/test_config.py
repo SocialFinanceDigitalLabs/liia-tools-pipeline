@@ -1,4 +1,4 @@
-from urllib.error import URLError
+import xmlschema
 
 import pytest
 
@@ -12,5 +12,5 @@ def test_schema():
     schema, schema_path = load_schema(2017)
     assert schema.name == "CIN_schema_2017.xsd"
 
-    with pytest.raises(URLError):
+    with pytest.raises(xmlschema.exceptions.XMLResourceOSError):
         load_schema(2016)

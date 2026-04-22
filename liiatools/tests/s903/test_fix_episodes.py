@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from liiatools.ssda903_pipeline.fix_episodes import (
     _has_x1_gap_before_next_episode,
@@ -35,17 +36,17 @@ def test_create_previous_and_next_episode():
 
     data_with_previous_next_episode = create_previous_and_next_episode(data, columns)
     assert data_with_previous_next_episode["DECOM_previous"].tolist() == [
-        None,
+        np.nan,
         "2016-07-26",
         "2016-08-22",
     ]
     assert data_with_previous_next_episode["DECOM_next"].tolist() == [
         "2016-08-22",
         "2016-09-13",
-        None,
+        np.nan,
     ]
-    assert data_with_previous_next_episode["RNE_previous"].tolist() == [None, "S", "L"]
-    assert data_with_previous_next_episode["RNE_next"].tolist() == ["L", "P", None]
+    assert data_with_previous_next_episode["RNE_previous"].tolist() == [np.nan, "S", "L"]
+    assert data_with_previous_next_episode["RNE_next"].tolist() == ["L", "P", np.nan]
     assert data_with_previous_next_episode["YEAR_previous"].tolist() == [
         None,
         2016,
@@ -764,7 +765,7 @@ def test__stage1_rule_to_apply():
     )
     data["Rule_to_apply"] = data.apply(_stage1_rule_to_apply, axis=1)
     assert data["Rule_to_apply"].tolist() == [
-        None,
+        np.nan,
         "RULE_3",
         "RULE_3A",
         "RULE_2",
@@ -795,7 +796,7 @@ def test__update_dec_stage1():
     )
     data["DEC"] = data.apply(_update_dec_stage1, axis=1)
     assert data["DEC"].astype(str).tolist() == [
-        "NaT",
+        np.nan,
         "2020-11-11",
         "2022-01-01",
         "2022-02-01",
@@ -814,7 +815,7 @@ def test__update_rec_stage1():
     )
     data["updated_REC"] = data.apply(_update_rec_stage1, axis=1)
     assert data["updated_REC"].tolist() == [
-        None,
+        np.nan,
         "E41",
         "X1",
         "E99",
@@ -922,7 +923,7 @@ def test__stage2_rule_to_apply():
     )
     data["test_result"] = data.apply(_stage2_rule_to_apply, axis=1)
     assert data["test_result"].tolist() == [
-        None,
+        np.nan,
         "RULE_4",
         "RULE_5",
     ]
