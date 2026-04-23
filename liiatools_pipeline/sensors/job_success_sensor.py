@@ -483,7 +483,7 @@ def full_clean_sensor(context):
 
         yield RunRequest(
             run_key=f"{latest_run_id}{la}",
-            tags={"dataset": dataset},
+            tags={"dataset": dataset, "manual_trigger": "true"},
             run_config=RunConfig(
                 ops={
                     "create_session_folder": clean_config,
