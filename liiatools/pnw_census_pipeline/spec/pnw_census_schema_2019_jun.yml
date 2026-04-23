@@ -540,7 +540,7 @@ column_map:
           type: "float"
           min_value: 0
           decimal_places: 2
-        canbeblank: False
+        canbeblank: True
         header_regex:
           - /contribution.*social care.*/i
       Contribution from Education:
