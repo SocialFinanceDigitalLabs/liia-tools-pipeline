@@ -17,7 +17,7 @@ lxml = "^6.1.0"
 more-itertools = "^8.12.0"
 sfdata-stream-parser = "^0.6.0"
 xmlschema = "^4.3.1"
-click = "^8.1.7"
+click = "8.3.3"
 PyYAML = "^6.0"
 tablib = {extras = ["cli", "xlsx"], version = "^3.2.0"}
 regex = "^2026.2.28"
