@@ -77,6 +77,7 @@ class Column(BaseModel):
     string: Literal["alphanumeric", "postcode", "regex"] | None = None
     numeric: Numeric | None = None
     date: str | None = None
+    time: str | None = None
 
     dictionary: Dict | None = None
     category: List[Category] | None = None
@@ -98,6 +99,8 @@ class Column(BaseModel):
             return "numeric"
         elif self.date:
             return "date"
+        elif self.time:
+            return "time"
         elif self.category:
             return "category"
         else:
