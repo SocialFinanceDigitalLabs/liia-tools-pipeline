@@ -21,6 +21,7 @@ from tablib import UnsupportedFormat, import_book, import_set
 from liiatools.common.converters import (
     to_category,
     to_date,
+    to_time,
     to_numeric,
     to_postcode,
     to_regex,
@@ -339,6 +340,8 @@ def conform_cell_types(event, preserve_value=False):
         converter = lambda x: to_category(x, column_spec)
     elif column_spec.type == "date":
         converter = lambda x: to_date(x, column_spec.date)
+    elif column_spec.type == "time":
+        converter = lambda x: to_time(x, column_spec.time)
     elif column_spec.type == "numeric":
         converter = lambda x: to_numeric(
             x,

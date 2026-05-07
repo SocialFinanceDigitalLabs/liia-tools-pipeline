@@ -802,7 +802,7 @@ spring:
             *alphanumeric-not-blank
         openingtime:
             &time
-            time: "%Y-%b-%d %H:%M:%S"
+            time: "%H:%M"
             canbeblank: yes
         closingtime:
             *time
