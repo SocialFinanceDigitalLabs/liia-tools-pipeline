@@ -98,38 +98,34 @@ def generate_run_key(folder_location, files):
     return hash_object.hexdigest()
 
 
-def find_previous_matching_run(
-    run_records, run_key, la_path, dataset, key_op, key_folder, context
+def find_previous_matching_run_key(
+    run_records,
+    match_fn,
+    context,
 ):
-    try:
-        previous_run_id = [
-            run.dagster_run.tags["dagster/run_key"]
-            for run in run_records
-            if all(
-                var in run.dagster_run.run_config["ops"][key_op]["config"][key_folder]
-                for var in (la_path, dataset)
-            )
-        ]
+    '''
+    Return the run key from the most recent SUCCESS that satisfies the provided match function
+    '''
+    for run in run_records:
+        try:
+            if match_fn(run):
+                previous_run_key = run.dagster_run.tags.get("dagster/run_key")
 
-    except KeyError as e:
-        if "dagster/run_key" in str(e):
+                context.log.info(
+                    f"Previous successful run found with run_key={previous_run_key}"
+                )
+
+                return previous_run_key
+
+        except KeyError as e:
             context.log.error(
-                f"dagster/run_key not found in tags. No previous run key found: {run_records[0].dagster_run.tags}"
-            )
-        elif key_op in str(e):
-            context.log.error(
-                f"{key_op} not found in run_config. No previous run config found: {run_records[0].dagster_run.run_config}"
-            )
-        elif key_folder in str(e):
-            context.log.error(
-                f"{key_folder} not found in run_config. No previous run config found: {run_records[0].dagster_run.run_config}"
+                f"Error while evaluating previous run match: {e}"
             )
 
-        previous_run_id = None
-
-    previous_run_id = previous_run_id[0] if previous_run_id else []
-    previous_matching_run_id = previous_run_id if run_key == previous_run_id else None
-    return previous_matching_run_id
+    context.log.info(
+        "No previous successful run found"
+    )
+    return None
 
 
 @schedule(
@@ -144,51 +140,68 @@ def clean_schedule(context):
 
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
     context.log.info(f"Allowed datasets: {allowed_datasets}")
+
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=clean.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    run_records_without_manual_trigger = [
+        run
+        for run in run_records
+        if run.dagster_run.tags.get("manual_trigger") != "true"
+    ]
+
     for dataset in allowed_datasets:
         context.log.info("Analysing folder contents")
-        directory_contents = input_directory_walker(folder_location, context, dataset)
+        directory_contents = input_directory_walker(
+            folder_location,
+            context,
+            dataset
+        )
 
         for la_path, files in directory_contents.items():
-            context.log.info(
-                f"Generating Run Key for {dataset} file in {la_path.split('-')[-1]} folder"
-            )
-            run_key = generate_run_key(f"{folder_location}/{la_path}/{dataset}", files)
-
-            context.log.info(
-                f"Run Key: {run_key} generated for {dataset} in {la_path.split('-')[-1]} folder"
-            )
-
-            run_records = context.instance.get_run_records(
-                filters=RunsFilter(
-                    job_name=clean.name,
-                    statuses=[DagsterRunStatus.SUCCESS],
-                ),
-                order_by="update_timestamp",
-                ascending=False,
-                limit=1000,
-            )
-
-            run_records_without_manual_trigger = [
-                run for run in run_records if run.dagster_run.tags.get("manual_trigger") != "true"
-            ]
-
-            previous_matching_run_id = find_previous_matching_run(
-                run_records_without_manual_trigger,
-                run_key,
-                la_path,
-                dataset,
-                "create_session_folder",
-                "dataset_folder",
-                context,
-            )
 
             try:
                 la = check_la(la_path)
             except ValueError:
                 context.log.error(
-                    f"LA code not found in the directory path: {folder_location}/{la_path.split('-')[-1]}/{dataset}"
+                    f"LA code not found in the directory path: "
+                    f"{folder_location}/{la_path.split('-')[-1]}/{dataset}"
                 )
                 continue
+
+            context.log.info(
+                f"Generating Run Key for {dataset} file in "
+                f"{la_path.split('-')[-1]} folder"
+            )
+
+            state_hash = generate_run_key(
+                f"{folder_location}/{la_path}/{dataset}",
+                files,
+            )
+
+            partition_key = f"{la}_{dataset}"
+            run_key = f"{partition_key}:{state_hash}"
+
+            context.log.info(
+                f"Run Key: {run_key} generated for "
+                f"{dataset} in {la_path.split('-')[-1]} folder"
+            )
+
+            previous_run_key = find_previous_matching_run_key(
+                run_records_without_manual_trigger,
+                lambda run: (
+                    run.dagster_run.run_config["ops"]["create_session_folder"]["config"]["input_la_code"] == la
+                    and run.dagster_run.run_config["ops"]["create_session_folder"]["config"]["dataset"] == dataset
+                ),
+                context,
+            )
 
             clean_config = CleanConfig(
                 dataset_folder=f"{folder_location}/{la_path}/{dataset}",
@@ -197,10 +210,14 @@ def clean_schedule(context):
                 dataset=dataset,
             )
 
-            if previous_matching_run_id is None:
+            if previous_run_key != run_key:
                 context.log.info(
-                    f"Differences found in {la_path.split('-')[-1]} {dataset} folder, executing run"
+                    f"State change detected for "
+                    f"{la_path.split('-')[-1]} {dataset} folder "
+                    f"(previous={previous_run_key}, current={run_key}), "
+                    f"executing run"
                 )
+
                 yield RunRequest(
                     run_key=run_key,
                     tags={"dataset": dataset},
@@ -214,7 +231,8 @@ def clean_schedule(context):
                 )
             else:
                 context.log.info(
-                    f"No new {la_path.split('-')[-1]} {dataset} files found, skipping run"
+                    f"No state change detected for "
+                    f"{la_path.split('-')[-1]} {dataset} folder, skipping run"
                 )
 
 
@@ -230,39 +248,43 @@ def reports_schedule(context):
 
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
     context.log.info(f"Allowed datasets: {allowed_datasets}")
+
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
     for dataset in allowed_datasets:
         context.log.info("Analysing folder contents")
-        files = concat_directory_walker(folder_location, context, dataset)
+
+        files = concat_directory_walker(
+            folder_location,
+            context,
+            dataset,)
 
         if files is not None:
             context.log.info(f"Generating Run Key for {dataset} files")
-            run_key = generate_run_key(
-                f"{folder_location}/concatenated/{dataset}", files
-            )
-            context.log.info(f"Run Key: {run_key}")
-
-            run_records = context.instance.get_run_records(
-                filters=RunsFilter(
-                    job_name=reports.name,
-                    statuses=[DagsterRunStatus.SUCCESS],
-                ),
-                order_by="update_timestamp",
-                ascending=False,
-                limit=1000,
+            state_hash = generate_run_key(
+                f"{folder_location}/concatenated/{dataset}",
+                files,
             )
 
-            previous_matching_run_id = find_previous_matching_run(
-                run_records,
-                run_key,
-                "",
-                dataset,
-                "create_org_session_folder",
-                "dataset",
-                context,
-            )
+            run_key = f"{dataset}:{state_hash}"
 
             context.log.info(
-                f"Have we found a previous matching ID? {previous_matching_run_id}"
+                f"Run Key: {run_key} generated for {dataset} files")
+
+            previous_run_key = find_previous_matching_run_key(
+                run_records,
+                lambda run: (
+                    run.dagster_run.run_config["ops"]["create_org_session_folder"]["config"]["dataset"] == dataset
+                ),
+                context,
             )
 
             clean_config = CleanConfig(
@@ -271,10 +293,10 @@ def reports_schedule(context):
                 input_la_code=None,
                 dataset=dataset,
             )
-            context.log.debug(f"Config used: {clean_config}")
 
-            if previous_matching_run_id is None:
-                context.log.info(f"Differences found for {dataset}, executing run")
+            if previous_run_key != run_key:
+                context.log.info(f"State change found for {dataset}, executing run")
+
                 yield RunRequest(
                     run_key=run_key,
                     tags={"dataset": dataset},
@@ -286,4 +308,4 @@ def reports_schedule(context):
                     ),
                 )
             else:
-                context.log.info(f"No new {dataset} files found, skipping run")
+                context.log.info(f"No state change found for {dataset}, skipping run")
