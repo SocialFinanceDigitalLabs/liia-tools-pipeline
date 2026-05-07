@@ -57,7 +57,12 @@ def move_current_la_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -87,7 +92,12 @@ def concatenate_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
@@ -128,7 +138,12 @@ def ssda903_fix_episodes_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=concatenate.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "ssda903"},
         ),
         order_by="update_timestamp",
@@ -155,7 +170,12 @@ def move_error_reports_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -186,7 +206,12 @@ def move_current_org_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
@@ -243,7 +268,12 @@ def move_concat_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": allowed_datasets},
         ),
         order_by="update_timestamp",
@@ -294,7 +324,12 @@ def sufficiency_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "ssda903"},
         ),
         order_by="update_timestamp",
@@ -323,7 +358,12 @@ def deduplicate_annex_a_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "annex_a"},
         ),
         order_by="update_timestamp",
@@ -364,7 +404,12 @@ def pnw_census_joins_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": ["ssda903", "pnw_census", "cans"]},
         ),
         order_by="update_timestamp",
@@ -404,7 +449,12 @@ def cin_reports_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "cin"},
         ),
         order_by="update_timestamp",
@@ -433,7 +483,12 @@ def full_clean_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=start_clean_dataset.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
 
         ),
         order_by="update_timestamp",
@@ -503,7 +558,12 @@ def cans_summary_columns_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "cans"},
         ),
         order_by="update_timestamp",
@@ -531,7 +591,12 @@ def sc_cross_reports_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "school_census"},
         ),
         order_by="update_timestamp",
@@ -560,7 +625,12 @@ def sc_region_reports_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
             tags={"dataset": "school_census"},
         ),
         order_by="update_timestamp",
