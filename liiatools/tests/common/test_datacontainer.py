@@ -54,3 +54,52 @@ def test_export_parquet(sample_data: DataContainer):
 
     assert fs.exists("test_table1.parquet")
     assert fs.exists("test_table1.parquet")
+
+
+def test_export_csv_chunked_creates_multiple_files(tmp_path):
+    import pandas as pd
+    from liiatools.common.data.__container import DataContainer
+    from tablib import Dataset
+    from fs.memoryfs import MemoryFS
+
+    # Create a DataContainer with enough rows to force chunking
+    df = pd.DataFrame({"a": range(100), "b": ["x" * 50] * 100})
+    data = DataContainer({"bigtable": df})
+    dataset = data.to_dataset("bigtable")
+    fs = MemoryFS()
+
+    # Use a very small max_file_size_mb to force chunking
+    data._export_csv_chunked(fs, "chunked_", "bigtable", dataset, max_file_size_mb=0.001)
+
+    # Should create multiple part files
+    files = list(fs.walk.files())
+    part_files = [f for f in files if "part" in f]
+    assert len(part_files) > 1
+    # All files should be non-empty
+    for f in part_files:
+        with fs.open(f, "r") as file:
+            content = file.read()
+            assert content.strip() != ""
+
+
+def test_export_csv_chunked_creates_single_file_when_small():
+    import pandas as pd
+    from liiatools.common.data.__container import DataContainer
+    from tablib import Dataset
+    from fs.memoryfs import MemoryFS
+
+    df = pd.DataFrame({"a": [1, 2], "b": ["foo", "bar"]})
+    data = DataContainer({"smalltable": df})
+    dataset = data.to_dataset("smalltable")
+    fs = MemoryFS()
+
+    # Large enough chunk size to avoid splitting
+    data._export_csv_chunked(fs, "single_", "smalltable", dataset, max_file_size_mb=1)
+
+    files = list(fs.walk.files())
+    assert len(files) == 1
+    assert files[0].endswith("smalltable.csv")
+    with fs.open(files[0], "r") as file:
+        content = file.read()
+        assert "a,b" in content
+        assert "foo" in content
