@@ -144,7 +144,12 @@ def clean_schedule(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=clean.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -252,7 +257,12 @@ def reports_schedule(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
-            statuses=[DagsterRunStatus.SUCCESS],
+            statuses=[
+                DagsterRunStatus.SUCCESS,
+                DagsterRunStatus.STARTED,
+                DagsterRunStatus.QUEUED,
+                DagsterRunStatus.NOT_STARTED,
+                ],
         ),
         order_by="update_timestamp",
         ascending=False,
