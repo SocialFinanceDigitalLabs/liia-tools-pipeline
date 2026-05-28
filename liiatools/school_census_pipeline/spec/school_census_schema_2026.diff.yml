@@ -1,0 +1,28 @@
+spring:
+  column_map.learnerfamoffroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      &learner-fam-type
+      category:
+        - code: "NLM"
+        - code: "EMH"
+        - code: "MMH"
+      canbeblank: yes
+  column_map.learnerfamonroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      *learner-fam-type
+
+summer:
+  column_map.learnerfamoffroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      *learner-fam-type
+  column_map.learnerfamonroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      *learner-fam-type

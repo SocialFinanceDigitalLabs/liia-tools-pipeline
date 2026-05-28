@@ -1,4 +1,37 @@
 autumn:
+  column_map.learnerfamoffroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2025 return
+    value:
+      &learner-fam-type
+      category:
+        - code: "NLM"
+        - code: "EMH"
+        - code: "MMH"
+      canbeblank: yes
+  column_map.learnerfamonroll.learnerfamtype:
+    type: modify
+    description: Update codes for 2025 return
+    value:
+      *learner-fam-type
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      &learner-fam-code
+      category:
+      - code: "01"
+      - code: "02"
+      - code: "03"
+      - code: "04"
+      - code: "05"      
+      - code: "22"
+      canbeblank: yes
+  column_map.learnerfamonroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2025 schema
+    value:
+      *learner-fam-code
   column_map.pupilnolongeronroll:
     type: remove
     description: Remove column from pupilnolongeronroll
