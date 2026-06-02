@@ -27,6 +27,7 @@ column_map.episodes.PLACE.category:
     - code: "U4"
     - code: "U5"
     - code: "U6"
+    - code: "Z1"
     - code: "Z11"
     - code: "Z12"
     - code: "Z13"
