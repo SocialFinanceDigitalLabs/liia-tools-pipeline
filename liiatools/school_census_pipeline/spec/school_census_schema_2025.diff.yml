@@ -18,7 +18,7 @@ autumn:
     type: modify
     description: Update codes for 2025 schema
     value:
-      &learner-fam-code
+      &learner-fam-code-aut
       category:
       - code: "01"
       - code: "02"
@@ -31,7 +31,7 @@ autumn:
     type: modify
     description: Update codes for 2025 schema
     value:
-      *learner-fam-code
+      *learner-fam-code-aut
   column_map.pupilnolongeronroll:
     type: remove
     description: Remove column from pupilnolongeronroll
