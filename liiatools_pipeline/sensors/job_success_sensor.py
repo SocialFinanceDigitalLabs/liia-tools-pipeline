@@ -357,7 +357,7 @@ def deduplicate_annex_a_sensor(context):
 @sensor(
     job=pnw_census_joins,
     description="Runs pnw_census_joins job once reports job is complete",
-    default_status=DefaultSensorStatus.RUNNING,
+    default_status=DefaultSensorStatus.STOPPED,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def pnw_census_joins_sensor(context):
