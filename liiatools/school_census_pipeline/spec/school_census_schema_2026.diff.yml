@@ -14,6 +14,19 @@ spring:
     description: Update codes for 2026 return
     value:
       *learner-fam-type
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      &learner-fam-code
+      category:
+      - code: "01"
+      - code: "02"
+      - code: "03"
+      - code: "04"
+      - code: "05"      
+      - code: "22"
+      canbeblank: yes
 
 summer:
   column_map.learnerfamoffroll.learnerfamtype:
@@ -26,3 +39,8 @@ summer:
     description: Update codes for 2026 return
     value:
       *learner-fam-type
+  column_map.learnerfamoffroll.learnerfamcode:
+    type: modify
+    description: Update codes for 2026 return
+    value:
+      *learner-fam-code
