@@ -52,6 +52,26 @@ autumn:
       - summerhalfterm2sessionsunauthorised
       - summerhalfterm2sessionseducational
       - summerhalfterm2sessionsexceptional
+  column_map.learningaimsoffroll:
+    type: remove
+    description: Remove column from learningaimsoffroll
+    value:
+      - traineeship
+  column_map.learningaimsonroll:
+    type: remove
+    description: Remove column from learningaimsonroll
+    value:
+      - traineeship
+  column_map.programmeaimsoffroll:
+    type: remove
+    description: Remove column from programmeaimsoffroll
+    value:
+      - traineeship
+  column_map.programmeaimsonroll:
+    type: remove
+    description: Remove column from programmeaimsonroll
+    value:
+      - traineeship
 
 spring:
   column_map.childcare.childcareplacesavailability:
