@@ -11,9 +11,9 @@ jobs:
         python-version: ["3.13"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
         architecture: "x64"
@@ -25,7 +25,7 @@ jobs:
         git config --global url."https://${{ secrets.PRIVATE_REPO_TOKEN }}:x-oauth-basic@github.com".insteadOf "https://github.com"
 
     - name: Cache dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.cache/pypoetry
         key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
@@ -60,6 +60,6 @@ jobs:
         poetry run coverage xml
 
     - name: "Upload coverage to Codecov"
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
