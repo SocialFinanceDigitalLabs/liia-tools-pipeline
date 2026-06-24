@@ -63,6 +63,7 @@ class PipelineConfig(BaseModel):
     reports_to_shared: Dict
     la_signed: Dict
     table_list: List[TableConfig]
+    input_schema_version: str
 
     def __getitem__(self, value) -> TableConfig:
         ix = {t.id: t for t in self.table_list}

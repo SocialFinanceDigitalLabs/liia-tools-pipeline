@@ -1,0 +1,203 @@
+column_map:
+  placements_standard:
+    child_ID:
+      string: "alphanumeric"
+      canbeblank: False
+    when_placement_is_needed_by:
+      category:
+        - code: "Today"
+        - code: "< 5 days"
+        - code: "> 5 days"
+      canbeblank: False
+    number_of_siblings_to_place_with:
+      &positive_int
+      numeric:
+        type: "integer"
+        min_value: 0
+      canbeblank: False
+    preferred_location_for_home_search:
+      &yes-no
+      category:
+        - code: "Yes"
+        - code: "No"
+      canbeblank: False
+    communication_language_learning_needs:
+      &yes-no-unspecified
+      category:
+        - code: "Yes"
+        - code: "No"
+        - code: "Not specified"
+      canbeblank: False
+    specific_communication_and_language_requirements:
+      category:
+        - code: "ESOL"
+        - code: "BSL"
+        - code: "Makaton"
+        - code: "Other"
+        - code: "None"
+      canbeblank: False
+    adaptation_to_the_home:
+      *yes-no
+    cultural_needs:
+      category:
+        - code: "Required"
+        - code: "Not required"
+        - code: "Not known"
+        - code: "Other"
+      canbeblank: False
+    who_can_the_child_be_cared_for_alongside:
+      category:
+        - code: "Solo placement recommended"
+        - code: "With other children recommended"
+        - code: "Only with other older children"
+        - code: "Only with other younger children"
+        - code: "No preference"
+      canbeblank: False
+    can_child_live_with_pets:
+      category:
+        - code: "Yes - must"
+        - code: "Yes - can"
+        - code: "No"
+        - code: "Unknown"
+      canbeblank: False
+    additional_support:
+      category:
+        - code: "Additional supervision"
+        - code: "Therapeutic support"
+        - code: "A worker for respite"
+        - code: "Taxis to school"
+        - code: "N/A"
+        - code: "Other"
+      canbeblank: False
+    mental_health_diagnosis:
+      *yes-no
+    neurodevelopmental_diagnosis:
+      &referral
+      category:
+        - code: "Yes"
+        - code: "No"
+        - code: "Referral in progress"
+      canbeblank: False
+    open_to_CAMHS:
+      *referral
+    dol:
+      *yes-no
+    needs_assessment:
+      category:
+        - code: "BERRI"
+        - code: "CANS"
+        - code: "Other - formalised needs assessment tool"
+        - code: "Other - social worker assessment"
+      canbeblank: True
+    foster_care_suitability:
+      &preferred
+      category:
+        - code: "Preferred"
+        - code: "Suitable but not preferred"
+        - code: "Unsuitable"
+        - code: "Not specified"
+      canbeblank: False
+    residential_care_suitability:
+      *preferred
+    supported_accommodation_suitability:
+      *preferred
+    risk_to_child_self_harm:
+      &risk
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      canbeblank: False
+    risk_to_child_criminal_exploitation:
+      *risk
+    risk_to_child_drug_and_alcohol_use:
+      *risk
+    risk_to_child_eating_disorder:
+      *risk
+    risk_to_child_going_missing:
+      *risk
+    risk_to_others_physical_harm:
+      *risk
+    risk_to_others_sexual_harm:
+      *risk
+    risk_to_others_fire_setting:
+      *risk
+    risk_to_others_harm_to_animals:
+      *risk
+    risk_to_others_criminal_exploitation:
+      *risk
+    placement_search_foster_total_number:
+      *positive_int
+    placement_search_foster_U4:
+      &yes-no-na
+      category:
+        - code: "Yes"
+        - code: "No"
+        - code: "N/A"
+      canbeblank: True
+    placement_search_foster_U5:
+      *yes-no-na
+    placement_search_foster_U6:
+      *yes-no-na
+    placement_search_supported_accommodation_total_number:
+      *positive_int
+    placement_search_supported_accommodation_solo:
+      *yes-no-na
+    placement_search_supported_accommodation_shared_lac:
+      *yes-no-na
+    placement_search_supported_accommodation_shared_other:
+      *yes-no-na
+    placement_search_supported_accommodation_shared_lodgings:
+      *yes-no-na
+    placement_search_residential_total_number:
+      *positive_int
+    placement_search_residential_ebd:
+      *yes-no-na
+    placement_search_residential_mhd:
+      *yes-no-na
+    placement_search_residential_si:
+      *yes-no-na
+    placement_search_residential_alc:
+      *yes-no-na
+    placement_search_residential_drug:
+      *yes-no-na
+    placement_search_residential_ld:
+      *yes-no-na
+    placement_search_residential_pd:
+      *yes-no-na
+    placement_start_date:
+      date: "%d/%m/%Y"
+      canbeblank: False
+    total_weekly_cost:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      canbeblank: False
+    preferability_of_placement_location:
+      *yes-no
+    placement_location_non_preferable_reason:
+      category:
+        - code: "CYP / parental preference"
+        - code: "Safeguarding requirement"
+        - code: "Provision within distance exists but is not available"
+        - code: "Provision within distance does not exist"
+        - code: "Carer moving out of area"
+        - code: "Legal reasons"
+        - code: "Not applicable"
+      canbeblank: True
+    education_continuity:
+      *yes-no
+    how_many_siblings_were_placed_together:
+      *positive_int
+    placement_type_offers:
+      *positive_int
+    placement_sourced:
+      category:
+        - code: "RCC contract"
+        - code: "Other regional contract"
+        - code: "Direct award / Off framework"
+        - code: "Local contract or framework"
+        - code: "Block contract"
+        - code: "Remand"
+        - code: "Secure Welfare Hub"
+      canbeblank: False

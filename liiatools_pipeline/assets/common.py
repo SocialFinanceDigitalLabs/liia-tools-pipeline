@@ -22,6 +22,9 @@ from liiatools.ssda903_pipeline.spec import (
 from liiatools.school_census_pipeline.spec import (
     load_pipeline_config as load_pipeline_config_school_census,
 )
+from liiatools.placements_standard_pipeline.spec import (
+    load_pipeline_config as load_pipeline_config_placements_standard,
+)
 from liiatools_pipeline.ops.common_config import CleanConfig
 
 logger = logging.getLogger(__name__)

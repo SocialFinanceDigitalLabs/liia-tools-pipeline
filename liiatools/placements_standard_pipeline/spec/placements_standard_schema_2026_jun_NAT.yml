@@ -1,0 +1,168 @@
+column_map:
+  placements_standard:
+    child_ID:
+      string: "alphanumeric"
+      canbeblank: False
+    when_placement_is_needed_by:
+      category:
+        - code: "Today"
+        - code: "< 5 days"
+        - code: "> 5 days"
+      canbeblank: False
+    number_of_siblings_to_place_with:
+      &positive_int
+      numeric:
+        type: "integer"
+        min_value: 0
+      canbeblank: False
+    preferred_location_for_home_search:
+      &yes-no
+      category:
+        - code: "Yes"
+        - code: "No"
+      canbeblank: False
+    preferred_location_diff_la_reason:
+      category:
+        - code: "Safeguarding concerns"
+        - code: "Bail conditions"
+        - code: "Court order"
+        - code: "Other"
+        - code: "N/A"
+      canbeblank: True
+    communication_language_learning_needs:
+      &yes-no-unspecified
+      category:
+        - code: "Yes"
+        - code: "No"
+        - code: "Not specified"
+      canbeblank: False
+    specific_communication_and_language_requirements:
+      category:
+        - code: "ESOL"
+        - code: "BSL"
+        - code: "Makaton"
+        - code: "Other"
+        - code: "None"
+      canbeblank: False
+    adaptation_to_the_home:
+      *yes-no
+    cultural_needs:
+      category:
+        - code: "Required"
+        - code: "Not required"
+        - code: "Not known"
+        - code: "Other"
+      canbeblank: False
+    who_can_the_child_be_cared_for_alongside:
+      category:
+        - code: "Solo placement recommended"
+        - code: "With other children recommended"
+        - code: "Only with other older children"
+        - code: "Only with other younger children"
+        - code: "No preference"
+      canbeblank: False
+    can_child_live_with_pets:
+      category:
+        - code: "Yes - must"
+        - code: "Yes - can"
+        - code: "No"
+        - code: "Unknown"
+      canbeblank: False
+    additional_support:
+      category:
+        - code: "Additional supervision"
+        - code: "Therapeutic support"
+        - code: "A worker for respite"
+        - code: "Taxis to school"
+        - code: "N/A"
+        - code: "Other"
+      canbeblank: False
+    dol:
+      *yes-no
+    foster_care_suitability:
+      &preferred
+      category:
+        - code: "Preferred"
+        - code: "Suitable but not preferred"
+        - code: "Unsuitable"
+        - code: "Not specified"
+      canbeblank: False
+    residential_care_suitability:
+      *preferred
+    supported_accommodation_suitability:
+      *preferred
+    risk_to_child_self_harm:
+      &risk
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      canbeblank: False
+    risk_to_child_criminal_exploitation:
+      *risk
+    risk_to_child_drug_and_alcohol_use:
+      *risk
+    risk_to_child_eating_disorder:
+      *risk
+    risk_to_child_going_missing:
+      *risk
+    risk_to_others_physical_harm:
+      *risk
+    risk_to_others_sexual_harm:
+      *risk
+    risk_to_others_fire_setting:
+      *risk
+    risk_to_others_harm_to_animals:
+      *risk
+    risk_to_others_criminal_exploitation:
+      *risk
+    placement_start_date:
+      date: "%d/%m/%Y"
+      canbeblank: False
+    cost_core_weekly:
+      &cost
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      canbeblank: False
+    cost_additional_support_weekly:
+      *cost
+    cost_education_weekly:
+      *cost
+    cost_other_weekly:
+      *cost
+    total_weekly_cost:
+      *cost
+    placement_location:
+      string: "postcode"
+      canbeblank: False
+    preferability_of_placement_location:
+      *yes-no
+    education_continuity:
+      *yes-no
+    provider_URN:
+      &string-canbeblank
+      string: "alphanumeric"
+      canbeblank: True
+    how_many_siblings_were_placed_together:
+      *positive_int
+    placement_type:
+      category:
+        - code: "Residential"
+        - code: "Foster"
+        - code: "Supported Accommodation"
+      canbeblank: False
+    name_of_officer_referral:
+      *string-canbeblank
+    date_entry_referral:
+      &date-canbeblank
+      date: "%d/%m/%Y"
+      canbeblank: True
+    name_of_officer_placement:
+      *string-canbeblank
+    date_entry_placement:
+      *date-canbeblank
+    name_of_officer_placement_cost:
+      *string-canbeblank
+    date_entry_placement_cost:
+      *date-canbeblank
