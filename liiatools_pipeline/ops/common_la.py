@@ -370,15 +370,24 @@ def process_files(
         else f"{config.dataset}_{session_id}_error_report.csv"
     )
 
-    destination_logs = shared_folder().makedirs("logs", recreate=True)
-    incoming_logs = open_fs(config.la_folder).makedirs("logs", recreate=True)
-    log_locations = [session_folder, destination_logs, incoming_logs]
+    error_report_df = error_report.to_dataframe()
 
-    for location in log_locations:
-        with location.open(error_report_name, "w") as FILE:
-            error_report.to_dataframe().to_csv(FILE, index=False)
+    if error_report_df.empty:
+        log.info(
+            f"No error report rows for {config.input_la_code} {config.dataset}; skipping CSV export"
+        )
+    else:
+        destination_logs = shared_folder().makedirs("logs", recreate=True)
+        incoming_logs = open_fs(config.la_folder).makedirs("logs", recreate=True)
+        log_locations = [session_folder, destination_logs, incoming_logs]
 
-    log.info(f"Error report for {config.input_la_code} written for {config.dataset}")
+        for location in log_locations:
+            with location.open(error_report_name, "w") as FILE:
+                error_report_df.to_csv(FILE, index=False)
+
+        log.info(
+            f"Error report for {config.input_la_code} written for {config.dataset}"
+        )
 
 
 @op()
@@ -407,7 +416,7 @@ def create_concatenated_view(current: DataframeArchive, config: CleanConfig):
         la_files_regex = f"{la_code}_{config.dataset}_"
         log.info(f"Removing files with regex: {la_files_regex}")
         pl.remove_files(la_files_regex, existing_files, concat_folder)
-        log.info(f"Successfully removed files")
+        log.info("Successfully removed files")
 
         if config.dataset == "annex_a":
             concat_data = current.current(la_code, deduplicate_mode="N")
