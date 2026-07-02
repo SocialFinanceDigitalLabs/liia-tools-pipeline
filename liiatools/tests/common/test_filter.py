@@ -67,6 +67,24 @@ def test_collect_tables():
     ]
 
 
+def test_collect_tables_no_data_rows_adds_error():
+    stream = [
+        events.StartContainer(),
+        events.StartTable(headers=["CHILD", "DOB"]),
+        events.EndTable(),
+        events.EndContainer(),
+    ]
+
+    dataset, stream = stream_filters.collect_tables(stream)
+    errors, stream = stream_filters.collect_errors(stream)
+    generic.consume(stream)
+
+    assert dataset.value == {}
+    assert errors.value == [
+        {"message": "Table has headers but no data rows", "type": "NoDataRows"}
+    ]
+
+
 def test_add_table_name_from_headers():
     schema = s903_schema(2040)
 
