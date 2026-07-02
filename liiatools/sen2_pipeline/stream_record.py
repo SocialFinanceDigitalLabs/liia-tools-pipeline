@@ -1,5 +1,6 @@
 from typing import Iterator, Optional
- 
+import datetime
+
 from more_itertools import peekable
 from sfdata_stream_parser import events
 from sfdata_stream_parser.collectors import xml_collector
@@ -300,7 +301,6 @@ def source_collector(stream):
         # advance by one event
         next(stream)
 
-    print(f">>>source_collector: {_reduce_dict(data_dict)}")
     return _reduce_dict(data_dict)
 
 
@@ -389,12 +389,6 @@ def message_collector(stream):
     stream = peekable(stream)
     assert stream.peek().tag == "Message"
 
-    person_counter = 0
-    request_counter = 0
-    assessment_counter = 0
-    plan_counter = 0
-    active_counter = 0
-
     while stream:
         event = stream.peek() # look at next XML token (do not advance)
 
@@ -402,7 +396,6 @@ def message_collector(stream):
             # This CALL consumes the entire <Source> subtree
             source_record = source_collector(stream)
             if source_record:
-                print(f">>>message_collector: yielding SourceEvent, {source_record=}")
                 yield SourceEvent(record=source_record) # yield pauses here
 
         elif event.get("tag") == "Person":
@@ -413,26 +406,25 @@ def message_collector(stream):
             if not person_record:
                 continue # skip if collector returned nothing
 
-            # Assign stable ID (either from XML or synthetic) LIIA - is it correct to use UPN like this? 
+            # Assign stable ID
             
             surname = person_record.get("Surname", "").replace(" ", "").lower()
             forename = person_record.get("Forename", "").replace(" ", "").lower()
 
-            person_birth_date = person_record.get("PersonBirthDate", "").strftime("%Y%m%d")
+            person_birth_date = _safe_date_format(person_record.get("PersonBirthDate"))
           
             person_id = f"{surname}_{forename}_{person_birth_date}"
 
-            #Surname,Forename,PersonBirthDate
             person_record["PersonID"] = person_id
 
             # Emit top-level Person event
-            print(f">>>message_collector: yielding PersonEvent, {person_record=}")
             yield PersonEvent(record=person_record)
 
             # Expand nested structures into flat events
             for request in _maybe_list(person_record.get("Requests")):
-                request_counter += 1
-                request_id = _safe_id("REQ", request_counter)
+
+                request_date = _safe_date_format(request.get("ReceivedDate"))
+                request_id = f"{person_id}_{request_date}"
 
                 # Propagate parent-child relationships
                 request["PersonID"] = person_id
@@ -442,8 +434,11 @@ def message_collector(stream):
 
                 # Nested: Assessment
                 for assessment in _maybe_list(request.get("Assessment")):
-                    assessment_counter += 1
-                    assessment_id = _safe_id("ASS", assessment_counter)
+                    
+                    
+                    assess_outcome_date = _safe_date_format(assessment.get("AssessmentOutcomeDate"))
+
+                    assessment_id = f"{request_id}_{assess_outcome_date}"
 
                     assessment["PersonID"] = person_id
                     assessment["RequestID"] = request_id
@@ -453,8 +448,9 @@ def message_collector(stream):
 
                     # Nested: NamedPlan
                     for plan in _maybe_list(assessment.get("NamedPlan")):
-                        plan_counter += 1
-                        named_plan_id = _safe_id("PLAN", plan_counter)
+
+                        start_date = _safe_date_format(plan.get("StartDate"))
+                        named_plan_id = f"{assessment_id}_{start_date}"
 
                         plan["PersonID"] = person_id
                         plan["RequestID"] = request_id
@@ -473,12 +469,9 @@ def message_collector(stream):
 
                 # Nested: ActivePlans
                 for active in _maybe_list(request.get("ActivePlans")):
-                    active_counter += 1
-                    active_id = _safe_id("ACT", active_counter)
-
+                    
                     active["PersonID"] = person_id
                     active["RequestID"] = request_id
-                    active["ActivePlanID"] = active_id
 
                     yield ActivePlansEvent(record=active)
 
@@ -486,14 +479,14 @@ def message_collector(stream):
                     for placement in _maybe_list(active.get("PlacementDetail")):
                         placement["PersonID"] = person_id
                         placement["RequestID"] = request_id
-                        placement["ActivePlanID"] = active_id
+                        # placement["ActivePlanID"] = active_id
                         yield PlacementDetailEvent(record=placement)
 
                     # Nested: SENneed
                     for need in _maybe_list(active.get("SENneed")):
                         need["PersonID"] = person_id
                         need["RequestID"] = request_id
-                        need["ActivePlanID"] = active_id
+                        # need["ActivePlanID"] = active_id
                         yield SENneedEvent(record=need)
 
         else:
@@ -501,8 +494,11 @@ def message_collector(stream):
             next(stream)
 
 
-def _safe_id(prefix, counter):
-    return f"{prefix}_{counter}"
+def _safe_date_format(date_to_format):
+    if isinstance(date_to_format, datetime.date):
+        return date_to_format.strftime("%Y%m%d")
+    return ""
+
 
 
 def _maybe_list(value):
@@ -520,7 +516,6 @@ def _maybe_list(value):
     - If the input value is already a list, it is returned as is.
     - For any other value, the function wraps it in a list and returns it.
     """
-    #print(f">>>sen2/_maybe_list: {value=}")
     if value is None:
         value = []
     if not isinstance(value, list):
@@ -543,7 +538,6 @@ def event_to_records(event, output_columns):
     """
 
     record = event.record
-    print(f">>>event_to_records: {record=}")
     yield {
         k: record.get(k)
         for k in output_columns
@@ -571,23 +565,15 @@ def export_table(stream, output_config):
     """
 
     dataset = {}
-    print(">>>sen2/export_table: Called with stream and output_config...")
-    # output_table = output_config[event_type.name()]
-    # print(f">>> {output_table=}")
-    # output_columns = [column.id for column in output_table.columns]
-    # print(f">>>sen2/export_table: Output columns for table: {output_columns=}")
+
     for event in stream:
-        #print(">>>sen2/export_table: processing next event: mapping to table and extracting records")
         event_type = type(event)
         output_table = output_config[event_type.name()]
         output_columns = [column.id for column in output_table.columns]
-        #print(f">>>sen2/export_table: stream {event_type=}")
-        #print(">>>sen2/export_table: calling event_to_records() for given event and output_columns...")
+
         for record in event_to_records(event, output_columns):
-            print(f">>>sen2/export_table: adding {event_type.name()} record to dataset: {record=} with {output_columns=}")
             dataset.setdefault(event_type.name(), []).append(record)
-        #print(f">>>sen2/export_table: about to yield {event_type.name()=}...")
+
         yield event
-        #print(">>>sen2/export_table: resuming after yielding an event")
-    print(f">>>sen2/export_table: Finished input stream: returning {dataset=}")
+
     return dataset
