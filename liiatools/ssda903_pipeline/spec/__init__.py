@@ -8,6 +8,11 @@ import yaml
 from pydantic_yaml import parse_yaml_file_as
 
 from liiatools.common.data import PipelineConfig
+from liiatools.common.file_header_readme_generator import (
+    MarkdownSection,
+    render_readme_by_year,
+    write_markdown_file,
+)
 from liiatools.common.spec import load_region_env
 from liiatools.common.spec.__data_schema import DataSchema
 
@@ -126,3 +131,37 @@ def load_schema(year: int) -> DataSchema:
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)
+
+
+def render_schema_header_readme(start_year: int, end_year: int) -> str:
+    years = list(range(start_year, end_year + 1))
+    if not years:
+        raise ValueError("No years to render")
+
+    schemas = {year: load_schema(year) for year in years}
+    year_sections = {
+        year: [
+            MarkdownSection(summary=table_name, items=list(schemas[year].table[table_name].keys()))
+            for table_name in sorted(schemas[year].table.keys())
+        ]
+        for year in years
+    }
+
+    return render_readme_by_year(
+        title="SSDA903 Expected Headers by Year",
+        intro_lines=["Select a year below to see the exact expected headers for that submission year."],
+        years=years,
+        year_sections=year_sections,
+    )
+
+
+def generate_schema_header_readme(
+    output_file: Path | None = None,
+    start_year: int = 2017,
+    end_year: int = 2026,
+) -> Path:
+    if output_file is None:
+        output_file = Path("docs", "file_headers_by_dataset", "ssda903_headers.md")
+
+    readme_content = render_schema_header_readme(start_year=start_year, end_year=end_year)
+    return write_markdown_file(output_file, readme_content)
