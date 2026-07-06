@@ -436,12 +436,30 @@ def collect_tables(stream):
     """
     # A dict to hold all the tables we find in the stream
     dataset = {}
+    in_table = False
+    table_row_count = 0
 
     # Iterate over the stream and collect the tables from the StartRow events
     for event in stream:
+        if isinstance(event, events.StartTable):
+            in_table = True
+            table_row_count = 0
+
+        if isinstance(event, events.StartRow):
+            table_row_count += 1
+
         if isinstance(event, events.StartRow) and hasattr(event, "table_name"):
             table_data = dataset.setdefault(event.table_name, [])
             table_data.append(event.row_values)
+
+        if isinstance(event, events.EndTable) and in_table:
+            if table_row_count == 0:
+                event = EventErrors.add_to_event(
+                    event,
+                    type="NoDataRows",
+                    message="Table has headers but no data rows",
+                )
+            in_table = False
 
         yield event
 
