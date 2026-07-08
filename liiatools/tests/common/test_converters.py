@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 import pytest
 
@@ -6,6 +6,7 @@ from liiatools.common.converters import (
     allow_blank,
     to_category,
     to_date,
+    to_time,
     to_nth_of_month,
     to_numeric,
     to_postcode,
@@ -167,13 +168,46 @@ def test_to_numeric():
 
 def test_to_date():
     assert (
-        to_date(datetime.datetime(2020, 3, 19)) == datetime.datetime(2020, 3, 19).date()
+        to_date(datetime(2020, 3, 19)) == datetime(2020, 3, 19).date()
     )
-    assert to_date("15/03/2017") == datetime.datetime(2017, 3, 15).date()
+    assert to_date("15/03/2017") == datetime(2017, 3, 15).date()
+
+
+def test_to_time():
+    # Basic valid time strings - should return normalised string
+    assert to_time("14:30") == "14:30"
+    assert to_time("00:00") == "00:00"
+    assert to_time("23:59") == "23:59"
+
+    # Blank/None passthrough (allow_blank behaviour)
+    assert to_time("") == ""
+    assert to_time(None) == ""
+
+    # datetime input - should extract and return formatted time string
+    assert to_time(datetime(2024, 1, 15, 14, 30, 0)) == "14:30"
+    assert to_time(datetime(2024, 6, 1, 0, 0, 0)) == "00:00"
+    assert to_time(datetime(2024, 12, 31, 23, 59, 0)) == "23:59"
+
+    # Custom timeformat
+    assert to_time("14:30:00", timeformat="%H:%M:%S") == "14:30:00"
+    assert to_time(datetime(2024, 1, 15, 14, 30, 45), timeformat="%H:%M:%S") == "14:30:45"
+
+    with pytest.raises(ValueError):
+        to_time("99:99")
+    with pytest.raises(ValueError):
+        to_time("25:00")
+    with pytest.raises(ValueError):
+        to_time("12:60")
+    with pytest.raises(ValueError):
+        to_time("14:30:00")    # seconds not expected in default format
+    with pytest.raises(ValueError):
+        to_time("not a time")
+    with pytest.raises(ValueError):
+        to_time(12345)         # wrong type - neither datetime nor str
 
 
 def test_to_nth_of_month():
-    assert to_nth_of_month(datetime.datetime(2020, 5, 17)) == datetime.datetime(
+    assert to_nth_of_month(datetime(2020, 5, 17)) == datetime(
         2020, 5, 1
     )
 
