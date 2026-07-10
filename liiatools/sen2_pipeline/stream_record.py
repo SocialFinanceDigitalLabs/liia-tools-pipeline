@@ -231,14 +231,14 @@ def namedplan_collector(stream):
 def activeplans_collector(stream):
     """
     Collect all values under the <ActivePlans> element.
-
+ 
     Consumes the <ActivePlans> subtree, extracting text fields directly and
     using `text_collector` to fully consume and capture nested
     <PlacementDetail> and <SENneed> elements.
-
+ 
     Parameters:
         stream (Iterator): XML parse event stream positioned at <ActivePlans>.
-
+ 
     Returns:
         dict: Reduced dictionary of extracted values from the ActivePlans subtree.
     """
@@ -253,10 +253,17 @@ def activeplans_collector(stream):
 
         if event.get("tag") in (
                 "PlacementDetail",
-                "SENneed",
             ):
-            # DELEGATION: consumes entire <PlacementDetail> and <SENneed> subtrees
+            # DELEGATION: consumes entire <PlacementDetail> subtree
             data_dict.setdefault(event.tag, []).append(text_collector(stream))
+
+        elif event.get("tag") == "SENneed":
+            # DELEGATION: consumes entire <SENneed> subtree
+            sen_need = text_collector(stream)
+            sen_type = sen_need.get("SENtype")
+            sen_rank = sen_need.get("SENtypeRank")
+            if sen_type and sen_rank:
+                data_dict[f"SENtype_{sen_rank}"] = sen_type
 
         else:
             # direct extraction for text nodes only
