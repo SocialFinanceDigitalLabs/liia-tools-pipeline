@@ -1,0 +1,87 @@
+column_map.pnw_census.Registration type:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    category:
+      - code: "Ofsted"
+      - code: "CQC"
+      - code: "Unregistered"
+      - code: "Care Inspectorate Scotland"
+      - code: "Care Inspectorate Wales"
+      - code: "Unknown"
+    canbeblank: False
+column_map.pnw_census.Establishment registration URN:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    string: "alphanumeric"
+    canbeblank: true
+    header_regex:
+      - /.*establishment.*URN.*/i
+column_map.pnw_census.Primary Placing at Distance Reason:
+  type: add
+  description: Adds new column for pnw_census
+  value:
+    category:
+      - code: Placement available locally but provider refused due to need
+      - code: Placement available locally but provider refused due to matching
+      - code: Requirement for DOLS or LPS placement
+      - code: Requirement for specialist SEND provision
+      - code: Requirement for other specialist provision
+      - code: Requirement to place quickly
+      - code: Requirement to place at distance (eg CSE/CCE/Parental choice/move to near family or support)
+      - code: No placement available locally
+      - code: Other (please specify)
+      - code: Unknown
+      - code: Not applicable
+      - code: N/A
+    canbeblank: True
+    header_regex:
+      - /.*placing at distance reason.*/i
+column_map.pnw_census.Type of provision.category:
+  type: modify
+  description: Updated Type of provision codes for 2022 schema
+  value:
+    - code: "Fostering - Independent Foster Care (IFA)"
+    - code: "Fostering - Inter LA"
+    - code: "Fostering - Parent and Child"
+    - code: "Fostering - Staying Put"
+    - code: "IFA - respite"
+    - code: "Student accommodation"
+    - code: "Youth Offending Institution"
+    - code: "Other - Youth Offending Institution"
+    - code: "Other - FFA"
+    - code: "Unregistered"
+    - code: "Other"
+    - code: "Outreach"
+    - code: "Other - Rent"
+    - code: "Other - Commissioned Support"
+    - code: "Other - CQC"
+    - code: "Residential - 52 week Residential School"
+    - code: "Residential - in House"
+    - code: "Residential - Parent and Child"
+    - code: "Residential - Residential School"
+    - code: "Residential - Secure Welfare"
+    - code: "Residential - External (Commissioned)"
+    - code: "Residential - Short Breaks"
+    - code: "Residential - With Education"
+    - code: "SaILs"
+    - code: "SaILs - Accommodation & Floating Support"
+    - code: "SaILs - Accommodation & Floating Support - in house"
+    - code: "SaILs - Floating Support Only"
+    - code: "SaILs - Group Living"
+    - code: "SaILs - Group Living - in house"
+    - code: "SaILs - Supported Accommodation"
+    - code: "Supported Lodgings"
+    - code: "Supported Lodgings - Inter LA"
+    - code: "Supported Lodgings - In House"
+    - code: "Supported Accommodation"
+    - code: "Supported Accommodation - Accommodation & Floating Support"
+    - code: "Supported Accommodation - Floating Support Only"
+    - code: "Supported Accommodation - Group Living"
+    - code: "Supported Accommodation - Accommodation & Floating Support - in house"
+    - code: "Supported Accommodation - Group Living - in house"
+    - code: "Supported Accommodation - Category 1: Self contained solo accommodation"
+    - code: "Supported Accommodation - Category 2: Shared or group living for LAC and care leavers"
+    - code: "Supported Accommodation - Category 3: Shared or group living not limited to LAC or care leavers"
+    - code: "Supported Accommodation - Category 4: Supported Lodgings"

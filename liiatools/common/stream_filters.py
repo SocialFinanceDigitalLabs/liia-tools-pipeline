@@ -12,7 +12,6 @@ import xmlschema
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
-    block_event,
     generator_with_value,
     pass_event,
     streamfilter,
@@ -22,6 +21,7 @@ from tablib import UnsupportedFormat, import_book, import_set
 from liiatools.common.converters import (
     to_category,
     to_date,
+    to_time,
     to_numeric,
     to_postcode,
     to_regex,
@@ -89,45 +89,14 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
 
 def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
-    table_name = params.pop("table_name", None)
-    table_spec = params.pop("table_spec", None)
-    error_message = params.pop("error_message", None)
     yield events.StartContainer(**params)
-
-    if table_name or table_spec:
-        if not error_message:
-            yield events.StartTable(
-                headers=dataset.headers,
-                sheetname=dataset.title,
-                table_name=table_name,
-                table_spec=table_spec,
-            )
-        else:
-            yield EventErrors.add_to_event(
-                events.StartTable(
-                    headers=dataset.headers,
-                    sheetname=dataset.title,
-                    table_name=table_name,
-                    table_spec=table_spec,
-                ),
-                type="SheetIdentificationError",
-                message=error_message,
-            )
-    elif error_message:
-        yield EventErrors.add_to_event(
-            events.StartTable(headers=dataset.headers, sheetname=dataset.title),
-            type="UnidentifiedTable",
-            message=error_message,
-        )
-    else:
-        yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
-
+    yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # tablib rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.headers[c_ix],
                 cell=cell,
             )
@@ -136,7 +105,7 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     yield events.EndContainer()
 
 
-def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
+def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
     params = {k: v for k, v in kwargs.items() if v is not None}
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.columns.tolist())
@@ -147,8 +116,8 @@ def _pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
                 if np.isnan(cell):
                     cell = ""
             yield events.Cell(
-                r_ix=r_ix,
-                c_ix=c_ix,
+                row_number=r_ix + 2,  # pandas rows are 0-indexed, plus 1 for header row
+                column_number=c_ix,
                 header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
@@ -178,7 +147,6 @@ def tablib_to_stream(
         if table_info:
             # table_info is a dictionary created when filename is used to identify sheet and schema to process within an xlsx workbook
             sheetname = table_info.get("sheetname")
-            error_message = table_info.get("error_message")
             if sheetname:
                 # Check that there is a matching sheet to process within the input file
                 sheet_names = [s.title for s in data.sheets()]
@@ -189,28 +157,13 @@ def tablib_to_stream(
                                 sheet,
                                 filename=filename,
                                 sheetname=sheet.title,
-                                table_spec=table_info["table_spec"],
-                                table_name=table_info["table_name"],
                             )
                 else:
                     # In the instance of sheetname existing in table info but not found in file
-                    error_message = (
-                        f"Sheet {table_info['sheetname']} not found in {filename}"
-                    )
-                    yield from _tablib_dataset_to_stream(
-                        tablib.Dataset(),
-                        table_spec=table_info["table_spec"],
-                        table_name=table_info["table_name"],
-                        filename=filename,
-                        error_message=error_message,
-                    )
+                    raise StreamError(f"Sheet {table_info['sheetname']} not found")
             else:
-                # If sheetname has not been found but error_message is not set, error is unknown
-                if not error_message:
-                    error_message = f"Matching sheetname not found for {filename} due to unknown error"
-                yield from _tablib_dataset_to_stream(
-                    tablib.Dataset(), filename=filename, error_message=error_message
-                )
+                # If sheetname has not been found error is unknown
+                raise StreamError("Matching sheetname not found due to unknown error")
 
         else:
             # if table_info does not exist, we want to yield all sheets
@@ -220,7 +173,7 @@ def tablib_to_stream(
                 )
 
     elif isinstance(data, pd.DataFrame):
-        yield from _pandas_dataframe_to_stream(data, filename=filename)
+        yield from pandas_dataframe_to_stream(data, filename=filename)
 
 
 def inherit_property(stream, prop_name: Union[str, Iterable[str]], override=False):
@@ -387,6 +340,8 @@ def conform_cell_types(event, preserve_value=False):
         converter = lambda x: to_category(x, column_spec)
     elif column_spec.type == "date":
         converter = lambda x: to_date(x, column_spec.date)
+    elif column_spec.type == "time":
+        converter = lambda x: to_time(x, column_spec.time)
     elif column_spec.type == "numeric":
         converter = lambda x: to_numeric(
             x,
@@ -481,12 +436,30 @@ def collect_tables(stream):
     """
     # A dict to hold all the tables we find in the stream
     dataset = {}
+    in_table = False
+    table_row_count = 0
 
     # Iterate over the stream and collect the tables from the StartRow events
     for event in stream:
+        if isinstance(event, events.StartTable):
+            in_table = True
+            table_row_count = 0
+
+        if isinstance(event, events.StartRow):
+            table_row_count += 1
+
         if isinstance(event, events.StartRow) and hasattr(event, "table_name"):
             table_data = dataset.setdefault(event.table_name, [])
             table_data.append(event.row_values)
+
+        if isinstance(event, events.EndTable) and in_table:
+            if table_row_count == 0:
+                event = EventErrors.add_to_event(
+                    event,
+                    type="NoDataRows",
+                    message="Table has headers but no data rows",
+                )
+            in_table = False
 
         yield event
 
@@ -531,8 +504,8 @@ def collect_errors(stream):
                     event,
                     error_entry,
                     "filename",
-                    "r_ix",
-                    "c_ix",
+                    "row_number",
+                    "column_number",
                     "table_name",
                     "header",
                     "xml_row",
@@ -793,7 +766,6 @@ def table_spec_from_filename(
     sheetname = None
     table_spec = None
     table_name = None
-    error_message = None
     if filename:
         for table in table_names:
             pattern = re.compile(re.escape(table))
@@ -809,18 +781,15 @@ def table_spec_from_filename(
                 sheetname = table_config.sheetname
 
     elif len(matched_tables) > 1:
-        error_message = f"Multiple tables matched the filename, file name: {filename}"
+        raise StreamError("Multiple tables matched the filename")
 
     else:
-        error_message = (
-            f"Failed to identify table based on filename, file name: {filename}"
-        )
+        raise StreamError("Failed to identify table based on filename")
 
     table_info = {
         "sheetname": sheetname,
         "table_spec": table_spec,
         "table_name": table_name,
-        "error_message": error_message,
     }
 
     return table_info

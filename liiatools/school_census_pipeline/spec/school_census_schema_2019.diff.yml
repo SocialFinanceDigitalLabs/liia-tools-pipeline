@@ -1,0 +1,178 @@
+autumn:
+  column_map.pupilnolongeronroll.englishgcsehighestpriorattainmentpreviousyear:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      &highest-attainment
+      category:
+      - code: "A*"
+      - code: "A"
+      - code: "B"
+      - code: "C"
+      - code: "D"
+      - code: "E"
+      - code: "F"
+      - code: "G"
+      - code: "U"
+      - code: "9"
+      - code: "8"
+      - code: "7"
+      - code: "6"
+      - code: "5"
+      - code: "4"
+      - code: "3"
+      - code: "2"
+      - code: "1"
+      - code: "NR"
+      canbeblank: yes
+  column_map.pupilnolongeronroll.mathsgcsehighestpriorattainmentpreviousyear:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      *highest-attainment
+  column_map.pupilnolongeronroll.nonqualhrspreviousyear:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      &int-blank
+      numeric:
+        type: "integer"
+      canbeblank: yes
+  column_map.pupilnolongeronroll.qualhrspreviousyear:
+    type: add
+    description: Adds new column for pupilnolongeronroll
+    value:
+      *int-blank
+  column_map.pupilonroll.englishgcsehighestpriorattainmentpreviousyear:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *highest-attainment
+  column_map.pupilonroll.mathsgcsehighestpriorattainmentpreviousyear:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *highest-attainment
+  column_map.pupilonroll.nonqualhrspreviousyear:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *int-blank
+  column_map.pupilonroll.qualhrspreviousyear:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      *int-blank
+  column_map.pupilonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      &sen-provision
+      category:
+      - code: "N"
+      - code: "E"
+      - code: "K"
+      - code: "A"
+      - code: "P"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+  column_map.termlyexclusionsonroll.senprovision:
+    type: modify
+    description: Update codes for 2020 schema
+    value:
+      *sen-provision
+
+spring:
+  column_map:
+    type: remove
+    description: Remove files for 2019 schema
+    value:
+      - levels
+      - nationalitiesoffroll
+      - nationalitiesonroll
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - countryofbirth
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - countryofbirth
+      - proficiencyinenglish
+  column_map.pupilonroll.eyppbf:
+    type: modify
+    description: Update codes for 2019 schema
+    value:
+      category:
+      - code: "RE"
+      - code: "RO"
+      - code: "RB"
+      - code: "RU"
+      canbeblank: yes
+  column_map.pupilonroll.eyppe:
+    type: rename
+    description: Rename column in pupilonroll
+    value:
+      eyppr
+
+summer:
+  column_map:
+    type: remove
+    description: Remove files for 2019 schema
+    value:
+      - levels
+      - nationalitiesoffroll
+      - nationalitiesonroll
+  column_map.pupilnolongeronroll:
+    type: remove
+    description: Remove column from pupilnolongeronroll
+    value:
+      - countryofbirth
+  column_map.pupilonroll:
+    type: remove
+    description: Remove column from pupilonroll
+    value:
+      - countryofbirth
+  column_map.pupilonroll.senprovision:
+    type: modify
+    description: Update codes for 2019 schema
+    value:
+      &sen-provision-update
+      category:
+      - code: "N"
+      - code: "E"
+      - code: "K"
+      - code: "A"
+      - code: "P"
+      canbeblank: yes
+  column_map.pupilonroll.servicechild:
+    type: add
+    description: Adds new column for pupilonroll
+    value:
+      &service-child
+      category:
+      - code: "Y"
+        name: "Yes"
+      - code: "N"
+        name: "No"
+      - code: "U"
+        name: "Unknown"
+      - code: "R"
+        name: "Refused"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.senprovision:
+    type: modify
+    description: Update codes for 2019 schema
+    value:
+      *sen-provision-update
+  column_map.termlyexclusionsonroll.senprovision:
+    type: modify
+    description: Update codes for 2019 schema
+    value:
+      *sen-provision-update

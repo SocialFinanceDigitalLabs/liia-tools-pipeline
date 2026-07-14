@@ -8,6 +8,8 @@ import math
 import re
 from datetime import date, datetime
 
+import pandas as pd
+
 from .spec.__data_schema import Column
 
 log = logging.getLogger(__name__)
@@ -26,7 +28,11 @@ def allow_blank(func):
     """
 
     def wrapper(value, *args, allow_blank=True, **kwargs):
-        is_blank = value is None or (isinstance(value, str) and value.strip() == "")
+        is_blank = (
+            value is None
+            or (isinstance(value, str) and value.strip() == "")
+            or pd.isna(value)
+        )
         if is_blank:
             if allow_blank:
                 return ""
@@ -186,6 +192,25 @@ def to_date(value, dateformat="%d/%m/%Y"):
 
 
 @allow_blank
+def to_time(value, timeformat="%H:%M"):
+    """
+    Convert a string to a time based on the timeformat %H:%M and convert a datetime to this time format
+    :param value: A value to test and make sure it's a datetime or string object
+    :param timeformat: A format for the time to be read correctly, default to %H:%M
+    :return: Either the specified time, converted to a string in the correct format, or an empty string
+    """
+    try:
+        if isinstance(value, datetime):
+            return datetime.strftime(value, timeformat)
+        elif isinstance(value, str):
+            return datetime.strftime(datetime.strptime(value, timeformat), timeformat)
+        else:
+            raise ValueError(f"Invalid time: {value}")
+    except Exception as e:
+        raise ValueError(f"Invalid time: {value}") from e
+
+
+@allow_blank
 def to_nth_of_month(value: date, n: int = 1):
     """
     Converts dates to the nth day of the month. n defaults to first of the month
@@ -193,10 +218,12 @@ def to_nth_of_month(value: date, n: int = 1):
     :param n: Number of the day of the month to convert to
     :return: A date of birth datetime object with the month rounded to the nth day
     """
-    try:
-        return value.replace(day=n)
-    except Exception as e:
-        raise ValueError(f"Invalid date: {value}") from e
+    if not isinstance(value, date):
+        try:
+            value = pd.to_datetime(value).date()
+        except Exception as e:
+            raise ValueError(f"Invalid date: {value}") from e
+    return value.replace(day=n)
 
 
 @allow_blank

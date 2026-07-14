@@ -55,7 +55,16 @@ class DataframeArchive:
         self.config = config
         self.dataset = dataset
 
-    def add(self, data: DataContainer, la_code: str, year: int, month: str | None, identifier: str | None):
+    def add(
+        self,
+        data: DataContainer,
+        la_code: str,
+        year: int,
+        month: str | None,
+        term: str | None,
+        school_type: str | None,
+        identifier: str | None,
+    ):
         """
         Add a new snapshot to the archive.
         """
@@ -64,7 +73,15 @@ class DataframeArchive:
         for table_spec in self.config.table_list:
             if table_spec.id in data:
                 self._add_table(
-                    la_dir, la_code, year, month, identifier, table_spec, data[table_spec.id]
+                    la_dir,
+                    la_code,
+                    year,
+                    month,
+                    term,
+                    school_type,
+                    identifier,
+                    table_spec,
+                    data[table_spec.id],
                 )
 
     def _add_table(
@@ -73,6 +90,8 @@ class DataframeArchive:
         la_code: str,
         year: int,
         month: str | None,
+        term: str | None,
+        school_type: str | None,
         identifier: str | None,
         table_spec: TableConfig,
         df: pd.DataFrame,
@@ -82,6 +101,10 @@ class DataframeArchive:
         """
         if identifier is not None and month is not None:
             path = f"{la_code}_{identifier}_{year}_{month}_{table_spec.id}.csv"
+        elif term is not None and school_type is not None:
+            path = f"{la_code}_{year}_{term}_{school_type}_{table_spec.id}.csv"
+        elif term is not None and school_type is None:
+            path = f"{la_code}_{year}_{term}_{table_spec.id}.csv"
         elif month is not None:
             path = f"{la_code}_{year}_{month}_{table_spec.id}.csv"
         else:
@@ -144,7 +167,7 @@ class DataframeArchive:
         """
         data = DataContainer()
         table_id = re.search(
-            r"_(?:\d{4}_)?\d{4}(?:_(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))?_([a-zA-Z0-9_]+)\.",
+            r"_(?:\d{4}_)?\d{4}(?:_(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|autumn|spring|summer))?(?:_(?:acad|la))?_([a-zA-Z0-9_]+)\.",
             snap_id,
         )
 
@@ -229,7 +252,7 @@ class DataframeArchive:
                             dict(
                                 type="DuplicateRemoval",
                                 message=f"Row {index + 2} removed as it was a duplicate",
-                                r_ix=index + 2,
+                                row_number=index + 2,
                                 table_name=table_spec.id,
                             )
                         )

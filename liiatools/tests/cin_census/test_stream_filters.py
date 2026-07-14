@@ -46,19 +46,16 @@ def test_add_column_spec():
                 code="0",
                 name="False",
                 cell_regex=None,
-                model_config={"extra": "forbid"},
             ),
             Category(
                 code="1",
                 name="True",
                 cell_regex=None,
-                model_config={"extra": "forbid"},
             ),
         ],
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[1].column_spec == Column(
@@ -68,7 +65,6 @@ def test_add_column_spec():
             min_value=0,
             max_value=None,
             decimal_places=None,
-            model_config={"extra": "forbid"},
         ),
         date=None,
         dictionary=None,
@@ -76,7 +72,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[2].column_spec == Column(
@@ -88,7 +83,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex="[A-Za-z]\\d{11}(\\d|[A-Za-z])",
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[3].column_spec == Column(
@@ -100,7 +94,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[4].column_spec == Column(
@@ -112,7 +105,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[5].column_spec == Column(
@@ -124,7 +116,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[6].column_spec == Column(
@@ -136,7 +127,6 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=True,
-        model_config={"extra": "forbid"},
     )
 
     assert column_spec[7].column_spec == Column(
@@ -148,5 +138,4 @@ def test_add_column_spec():
         header_regex=None,
         cell_regex=None,
         canbeblank=False,
-        model_config={"extra": "forbid"},
     )

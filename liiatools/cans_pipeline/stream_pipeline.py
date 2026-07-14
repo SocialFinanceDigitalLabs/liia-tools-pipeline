@@ -3,6 +3,7 @@ from typing import Optional
 
 from sfdata_stream_parser.filters import generic
 
+from liiatools.cans_pipeline.stream_filters import transform_input
 from liiatools.common import stream_filters as stream_functions
 from liiatools.common.data import (
     DataContainer,
@@ -38,11 +39,12 @@ def task_cleanfile(
     )
 
     # Open & Parse file
-    stream = stream_functions.tablib_parse(src_file, table_info=table_info)
-
+    stream = transform_input(src_file, table_info)
+    stream = stream_functions.pandas_dataframe_to_stream(stream, filename=src_file.name, sheetname=table_info["sheetname"])
     logger.info("File %s opened and parsed, beginning processing", src_file.name)
 
     # Configure stream
+    stream = stream_functions.add_table_name_from_headers(stream, schema=schema)
     stream = stream_functions.inherit_property(stream, ["table_name", "table_spec"])
     stream = stream_functions.convert_column_header_to_match(stream, schema=schema)
     stream = stream_functions.match_config_to_cell(stream, schema=schema)

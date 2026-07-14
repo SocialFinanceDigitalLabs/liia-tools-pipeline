@@ -9,18 +9,23 @@ from liiatools.common.data import ColumnConfig
 
 class TestToInteger(unittest.TestCase):
     def setUp(self):
-        self.column_config = ColumnConfig(id="test_column", type="integer")
+        self.column_config = ColumnConfig(id="test_column", type="string")
         self.metadata = {"metadata": "test"}
 
     def test_to_integer_with_valid_number(self):
-        row = pd.Series({"test_column": "123.0"})
+        row = pd.Series({"test_column": " 123.0"})
         result = to_integer(row, self.column_config, self.metadata)
         self.assertEqual(result, 123)
 
-    def test_to_integer_with_invalid_number(self):
-        row = pd.Series({"test_column": "abc"})
+    def test_to_integer_with_valid_int(self):
+        row = pd.Series({"test_column": 123})
         result = to_integer(row, self.column_config, self.metadata)
-        self.assertEqual(result, "abc")
+        self.assertEqual(result, 123)
+
+    def test_to_integer_with_valid_string(self):
+        row = pd.Series({"test_column": " abc123"})
+        result = to_integer(row, self.column_config, self.metadata)
+        self.assertEqual(result, "ABC123")
 
     def test_to_integer_with_nan(self):
         row = pd.Series({"test_column": np.nan})

@@ -25,7 +25,7 @@ def _transform(
     metadata: Metadata,
     property: str,
     functions: Dict[str, Callable],
-    additional_property: Optional[str] = None
+    additional_property: Optional[str] = None,
 ):
     """Performs a transform on a table"""
     for column_config in table_config.columns:
@@ -57,7 +57,9 @@ def _transform(
                     data = mapping_function(data, mapping_field, column_config.id)
                 else:
                     data[column_config.id] = data.apply(
-                        lambda row: functions[transform_name](row, column_config, metadata),
+                        lambda row: functions[transform_name](
+                            row, column_config, metadata
+                        ),
                         axis=1,
                     )
 
@@ -68,7 +70,7 @@ def data_transforms(
     metadata: Metadata,
     property: str,
     functions: Dict[str, Callable],
-    additional_property: Optional[str] = None
+    additional_property: Optional[str] = None,
 ) -> ProcessResult:
     """Pipelines can have a set of data transforms that are applied to the data after it has been cleaned.
 
@@ -86,7 +88,12 @@ def data_transforms(
         for table_config in config.table_list:
             if table_config.id in data:
                 _transform(
-                    data[table_config.id], table_config, metadata, property, functions, additional_property
+                    data[table_config.id],
+                    table_config,
+                    metadata,
+                    property,
+                    functions,
+                    additional_property,
                 )
                 remove_row_mask = (
                     ~data[table_config.id].isin(["remove_row"]).any(axis=1)
@@ -97,12 +104,13 @@ def data_transforms(
                 data[table_config.id] = data[table_config.id][remove_row_mask]
 
                 for row in remove_row_indices:
+                    r_ix = row + 2  # Adjust for 0-indexing and header row
                     errors.append(
                         dict(
                             type="InvalidMandatoryField",
-                            message=f"Row {row} removed due to invalid mandatory field",
+                            message=f"Row {r_ix} removed due to invalid mandatory field",
                             table_name=table_config.id,
-                            r_ix=row,
+                            row_number=r_ix,
                         )
                     )
     except Exception as e:
@@ -121,7 +129,9 @@ def enrich_data(
     if metadata is None:
         metadata = {}
 
-    return data_transforms(data, config, metadata, "enrich", enrich_functions, "enrich_input")
+    return data_transforms(
+        data, config, metadata, "enrich", enrich_functions, "enrich_input"
+    )
 
 
 def degrade_data(
@@ -135,11 +145,11 @@ def degrade_data(
 
 
 def prepare_export(
-    data: DataContainer, config: PipelineConfig, profile: str = None
+    data: DataContainer, config: PipelineConfig, profile: str | list[str]
 ) -> DataContainer:
     """
-    Prepare data for export by removing columns that are not required for the given profile
-    or for all configured tables if no profile is given.
+    Prepare data for export by removing tables and columns that are not required
+    for the given profile or list of profiles provided.
 
     The DataContainer will only hold tables and columns that are configured in the config,
     and only tables that also exist in the data. If a configured column is missing from a table,
@@ -147,21 +157,17 @@ def prepare_export(
 
     :param data: The data to prepare for export
     :param config: The pipeline config
-    :param profile: The profile to export for (optional)
+    :param profile: The profile or list of profiles to export for
     :return: The prepared data
     """
     data_container = DataContainer()
 
-    table_list = config.tables_for_profile(profile) if profile else config.table_list
+    table_list = config.tables_for_profile(profile)
 
     # Loop over known tables
     for table_config in table_list:
         table_name = table_config.id
-        table_config = (
-            table_config.columns_for_profile(profile)
-            if profile
-            else table_config.columns
-        )
+        table_config = table_config.columns_for_profile(profile)
         table_columns = [column.id for column in table_config]
         column_types = {col.id: col.type for col in table_config}
 
