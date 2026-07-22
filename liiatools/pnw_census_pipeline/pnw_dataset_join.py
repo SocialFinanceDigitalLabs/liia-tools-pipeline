@@ -11,6 +11,11 @@ def _filter_to_open_in_last_12m(
     """
     Filters dataframe to episodes that are open within 12 months before the snapshot date
     """
+    df = df.copy()
+    df[episode_start] = pd.to_datetime(df[episode_start], errors="coerce")
+    df[snapshot_date] = pd.to_datetime(df[snapshot_date], errors="coerce")
+    df[episode_end] = pd.to_datetime(df[episode_end], errors="coerce")
+
     filtered_df = df[
         # Opened before or on the snapshot date
         (df[episode_start] <= df[snapshot_date])
@@ -38,6 +43,11 @@ def _filter_to_open_on_snapshot_date(
     - One closed on the snapshot date
     - One opened on the snapshot date
     """
+    df = df.copy()
+    df[episode_start] = pd.to_datetime(df[episode_start], errors="coerce")
+    df[snapshot_date] = pd.to_datetime(df[snapshot_date], errors="coerce")
+    df[episode_end] = pd.to_datetime(df[episode_end], errors="coerce")
+
     filtered_df = df[
         ((df[episode_end].isna()) | (df[episode_end] >= df[snapshot_date]))
         & (df[episode_start] < df[snapshot_date])

@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+import numpy as np
 from unittest.mock import MagicMock
 
 from liiatools.cans_pipeline.stream_filters import (
@@ -35,7 +36,7 @@ def test_align_headers_with_nan():
     input_headers = pd.Series(["Assessment Date", None, "Cognitive (Developmental/Intellectual*)"])
     schema_headers = ["Assessment Date", "Developmental/Intellectual*", "Cognitive (Developmental/Intellectual*)"]
     result = _align_headers(input_headers, schema_headers)
-    assert result.tolist() == ["Assessment Date", None, "Cognitive (Developmental/Intellectual*)"]
+    assert result.tolist() == ["Assessment Date", np.nan, "Cognitive (Developmental/Intellectual*)"]
 
 
 def test_match_headers_all_direct_match():
