@@ -23,6 +23,11 @@ def add_la_suffix(
 ) -> str:
     return f"{row[column_config.id]}_{metadata['la_code']}"
 
+def add_la_prefix(
+    row: pd.Series, column_config: ColumnConfig, metadata: Metadata
+) -> str:
+    return f"{metadata['la_code']}_{row[column_config.id]}"
+
 
 def add_la_code(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
     return metadata["la_code"]
@@ -107,6 +112,7 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
 
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
+    "add_la_prefix": add_la_prefix,
     "la_code": add_la_code,
     "la_name": add_la_name,
     "year": add_year,

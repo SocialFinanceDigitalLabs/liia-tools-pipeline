@@ -417,7 +417,6 @@ def message_collector(stream):
             
             surname = person_record.get("Surname", "").replace(" ", "").lower()
             forename = person_record.get("Forename", "").replace(" ", "").lower()
-
             person_birth_date = _safe_date_format(person_record.get("PersonBirthDate"))
           
             person_id = f"{surname}_{forename}_{person_birth_date}"
@@ -442,14 +441,8 @@ def message_collector(stream):
                 # Nested: Assessment
                 for assessment in _maybe_list(request.get("Assessment")):
                     
-                    
-                    assess_outcome_date = _safe_date_format(assessment.get("AssessmentOutcomeDate"))
-
-                    assessment_id = f"{request_id}_{assess_outcome_date}"
-
                     assessment["PersonID"] = person_id
                     assessment["RequestID"] = request_id
-                    assessment["AssessmentID"] = assessment_id
 
                     yield AssessmentEvent(record=assessment)
 
@@ -457,11 +450,10 @@ def message_collector(stream):
                     for plan in _maybe_list(assessment.get("NamedPlan")):
 
                         start_date = _safe_date_format(plan.get("StartDate"))
-                        named_plan_id = f"{assessment_id}_{start_date}"
+                        named_plan_id = f"{request_id}_{start_date}"
 
                         plan["PersonID"] = person_id
                         plan["RequestID"] = request_id
-                        plan["AssessmentID"] = assessment_id
                         plan["NamedPlanID"] = named_plan_id
 
                         yield NamedPlanEvent(record=plan)
@@ -470,7 +462,6 @@ def message_collector(stream):
                         for detail in _maybe_list(plan.get("PlanDetail")):
                             detail["PersonID"] = person_id
                             detail["RequestID"] = request_id
-                            detail["AssessmentID"] = assessment_id
                             detail["NamedPlanID"] = named_plan_id
                             yield PlanDetailEvent(record=detail)
 
@@ -483,19 +474,24 @@ def message_collector(stream):
                     yield ActivePlansEvent(record=active)
 
                     # Nested: PlacementDetail
+                    
                     for placement in _maybe_list(active.get("PlacementDetail")):
+
+                        entry_date = _safe_date_format(placement.get("EntryDate"))
+                        placement_rank = placement.get("PlacementRank", "").replace(" ", "").lower()
+
+                        placement_id = f"{request_id}_{entry_date}_{placement_rank}"
+
                         placement["PersonID"] = person_id
                         placement["RequestID"] = request_id
-                        # placement["ActivePlanID"] = active_id
+                        placement["PlacementID"] = placement_id
                         yield PlacementDetailEvent(record=placement)
 
                     # Nested: SENneed
                     for need in _maybe_list(active.get("SENneed")):
                         need["PersonID"] = person_id
                         need["RequestID"] = request_id
-                        # need["ActivePlanID"] = active_id
                         yield SENneedEvent(record=need)
-
         else:
             # advance stream by one token if not handled
             next(stream)
