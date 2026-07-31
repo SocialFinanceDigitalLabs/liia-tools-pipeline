@@ -15,7 +15,7 @@ on:
 
 jobs:
   push_to_registry:
-    uses: ./.github/workflows/base_build.yml
+    uses: SocialFinanceDigitalLabs/.github/.github/workflows/base_docker_build.yml@main
     with:
       tag: ${{ github.ref_name }}
       dockerfile: "./Dockerfile_Org"

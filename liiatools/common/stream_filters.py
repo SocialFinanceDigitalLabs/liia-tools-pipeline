@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import tablib
 import xmlschema
+from xlsxwriter.utility import xl_col_to_name
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
@@ -96,7 +97,7 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
         for c_ix, cell in enumerate(row):
             yield events.Cell(
                 row_number=r_ix + 2,  # tablib rows are 0-indexed, plus 1 for header row
-                column_number=c_ix,
+                column_letter=xl_col_to_name(c_ix),
                 header=dataset.headers[c_ix],
                 cell=cell,
             )
@@ -117,7 +118,7 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
                     cell = ""
             yield events.Cell(
                 row_number=r_ix + 2,  # pandas rows are 0-indexed, plus 1 for header row
-                column_number=c_ix,
+                column_letter=xl_col_to_name(c_ix),
                 header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
@@ -505,7 +506,7 @@ def collect_errors(stream):
                     error_entry,
                     "filename",
                     "row_number",
-                    "column_number",
+                    "column_letter",
                     "table_name",
                     "header",
                     "xml_row",
