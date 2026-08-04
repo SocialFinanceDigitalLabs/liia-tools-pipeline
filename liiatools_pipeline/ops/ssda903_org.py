@@ -1,11 +1,23 @@
-from dagster import In, Out, op, get_dagster_logger
-from fs.base import FS
-from fs import errors
 import re
 
+import pandas as pd
+from dagster import In, Out, get_dagster_logger, op
+from decouple import config as env_config
+from fs import errors
+from fs.base import FS
+from pandas.tseries.offsets import MonthEnd
+
 from liiatools.common import pipeline as pl
-from liiatools.common.constants import SessionNamesSufficiency
+from liiatools.common.constants import (
+    SessionNamesPanSufficiencyJoins,
+    SessionNamesSufficiency,
+)
 from liiatools.common.data import DataContainer
+from liiatools.ssda903_pipeline.ssda903_dataset_join import (
+    join_header_data,
+    join_pnw_data,
+    join_uasc_data,
+)
 from liiatools.ssda903_pipeline.sufficiency_transform import (
     dict_to_dfs,
     ofsted_transform,
@@ -138,3 +150,131 @@ def create_dim_fact_tables(
     # If three 903 input files not present, terminate process with log
     else:
         log.info("903 input files for sufficiency not all present: terminating process")
+
+
+@op(
+    out={
+        "session_folder": Out(FS),
+    }
+)
+def create_pan_sufficiency_join_session_folder() -> FS:
+    log.info("Creating session folder...")
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesPanSufficiencyJoins
+    )
+
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
+    log.info("Opening incoming folder...")
+    session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
+
+    ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+    pl.move_files_for_sharing(
+        ssda903_reports_folder,
+        session_folder,
+        required_table_id=["episodes", "header", "uasc"],
+        )
+
+    if "pnw_census" in allowed_datasets:
+        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
+        pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
+
+    if "cans" in allowed_datasets:
+        cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
+        pl.move_files_for_sharing(cans_reports_folder, session_folder)
+
+    if "placement_standards" in allowed_datasets:
+        placement_standards_reports_folder = workspace_folder().opendir("current/placement_standards/PAN")
+        pl.move_files_for_sharing(placement_standards_reports_folder, session_folder)
+
+    return session_folder
+
+
+@op(
+    ins={
+        "session_folder": In(FS),
+    },
+)
+def joins_pan_sufficiency(
+    session_folder: FS,
+):
+    log.info("Checking necessary files are present...")
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
+    # SSDA903 file patterns
+    episodes_pattern = re.compile(r"episodes")
+    header_pattern = re.compile(r"header")
+    uasc_pattern = re.compile(r"uasc")
+
+    # PNW file pattern
+    pnw_pattern = re.compile(r"pnw")
+
+    # Placement standard file patterns
+    placement_standard_pattern = re.compile(r"placement_standard")
+
+    files = session_folder.listdir("/")
+
+    try:
+        episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
+    except errors.ResourceNotFound as err:
+        log.error(f"No SSDA903 episodes file to open: {err}")
+        log.info("Exiting run as SSDA903 episodes file not available")
+        return
+
+    ssda903_patterns = [
+        header_pattern,
+        uasc_pattern,
+    ]
+
+    # If no SSDA903, PNW or Placement Standard files, terminate process
+    if not any(
+        any(pattern.search(f) for f in files) for pattern in ssda903_patterns
+    ) and not any(pattern.search(f) for f in files for pattern in [placement_standard_pattern]
+    ) and not any(pattern.search(f) for f in files for pattern in [pnw_pattern]):
+        log.error("No SSDA903, PNW or Placement Standard files found: terminating process.")
+        return
+
+    # Open the SSDA903 episodes file
+    episodes = open_file(session_folder, episodes_file)
+
+    # Check and process each SSDA903 file type
+    if any(header_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 header data with SSDA903 episodes data")
+        header_file = next(f for f in files if header_pattern.search(f))
+        header = open_file(session_folder, header_file)
+        episodes = join_header_data(header, episodes)
+    else:
+        log.error("No 903 header data to join")
+        empty_header_cols = ["SEX", "ETHNIC", "DOB"]
+        for col in empty_header_cols:
+            episodes[col] = None
+
+    if any(uasc_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 UASC data with SSDA903 episodes data")
+        uasc_file = next(f for f in files if uasc_pattern.search(f))
+        uasc = open_file(session_folder, uasc_file)
+        episodes = join_uasc_data(uasc, episodes)
+    else:
+        log.error("No 903 uasc data to join")
+        empty_uasc_cols = ["UASC 903"]
+        for col in empty_uasc_cols:
+            episodes[col] = None
+
+    # Check and process the PNW Census file
+    if any(pnw_pattern.search(f) for f in files):
+        log.info("Joining PNW Census data with SSDA903 episodes data")
+        pnw_census_file = next(f for f in files if pnw_pattern.search(f))
+        pnw_census = open_file(session_folder, pnw_census_file)
+
+        # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
+        pnw_census["snapshot_date"] = pd.to_datetime(
+            pnw_census[["Year", "Month"]].assign(day=1)
+        ) + MonthEnd(0)
+
+        episodes = join_pnw_data(pnw_census, episodes)
+
+    # Export PNW file
+    episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
+    log.info("Writing joined episodes output to shared folder")
+    output_folder = shared_folder()
+    episodes_dc.export(output_folder, "", "csv")
