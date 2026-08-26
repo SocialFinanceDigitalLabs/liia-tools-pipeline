@@ -12,6 +12,11 @@ yaml = YAML()
 yaml.preserve_quotes = True
 
 from liiatools.common.data import PipelineConfig
+from liiatools.common.file_header_readme_generator import (
+    MarkdownSection,
+    render_readme_by_year,
+    write_markdown_file,
+)
 from liiatools.common.spec import load_region_env
 from liiatools.common.spec.__data_schema import DataSchema
 
@@ -145,3 +150,62 @@ def load_schema(year: int, month: str) -> DataSchema:
 
     # Now we can parse the full schema into a DataSchema object from the dict
     return DataSchema(**full_schema)
+
+
+def render_schema_header_readme(start_year: int, end_year: int) -> str:
+    years = list(range(start_year, end_year + 1))
+    months = ["mar", "jun", "sep", "dec"]
+    if not years:
+        raise ValueError("No years to render")
+
+    schemas: dict[int, dict[str, DataSchema]] = {}
+    for year in years:
+        schemas[year] = {}
+        for month in months:
+            try:
+                schemas[year][month] = load_schema(year, month)
+            except ValueError:
+                # Some selected months are not available for all years.
+                continue
+
+    year_sections: dict[int, list[MarkdownSection]] = {}
+    for year in years:
+        available_months = [month for month in months if month in schemas[year]]
+        month_sections: list[MarkdownSection] = []
+
+        for month in available_months:
+            schema = schemas[year][month]
+            table_names = sorted(schema.table.keys())
+            if not table_names:
+                month_sections.append(
+                    MarkdownSection(
+                        summary=month.upper(),
+                        items=["_No table found in schema._"],
+                    )
+                )
+                continue
+
+            headers = list(schema.table[table_names[0]].keys())
+            month_sections.append(MarkdownSection(summary=month.upper(), items=headers))
+
+        year_sections[year] = month_sections
+
+    return render_readme_by_year(
+        title="PNW Census Expected Headers by Year and Month",
+        intro_lines=["Select a year and month below to see the exact expected headers for that submission year."],
+        years=years,
+        year_sections=year_sections,
+        empty_year_message="_No schema available for selected months in this year._",
+    )
+
+
+def generate_schema_header_readme(
+    output_file: Path | None = None,
+    start_year: int = 2019,
+    end_year: int = 2025,
+) -> Path:
+    if output_file is None:
+        output_file = Path("docs", "file_headers_by_dataset", "pnw_census_headers.md")
+
+    readme_content = render_schema_header_readme(start_year=start_year, end_year=end_year)
+    return write_markdown_file(output_file, readme_content)
