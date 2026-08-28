@@ -15,6 +15,7 @@ from liiatools.common.constants import (
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_header_data,
+    join_placement_standard_data,
     join_pnw_data,
     join_uasc_data,
 )
@@ -179,10 +180,6 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    if "cans" in allowed_datasets:
-        cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
-        pl.move_files_for_sharing(cans_reports_folder, session_folder)
-
     if "placement_standards" in allowed_datasets:
         placement_standards_reports_folder = workspace_folder().opendir("current/placement_standards/PAN")
         pl.move_files_for_sharing(placement_standards_reports_folder, session_folder)
@@ -256,24 +253,95 @@ def joins_pan_sufficiency(
         episodes = join_uasc_data(uasc, episodes)
     else:
         log.error("No 903 uasc data to join")
-        empty_uasc_cols = ["UASC 903"]
+        empty_uasc_cols = ["DUC"]
         for col in empty_uasc_cols:
             episodes[col] = None
 
-    # Check and process the PNW Census file
-    if any(pnw_pattern.search(f) for f in files):
-        log.info("Joining PNW Census data with SSDA903 episodes data")
-        pnw_census_file = next(f for f in files if pnw_pattern.search(f))
-        pnw_census = open_file(session_folder, pnw_census_file)
+    if "pnw_census" in allowed_datasets:
+        # Check and process the PNW Census file
+        if any(pnw_pattern.search(f) for f in files):
+            log.info("Joining PNW Census data with SSDA903 episodes data")
+            pnw_census_file = next(f for f in files if pnw_pattern.search(f))
+            pnw_census = open_file(session_folder, pnw_census_file)
 
-        # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
-        pnw_census["snapshot_date"] = pd.to_datetime(
-            pnw_census[["Year", "Month"]].assign(day=1)
-        ) + MonthEnd(0)
+            # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
+            pnw_census["snapshot_date"] = pd.to_datetime(
+                pnw_census[["Year", "Month"]].assign(day=1)
+            ) + MonthEnd(0)
 
-        episodes = join_pnw_data(pnw_census, episodes)
+            episodes = join_pnw_data(pnw_census, episodes)
+        else:
+            log.error("No PNW Census data to join")
+            empty_pnw_cols = ["Type of provision", "Primary Registration type"]
+            for col in empty_pnw_cols:
+                episodes[col] = None
 
-    # Export PNW file
+    if "placement_standards" in allowed_datasets:
+        # Check and process the Placement Standard file
+        if any(placement_standard_pattern.search(f) for f in files):
+            log.info("Joining Placement Standard data with SSDA903 episodes data")
+            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
+            placement_standard = open_file(session_folder, placement_standard_file)
+
+            episodes = join_placement_standard_data(placement_standard, episodes)
+        else:
+            log.error("No Placement Standard data to join")
+            empty_placement_standard_cols = [
+                "when_placement_is_needed_by",
+                "number_of_siblings_to_place_with",
+                "preferred_location_for_home_search",
+                "communication_language_learning_needs",
+                "specific_communication_and_language_requirements",
+                "adaptation_to_the_home",
+                "cultural_needs",
+                "who_can_the_child_be_cared_for_alongside",
+                "can_child_live_with_pets",
+                "additional_support",
+                "mental_health_diagnosis",
+                "open_to_CAMHS",
+                "dol",
+                "needs_assesment",
+                "foster_care_suitability",
+                "residential_care_suitability",
+                "supported_accommodation",
+                "risk_to_child_self_harm",
+                "risk_to_child_criminal_exploitation",
+                "risk_to_child_drug_and_alcohol_use",
+                "risk_to_child_eating_disorder",
+                "risk_to_child_going_missing",
+                "risk_to_others_physical_harm",
+                "risk_to_others_sexual_harm",
+                "risk_to_others_fire_setting",
+                "risk_to_others_harm_to_animals",
+                "risk_to_others_criminal_exploitation",
+                "placement_search_foster_total_number",
+                "placement_search_foster_U4",
+                "placement_search_foster_U5",
+                "placement_search_foster_U6",
+                "placement_search_supported_accommodation_total_number",
+                "placement_search_supported_accommodation_solo",
+                "placement_search_supported_accommodation_shared_lac",
+                "placement_search_supported_accommodation_shared_other",
+                "placement_search_supported_accommodation_shared_lodgings",
+                "placement_search_residential_total_number",
+                "placement_search_residential_ebd",
+                "placement_search_residential_mhd",
+                "placement_search_residential_si",
+                "placement_search_residential_alc",
+                "placement_search_residential_drug",
+                "placement_search_residential_ld",
+                "placement_search_residential_pd",
+                "placement_type_offers",
+                "placement_sourced",
+                "preferability_of_placement_location",
+                "placement_location_non_preferable_reason",
+                "education_continuity",
+                "how_many_siblings_were_placed_together",
+                ]
+            for col in empty_placement_standard_cols:
+                episodes[col] = None
+
+    # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
     log.info("Writing joined episodes output to shared folder")
     output_folder = shared_folder()
