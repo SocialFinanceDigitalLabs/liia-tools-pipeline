@@ -258,6 +258,7 @@ def joins_pan_sufficiency(
             episodes[col] = None
 
     if "pnw_census" in allowed_datasets:
+        pnw_join_columns = ["Type of provision", "Primary Registration type"]
         # Check and process the PNW Census file
         if any(pnw_pattern.search(f) for f in files):
             log.info("Joining PNW Census data with SSDA903 episodes data")
@@ -269,24 +270,14 @@ def joins_pan_sufficiency(
                 pnw_census[["Year", "Month"]].assign(day=1)
             ) + MonthEnd(0)
 
-            episodes = join_pnw_data(pnw_census, episodes)
+            episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
         else:
             log.error("No PNW Census data to join")
-            empty_pnw_cols = ["Type of provision", "Primary Registration type"]
-            for col in empty_pnw_cols:
+            for col in pnw_join_columns:
                 episodes[col] = None
 
     if "placement_standards" in allowed_datasets:
-        # Check and process the Placement Standard file
-        if any(placement_standard_pattern.search(f) for f in files):
-            log.info("Joining Placement Standard data with SSDA903 episodes data")
-            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
-            placement_standard = open_file(session_folder, placement_standard_file)
-
-            episodes = join_placement_standard_data(placement_standard, episodes)
-        else:
-            log.error("No Placement Standard data to join")
-            empty_placement_standard_cols = [
+        placement_standard_join_columns = [
                 "when_placement_is_needed_by",
                 "number_of_siblings_to_place_with",
                 "preferred_location_for_home_search",
@@ -338,7 +329,16 @@ def joins_pan_sufficiency(
                 "education_continuity",
                 "how_many_siblings_were_placed_together",
                 ]
-            for col in empty_placement_standard_cols:
+        # Check and process the Placement Standard file
+        if any(placement_standard_pattern.search(f) for f in files):
+            log.info("Joining Placement Standard data with SSDA903 episodes data")
+            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
+            placement_standard = open_file(session_folder, placement_standard_file)
+
+            episodes = join_placement_standard_data(placement_standard, episodes, placement_standard_join_columns)
+        else:
+            log.error("No Placement Standard data to join")
+            for col in placement_standard_join_columns:
                 episodes[col] = None
 
     # Export Episodes file
