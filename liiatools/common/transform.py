@@ -40,6 +40,10 @@ def _transform(
                         mapping_field = getattr(column_config, additional_property)
                         mapping_function = functions[transform_name]
                         data = mapping_function(data, mapping_field, column_config.id)
+                    elif transform_name == "distance_between_postcodes":
+                        postcodes = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, postcodes[0], postcodes[1], column_config.id)
                     else:
                         data[column_config.id] = data.apply(
                             lambda row: functions[transform_name](
@@ -55,6 +59,10 @@ def _transform(
                     mapping_field = getattr(column_config, additional_property)
                     mapping_function = functions[transform_name]
                     data = mapping_function(data, mapping_field, column_config.id)
+                elif transform_name == "distance_between_postcodes":
+                        postcodes = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, postcodes[0], postcodes[1], column_config.id)
                 else:
                     data[column_config.id] = data.apply(
                         lambda row: functions[transform_name](

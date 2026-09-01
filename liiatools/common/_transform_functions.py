@@ -105,6 +105,27 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
     return data
 
 
+def calculate_distance_between_postcodes(data: pd.DataFrame, postcode_one: str, postcode_two: str, output_field: str) -> pd.DataFrame:
+    # Load postcode lookup
+    ext_folder = external_data_folder()
+    mapping_file = "ONSPD_postcode_eastings_northings_lookup.parquet"
+    with ext_folder.open(mapping_file, "rb") as f:
+        mapping_df = pd.read_parquet(f)
+
+    # Merge coordinates for the first postcode
+    merged_one = data.merge(mapping_df, left_on=postcode_one, right_on="pcds", how="left")
+
+    # Merge coordinates for the second postcode
+    merged_two = merged_one.merge(mapping_df, left_on=postcode_two, right_on="pcds", how="left", suffixes=('_one', '_two'))
+
+    # Calculate distance using the northings and eastings
+    distance = ((merged_two['oseast1m_two'] - merged_two['oseast1m_one'])**2 + (merged_two['osnrth1m_two'] - merged_two['osnrth1m_one'])**2)**0.5 
+    distance = distance / 1609.34  # Convert metres to miles
+    distance = distance.round(1)
+    data[output_field] = distance
+    return data
+
+
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
     "la_code": add_la_code,
@@ -115,7 +136,8 @@ enrich_functions = {
     "integer": to_integer,
     "school_year": add_school_year,
     "school_type": add_school_type,
-    "postcode_la_lookup": add_la_from_postcode
+    "postcode_la_lookup": add_la_from_postcode,
+    "distance_between_postcodes": calculate_distance_between_postcodes
 }
 
 
