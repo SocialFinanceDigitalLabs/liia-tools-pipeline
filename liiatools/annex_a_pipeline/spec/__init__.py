@@ -70,13 +70,13 @@ def load_schema(year: int) -> DataSchema:
 
     # We load the full schema
     logger.debug("Loading schema from %s", schema_lookup[0][0])
-    full_schema = yaml.load(schema_lookup[0][0].read_text())
+    full_schema = yaml.load(schema_lookup[0][0].read_text(encoding="utf-8"))
 
     # Now loop over diff files and apply them
     for fn, _, _ in schema_lookup[1:]:
         logger.debug("Loading partial schema from %s", fn)
         try:
-            diff = yaml.load(fn.read_text())
+            diff = yaml.load(fn.read_text(encoding="utf-8"))
         except yaml.YAMLError as e:
             raise ValueError(f"Error parsing diff file {fn}") from e
 
