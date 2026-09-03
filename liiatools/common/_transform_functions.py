@@ -105,6 +105,12 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
     return data
 
 
+def create_episode_id(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
+    child_id = row["CHILD"]
+    date_episode_commenced = row["DECOM"]
+    return f"{child_id}_{date_episode_commenced}"
+
+
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
     "la_code": add_la_code,
@@ -115,7 +121,8 @@ enrich_functions = {
     "integer": to_integer,
     "school_year": add_school_year,
     "school_type": add_school_type,
-    "postcode_la_lookup": add_la_from_postcode
+    "postcode_la_lookup": add_la_from_postcode,
+    "episode_id": create_episode_id
 }
 
 
