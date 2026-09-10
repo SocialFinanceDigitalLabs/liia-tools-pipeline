@@ -233,6 +233,7 @@ def joins_pan_sufficiency(
 
     # Open the SSDA903 episodes file
     episodes = open_file(session_folder, episodes_file)
+    episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
     # Check and process each SSDA903 file type
     if any(header_pattern.search(f) for f in files):
@@ -259,6 +260,8 @@ def joins_pan_sufficiency(
 
     if "pnw_census" in allowed_datasets:
         pnw_join_columns = ["Type of provision", "Primary Registration type"]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        pnw_column_renames = {"Month": "PNW_Month"}
         # Check and process the PNW Census file
         if any(pnw_pattern.search(f) for f in files):
             log.info("Joining PNW Census data with SSDA903 episodes data")
@@ -271,10 +274,11 @@ def joins_pan_sufficiency(
             ) + MonthEnd(0)
 
             episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
+            episodes = episodes.rename(columns=pnw_column_renames)
         else:
             log.error("No PNW Census data to join")
             for col in pnw_join_columns:
-                episodes[col] = None
+                episodes[pnw_column_renames.get(col, col)] = None
 
     if "placement_standards" in allowed_datasets:
         placement_standard_join_columns = [
@@ -329,6 +333,8 @@ def joins_pan_sufficiency(
                 "education_continuity",
                 "how_many_siblings_were_placed_together",
                 ]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        placement_standard_column_renames = {"Month": "placement_standard_Month"}
         # Check and process the Placement Standard file
         if any(placement_standard_pattern.search(f) for f in files):
             log.info("Joining Placement Standard data with SSDA903 episodes data")
@@ -336,10 +342,11 @@ def joins_pan_sufficiency(
             placement_standard = open_file(session_folder, placement_standard_file)
 
             episodes = join_placement_standard_data(placement_standard, episodes, placement_standard_join_columns)
+            episodes = episodes.rename(columns=placement_standard_column_renames)
         else:
             log.error("No Placement Standard data to join")
             for col in placement_standard_join_columns:
-                episodes[col] = None
+                episodes[placement_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
