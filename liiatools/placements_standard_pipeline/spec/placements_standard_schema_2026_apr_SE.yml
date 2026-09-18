@@ -1,0 +1,301 @@
+column_map:
+  placements_standard:
+    child_ID:
+      string: "alphanumeric"
+      header_regex: ^child_ID\b
+      canbeblank: False
+    when_placement_is_needed_by:
+      category:
+        - code: "Today"
+        - code: "< 5 days"
+        - code: "> 5 days"
+      header_regex: ^when_placement_is_needed_by\b
+      canbeblank: False
+    number_of_siblings_to_place_with:
+      numeric:
+        type: "integer"
+        min_value: 0
+      header_regex: ^number_of_siblings_to_place_with\b
+      canbeblank: False
+    preferred_location_for_home_search:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^preferred_location_for_home_search\b
+      canbeblank: False
+    preferred_location_for_outside_LA_home_search_reason:
+      category:
+        - code: "Safeguarding concerns"
+        - code: "Bail conditions"
+        - code: "Court order"
+        - code: "Other"
+        - code: "N/A"
+      header_regex: ^preferred_location_for_outside_LA_home_search_reason\b
+      canbeblank: True
+    communication_language_learning_needs:
+      category:
+        - code: "Yes"
+        - code: "No"
+        - code: "Not specified"
+      header_regex: ^communication_language_learning_needs\b
+      canbeblank: False
+    specific_communication_and_language_requirements:
+      category:
+        - code: "ESOL"
+        - code: "BSL"
+        - code: "Makaton"
+        - code: "Other"
+        - code: "None"
+      header_regex: ^specific_communication_and_language_requirements\b
+      canbeblank: False
+    adaptation_to_the_home:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^adaptation_to_the_home\b
+      canbeblank: False
+    cultural_needs:
+      category:
+        - code: "Required"
+        - code: "Not required"
+        - code: "Not known"
+        - code: "Other"
+      header_regex: ^cultural_needs\b
+      canbeblank: False
+    who_can_the_child_be_cared_for_alongside:
+      category:
+        - code: "Solo placement recommended"
+        - code: "With other children recommended"
+        - code: "Only with other older children"
+        - code: "Only with other younger children"
+        - code: "No preference"
+      header_regex: ^who_can_the_child_be_cared_for_alongside\b
+      canbeblank: False
+    can_child_live_with_pets:
+      category:
+        - code: "Yes - must"
+        - code: "Yes - can"
+        - code: "No"
+        - code: "Unknown"
+      header_regex: ^can_child_live_with_pets\b
+      canbeblank: False
+    additional_support:
+      category:
+        - code: "Additional supervision"
+        - code: "Therapeutic support"
+        - code: "A worker for respite"
+        - code: "Taxis to school"
+        - code: "N/A"
+        - code: "Other"
+      header_regex: ^additional_support\b
+      canbeblank: False
+    autistic_spectrum_condition:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^autistic_spectrum_condition\b
+      canbeblank: False
+    learning_disability:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^learning_disability\b
+      canbeblank: False
+    section_117:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^section_117\b
+      canbeblank: False
+    dol:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^dol\b
+      canbeblank: False
+    foster_care_suitability:
+      category:
+        - code: "Preferred"
+        - code: "Suitable but not preferred"
+        - code: "Unsuitable"
+        - code: "Not specified"
+      header_regex: ^foster_care_suitability\b
+      canbeblank: False
+    residential_care_suitability:
+      category:
+        - code: "Preferred"
+        - code: "Suitable but not preferred"
+        - code: "Unsuitable"
+        - code: "Not specified"
+      header_regex: ^residential_care_suitability\b
+      canbeblank: False
+    supported_accommodation_suitability:
+      category:
+        - code: "Preferred"
+        - code: "Suitable but not preferred"
+        - code: "Unsuitable"
+        - code: "Not specified"
+      header_regex: ^supported_accommodation_suitability\b
+      canbeblank: False
+    risk_to_child_self_harm:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_child_self_harm\b
+      canbeblank: False
+    risk_to_child_criminal_exploitation:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_child_criminal_exploitation\b
+      canbeblank: False
+    risk_to_child_drug_and_alcohol_use:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_child_drug_and_alcohol_use\b
+      canbeblank: False
+    risk_to_child_eating_disorder:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_child_eating_disorder\b
+      canbeblank: False
+    risk_to_child_going_missing:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_child_going_missing\b
+      canbeblank: False
+    risk_to_others_physical_harm:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_others_physical_harm\b
+      canbeblank: False
+    risk_to_others_sexual_harm:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_others_sexual_harm\b
+      canbeblank: False
+    risk_to_others_fire_setting:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_others_fire_setting\b
+      canbeblank: False
+    risk_to_others_harm_to_animals:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_others_harm_to_animals\b
+      canbeblank: False
+    risk_to_others_criminal_exploitation:
+      category:
+        - code: "No known risk"
+        - code: "Risk present"
+      header_regex: ^risk_to_others_criminal_exploitation\b
+      canbeblank: False
+    placement_start_date:
+      date: "%d/%m/%Y"
+      header_regex: ^placement_start_date\b
+      canbeblank: False
+    core_cost:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      header_regex: ^core_cost\b
+      canbeblank: False
+    additional_support_cost:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      header_regex: ^additional_support_cost\b
+      canbeblank: False
+    education_cost:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      header_regex: ^education_cost\b
+      canbeblank: False
+    other_costs:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      header_regex: ^other_costs\b
+      canbeblank: False
+    total_weekly_cost:
+      numeric:
+        type: "float"
+        min_value: 0
+        decimal_places: 2
+      header_regex: ^total_weekly_cost\b
+      canbeblank: False
+    placement_location:
+      string: "postcode"
+      header_regex: ^placement_location\b
+      canbeblank: False
+    preferability_of_placement_location:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^preferability_of_placement_location\b
+      canbeblank: False
+    education_continuity:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^education_continuity\b
+      canbeblank: False
+    provider_URN:
+      string: "alphanumeric"
+      header_regex: ^provider_URN\b
+      canbeblank: True
+    how_many_siblings_were_placed_together:
+      numeric:
+        type: "integer"
+        min_value: 0
+      header_regex: ^how_many_siblings_were_placed_together\b
+      canbeblank: False
+    placement_type:
+      category:
+        - code: "Residential"
+        - code: "Foster"
+        - code: "Supported Accommodation"
+      header_regex: ^placement_type\b
+      canbeblank: False
+    therapeutic_placement:
+      category:
+        - code: "Yes"
+        - code: "No"
+      header_regex: ^therapeutic_placement\b
+      canbeblank: False
+    name_of_officer_referral:
+      string: "alphanumeric"
+      header_regex: ^name_of_officer_referral\b
+      canbeblank: True
+    date_entry_referral:
+      date: "%d/%m/%Y"
+      header_regex: ^date_entry_referral\b
+      canbeblank: True
+    name_of_officer_placement:
+      string: "alphanumeric"
+      header_regex: ^name_of_officer_placement\b
+      canbeblank: True
+    date_entry_placement_admin:
+      date: "%d/%m/%Y"
+      header_regex: ^date_entry_placement_admin\b
+      canbeblank: True
+    name_of_officer_placement_cost:
+      string: "alphanumeric"
+      header_regex: ^name_of_officer_placement_cost\b
+      canbeblank: True
+    date_entry_placement_cost:
+      date: "%d/%m/%Y"
+      header_regex: ^date_entry_placement_cost\b
+      canbeblank: True
