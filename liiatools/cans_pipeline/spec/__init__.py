@@ -84,3 +84,16 @@ def load_summary_sheet_column_order() -> dict:
     with open(summary_sheet_column_order_path, "r", encoding="utf-8") as f:
         column_order = yaml.load(f)
     return column_order
+
+
+@lru_cache
+def load_category_mapping() -> dict:
+    """
+    Load the category mapping file
+    :return: A dictionary of category mappings
+    """
+    category_mapping_path = Path(SCHEMA_DIR, "category_mapping.yml")
+
+    with open(category_mapping_path, "r", encoding="utf-8") as f:
+        mapping = yaml.load(f)
+    return mapping

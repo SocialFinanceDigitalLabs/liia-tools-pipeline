@@ -2,7 +2,11 @@ from dagster import repository
 
 from liiatools.common._fs_serializer import register
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
-from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cans_org import (
+    cans_summary_columns,
+    pan_cans_joins,
+    transform_pan_cans_data,
+)
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
@@ -16,7 +20,10 @@ from liiatools_pipeline.jobs.school_census_org import (
     school_census_cross,
     school_census_region,
 )
-from liiatools_pipeline.jobs.ssda903_org import ssda903_joins, ssda903_sufficiency
+from liiatools_pipeline.jobs.ssda903_org import (
+    ssda903_pan_sufficiency_joins,
+    ssda903_sufficiency,
+)
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     cans_summary_columns_sensor,
@@ -25,11 +32,13 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     move_concat_sensor,
     move_current_org_sensor,
     move_error_reports_sensor,
+    pan_cans_joins_sensor,
     pnw_census_joins_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
     ssda903_pan_sufficiency_joins_sensor,
     sufficiency_sensor,
+    transform_pan_cans_data_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
 
@@ -51,13 +60,15 @@ def sync():
         reports,
         external_incoming,
         ssda903_sufficiency,
-        ssda903_joins,
+        ssda903_pan_sufficiency_joins,
         deduplicate_annex_a,
         pnw_census_joins,
         cin_reports,
         school_census_cross,
         school_census_region,
         cans_summary_columns,
+        pan_cans_joins,
+        transform_pan_cans_data,
     ]
     schedules = [
         reports_schedule,
@@ -75,6 +86,8 @@ def sync():
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
         ssda903_pan_sufficiency_joins_sensor,
+        transform_pan_cans_data_sensor,
+        pan_cans_joins_sensor,
     ]
 
     return jobs + schedules + sensors

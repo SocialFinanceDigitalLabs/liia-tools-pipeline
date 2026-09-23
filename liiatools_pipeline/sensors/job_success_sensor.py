@@ -10,7 +10,11 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
-from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cans_org import (
+    cans_summary_columns,
+    pan_cans_joins,
+    transform_pan_cans_data,
+)
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import (
     clean,
@@ -499,6 +503,7 @@ def full_clean_sensor(context):
             ),
         )
 
+
 @sensor(
     job=cans_summary_columns,
     description="Runs cans_summary_columns job once reports job is complete",
@@ -525,6 +530,32 @@ def cans_summary_columns_sensor(context):
             run_key=latest_run_id,
         )
 
+
+@sensor(
+    job=transform_pan_cans_data,
+    description="Runs transform_cans_data job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def transform_pan_cans_data_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cans"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for CANS reports job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
 
 
 @sensor(
@@ -619,6 +650,43 @@ def ssda903_pan_sufficiency_joins_sensor(context):
     # Ensure there is at least one of each record
     if (latest_run_id_pnw or latest_run_id_placement_standards) and latest_run_id_ssda903:
         run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placement_standards}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+        )
+
+
+@sensor(
+    job=pan_cans_joins,
+    description="Runs pan_cans_joins job once transform_pan_cans_data job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def pan_cans_joins_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=transform_pan_cans_data.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["cans", "ssda903"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903 & CANS run ids
+    latest_run_id_cans = find_previous_matching_dataset_run(
+        run_records,
+        "cans",
+    )
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
+    )
+
+    # Ensure there is at least one of each record
+    if latest_run_id_cans and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_cans}_{latest_run_id_ssda903}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
