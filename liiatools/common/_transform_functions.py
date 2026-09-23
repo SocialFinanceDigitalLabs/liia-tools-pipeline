@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 from typing import Dict
 import pandas as pd
 from fs.base import FS
@@ -134,22 +135,18 @@ def degrade_to_short_postcode(
     return to_short_postcode(row[column_config.id])
 
 
-def hash_column_sha256(
-    row: pd.Series, column_config: ColumnConfig, metadata: Metadata
+def hmac_column_sha256(
+    row: pd.Series, column_config: ColumnConfig, secret_key: str, 
 ) -> str:
     value = row[column_config.id]
     if not value:
         return value
 
-    digest = hashlib.sha256()
-    digest.update(str(value).encode("utf-8"))
-
-    salt = _get_first(metadata, f"sha256_salt_{column_config.id}", "sha256_salt")
-    if salt:
-        digest.update(salt.encode("utf-8"))
-
-    return digest.hexdigest()
-
+    return hmac.new(
+        secret_key.encode("utf-8"),
+        str(value).encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
     if not row[column_config.id]:
@@ -161,6 +158,6 @@ def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) 
 degrade_functions = {
     "first_of_month": degrade_to_first_of_month,
     "short_postcode": degrade_to_short_postcode,
-    "hash_sha256": hash_column_sha256,
+    "hash_sha256": hmac_column_sha256,
     "remove_row": remove_row,
 }
