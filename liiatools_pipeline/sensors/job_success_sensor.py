@@ -596,14 +596,14 @@ def ssda903_pan_sufficiency_joins_sensor(context):
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": ["ssda903", "pnw_census", "placement_standards"]},
+            tags={"dataset": ["ssda903", "pnw_census", "placements_standard"]},
         ),
         order_by="update_timestamp",
         ascending=False,
         limit=1000,
     )
 
-    # Get the most recent ssda903, placement_standards & pnw_census run ids
+    # Get the most recent ssda903, placements_standard & pnw_census run ids
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
         run_records,
         "ssda903",
@@ -612,13 +612,13 @@ def ssda903_pan_sufficiency_joins_sensor(context):
         run_records,
         "pnw_census",
     )
-    latest_run_id_placement_standards = find_previous_matching_dataset_run(
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
         run_records,
-        "placement_standards",
+        "placements_standard",
     )
     # Ensure there is at least one of each record
-    if (latest_run_id_pnw or latest_run_id_placement_standards) and latest_run_id_ssda903:
-        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placement_standards}"
+    if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,

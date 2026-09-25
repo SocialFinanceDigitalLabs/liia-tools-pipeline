@@ -15,7 +15,7 @@ from liiatools.common.constants import (
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_header_data,
-    join_placement_standard_data,
+    join_placements_standard_data,
     join_pnw_data,
     join_uasc_data,
 )
@@ -180,9 +180,9 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    if "placement_standards" in allowed_datasets:
-        placement_standards_reports_folder = workspace_folder().opendir("current/placement_standards/PAN")
-        pl.move_files_for_sharing(placement_standards_reports_folder, session_folder)
+    if "placements_standard" in allowed_datasets:
+        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
 
@@ -206,8 +206,8 @@ def joins_pan_sufficiency(
     # PNW file pattern
     pnw_pattern = re.compile(r"pnw")
 
-    # Placement standard file patterns
-    placement_standard_pattern = re.compile(r"placement_standard")
+    # Placements standard file patterns
+    placements_standard_pattern = re.compile(r"placements_standard")
 
     files = session_folder.listdir("/")
 
@@ -223,12 +223,12 @@ def joins_pan_sufficiency(
         uasc_pattern,
     ]
 
-    # If no SSDA903, PNW or Placement Standard files, terminate process
+    # If no SSDA903, PNW or Placements Standard files, terminate process
     if not any(
         any(pattern.search(f) for f in files) for pattern in ssda903_patterns
-    ) and not any(pattern.search(f) for f in files for pattern in [placement_standard_pattern]
+    ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in [pnw_pattern]):
-        log.error("No SSDA903, PNW or Placement Standard files found: terminating process.")
+        log.error("No SSDA903, PNW or Placements Standard files found: terminating process.")
         return
 
     # Open the SSDA903 episodes file
@@ -259,7 +259,7 @@ def joins_pan_sufficiency(
             episodes[col] = None
 
     if "pnw_census" in allowed_datasets:
-        pnw_join_columns = ["Type of provision", "Primary Registration type"]
+        pnw_join_columns = ["Type of provision", "Primary Registration type", "Month"]
         # Applied after the join, and to the blank columns, so output headers match either way
         pnw_column_renames = {"Month": "PNW_Month"}
         # Check and process the PNW Census file
@@ -280,8 +280,8 @@ def joins_pan_sufficiency(
             for col in pnw_join_columns:
                 episodes[pnw_column_renames.get(col, col)] = None
 
-    if "placement_standards" in allowed_datasets:
-        placement_standard_join_columns = [
+    if "placements_standard" in allowed_datasets:
+        placements_standard_join_columns = [
                 "when_placement_is_needed_by",
                 "number_of_siblings_to_place_with",
                 "preferred_location_for_home_search",
@@ -334,19 +334,19 @@ def joins_pan_sufficiency(
                 "how_many_siblings_were_placed_together",
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        placement_standard_column_renames = {"Month": "placement_standard_Month"}
+        placements_standard_column_renames = {"Month": "placements_standard_Month"}
         # Check and process the Placement Standard file
-        if any(placement_standard_pattern.search(f) for f in files):
+        if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placement Standard data with SSDA903 episodes data")
-            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
-            placement_standard = open_file(session_folder, placement_standard_file)
+            placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
+            placements_standard = open_file(session_folder, placements_standard_file)
 
-            episodes = join_placement_standard_data(placement_standard, episodes, placement_standard_join_columns)
-            episodes = episodes.rename(columns=placement_standard_column_renames)
+            episodes = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
+            episodes = episodes.rename(columns=placements_standard_column_renames)
         else:
-            log.error("No Placement Standard data to join")
-            for col in placement_standard_join_columns:
-                episodes[placement_standard_column_renames.get(col, col)] = None
+            log.error("No Placements Standard data to join")
+            for col in placements_standard_join_columns:
+                episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
