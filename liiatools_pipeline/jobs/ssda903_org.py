@@ -14,7 +14,7 @@ def ssda903_sufficiency():
 
 @job
 def ssda903_pan_sufficiency_joins():
-    log.info("Joining additional datasets with PNW Census...")
+    log.info("Joining additional datasets with SSDA903...")
     session_folder = ssda903.create_pan_sufficiency_join_session_folder()
     ssda903.joins_pan_sufficiency(session_folder)
 
