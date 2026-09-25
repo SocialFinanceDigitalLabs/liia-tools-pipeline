@@ -25,3 +25,10 @@ def ssda903_pan_commissioning_joins():
     log.info("Joining additional datasets with SSDA903...")
     session_folder = ssda903.create_pan_commissioning_join_session_folder()
     ssda903.joins_pan_commissioning(session_folder)
+
+
+@job
+def ssda903_pan_child_joins():
+    log.info("Joining additional datasets with SSDA903...")
+    session_folder = ssda903.create_pan_child_join_session_folder()
+    ssda903.joins_pan_child(session_folder)

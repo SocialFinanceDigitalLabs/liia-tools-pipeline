@@ -21,6 +21,7 @@ from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_latest_cans_data,
     join_latest_episodes_data,
     join_latest_oc2_data,
+    join_latest_placements_standard_data,
     join_latest_uasc_data,
     join_placements_standard_data,
     join_pnw_data,
@@ -528,9 +529,9 @@ def create_pan_child_join_session_folder() -> FS:
         cans_reports_folder = workspace_folder().opendir("current/cans/PAN")
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
-    if "placement_standards" in allowed_datasets:
-        placement_standards_reports_folder = workspace_folder().opendir("current/placement_standards/PAN")
-        pl.move_files_for_sharing(placement_standards_reports_folder, session_folder)
+    if "placements_standard" in allowed_datasets:
+        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
 
@@ -557,8 +558,8 @@ def joins_pan_child(
     youth_pattern = re.compile(r"6_21")
 
 
-    # Placement standard file patterns
-    placement_standard_pattern = re.compile(r"placement_standard")
+    # Placements standard file patterns
+    placements_standard_pattern = re.compile(r"placements_standard")
 
     files = session_folder.listdir("/")
 
@@ -580,12 +581,12 @@ def joins_pan_child(
         youth_pattern,
     ]
 
-    # If no SSDA903, CANS or Placement Standard files, terminate process
+    # If no SSDA903, CANS or Placements Standard files, terminate process
     if not any(
         any(pattern.search(f) for f in files) for pattern in ssda903_patterns
-    ) and not any(pattern.search(f) for f in files for pattern in [placement_standard_pattern]
+    ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in cans_patterns):
-        log.error("No SSDA903, CANS or Placement Standard files found: terminating process.")
+        log.error("No SSDA903, CANS or Placements Standard files found: terminating process.")
         return
 
     # Open the SSDA903 header file
@@ -656,8 +657,8 @@ def joins_pan_child(
             for col in cans_join_columns:
                 header[col] = None
 
-    if "placement_standards" in allowed_datasets:
-        placement_standard_join_columns = [
+    if "placements_standard" in allowed_datasets:
+        placements_standard_join_columns = [
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
                 "needs_assessment",
@@ -672,16 +673,16 @@ def joins_pan_child(
                 "risk_to_others_harm_to_animals",
                 "risk_to_others_criminal_exploitation"
                 ]
-        # Check and process the Placement Standard file
-        if any(placement_standard_pattern.search(f) for f in files):
-            log.info("Joining Placement Standard data with SSDA903 header data")
-            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
-            placement_standard = open_file(session_folder, placement_standard_file)
+        # Check and process the Placements Standard file
+        if any(placements_standard_pattern.search(f) for f in files):
+            log.info("Joining Placements Standard data with SSDA903 header data")
+            placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
+            placements_standard = open_file(session_folder, placements_standard_file)
 
-            header = join_placement_standard_data(placement_standard, header, placement_standard_join_columns)
+            header = join_latest_placements_standard_data(placements_standard, header, placements_standard_join_columns)
         else:
-            log.error("No Placement Standard data to join")
-            for col in placement_standard_join_columns:
+            log.error("No Placements Standard data to join")
+            for col in placements_standard_join_columns:
                 header[col] = None
 
     # Export header file

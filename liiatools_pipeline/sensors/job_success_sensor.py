@@ -32,6 +32,7 @@ from liiatools_pipeline.jobs.school_census_org import (
 )
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import (
+    ssda903_pan_child_joins,
     ssda903_pan_commissioning_joins,
     ssda903_pan_sufficiency_joins,
     ssda903_sufficiency,
@@ -660,6 +661,46 @@ def ssda903_pan_commissioning_joins_sensor(context):
     # Ensure there is at least one of each record
     if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
         run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+        )
+
+
+@sensor(
+    job=ssda903_pan_child_joins,
+    description="Runs ssda903_pan_child_joins job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def ssda903_pan_child_joins_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["ssda903", "cans", "placements_standard"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903, placements_standard & cans run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
+    )
+    latest_run_id_cans = find_previous_matching_dataset_run(
+        run_records,
+        "cans",
+    )
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        run_records,
+        "placements_standard",
+    )
+    # Ensure there is at least one of each record
+    if (latest_run_id_cans or latest_run_id_placements_standard) and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_cans}_{latest_run_id_placements_standard}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,

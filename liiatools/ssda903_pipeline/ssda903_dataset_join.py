@@ -262,24 +262,24 @@ def join_latest_cans_data(
     return header_merged
 
 
-def join_latest_placement_standard_data(
-    placement_standard: pd.DataFrame, header: pd.DataFrame, placement_standard_join_columns: list
+def join_latest_placements_standard_data(
+    placements_standard: pd.DataFrame, header: pd.DataFrame, placements_standard_join_columns: list
     ) -> pd.DataFrame:
     """
-    Merges data from placement standard dataframe onto 903 header dataframe
+    Merges data from placements standard dataframe onto 903 header dataframe
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    placement_standard["placement_start_date"] = pd.to_datetime(placement_standard["placement_start_date"])
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"])
 
-    # Keep only the latest Placement Standard assessment for each child
-    latest_placement_standard = (
-        placement_standard.sort_values(["child_ID", "placement_start_date"], ascending=[True, False])
+    # Keep only the latest Placements Standard assessment for each child
+    latest_placements_standard = (
+        placements_standard.sort_values(["child_ID", "placement_start_date"], ascending=[True, False])
         .drop_duplicates(subset="child_ID", keep="first")
     )
 
     header_merged = header.merge(
-        latest_placement_standard[["child_ID",] + placement_standard_join_columns],
+        latest_placements_standard[["child_ID",] + placements_standard_join_columns],
         left_on="CHILD",
         right_on="child_ID",
         how="left",
@@ -290,12 +290,12 @@ def join_latest_placement_standard_data(
         assert len(header) == len(header_merged)
     except AssertionError:
         log.error(
-            f"Join with Placement Standard results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+            f"Join with Placements Standard results in incorrect row count: {len(header_merged)-len(header)} additional rows."
         )
 
     # Log number of joins made
     joins = header_merged["child_ID"].count()
-    log.info(f"{joins} joins made from Placement Standard file")
+    log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
     header_merged = header_merged.drop(columns=["child_ID"])
