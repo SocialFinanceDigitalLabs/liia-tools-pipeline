@@ -16,7 +16,7 @@ from liiatools.common.constants import (
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_header_data,
-    join_placement_standard_data,
+    join_placements_standard_data,
     join_pnw_data,
     join_uasc_data,
 )
@@ -342,7 +342,7 @@ def joins_pan_sufficiency(
             placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
             placement_standard = open_file(session_folder, placement_standard_file)
 
-            episodes = join_placement_standard_data(placement_standard, episodes, placement_standard_join_columns)
+            episodes = join_placements_standard_data(placement_standard, episodes, placement_standard_join_columns)
             episodes = episodes.rename(columns=placement_standard_column_renames)
         else:
             log.error("No Placement Standard data to join")
@@ -383,9 +383,9 @@ def create_pan_commissioning_join_session_folder() -> FS:
         pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    if "placement_standards" in allowed_datasets:
-        placement_standards_reports_folder = workspace_folder().opendir("current/placement_standards/PAN")
-        pl.move_files_for_sharing(placement_standards_reports_folder, session_folder)
+    if "placements_standard" in allowed_datasets:
+        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
 
@@ -407,8 +407,8 @@ def joins_pan_commissioning(
     # PNW file pattern
     pnw_pattern = re.compile(r"pnw")
 
-    # Placement standard file patterns
-    placement_standard_pattern = re.compile(r"placement_standard")
+    # Placements standard file patterns
+    placements_standard_pattern = re.compile(r"placements_standard")
 
     files = session_folder.listdir("/")
 
@@ -419,12 +419,12 @@ def joins_pan_commissioning(
         log.info("Exiting run as SSDA903 episodes file not available")
         return
 
-    # If no SSDA903, PNW or Placement Standard files, terminate process
+    # If no SSDA903, PNW or Placements Standard files, terminate process
     if not any(
         any(pattern.search(f) for f in files) for pattern in [episodes_pattern]
-    ) and not any(pattern.search(f) for f in files for pattern in [placement_standard_pattern]
+    ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in [pnw_pattern]):
-        log.error("No SSDA903, PNW or Placement Standard files found: terminating process.")
+        log.error("No SSDA903, PNW or Placements Standard files found: terminating process.")
         return
 
     # Open the SSDA903 episodes file
@@ -464,25 +464,29 @@ def joins_pan_commissioning(
             for col in pnw_join_columns:
                 episodes[pnw_column_renames.get(col, col)] = None
 
-    if "placement_standards" in allowed_datasets:
-        placement_standard_join_columns = [
+    if "placements_standard" in allowed_datasets:
+        placements_standard_join_columns = [
                 "placement_search_foster_total_number",
                 "placement_search_supported_accommodation_total_number",
                 "placement_search_residential_total_number",
                 "placement_type_offers",
                 "placement_sourced",
+                "Month"
                 ]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        placements_standard_column_renames = {"Month": "PNW_Month"}
         # Check and process the Placement Standard file
-        if any(placement_standard_pattern.search(f) for f in files):
-            log.info("Joining Placement Standard data with SSDA903 episodes data")
-            placement_standard_file = next(f for f in files if placement_standard_pattern.search(f))
-            placement_standard = open_file(session_folder, placement_standard_file)
+        if any(placements_standard_pattern.search(f) for f in files):
+            log.info("Joining Placements Standard data with SSDA903 episodes data")
+            placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
+            placements_standard = open_file(session_folder, placements_standard_file)
 
-            episodes = join_placement_standard_data(placement_standard, episodes, placement_standard_join_columns)
+            episodes = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
+            episodes = episodes.rename(columns=placements_standard_column_renames)
         else:
-            log.error("No Placement Standard data to join")
-            for col in placement_standard_join_columns:
-                episodes[col] = None
+            log.error("No Placements Standard data to join")
+            for col in placements_standard_join_columns:
+                episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_COMMISSIONING": episodes})

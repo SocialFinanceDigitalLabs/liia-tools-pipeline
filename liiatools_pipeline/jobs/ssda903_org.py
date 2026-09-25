@@ -12,9 +12,16 @@ def ssda903_sufficiency():
     log.info("Creating Dim/Fact tables...")
     ssda903.create_dim_fact_tables(session_folder)
 
+
 @job
 def ssda903_pan_sufficiency_joins():
     log.info("Joining additional datasets with SSDA903...")
     session_folder = ssda903.create_pan_sufficiency_join_session_folder()
     ssda903.joins_pan_sufficiency(session_folder)
 
+
+@job
+def ssda903_pan_commissioning_joins():
+    log.info("Joining additional datasets with SSDA903...")
+    session_folder = ssda903.create_pan_commissioning_join_session_folder()
+    ssda903.joins_pan_commissioning(session_folder)

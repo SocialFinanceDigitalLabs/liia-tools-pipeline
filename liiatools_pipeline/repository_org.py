@@ -18,6 +18,7 @@ from liiatools_pipeline.jobs.school_census_org import (
 )
 from liiatools_pipeline.jobs.ssda903_org import (
     ssda903_joins,
+    ssda903_pan_commissioning_joins,
     ssda903_pan_sufficiency_joins,
     ssda903_sufficiency,
 )
@@ -32,6 +33,7 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     pnw_census_joins_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
+    ssda903_pan_commissioning_joins_sensor,
     ssda903_pan_sufficiency_joins_sensor,
     sufficiency_sensor,
 )
@@ -60,6 +62,7 @@ def sync():
         deduplicate_annex_a,
         pnw_census_joins,
         cin_reports,
+        ssda903_pan_commissioning_joins,
         school_census_cross,
         school_census_region,
         cans_summary_columns,
@@ -79,6 +82,7 @@ def sync():
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
+        ssda903_pan_commissioning_joins_sensor,
         ssda903_pan_sufficiency_joins_sensor,
     ]
 
