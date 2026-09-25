@@ -52,6 +52,10 @@ def _transform(
                             ),
                             axis=1,
                         )
+                    elif transform_name == "combine_columns":
+                        columns_to_combine = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, columns_to_combine, column_config.id)
                     else:
                         data[column_config.id] = data.apply(
                             lambda row: functions[transform_name](
@@ -78,6 +82,10 @@ def _transform(
                         ),
                         axis=1,
                     )
+                elif transform_name == "combine_columns":
+                    columns_to_combine = getattr(column_config, additional_property)
+                    mapping_function = functions[transform_name]
+                    data = mapping_function(data, columns_to_combine, column_config.id)
                 else:
                     data[column_config.id] = data.apply(
                         lambda row: functions[transform_name](
