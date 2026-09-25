@@ -106,7 +106,7 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
     return data
 
 
-def create_combined_columns(row: pd.Series, columns_to_combine: list[str], column_config: ColumnConfig, metadata: Metadata) -> str:
+def create_combined_columns(row: pd.Series, columns_to_combine: list[str], column_config: ColumnConfig) -> str:
     combined_values = [str(row[col]) for col in columns_to_combine]
     return "_".join(combined_values)
 
