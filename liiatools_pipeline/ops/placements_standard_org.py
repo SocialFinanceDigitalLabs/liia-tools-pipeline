@@ -56,8 +56,8 @@ def joins_pan_placements_standard(
     log.info("Checking necessary files are present...")
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
-    # Placement standard file patterns
-    placements_standard_pattern = re.compile(r"placement_standard")
+    # Placements standard file patterns
+    placements_standard_pattern = re.compile(r"placements_standard")
 
     # SSDA903 file patterns
     episodes_pattern = re.compile(r"episodes")
@@ -71,12 +71,12 @@ def joins_pan_placements_standard(
         log.info("Exiting run as placements standard file not available")
         return
 
-    # If no Placement Standard or SSDA903 files, terminate process
+    # If no Placements Standard or SSDA903 files, terminate process
     if not any(
         any(pattern.search(f) for f in files) for pattern in [episodes_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ):
-        log.error("No SSDA903 or Placement Standard files found: terminating process.")
+        log.error("No SSDA903 or Placements Standard files found: terminating process.")
         return
 
     # Open the placements standard file
@@ -90,7 +90,7 @@ def joins_pan_placements_standard(
             episodes = open_file(session_folder, episodes_file)
             placements_standard = join_episodes_data(episodes, placements_standard)
         else:
-            log.error("No 903 episodes data to join with placements standard data")
+            log.error("No SSDA903 episodes data to join with placements standard data")
             empty_episodes_cols = ["EPISODE_ID"]
             for col in empty_episodes_cols:
                 placements_standard[col] = None
