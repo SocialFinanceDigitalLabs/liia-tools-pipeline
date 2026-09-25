@@ -82,3 +82,8 @@ class SessionNamesPanChildJoins(StrEnum):
     """Enum for PAN Child joins session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+class SessionNamesPanPlacementsStandardJoins(StrEnum):
+    """Enum for PAN Placements Standard joins session folders."""
+
+    INCOMING_FOLDER = "incoming"

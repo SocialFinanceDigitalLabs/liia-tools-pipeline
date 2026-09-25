@@ -29,6 +29,9 @@ from liiatools_pipeline.jobs.common_org import (
     move_error_reports,
     reports,
 )
+from liiatools_pipeline.jobs.placements_standard_org import (
+    pan_placements_standard_joins,
+)
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.school_census_org import (
     school_census_cross,
@@ -687,6 +690,42 @@ def pan_cans_joins_sensor(context):
     # Ensure there is at least one of each record
     if latest_run_id_cans and latest_run_id_ssda903:
         run_key = f"{latest_run_id_cans}_{latest_run_id_ssda903}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+        )
+
+
+@sensor(
+    job=pan_placements_standard_joins,
+    description="Runs pan_placements_standard_joins job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def pan_placements_standard_joins_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["placements_standard", "ssda903"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent placements_standard & ssda903 run ids
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        run_records,
+        "placements_standard",
+    )
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
+    )
+    # Ensure there is at least one of each record
+    if latest_run_id_placements_standard and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_placements_standard}_{latest_run_id_ssda903}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,

@@ -15,6 +15,9 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.external_dataset import external_incoming
+from liiatools_pipeline.jobs.placements_standard_org import (
+    pan_placements_standard_joins,
+)
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
 from liiatools_pipeline.jobs.school_census_org import (
     school_census_cross,
@@ -33,6 +36,7 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     move_current_org_sensor,
     move_error_reports_sensor,
     pan_cans_joins_sensor,
+    pan_placements_standard_joins_sensor,
     pnw_census_joins_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
@@ -69,6 +73,7 @@ def sync():
         cans_summary_columns,
         pan_cans_joins,
         transform_pan_cans_data,
+        pan_placements_standard_joins,
     ]
     schedules = [
         reports_schedule,
@@ -88,6 +93,7 @@ def sync():
         ssda903_pan_sufficiency_joins_sensor,
         transform_pan_cans_data_sensor,
         pan_cans_joins_sensor,
+        pan_placements_standard_joins_sensor,
     ]
 
     return jobs + schedules + sensors
