@@ -106,6 +106,11 @@ def add_la_from_postcode(data: pd.DataFrame, mapping_field: str, output_field: s
     return data
 
 
+def create_combined_columns(row: pd.Series, columns_to_combine: list[str], column_config: ColumnConfig) -> str:
+    combined_values = [str(row[col]) for col in columns_to_combine]
+    return "_".join(combined_values)
+
+    
 def calculate_distance_between_postcodes(data: pd.DataFrame, postcode_one: str, postcode_two: str, output_field: str) -> pd.DataFrame:
     # Load postcode lookup
     ext_folder = external_data_folder()
@@ -138,6 +143,7 @@ enrich_functions = {
     "school_year": add_school_year,
     "school_type": add_school_type,
     "postcode_la_lookup": add_la_from_postcode,
+    "combine_columns": create_combined_columns,
     "distance_between_postcodes": calculate_distance_between_postcodes
 }
 
