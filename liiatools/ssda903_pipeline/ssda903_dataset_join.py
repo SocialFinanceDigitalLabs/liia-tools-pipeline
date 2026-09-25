@@ -190,13 +190,13 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     return episodes_merged
 
 
-def join_placement_standard_data(placement_standard: pd.DataFrame, episodes: pd.DataFrame, placement_standard_join_columns: list) -> pd.DataFrame:
+def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: pd.DataFrame, placements_standard_join_columns: list) -> pd.DataFrame:
     """
     Merges data from placement standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe
     """
     episodes_merged = episodes.merge(
-        placement_standard[["child_ID",] + placement_standard_join_columns],
+        placements_standard[["child_ID",] + placements_standard_join_columns],
         left_on="CHILD",
         right_on="child_ID",
         how="left",
@@ -207,12 +207,12 @@ def join_placement_standard_data(placement_standard: pd.DataFrame, episodes: pd.
         assert len(episodes) == len(episodes_merged)
     except AssertionError:
         log.error(
-            f"Join with Placement Standard results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+            f"Join with Placements Standard results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
         )
 
     # Log number of joins made
     joins = episodes_merged["child_ID"].count()
-    log.info(f"{joins} joins made from Placement Standard file")
+    log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
     episodes_merged = episodes_merged.drop(columns=["child_ID"])
