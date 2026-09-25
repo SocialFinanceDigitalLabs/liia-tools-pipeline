@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 from typing import Dict
 import pandas as pd
 from fs.base import FS
@@ -110,6 +111,27 @@ def create_episode_id(row: pd.Series, column_config: ColumnConfig, metadata: Met
     date_episode_commenced = row["DECOM"]
     return f"{child_id}_{date_episode_commenced}"
 
+    
+def calculate_distance_between_postcodes(data: pd.DataFrame, postcode_one: str, postcode_two: str, output_field: str) -> pd.DataFrame:
+    # Load postcode lookup
+    ext_folder = external_data_folder()
+    mapping_file = "ONSPD_postcode_eastings_northings_lookup.parquet"
+    with ext_folder.open(mapping_file, "rb") as f:
+        mapping_df = pd.read_parquet(f)
+
+    # Merge coordinates for the first postcode
+    merged_one = data.merge(mapping_df, left_on=postcode_one, right_on="pcds", how="left")
+
+    # Merge coordinates for the second postcode
+    merged_two = merged_one.merge(mapping_df, left_on=postcode_two, right_on="pcds", how="left", suffixes=('_one', '_two'))
+
+    # Calculate distance using the northings and eastings
+    distance = ((merged_two['oseast1m_two'] - merged_two['oseast1m_one'])**2 + (merged_two['osnrth1m_two'] - merged_two['osnrth1m_one'])**2)**0.5 
+    distance = distance / 1609.34  # Convert metres to miles
+    distance = distance.round(1)
+    data[output_field] = distance
+    return data
+
 
 enrich_functions = {
     "add_la_suffix": add_la_suffix,
@@ -122,7 +144,8 @@ enrich_functions = {
     "school_year": add_school_year,
     "school_type": add_school_type,
     "postcode_la_lookup": add_la_from_postcode,
-    "episode_id": create_episode_id
+    "episode_id": create_episode_id,
+    "distance_between_postcodes": calculate_distance_between_postcodes
 }
 
 
@@ -141,22 +164,18 @@ def degrade_to_short_postcode(
     return to_short_postcode(row[column_config.id])
 
 
-def hash_column_sha256(
-    row: pd.Series, column_config: ColumnConfig, metadata: Metadata
+def hmac_column_sha256(
+    row: pd.Series, column_config: ColumnConfig, secret_key: str, 
 ) -> str:
     value = row[column_config.id]
     if not value:
         return value
 
-    digest = hashlib.sha256()
-    digest.update(str(value).encode("utf-8"))
-
-    salt = _get_first(metadata, f"sha256_salt_{column_config.id}", "sha256_salt")
-    if salt:
-        digest.update(salt.encode("utf-8"))
-
-    return digest.hexdigest()
-
+    return hmac.new(
+        secret_key.encode("utf-8"),
+        str(value).encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) -> str:
     if not row[column_config.id]:
@@ -168,6 +187,6 @@ def remove_row(row: pd.Series, column_config: ColumnConfig, metadata: Metadata) 
 degrade_functions = {
     "first_of_month": degrade_to_first_of_month,
     "short_postcode": degrade_to_short_postcode,
-    "hash_sha256": hash_column_sha256,
+    "hash_sha256": hmac_column_sha256,
     "remove_row": remove_row,
 }

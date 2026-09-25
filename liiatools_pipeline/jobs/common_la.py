@@ -1,11 +1,12 @@
 from dagster import get_dagster_logger, job
 
+from liiatools_pipeline.resources import hashing_secret
 from liiatools_pipeline.ops import common_la
 
 log = get_dagster_logger(__name__)
 
 
-@job
+@job(resource_defs={"hashing_secret":hashing_secret})
 def clean():
     log.info("Creating Session Folder...")
     session_folder, session_id, incoming_files = common_la.create_session_folder()
