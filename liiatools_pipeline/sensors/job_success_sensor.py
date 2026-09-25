@@ -590,7 +590,7 @@ def sc_region_reports_sensor(context):
 @sensor(
     job=ssda903_pan_sufficiency_joins,
     description="Runs ssda903_pan_sufficiency_joins job once reports job is complete",
-    default_status=DefaultSensorStatus.STOPPED,
+    default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def ssda903_pan_sufficiency_joins_sensor(context):
