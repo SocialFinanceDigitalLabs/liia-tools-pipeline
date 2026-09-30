@@ -1,0 +1,16 @@
+column_map.deprivation_of_liberty_order:
+  type: add
+  description: Adds new table for the 2027 return
+  value:
+    CHILD:
+      string: "alphanumeric"
+      canbeblank: no
+    DOB:
+      date: "%d/%m/%Y"
+      canbeblank: no
+    DOLO_START:
+      date: "%d/%m/%Y"
+      canbeblank: no
+    DOLO_END:
+      date: "%d/%m/%Y"
+      canbeblank: yes
