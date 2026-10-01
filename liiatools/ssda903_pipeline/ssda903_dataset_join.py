@@ -111,14 +111,6 @@ def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> pd.DataFr
     joins = header_merged["DUC"].count()
     log.info(f"{joins} joins made from 903 uasc file")
 
-    #TODO check if we need to filter DUC for regarding header
-    # # Create new column for when snapshot date is less than or equal to DUC
-    # header_merged["UASC 903"] = np.where(
-    #     header_merged["snapshot_date"] <= header_merged["DUC"], 1, 0
-    # )
-
-    # header_merged = header_merged.drop(columns=["CHILD", "DUC"])
-
     return header_merged
 
 
@@ -271,9 +263,9 @@ def join_latest_placements_standard_data(
     )
 
     header_merged = header.merge(
-        latest_placements_standard[["child_ID",] + placements_standard_join_columns],
-        left_on="CHILD",
-        right_on="child_ID",
+        latest_placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
+        left_on=["CHILD", "DECOM"],
+        right_on=["child_ID", "placement_start_date"],
         how="left",
     )
 
@@ -290,6 +282,6 @@ def join_latest_placements_standard_data(
     log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
-    header_merged = header_merged.drop(columns=["child_ID"])
+    header_merged = header_merged.drop(columns=["child_ID", "placement_start_date"])
 
     return header_merged
