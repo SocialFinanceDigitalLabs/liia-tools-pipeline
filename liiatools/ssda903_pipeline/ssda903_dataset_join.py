@@ -55,14 +55,6 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
     joins = episodes_merged["DUC"].count()
     log.info(f"{joins} joins made from 903 uasc file")
 
-    #TODO check if we need to filter DUC for regarding episodes
-    # # Create new column for when snapshot date is less than or equal to DUC
-    # episodes_merged["UASC 903"] = np.where(
-    #     episodes_merged["snapshot_date"] <= episodes_merged["DUC"], 1, 0
-    # )
-
-    # episodes_merged = episodes_merged.drop(columns=["CHILD", "DUC"])
-
     return episodes_merged
 
 
@@ -118,14 +110,6 @@ def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> pd.DataFr
     # Log number of joins made
     joins = header_merged["DUC"].count()
     log.info(f"{joins} joins made from 903 uasc file")
-
-    #TODO check if we need to filter DUC for regarding header
-    # # Create new column for when snapshot date is less than or equal to DUC
-    # header_merged["UASC 903"] = np.where(
-    #     header_merged["snapshot_date"] <= header_merged["DUC"], 1, 0
-    # )
-
-    # header_merged = header_merged.drop(columns=["CHILD", "DUC"])
 
     return header_merged
 
@@ -196,9 +180,9 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Returns 903 episodes dataframe
     """
     episodes_merged = episodes.merge(
-        placements_standard[["child_ID",] + placements_standard_join_columns],
-        left_on="CHILD",
-        right_on="child_ID",
+        placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
+        left_on=["CHILD", "DECOM"],
+        right_on=["child_ID", "placement_start_date"],
         how="left",
     )
 
@@ -215,7 +199,7 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
-    episodes_merged = episodes_merged.drop(columns=["child_ID"])
+    episodes_merged = episodes_merged.drop(columns=["child_ID", "placement_start_date"])
 
     return episodes_merged
 
@@ -279,9 +263,9 @@ def join_latest_placements_standard_data(
     )
 
     header_merged = header.merge(
-        latest_placements_standard[["child_ID",] + placements_standard_join_columns],
-        left_on="CHILD",
-        right_on="child_ID",
+        latest_placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
+        left_on=["CHILD", "DECOM"],
+        right_on=["child_ID", "placement_start_date"],
         how="left",
     )
 
@@ -298,6 +282,6 @@ def join_latest_placements_standard_data(
     log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
-    header_merged = header_merged.drop(columns=["child_ID"])
+    header_merged = header_merged.drop(columns=["child_ID", "placement_start_date"])
 
     return header_merged
