@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
@@ -34,12 +33,23 @@ def test_find_column():
 
 
 def test_describe_matching_criteria():
-    assert _describe_matching_criteria(["CHILD"], ["CHILD"], "header", "episodes") == "header CHILD = episodes CHILD"
-    assert _describe_matching_criteria(
-        ["child_ID"], ["CHILD"], "placements_standard", "episodes"
-    ) == "placements_standard child_ID = episodes CHILD"
     assert (
-        _describe_matching_criteria(["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "placements_standard", "episodes")
+        _describe_matching_criteria(["CHILD"], ["CHILD"], "header", "episodes")
+        == "header CHILD = episodes CHILD"
+    )
+    assert (
+        _describe_matching_criteria(
+            ["child_ID"], ["CHILD"], "placements_standard", "episodes"
+        )
+        == "placements_standard child_ID = episodes CHILD"
+    )
+    assert (
+        _describe_matching_criteria(
+            ["child_ID", "placement_start_date"],
+            ["CHILD", "DECOM"],
+            "placements_standard",
+            "episodes",
+        )
         == "placements_standard child_ID = episodes CHILD, placements_standard placement_start_date = episodes DECOM"
     )
 
@@ -56,7 +66,9 @@ def test_get_unmatched_rows_single_key():
     )
     target = pd.DataFrame({"CHILD": ["1", "2"]})
 
-    result = _get_unmatched_rows(source, target, "CHILD", "CHILD", "test_source_dataset", "test_target_dataset")
+    result = _get_unmatched_rows(
+        source, target, "CHILD", "CHILD", "test_source_dataset", "test_target_dataset"
+    )
 
     assert list(result.columns) == [
         "Row Number",
@@ -69,7 +81,10 @@ def test_get_unmatched_rows_single_key():
     assert len(result) == 1
     assert result["Row Number"].iloc[0] == 4
     assert result["Dataset"].iloc[0] == "test_source_dataset"
-    assert result["Matching Criteria"].iloc[0] == "test_source_dataset CHILD = test_target_dataset CHILD"
+    assert (
+        result["Matching Criteria"].iloc[0]
+        == "test_source_dataset CHILD = test_target_dataset CHILD"
+    )
 
 
 def test_get_unmatched_rows_composite_key():
@@ -91,12 +106,20 @@ def test_get_unmatched_rows_composite_key():
     )
 
     result = _get_unmatched_rows(
-        source, target, ["CHILD", "DECOM"], ["child_ID", "placement_start_date"], "episodes", "placements_standard"
+        source,
+        target,
+        ["CHILD", "DECOM"],
+        ["child_ID", "placement_start_date"],
+        "episodes",
+        "placements_standard",
     )
 
     assert len(result) == 2
     assert set(result["Row Number"]) == {3, 4}
-    assert (result["Matching Criteria"] == "episodes CHILD = placements_standard child_ID, episodes DECOM = placements_standard placement_start_date").all()
+    assert (
+        result["Matching Criteria"]
+        == "episodes CHILD = placements_standard child_ID, episodes DECOM = placements_standard placement_start_date"
+    ).all()
 
 
 def test_get_unmatched_rows_handles_aliases_and_missing_columns():
@@ -111,7 +134,9 @@ def test_get_unmatched_rows_handles_aliases_and_missing_columns():
     )
     target = pd.DataFrame({"CHILD": ["1"]})
 
-    result = _get_unmatched_rows(source, target, "CHILD", "CHILD", "annual_dataset", "test_target_dataset")
+    result = _get_unmatched_rows(
+        source, target, "CHILD", "CHILD", "annual_dataset", "test_target_dataset"
+    )
 
     assert len(result) == 1
     assert result["Row Number"].iloc[0] == 3
@@ -146,7 +171,9 @@ def test_join_header_data():
     assert len(unmatched_header) == 1
     assert unmatched_header["Row Number"].iloc[0] == 4
     assert unmatched_header["Dataset"].iloc[0] == "header"
-    assert unmatched_header["Matching Criteria"].iloc[0] == "header CHILD = episodes CHILD"
+    assert (
+        unmatched_header["Matching Criteria"].iloc[0] == "header CHILD = episodes CHILD"
+    )
 
 
 def test_join_uasc_data():
@@ -238,7 +265,9 @@ def test_join_latest_oc2_data():
 
     assert len(header_merged) == 2
     assert header_merged.loc[header_merged["CHILD"] == "1", "SDQ_SCORE"].iloc[0] == 10
-    assert pd.isna(header_merged.loc[header_merged["CHILD"] == "2", "SDQ_SCORE"].iloc[0])
+    assert pd.isna(
+        header_merged.loc[header_merged["CHILD"] == "2", "SDQ_SCORE"].iloc[0]
+    )
     assert len(unmatched_oc2) == 1
     assert unmatched_oc2["Row Number"].iloc[0] == 3
 
@@ -271,10 +300,13 @@ def test_join_pnw_data():
 
     assert len(episodes_merged) == 2
     assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi"]
-    assert len(unmatched_pnw) == 1
-    assert unmatched_pnw["Row Number"].iloc[0] == 4
-    assert unmatched_pnw["Dataset"].iloc[0] == "pnw_census"
-    assert unmatched_pnw["Matching Criteria"].iloc[0] == "pnw_census Identifier = episodes CHILD"
+    assert len(unmatched_pnw) == 2
+    assert unmatched_pnw["Row Number"].tolist() == [4, 5]
+    assert unmatched_pnw["Dataset"].tolist() == ["pnw_census", "pnw_census"]
+    assert unmatched_pnw["Matching Criteria"].tolist() == [
+        "pnw_census Identifier = episodes CHILD",
+        "episodes DECOM <= pnw_census snapshot_date <= episodes DEC",
+    ]
 
 
 def test_join_placements_standard_data():
@@ -289,20 +321,24 @@ def test_join_placements_standard_data():
             "LA": ["999", "999"],
         }
     )
-    episodes_df = pd.DataFrame({"CHILD": ["1", "2"], "DECOM": pd.to_datetime(["2024-01-01", "2024-04-06"])})
+    episodes_df = pd.DataFrame(
+        {"CHILD": ["1", "2"], "DECOM": pd.to_datetime(["2024-01-01", "2024-04-06"])}
+    )
 
     episodes_merged, unmatched_placements_standard = join_placements_standard_data(
         placements_standard_df, episodes_df, ["placement_type_offers"]
     )
 
     assert len(episodes_merged) == 2
-    assert (
-        episodes_merged.loc[episodes_merged["CHILD"] == "1", "DECOM"].iloc[0]
-        == pd.to_datetime("2024-01-01")
-    )
+    assert episodes_merged.loc[episodes_merged["CHILD"] == "1", "DECOM"].iloc[
+        0
+    ] == pd.to_datetime("2024-01-01")
     assert len(unmatched_placements_standard) == 1
     assert unmatched_placements_standard["Row Number"].iloc[0] == 3
-    assert unmatched_placements_standard["Matching Criteria"].iloc[0] == "placements_standard child_ID = episodes CHILD, placements_standard placement_start_date = episodes DECOM"
+    assert (
+        unmatched_placements_standard["Matching Criteria"].iloc[0]
+        == "placements_standard child_ID = episodes CHILD, placements_standard placement_start_date = episodes DECOM"
+    )
 
 
 def test_join_latest_cans_data():
@@ -319,9 +355,7 @@ def test_join_latest_cans_data():
     )
     header_df = pd.DataFrame({"CHILD": ["1", "2"]})
 
-    header_merged = join_latest_cans_data(
-        cans_df, header_df, ["Assessment type"]
-    )
+    header_merged = join_latest_cans_data(cans_df, header_df, ["Assessment type"])
 
     assert len(header_merged) == 2
     assert (
@@ -334,7 +368,9 @@ def test_join_latest_placements_standard_data():
     placements_standard_df = pd.DataFrame(
         {
             "child_ID": ["1", "1", "8"],
-            "placement_start_date": pd.to_datetime(["2024-01-01", "2024-06-01", "2024-01-01"]),
+            "placement_start_date": pd.to_datetime(
+                ["2024-01-01", "2024-06-01", "2024-01-01"]
+            ),
             "placement_type_offers": ["Foster", "Resi", "Solo"],
             "row_number": [2, 3, 4],
             "Year": [2024, 2024, 2024],
@@ -350,7 +386,9 @@ def test_join_latest_placements_standard_data():
 
     assert len(header_merged) == 2
     assert (
-        header_merged.loc[header_merged["CHILD"] == "1", "placement_type_offers"].iloc[0]
+        header_merged.loc[header_merged["CHILD"] == "1", "placement_type_offers"].iloc[
+            0
+        ]
         == "Resi"
     )
     assert len(unmatched_placements_standard) == 1

@@ -1,5 +1,6 @@
 import re
 
+import pandas as pd
 from dagster import In, Out, get_dagster_logger, op
 from decouple import config as env_config
 from fs import errors
@@ -82,13 +83,17 @@ def joins_pan_placements_standard(
     # Open the placements standard file
     placements_standard = open_file(session_folder, placements_standard_file)
 
+    # Accumulates rows from joined datasets that could not be matched onto SSDA903 header
+    unmatched_rows = pd.DataFrame(columns=["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"])
+
     # Check and process SSDA903 episodes file type
     if "ssda903" in allowed_datasets:
         if any(episodes_pattern.search(f) for f in files):
             log.info("Joining SSDA903 episodes data with placements standard data")
             episodes_file = next(f for f in files if episodes_pattern.search(f))
             episodes = open_file(session_folder, episodes_file)
-            placements_standard = join_episodes_data(episodes, placements_standard)
+            placements_standard, unmatched_episodes = join_episodes_data(episodes, placements_standard)
+            unmatched_rows = pd.concat([unmatched_rows, unmatched_episodes], ignore_index=True)
         else:
             log.error("No SSDA903 episodes data to join with placements standard data")
             empty_episodes_cols = ["EPISODE_ID"]
@@ -96,7 +101,12 @@ def joins_pan_placements_standard(
                 placements_standard[col] = None
 
     # Export header file
-    placements_standard_dc = DataContainer({"PAN_PLACEMENTS_STANDARD": placements_standard})
+    placements_standard_dc = DataContainer(
+        {
+            "PAN_PLACEMENTS_STANDARD": placements_standard,
+            "PAN_PLACEMENTS_STANDARD_MATCHING_REPORT": unmatched_rows
+         }
+    )
     log.info("Writing joined placements standard output to shared folder")
     output_folder = shared_folder()
     placements_standard_dc.export(output_folder, "", "csv")

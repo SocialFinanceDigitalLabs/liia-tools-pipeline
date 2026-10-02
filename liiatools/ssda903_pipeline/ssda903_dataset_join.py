@@ -227,7 +227,7 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
 
     # Join pnw_census onto episodes, keeping all children in episodes
     episodes_merged = episodes.merge(
-        pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
+        pnw_census[["Identifier", "snapshot_date", "row_number", "Year", "Month", "LA"] + pnw_join_columns],
         left_on="CHILD",
         right_on="Identifier",
         how="left",
@@ -237,6 +237,11 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     episodes_merged_filtered = _filter_to_open_on_snapshot_date(
         episodes_merged, "DEC", "snapshot_date", "DECOM"
     )
+
+    filtered_pnw = _get_unmatched_rows(episodes_merged, episodes_merged_filtered, ["CHILD", "DECOM"], ["CHILD", "DECOM"], "episodes_merged", "episodes_merged_filtered")
+    filtered_pnw["Dataset"] = "pnw_census"
+    filtered_pnw["Matching Criteria"] = "episodes DECOM <= pnw_census snapshot_date <= episodes DEC"
+    unmatched_pnw = pd.concat([unmatched_pnw, filtered_pnw], ignore_index=True)
 
     # Row number in episodes should not have changed
     try:
@@ -251,7 +256,7 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     log.info(f"{joins} joins made from PNW Census file")
 
     # Drop unnecessary columns
-    episodes_merged_filtered = episodes_merged_filtered.drop(columns=["snapshot_date", "Identifier"])
+    episodes_merged_filtered = episodes_merged_filtered.drop(columns=["snapshot_date", "Identifier", "row_number", "Year", "Month", "LA"])
 
     return episodes_merged_filtered, unmatched_pnw
 
