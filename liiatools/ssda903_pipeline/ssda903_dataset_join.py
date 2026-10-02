@@ -263,9 +263,9 @@ def join_latest_placements_standard_data(
     )
 
     header_merged = header.merge(
-        latest_placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
-        left_on=["CHILD", "DECOM"],
-        right_on=["child_ID", "placement_start_date"],
+        latest_placements_standard[["child_ID"] + placements_standard_join_columns],
+        left_on="CHILD",
+        right_on="child_ID",
         how="left",
     )
 
@@ -282,6 +282,6 @@ def join_latest_placements_standard_data(
     log.info(f"{joins} joins made from Placements Standard file")
 
     # Drop unnecessary columns
-    header_merged = header_merged.drop(columns=["child_ID", "placement_start_date"])
+    header_merged = header_merged.drop(columns=["child_ID"])
 
     return header_merged
