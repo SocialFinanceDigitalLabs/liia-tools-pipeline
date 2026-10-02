@@ -40,12 +40,17 @@ from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
+from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
+from liiatools.csww_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_csww,
+)
 from liiatools_pipeline.assets.common import (
     pipeline_config,
     shared_folder,
     workspace_folder,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.resources.hashing import HashingSecretResource
 from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger(__name__)
@@ -95,6 +100,7 @@ def process_files(
     current: DataframeArchive,
     session_id: str,
     config: CleanConfig,
+    hashing_secret: HashingSecretResource,
 ):
     la_name = authorities.get_by_code(config.input_la_code)
     log.info(f"Processing {config.dataset} {la_name} files...")
@@ -243,7 +249,7 @@ def process_files(
             try:
                 schema = (
                     globals()[f"load_schema_{config.dataset}"]()
-                    if config.dataset in ["annex_a", "cans"]
+                    if config.dataset in ["cans"]
                     else globals()[f"load_schema_{config.dataset}"](year, term)
                     if config.dataset == "school_census"
                     else globals()[f"load_schema_{config.dataset}"](year, month)
@@ -319,7 +325,7 @@ def process_files(
             degrade_flag = all(output_config.degrade_at_clean.values())
             if degrade_flag:
                 degraded_result = degrade_data(
-                    enrich_result.data, output_config, metadata
+                    enrich_result.data, output_config, metadata, hashing_secret.key
                 )
                 degraded_result.data.export(
                     session_folder.opendir(SessionNames.DEGRADED_FOLDER),
