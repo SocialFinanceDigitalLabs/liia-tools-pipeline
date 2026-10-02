@@ -239,6 +239,9 @@ def joins_pan_sufficiency(
         log.error("No SSDA903, PNW or Placements Standard files found: terminating process.")
         return
 
+    # Accumulates rows from joined datasets that could not be matched onto SSDA903 episodes
+    unmatched_rows = pd.DataFrame(columns=["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"])
+
     # Open the SSDA903 episodes file
     episodes = open_file(session_folder, episodes_file)
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
@@ -248,7 +251,10 @@ def joins_pan_sufficiency(
         log.info("Joining SSDA903 header data with SSDA903 episodes data")
         header_file = next(f for f in files if header_pattern.search(f))
         header = open_file(session_folder, header_file)
-        episodes = join_header_data(header, episodes)
+        episodes, unmatched_header = join_header_data(header, episodes)
+        unmatched_rows = pd.concat(
+            [unmatched_rows, unmatched_header], ignore_index=True
+        )
     else:
         log.error("No 903 header data to join")
         empty_header_cols = ["SEX", "ETHNIC", "DOB"]
@@ -259,7 +265,10 @@ def joins_pan_sufficiency(
         log.info("Joining SSDA903 UASC data with SSDA903 episodes data")
         uasc_file = next(f for f in files if uasc_pattern.search(f))
         uasc = open_file(session_folder, uasc_file)
-        episodes = join_uasc_data(uasc, episodes)
+        episodes, unmatched_uasc = join_uasc_data(uasc, episodes)
+        unmatched_rows = pd.concat(
+            [unmatched_rows, unmatched_uasc], ignore_index=True
+        )
     else:
         log.error("No 903 uasc data to join")
         empty_uasc_cols = ["DUC"]
@@ -281,8 +290,11 @@ def joins_pan_sufficiency(
                 pnw_census[["Year", "Month"]].assign(day=1)
             ) + MonthEnd(0)
 
-            episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
+            episodes, unmatched_pnw = join_pnw_data(pnw_census, episodes, pnw_join_columns)
             episodes = episodes.rename(columns=pnw_column_renames)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_pnw], ignore_index=True
+            )
         else:
             log.error("No PNW Census data to join")
             for col in pnw_join_columns:
@@ -349,15 +361,23 @@ def joins_pan_sufficiency(
             placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
             placements_standard = open_file(session_folder, placements_standard_file)
 
-            episodes = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
+            episodes, unmatched_placements_standard = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
             episodes = episodes.rename(columns=placements_standard_column_renames)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_placements_standard], ignore_index=True
+            )
         else:
             log.error("No Placements Standard data to join")
             for col in placements_standard_join_columns:
                 episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
-    episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
+    episodes_dc = DataContainer(
+        {
+            "PAN_SUFFICIENCY": episodes,
+            "PAN_SUFFICIENCY_MATCHING_REPORT": unmatched_rows
+        }
+    )
     log.info("Writing joined episodes output to shared folder")
     output_folder = shared_folder()
     episodes_dc.export(output_folder, "", "csv")
@@ -440,6 +460,9 @@ def joins_pan_commissioning(
     episodes = episodes[episodes_columns]
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
+    # Accumulates rows from joined datasets that could not be matched onto SSDA903 episodes
+    unmatched_rows = pd.DataFrame(columns=["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"])
+
     if "pnw_census" in allowed_datasets:
         pnw_join_columns = [
             "Type of provision",
@@ -464,8 +487,11 @@ def joins_pan_commissioning(
                 pnw_census[["Year", "Month"]].assign(day=1)
             ) + MonthEnd(0)
 
-            episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
+            episodes, unmatched_pnw = join_pnw_data(pnw_census, episodes, pnw_join_columns)
             episodes = episodes.rename(columns=pnw_column_renames)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_pnw], ignore_index=True
+            )
         else:
             log.error("No PNW Census data to join")
             for col in pnw_join_columns:
@@ -488,15 +514,23 @@ def joins_pan_commissioning(
             placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
             placements_standard = open_file(session_folder, placements_standard_file)
 
-            episodes = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
+            episodes, unmatched_placements_standard = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
             episodes = episodes.rename(columns=placements_standard_column_renames)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_placements_standard], ignore_index=True
+            )
         else:
             log.error("No Placements Standard data to join")
             for col in placements_standard_join_columns:
                 episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
-    episodes_dc = DataContainer({"PAN_COMMISSIONING": episodes})
+    episodes_dc = DataContainer(
+        {
+            "PAN_COMMISSIONING": episodes,
+            "PAN_COMMISSIONING_MATCHING_REPORT": unmatched_rows,
+        }
+    )
     log.info("Writing joined episodes output to shared folder")
     output_folder = shared_folder()
     episodes_dc.export(output_folder, "", "csv")
@@ -595,12 +629,18 @@ def joins_pan_child(
     header = header[header_columns]
     header = header.rename(columns={"YEAR": "903_YEAR"})
 
+    # Accumulates rows from joined datasets that could not be matched onto SSDA903 header
+    unmatched_rows = pd.DataFrame(columns=["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"])
+
     # Check and process each SSDA903 file type
     if any(episodes_pattern.search(f) for f in files):
         log.info("Joining SSDA903 header data with SSDA903 episodes data")
         episodes_file = next(f for f in files if episodes_pattern.search(f))
         episodes = open_file(session_folder, episodes_file)
-        header = join_latest_episodes_data(episodes, header)
+        header, unmatched_episodes = join_latest_episodes_data(episodes, header)
+        unmatched_rows = pd.concat(
+            [unmatched_rows, unmatched_episodes], ignore_index=True
+        )
     else:
         log.error("No 903 episodes data to join with header")
         empty_episodes_cols = ["CIN"]
@@ -611,7 +651,10 @@ def joins_pan_child(
         log.info("Joining SSDA903 UASC data with SSDA903 header data")
         uasc_file = next(f for f in files if uasc_pattern.search(f))
         uasc = open_file(session_folder, uasc_file)
-        header = join_latest_uasc_data(uasc, header)
+        header, unmatched_uasc = join_latest_uasc_data(uasc, header)
+        unmatched_rows = pd.concat(
+            [unmatched_rows, unmatched_uasc], ignore_index=True
+        )
     else:
         log.error("No 903 uasc data to join")
         empty_uasc_cols = ["DUC"]
@@ -622,7 +665,10 @@ def joins_pan_child(
         log.info("Joining SSDA903 OC2 data with SSDA903 header data")
         oc2_file = next(f for f in files if oc2_pattern.search(f))
         oc2 = open_file(session_folder, oc2_file)
-        header = join_latest_oc2_data(oc2, header)
+        header, unmatched_oc2 = join_latest_oc2_data(oc2, header)
+        unmatched_rows = pd.concat(
+            [unmatched_rows, unmatched_oc2], ignore_index=True
+        )
     else:
         log.error("No 903 oc2 data to join")
         empty_oc2_cols = ["SDQ_SCORE"]
@@ -679,14 +725,22 @@ def joins_pan_child(
             placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
             placements_standard = open_file(session_folder, placements_standard_file)
 
-            header = join_latest_placements_standard_data(placements_standard, header, placements_standard_join_columns)
+            header, unmatched_placements_standard = join_latest_placements_standard_data(placements_standard, header, placements_standard_join_columns)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_placements_standard], ignore_index=True
+            )
         else:
             log.error("No Placements Standard data to join")
             for col in placements_standard_join_columns:
                 header[col] = None
 
     # Export header file
-    header_dc = DataContainer({"PAN_CHILD": header})
+    header_dc = DataContainer(
+        {
+            "PAN_CHILD": header,
+            "PAN_CHILD_MATCHING_REPORT": unmatched_rows,
+        }
+    )
     log.info("Writing joined header output to shared folder")
     output_folder = shared_folder()
     header_dc.export(output_folder, "", "csv")
