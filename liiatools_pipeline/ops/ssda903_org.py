@@ -696,7 +696,10 @@ def joins_pan_child(
                 cans_data = pd.concat([child_cans, youth_cans], ignore_index=True)
             else:
                 cans_data = child_cans if child_cans is not None else youth_cans
-            header = join_latest_cans_data(cans_data, header, cans_join_columns)
+            header, unmatched_cans = join_latest_cans_data(cans_data, header, cans_join_columns)
+            unmatched_rows = pd.concat(
+                [unmatched_rows, unmatched_cans], ignore_index=True
+            )
 
         else:
             log.error("No CANS data to join")

@@ -28,15 +28,26 @@ def _find_column(df: pd.DataFrame, name: str) -> str | None:
     return None
 
 
+<<<<<<< Updated upstream
 def _describe_matching_criteria(source_keys: list[str], target_keys: list[str], source_dataset_name: str, target_dataset_name: str) -> str:
+=======
+def _describe_matching_criteria(source_keys: list[str], target_keys: list[str]) -> str:
+>>>>>>> Stashed changes
     """
     Describes which column(s) were used to match, e.g. "CHILD + DECOM" or "child_ID = CHILD"
     """
     parts = [
+<<<<<<< Updated upstream
         f"{source_dataset_name} {source_col} = {target_dataset_name} {target_col}"
         for source_col, target_col in zip(source_keys, target_keys)
     ]
     return ", ".join(parts)
+=======
+        source_col if source_col == target_col else f"{source_col} = {target_col}"
+        for source_col, target_col in zip(source_keys, target_keys)
+    ]
+    return " + ".join(parts)
+>>>>>>> Stashed changes
 
 
 def _get_unmatched_rows(
@@ -44,8 +55,12 @@ def _get_unmatched_rows(
     target: pd.DataFrame,
     source_keys: str | list[str],
     target_keys: str | list[str],
+<<<<<<< Updated upstream
     source_dataset_name: str,
     target_dataset_name: str,
+=======
+    dataset_name: str,
+>>>>>>> Stashed changes
 ) -> pd.DataFrame:
     """
     Identifies rows in `source` whose join key(s) have no match in `target`
@@ -56,6 +71,7 @@ def _get_unmatched_rows(
     source_keys = [source_keys] if isinstance(source_keys, str) else list(source_keys)
     target_keys = [target_keys] if isinstance(target_keys, str) else list(target_keys)
 
+<<<<<<< Updated upstream
     unmatched = source.merge(
         target[target_keys],
         left_on=source_keys,
@@ -74,6 +90,28 @@ def _get_unmatched_rows(
     result["Matching Criteria"] = _describe_matching_criteria(source_keys, target_keys, source_dataset_name, target_dataset_name)
 
     return result[["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"]]
+=======
+    source = source.reset_index(drop=True)
+    match_status = source.merge(
+        target[target_keys].drop_duplicates(),
+        left_on=source_keys,
+        right_on=target_keys,
+        how="left",
+        indicator=True,
+    )["_merge"]
+    unmatched = source[match_status.values == "left_only"]
+
+    info_columns = {"Row Number": "row_number", "Year": "Year", "Month": "Month", "LA": "LA"}
+    result = pd.DataFrame(index=unmatched.index)
+    for canonical, alias in info_columns.items():
+        actual_col = _find_column(unmatched, alias)
+        result[canonical] = unmatched[actual_col] if actual_col else pd.NA
+
+    result["Dataset"] = dataset_name
+    result["Matching Criteria"] = _describe_matching_criteria(source_keys, target_keys)
+
+    return result.reset_index(drop=True)
+>>>>>>> Stashed changes
 
 
 def join_header_data(header: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -82,8 +120,17 @@ def join_header_data(header: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.D
     Returns 903 episodes dataframe and a dataframe of unmatched header rows
     """
     unmatched_header = _get_unmatched_rows(
+<<<<<<< Updated upstream
         header, episodes, "CHILD", "CHILD", "header", "episodes"
     )
+=======
+        header, episodes, "CHILD", "CHILD", "header"
+    )
+    if len(unmatched_header):
+        log.warning(
+            f"{len(unmatched_header)} rows in 903 header file did not match any 903 episodes record"
+        )
+>>>>>>> Stashed changes
 
     episodes_merged = episodes.merge(
         header[["CHILD", "SEX", "ETHNIC", "DOB"]],
@@ -111,7 +158,15 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.DataF
     Merges data from 903 UASC dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched uasc rows
     """
+<<<<<<< Updated upstream
     unmatched_uasc = _get_unmatched_rows(uasc, episodes, "CHILD", "CHILD", "uasc", "episodes")
+=======
+    unmatched_uasc = _get_unmatched_rows(uasc, episodes, "CHILD", "CHILD", "uasc")
+    if len(unmatched_uasc):
+        log.warning(
+            f"{len(unmatched_uasc)} rows in 903 uasc file did not match any 903 episodes record"
+        )
+>>>>>>> Stashed changes
 
     episodes_merged = episodes.merge(
         uasc[["CHILD", "DUC"]], on="CHILD", how="left"
@@ -129,6 +184,17 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.DataF
     joins = episodes_merged["DUC"].count()
     log.info(f"{joins} joins made from 903 uasc file")
 
+<<<<<<< Updated upstream
+=======
+    #TODO check if we need to filter DUC for regarding episodes
+    # # Create new column for when snapshot date is less than or equal to DUC
+    # episodes_merged["UASC 903"] = np.where(
+    #     episodes_merged["snapshot_date"] <= episodes_merged["DUC"], 1, 0
+    # )
+
+    # episodes_merged = episodes_merged.drop(columns=["CHILD", "DUC"])
+
+>>>>>>> Stashed changes
     return episodes_merged, unmatched_uasc
 
 
@@ -145,7 +211,15 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> t
         .drop_duplicates(subset="CHILD", keep="first")
     )
 
+<<<<<<< Updated upstream
     unmatched_episodes = _get_unmatched_rows(latest_episodes, header, "CHILD", "CHILD", "episodes", "header")
+=======
+    unmatched_episodes = _get_unmatched_rows(latest_episodes, header, "CHILD", "CHILD", "episodes")
+    if len(unmatched_episodes):
+        log.warning(
+            f"{len(unmatched_episodes)} rows in 903 episodes file did not match any 903 header record"
+        )
+>>>>>>> Stashed changes
 
     header_merged = header.merge(
         latest_episodes[["CHILD", "CIN"]], on="CHILD", how="left",
@@ -171,7 +245,15 @@ def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.
     Merges data from the latest 903 UASC dataframe onto 903 header dataframe
     Returns 903 header dataframe and a dataframe of unmatched uasc rows
     """
+<<<<<<< Updated upstream
     unmatched_uasc = _get_unmatched_rows(uasc, header, "CHILD", "CHILD", "uasc", "header")
+=======
+    unmatched_uasc = _get_unmatched_rows(uasc, header, "CHILD", "CHILD", "uasc")
+    if len(unmatched_uasc):
+        log.warning(
+            f"{len(unmatched_uasc)} rows in 903 uasc file did not match any 903 header record"
+        )
+>>>>>>> Stashed changes
 
     header_merged = header.merge(
         uasc[["CHILD", "DUC"]], on="CHILD", how="left"
@@ -189,6 +271,17 @@ def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.
     joins = header_merged["DUC"].count()
     log.info(f"{joins} joins made from 903 uasc file")
 
+<<<<<<< Updated upstream
+=======
+    #TODO check if we need to filter DUC for regarding header
+    # # Create new column for when snapshot date is less than or equal to DUC
+    # header_merged["UASC 903"] = np.where(
+    #     header_merged["snapshot_date"] <= header_merged["DUC"], 1, 0
+    # )
+
+    # header_merged = header_merged.drop(columns=["CHILD", "DUC"])
+
+>>>>>>> Stashed changes
     return header_merged, unmatched_uasc
 
 
@@ -197,7 +290,15 @@ def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.Da
     Merges data from the latest 903 oc2 dataframe onto 903 header dataframe
     Returns 903 header dataframe and a dataframe of unmatched oc2 rows
     """
+<<<<<<< Updated upstream
     unmatched_oc2 = _get_unmatched_rows(oc2, header, "CHILD", "CHILD", "oc2", "header")
+=======
+    unmatched_oc2 = _get_unmatched_rows(oc2, header, "CHILD", "CHILD", "oc2")
+    if len(unmatched_oc2):
+        log.warning(
+            f"{len(unmatched_oc2)} rows in 903 oc2 file did not match any 903 header record"
+        )
+>>>>>>> Stashed changes
 
     header_merged = header.merge(
         oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
@@ -223,7 +324,15 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     Merges data from pnw census dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched pnw census rows
     """
+<<<<<<< Updated upstream
     unmatched_pnw = _get_unmatched_rows(pnw_census, episodes, "Identifier", "CHILD", "pnw_census", "episodes")
+=======
+    unmatched_pnw = _get_unmatched_rows(pnw_census, episodes, "Identifier", "CHILD", "pnw_census")
+    if len(unmatched_pnw):
+        log.warning(
+            f"{len(unmatched_pnw)} rows in PNW Census file did not match any 903 episodes record"
+        )
+>>>>>>> Stashed changes
 
     # Join pnw_census onto episodes, keeping all children in episodes
     episodes_merged = episodes.merge(
@@ -258,7 +367,11 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     # Drop unnecessary columns
     episodes_merged_filtered = episodes_merged_filtered.drop(columns=["snapshot_date", "Identifier", "row_number", "Year", "Month", "LA"])
 
+<<<<<<< Updated upstream
     return episodes_merged_filtered, unmatched_pnw
+=======
+    return episodes_merged, unmatched_pnw
+>>>>>>> Stashed changes
 
 
 def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: pd.DataFrame, placements_standard_join_columns: list) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -267,8 +380,17 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Returns 903 episodes dataframe and a dataframe of unmatched placements standard rows
     """
     unmatched_placements_standard = _get_unmatched_rows(
+<<<<<<< Updated upstream
         placements_standard, episodes, ["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "placements_standard", "episodes"
     )
+=======
+        placements_standard, episodes, "child_ID", "CHILD", "placements_standard"
+    )
+    if len(unmatched_placements_standard):
+        log.warning(
+            f"{len(unmatched_placements_standard)} rows in Placements Standard file did not match any 903 episodes record"
+        )
+>>>>>>> Stashed changes
 
     episodes_merged = episodes.merge(
         placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
@@ -297,10 +419,10 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
 
 def join_latest_cans_data(
     cans: pd.DataFrame, header: pd.DataFrame, cans_columns: list
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Merges data from CANS dataframe onto 903 header dataframe
-    Returns 903 header dataframe
+    Returns 903 header dataframe and a dataframe of unmatched cans rows
     """
 
     # Make sure dates are datetime
@@ -311,6 +433,12 @@ def join_latest_cans_data(
         cans.sort_values(["Child Unique ID", "Assessment Date"], ascending=[True, False])
         .drop_duplicates(subset="Child Unique ID", keep="first")
     )
+
+    unmatched_cans = _get_unmatched_rows(latest_cans, header, "Child Unique ID", "CHILD", "cans")
+    if len(unmatched_cans):
+        log.warning(
+            f"{len(unmatched_cans)} rows in CANS file did not match any 903 header record"
+        )
 
     # Merge with header
     header_merged = header.merge(
@@ -334,7 +462,7 @@ def join_latest_cans_data(
 
     header_merged = header_merged.drop(columns="Child Unique ID")
 
-    return header_merged
+    return header_merged, unmatched_cans
 
 
 def join_latest_placements_standard_data(
@@ -354,8 +482,17 @@ def join_latest_placements_standard_data(
     )
 
     unmatched_placements_standard = _get_unmatched_rows(
+<<<<<<< Updated upstream
         latest_placements_standard, header, "child_ID", "CHILD", "placements_standard", "header"
     )
+=======
+        latest_placements_standard, header, "child_ID", "CHILD", "placements_standard"
+    )
+    if len(unmatched_placements_standard):
+        log.warning(
+            f"{len(unmatched_placements_standard)} rows in Placements Standard file did not match any 903 header record"
+        )
+>>>>>>> Stashed changes
 
     header_merged = header.merge(
         latest_placements_standard[["child_ID"] + placements_standard_join_columns],
