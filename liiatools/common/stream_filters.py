@@ -53,13 +53,12 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     """
     filename = source.name
     with source.open("rb") as f:
-        data = f.read()
+        raw = f.read()
 
     try:
-        data = data.decode("utf-8-sig")
-        data = StringIO(data)
+        data = StringIO(raw.decode("utf-8-sig"))
     except UnicodeDecodeError:
-        data = BytesIO(data)
+        data = BytesIO(raw)
 
     try:
         databook = import_book(data)
@@ -75,6 +74,10 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     except Exception as e:
         logger.debug("Failed to open %s as a book", filename, exc_info=e)
         pass
+
+    if isinstance(data, BytesIO):
+        # Not UTF-8 and not a workbook, so assume legacy-encoded text such as an Excel "CSV" save
+        data = StringIO(raw.decode("cp1252", errors="replace"))
 
     try:
         dataset = _import_set_workaround(data)
