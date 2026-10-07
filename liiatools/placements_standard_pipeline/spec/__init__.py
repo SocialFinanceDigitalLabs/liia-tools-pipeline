@@ -42,12 +42,12 @@ def load_pipeline_config():
 
 @lru_cache
 def load_schema(year: int, month: str, schema_version: str) -> DataSchema:
-    year_month_re = "(\d{4})_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
-    schema_version_re = "GM|NAT"
-    pattern = re.compile(r"placement_standards_schema_" + year_month_re + f"_{schema_version_re}" + r"(\.diff)?\.yml")
+    year_month_re = r"(\d{4})_(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
+    schema_version_re = r"(GM|NAT|SE)"
+    pattern = re.compile(r"placements_standard_schema_" + year_month_re + f"_{schema_version_re}" + r"(\.diff)?\.yml")
 
     # Build index of all schema files
-    all_schema_files = list(SCHEMA_DIR.glob("placement_standards_schema_*.yml"))
+    all_schema_files = list(SCHEMA_DIR.glob("placements_standard_schema_*.yml"))
 
     month_map = {m.lower(): i for i, m in enumerate(calendar.month_abbr) if m}
 
@@ -86,7 +86,7 @@ def load_schema(year: int, month: str, schema_version: str) -> DataSchema:
     full_schema = yaml.safe_load(schema_lookup[0][0].read_text())
 
     # Now loop over diff files and apply them
-    for fn, _, _, _ in schema_lookup[1:]:
+    for fn, _, _, _, _ in schema_lookup[1:]:
         logger.debug("Loading partial schema from %s", fn)
         try:
             diff = yaml.safe_load(fn.read_text())

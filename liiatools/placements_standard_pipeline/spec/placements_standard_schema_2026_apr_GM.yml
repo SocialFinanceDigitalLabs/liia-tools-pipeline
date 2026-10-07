@@ -2,33 +2,38 @@ column_map:
   placements_standard:
     child_ID:
       string: "alphanumeric"
-      header_regex: ^child_ID\b
+      header_regex:
+        - /^child_ID\b/i
       canbeblank: False
     when_placement_is_needed_by:
       category:
         - code: "Today"
         - code: "< 5 days"
         - code: "> 5 days"
-      header_regex: ^when_placement_is_needed_by\b
+      header_regex:
+        - /^when_placement_is_needed_by\b/i
       canbeblank: False
     number_of_siblings_to_place_with:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^number_of_siblings_to_place_with\b
+      header_regex:
+        - /^number_of_siblings_to_place_with\b/i
       canbeblank: False
     preferred_location_for_home_search:
       category:
         - code: "Yes"
         - code: "No"
-      header_regex: ^preferred_location_for_home_search\b
+      header_regex:
+        - /^preferred_location_for_home_search\b/i
       canbeblank: False
     communication_language_learning_needs:
       category:
         - code: "Yes"
         - code: "No"
         - code: "Not specified"
-      header_regex: ^communication_language_learning_needs\b
+      header_regex:
+        - /^communication_language_learning_needs\b/i
       canbeblank: False
     specific_communication_and_language_requirements:
       category:
@@ -37,13 +42,15 @@ column_map:
         - code: "Makaton"
         - code: "Other"
         - code: "None"
-      header_regex: ^specific_communication_and_language_requirements\b
+      header_regex:
+        - /^specific_communication_and_language_requirements\b/i
       canbeblank: False
     adaptation_to_the_home:
       category:
         - code: "Yes"
         - code: "No"
-      header_regex: ^adaptation_to_the_home\b
+      header_regex:
+        - /^adaptation_to_the_home\b/i
       canbeblank: False
     cultural_needs:
       category:
@@ -51,7 +58,8 @@ column_map:
         - code: "Not required"
         - code: "Not known"
         - code: "Other"
-      header_regex: ^cultural_needs\b
+      header_regex:
+        - /^cultural_needs\b/i
       canbeblank: False
     who_can_the_child_be_cared_for_alongside:
       category:
@@ -60,7 +68,8 @@ column_map:
         - code: "Only with other older children"
         - code: "Only with other younger children"
         - code: "No preference"
-      header_regex: ^who_can_the_child_be_cared_for_alongside\b
+      header_regex:
+        - /^who_can_the_child_be_cared_for_alongside\b/i
       canbeblank: False
     can_child_live_with_pets:
       category:
@@ -68,7 +77,8 @@ column_map:
         - code: "Yes - can"
         - code: "No"
         - code: "Unknown"
-      header_regex: ^can_child_live_with_pets\b
+      header_regex:
+        - /^can_child_live_with_pets\b/i
       canbeblank: False
     additional_support:
       category:
@@ -78,27 +88,31 @@ column_map:
         - code: "Taxis to school"
         - code: "N/A"
         - code: "Other"
-      header_regex: ^additional_support\b
+      header_regex:
+        - /^additional_support\b/i
       canbeblank: False
     mental_health_diagnosis:
       category:
         - code: "Yes"
         - code: "No"
-      header_regex: ^mental_health_diagnosis\b
+      header_regex:
+        - /^mental_health_diagnosis\b/i
       canbeblank: False
     neurodevelopmental_diagnosis:
       category:
         - code: "Yes"
         - code: "No"
         - code: "Referral in progress"
-      header_regex: ^neurodevelopmental_diagnosis\b
+      header_regex:
+        - /^neurodevelopmental_diagnosis\b/i
       canbeblank: False
     open_to_CAMHS:
       category:
         - code: "Yes"
         - code: "No"
         - code: "Referral in progress"
-      header_regex: ^open_to_CAMHS\b
+      header_regex:
+        - /^open_to_CAMHS\b/i
       canbeblank: False
     needs_assessment:
       category:
@@ -106,7 +120,8 @@ column_map:
         - code: "CANS"
         - code: "Other - formalised needs assessment tool"
         - code: "Other - social worker assessment"
-      header_regex: ^needs_assessment\b
+      header_regex:
+        - /^needs_assessment\b/i
       canbeblank: True
     foster_care_suitability:
       category:
@@ -114,7 +129,8 @@ column_map:
         - code: "Suitable but not preferred"
         - code: "Unsuitable"
         - code: "Not specified"
-      header_regex: ^foster_care_suitability\b
+      header_regex:
+        - /^foster_care_suitability\b/i
       canbeblank: False
     residential_care_suitability:
       category:
@@ -122,7 +138,8 @@ column_map:
         - code: "Suitable but not preferred"
         - code: "Unsuitable"
         - code: "Not specified"
-      header_regex: ^residential_care_suitability\b
+      header_regex:
+        - /^residential_care_suitability\b/i
       canbeblank: False
     supported_accommodation_suitability:
       category:
@@ -130,200 +147,231 @@ column_map:
         - code: "Suitable but not preferred"
         - code: "Unsuitable"
         - code: "Not specified"
-      header_regex: ^supported_accommodation_suitability\b
+      header_regex:
+        - /^supported_accommodation_suitability\b/i
       canbeblank: False
     risk_to_child_self_harm:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_child_self_harm\b
+      header_regex:
+        - /^risk_to_child_self_harm\b/i
       canbeblank: False
     risk_to_child_criminal_exploitation:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_child_criminal_exploitation\b
+      header_regex:
+        - /^risk_to_child_criminal_exploitation\b/i
       canbeblank: False
     risk_to_child_drug_and_alcohol_use:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_child_drug_and_alcohol_use\b
+      header_regex:
+        - /^risk_to_child_drug_and_alcohol_use\b/i
       canbeblank: False
     risk_to_child_eating_disorder:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_child_eating_disorder\b
+      header_regex:
+        - /^risk_to_child_eating_disorder\b/i
       canbeblank: False
     risk_to_child_going_missing:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_child_going_missing\b
+      header_regex:
+        - /^risk_to_child_going_missing\b/i
       canbeblank: False
     risk_to_others_physical_harm:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_others_physical_harm\b
+      header_regex:
+        - /^risk_to_others_physical_harm\b/i
       canbeblank: False
     risk_to_others_sexual_harm:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_others_sexual_harm\b
+      header_regex:
+        - /^risk_to_others_sexual_harm\b/i
       canbeblank: False
     risk_to_others_fire_setting:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_others_fire_setting\b
+      header_regex:
+        - /^risk_to_others_fire_setting\b/i
       canbeblank: False
     risk_to_others_harm_to_animals:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_others_harm_to_animals\b
+      header_regex:
+        - /^risk_to_others_harm_to_animals\b/i
       canbeblank: False
     risk_to_others_criminal_exploitation:
       category:
         - code: "No known risk"
         - code: "Risk present"
-      header_regex: ^risk_to_others_criminal_exploitation\b
+      header_regex:
+        - /^risk_to_others_criminal_exploitation\b/i
       canbeblank: False
     placement_search_foster_total_number:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^placement_search_foster_total_number\b
+      header_regex:
+        - /^placement_search_foster_total_number\b/i
       canbeblank: False
     placement_search_foster_U4:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_foster_U4\b
+      header_regex:
+        - /^placement_search_foster_U4\b/i
       canbeblank: True
     placement_search_foster_U5:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_foster_U5\b
+      header_regex:
+        - /^placement_search_foster_U5\b/i
       canbeblank: True
     placement_search_foster_U6:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_foster_U6\b
+      header_regex:
+        - /^placement_search_foster_U6\b/i
       canbeblank: True
     placement_search_supported_accommodation_total_number:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^placement_search_supported_accommodation_total_number\b
+      header_regex:
+        - /^placement_search_supported_accommodation_total_number\b/i
       canbeblank: False
     placement_search_supported_accommodation_solo:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_supported_accommodation_solo\b
+      header_regex:
+        - /^placement_search_supported_accommodation_solo\b/i
       canbeblank: True
     placement_search_supported_accommodation_shared_lac:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_supported_accommodation_shared_lac\b
+      header_regex:
+        - /^placement_search_supported_accommodation_shared_lac\b/i
       canbeblank: True
     placement_search_supported_accommodation_shared_other:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_supported_accommodation_shared_other\b
+      header_regex:
+        - /^placement_search_supported_accommodation_shared_other\b/i
       canbeblank: True
     placement_search_supported_accommodation_shared_lodgings:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_supported_accommodation_shared_lodgings\b
+      header_regex:
+        - /^placement_search_supported_accommodation_shared_lodgings\b/i
       canbeblank: True
     placement_search_residential_total_number:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^placement_search_residential_total_number\b
+      header_regex:
+        - /^placement_search_residential_total_number\b/i
       canbeblank: False
     placement_search_residential_ebd:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_ebd\b
+      header_regex:
+        - /^placement_search_residential_ebd\b/i
       canbeblank: True
     placement_search_residential_mhd:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_mhd\b
+      header_regex:
+        - /^placement_search_residential_mhd\b/i
       canbeblank: True
     placement_search_residential_si:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_si\b
+      header_regex:
+        - /^placement_search_residential_si\b/i
       canbeblank: True
     placement_search_residential_alc:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_alc\b
+      header_regex:
+        - /^placement_search_residential_alc\b/i
       canbeblank: True
     placement_search_residential_drug:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_drug\b
+      header_regex:
+        - /^placement_search_residential_drug\b/i
       canbeblank: True
     placement_search_residential_ld:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_ld\b
+      header_regex:
+        - /^placement_search_residential_ld\b/i
       canbeblank: True
     placement_search_residential_pd:
       category:
         - code: "Yes"
         - code: "No"
         - code: "N/A"
-      header_regex: ^placement_search_residential_pd\b
+      header_regex:
+        - /^placement_search_residential_pd\b/i
       canbeblank: True
     placement_start_date:
       date: "%d/%m/%Y"
-      header_regex: ^placement_start_date\b
+      header_regex:
+        - /^placement_start_date\b/i
       canbeblank: False
     total_weekly_cost:
       numeric:
         type: "float"
         min_value: 0
         decimal_places: 2
-      header_regex: ^total_weekly_cost\b
+      header_regex:
+        - /^total_weekly_cost\b/i
       canbeblank: False
     preferability_of_placement_location:
       category:
         - code: "Yes"
         - code: "No"
-      header_regex: ^preferability_of_placement_location\b
+      header_regex:
+        - /^preferr?ability_of_placement_location\b/i
       canbeblank: False
     placement_location_non_preferable_reason:
       category:
@@ -334,25 +382,29 @@ column_map:
         - code: "Carer moving out of area"
         - code: "Legal reasons"
         - code: "Not applicable"
-      header_regex: ^placement_location_non_preferable_reason\b
+      header_regex:
+        - /^placement_location_non_preferable_reason\b/i
       canbeblank: True
     education_continuity:
       category:
         - code: "Yes"
         - code: "No"
-      header_regex: ^education_continuity\b
+      header_regex:
+        - /^education_continuity\b/i
       canbeblank: False
     how_many_siblings_were_placed_together:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^how_many_siblings_were_placed_together\b
+      header_regex:
+        - /^how_many_siblings_were_placed_together\b/i
       canbeblank: False
     placement_type_offers:
       numeric:
         type: "integer"
         min_value: 0
-      header_regex: ^placement_type_offers\b
+      header_regex:
+        - /^placement_type_offers\b/i
       canbeblank: False
     placement_sourced:
       category:
@@ -363,5 +415,6 @@ column_map:
         - code: "Block contract"
         - code: "Remand"
         - code: "Secure Welfare Hub"
-      header_regex: ^placement_sourced\b
+      header_regex:
+        - /^placement_sourced\b/i
       canbeblank: False
