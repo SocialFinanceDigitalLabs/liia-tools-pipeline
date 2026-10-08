@@ -729,6 +729,18 @@ def convert_column_header_to_match(event, schema: DataSchema):
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
+
+        # Mirrors the relaxed fallback in DataSchema.get_table_from_headers
+        relaxed = [
+            c
+            for c in column_config
+            if DataSchema.match_column_name(event.header, c, relaxed=True)
+        ]
+        if len(relaxed) == 1:
+            logger.debug(
+                'Header="%s" matched "%s" after normalisation', event.header, relaxed[0]
+            )
+            return event.from_event(event, header=relaxed[0])
         logger.debug(
             'No match found for cell with header="%s" and table_name="%s"',
             event.header,

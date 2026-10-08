@@ -1,7 +1,13 @@
+import logging
 import re
+from functools import cached_property
 from typing import Any, Dict, Iterable, List, Literal, Optional, Pattern
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from liiatools.common.matching import normalise_text
+
+log = logging.getLogger(__name__)
 
 
 class Category(BaseModel):
@@ -23,21 +29,10 @@ class Category(BaseModel):
         super().__init__(**data)
 
     def __contains__(self, item):
-        values = {self.code.lower()}
-
-        if isinstance(self.name, str):
-            values.add(self.name.lower())
-        elif isinstance(self.name, list):
-            values.update({name.lower() for name in self.name})
-
-        is_numeric = (
-            self.code.isnumeric()
-            or (isinstance(self.name, str) and self.name.isnumeric())
-            or (
-                isinstance(self.name, list)
-                and any(name.isnumeric() for name in self.name)
-            )
-        )
+        # Schema values are stripped so stray whitespace in the schema can't break matching
+        names = [self.name] if isinstance(self.name, str) else self.name or []
+        values = {v.strip().lower() for v in [self.code, *names]}
+        is_numeric = any(v.isnumeric() for v in values)
 
         if item in values:
             return True
@@ -52,6 +47,17 @@ class Category(BaseModel):
                 pass
 
         return False
+
+    # Cached set of normalised codes and names for category types to save normalising with every cell
+    @cached_property
+    def normalised_values(self) -> set:
+        names = [self.name] if isinstance(self.name, str) else self.name or []
+        return {n for n in map(normalise_text, [self.code, *names]) if n}
+
+    def matches_normalised(self, item) -> bool:
+        """Relaxed match ignoring case, spacing and punctuation differences."""
+        normalised = normalise_text(item)
+        return bool(normalised) and normalised in self.normalised_values
 
 
 class Numeric(BaseModel):
@@ -137,6 +143,12 @@ class Column(BaseModel):
         return re.compile(pattern, flags)
 
     def match_category(self, value: str) -> Optional[Category]:
+        '''
+        Tries three ways to match a category value to the set of values in the config
+        1. Exact match of stripped, lower case value with code or name
+        2. Regex using category-specific regex in schema if exists
+        3. Match of normalised value against normalised code or name
+        '''
         assert self.category, "Column is not a category"
 
         value = value.strip().lower()
@@ -148,6 +160,13 @@ class Column(BaseModel):
                     parse = self.parse_regex(regex)
                     if parse.match(value) is not None:
                         return category.code
+
+        # Relaxed fallback: only accepted when it identifies exactly one category
+        relaxed = {c.code for c in self.category if c.matches_normalised(value)}
+        if len(relaxed) == 1:
+            code = relaxed.pop()
+            log.debug("Category value '%s' matched '%s' after normalisation", value, code)
+            return code
         return None
 
 
@@ -182,6 +201,20 @@ class DataSchema(BaseModel):
                 # Filter checks to only those that matched
                 matching_configs = [c for c in header_matches if c is not None]
 
+                # Relaxed fallback only when no exact/regex match exists
+                if not matching_configs:
+                    matching_configs = [
+                        c[0]
+                        for c in header_config
+                        if self.match_column_name(actual_column, c[0], relaxed=True)
+                    ]
+                    if matching_configs:
+                        log.info(
+                            "Header '%s' matched %s after normalisation",
+                            actual_column,
+                            matching_configs,
+                        )
+
                 # Check if we have one or multiple configurations that match the actual value
                 if len(matching_configs) == 1:
                     matched_columns.append(matching_configs[0])
@@ -204,7 +237,10 @@ class DataSchema(BaseModel):
 
     @staticmethod
     def match_column_name(
-        actual_value: str, expected_value: str, expected_expressions: str = None
+        actual_value: str,
+        expected_value: str,
+        expected_expressions: str = None,
+        relaxed: bool = False,
     ) -> Optional[str]:
         """
         Matches an actual column name against an expected values. Can optionally take a list of expressions to test.
@@ -212,8 +248,15 @@ class DataSchema(BaseModel):
         :param actual_value: Value that exists currently
         :param expected_value: Value that we expect
         :param expected_expressions: Optional list of (regex) expressions to test as well
+        :param relaxed: Compare only after normalising case, spacing and punctuation (skips regexes)
         :return: The expected Value or None
         """
+
+        if relaxed:
+            normalised = normalise_text(actual_value)
+            if normalised and normalised == normalise_text(expected_value):
+                return expected_value
+            return None
 
         actual_value = actual_value.lower().strip()
         test_expected_value = expected_value.lower().strip()
