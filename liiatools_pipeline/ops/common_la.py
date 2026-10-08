@@ -115,7 +115,14 @@ def process_files(
 
     output_config = pipeline_config(config)
     la_signed_dict = output_config.la_signed[la_name]
-    la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
+    if output_config.input_schema_version:
+        la_profiles = [
+            k
+            for k, v in la_signed_dict.items()
+            if k == output_config.input_schema_version and v == "Yes"
+        ]
+    else:
+        la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
     if len(la_profiles) == 0:
         log.info(f"{la_name} is not signed up for {config.dataset} data processing.")
         error_report.append(
