@@ -1,0 +1,69 @@
+column_map.placements_standard:
+  type: remove
+  description: Remove column from placements_standard
+  value:
+    - preferred_location_for_home_search
+    - preferred_location_for_outside_LA_home_search_reason
+column_map.placements_standard.isLocationPreferred:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "CYP/parental preference"
+    - code: "Safeguarding requirement"
+    - code: "Provision within distance exists but is not available"
+    - code: "Provision within distance does not exist"
+    - code: "Carer moving out of area"
+    - code: "Legal reasons"
+    - code: "Not applicable"
+    header_regex:
+    - /^isLocationPreferred\b/i
+    canbeblank: yes
+column_map.placements_standard.needs_assessment:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "BERRI"
+    - code: "CANS"
+    - code: "Other formalised need assessment tool"
+    - code: "Other social worker assessment"
+    header_regex:
+    - /^needs_assessment\b/i
+    canbeblank: yes
+column_map.placements_standard.uasc:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "Yes"
+    - code: "No"
+    header_regex:
+    - /^uasc\b/i
+    canbeblank: yes
+column_map.placements_standard.risk_to_child_sexual_exploitation:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "No known risk"
+    - code: "Risk present"
+    header_regex:
+    - /^sexual_exploitation\b/i
+    canbeblank: yes
+column_map.placements_standard.placement_sourced:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "RCC contract"
+    - code: "Other regional contract"
+    - code: "Direct award / Off framework"
+    - code: "Local contract or framework"
+    - code: "Block contract"
+    - code: "Remand"
+    - code: "Secure Welfare Hub"
+    header_regex:
+    - /^placement_sourced\b/i
+    canbeblank: yes
+

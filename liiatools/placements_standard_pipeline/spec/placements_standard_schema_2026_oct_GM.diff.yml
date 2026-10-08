@@ -1,0 +1,15 @@
+column_map.placements_standard:
+  type: remove
+  description: Remove column from placements_standard
+  value:
+    - preferred_location_for_home_search
+column_map.placements_standard.risk_to_child_sexual_exploitation:
+  type: add
+  description: Adds new column for placements_standard
+  value:
+    category:
+    - code: "No known risk"
+    - code: "Risk present"
+    header_regex:
+    - /^sexual_exploitation\b/i
+    canbeblank: yes
