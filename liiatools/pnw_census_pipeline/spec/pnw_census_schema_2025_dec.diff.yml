@@ -77,7 +77,7 @@ column_map.pnw_census.Type of provision.category:
     - code: "Residential - Parent and Child"
     - code: "Residential - 38 week Residential School/College"
     - code: "Residential - 52 week Residential School/College"
-    - code: "Supported Accommodation - Category 1: Self contained solo accommodation "
+    - code: "Supported Accommodation - Category 1: Self contained solo accommodation"
     - code: "Supported Accommodation - Category 2: Shared or group living for LAC and care leavers"
     - code: "Supported Accommodation - Category 3: Shared or group living not limited to LAC or care leavers"
     - code: "Supported Accommodation - Category 4: Supported Lodgings"
