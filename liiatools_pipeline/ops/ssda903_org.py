@@ -351,5 +351,4 @@ def joins_pan_sufficiency(
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
     log.info("Writing joined episodes output to shared folder")
-    output_folder = shared_folder()
-    episodes_dc.export(output_folder, "", "csv")
+    episodes_dc.export(shared_folder(), "", "csv")
