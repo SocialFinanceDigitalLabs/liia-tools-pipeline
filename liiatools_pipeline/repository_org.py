@@ -17,7 +17,6 @@ from liiatools_pipeline.jobs.school_census_org import (
     school_census_region,
 )
 from liiatools_pipeline.jobs.ssda903_org import (
-    ssda903_joins,
     ssda903_pan_commissioning_joins,
     ssda903_pan_sufficiency_joins,
     ssda903_sufficiency,
@@ -57,7 +56,6 @@ def sync():
         reports,
         external_incoming,
         ssda903_sufficiency,
-        ssda903_joins,
         ssda903_pan_sufficiency_joins,
         deduplicate_annex_a,
         pnw_census_joins,
