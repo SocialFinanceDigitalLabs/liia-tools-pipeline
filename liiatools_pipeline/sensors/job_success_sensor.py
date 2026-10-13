@@ -706,16 +706,25 @@ def ssda903_pan_commissioning_joins_sensor(context):
 
 @sensor(
     job=ssda903_pan_child_joins,
-    description="Runs ssda903_pan_child_joins job once reports job is complete",
+    description="Runs ssda903_pan_child_joins job once reports job and/or cans_summary_columns job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def ssda903_pan_child_joins_sensor(context):
-    run_records = context.instance.get_run_records(
+    reports_run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": ["ssda903", "cans", "placements_standard"]},
+            tags={"dataset": ["ssda903", "placements_standard"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    cans_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=cans_summary_columns.name,
+            statuses=[DagsterRunStatus.SUCCESS],
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -724,17 +733,15 @@ def ssda903_pan_child_joins_sensor(context):
 
     # Get the most recent ssda903, placements_standard & cans run ids
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
-        run_records,
+        reports_run_records,
         "ssda903",
     )
-    latest_run_id_cans = find_previous_matching_dataset_run(
-        run_records,
-        "cans",
-    )
     latest_run_id_placements_standard = find_previous_matching_dataset_run(
-        run_records,
+        reports_run_records,
         "placements_standard",
     )
+    latest_run_id_cans = cans_run_records[0].dagster_run.run_id if cans_run_records else None
+
     # Ensure there is at least one of each record
     if (latest_run_id_cans or latest_run_id_placements_standard) and latest_run_id_ssda903:
         run_key = f"{latest_run_id_ssda903}_{latest_run_id_cans}_{latest_run_id_placements_standard}"

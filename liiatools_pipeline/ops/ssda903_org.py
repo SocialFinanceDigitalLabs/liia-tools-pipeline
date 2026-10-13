@@ -531,7 +531,7 @@ def create_pan_child_join_session_folder() -> FS:
         )
 
     if "cans" in allowed_datasets:
-        cans_reports_folder = workspace_folder().opendir("current/cans/PAN")
+        cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
@@ -562,16 +562,19 @@ def joins_pan_child(
     child_pattern = re.compile(r"0_5")
     youth_pattern = re.compile(r"6_21")
 
-
     # Placements standard file patterns
     placements_standard_pattern = re.compile(r"placements_standard")
 
     files = session_folder.listdir("/")
 
-    try:
-        header_file = next((f for f in files if header_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No SSDA903 header file to open: {err}")
+    log.info("Removing existing PAN_CHILD file from the shared folder before processing a new one")
+    existing_pan_child_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_CHILD", existing_pan_child_files, shared_folder())
+    
+    header_file = next((f for f in files if header_pattern.search(f)), None)
+
+    if header_file is None:
+        log.error("No SSDA903 header file to open")
         log.info("Exiting run as SSDA903 header file not available")
         return
 
@@ -693,5 +696,4 @@ def joins_pan_child(
     # Export header file
     header_dc = DataContainer({"PAN_CHILD": header})
     log.info("Writing joined header output to shared folder")
-    output_folder = shared_folder()
-    header_dc.export(output_folder, "", "csv")
+    header_dc.export(shared_folder(), "", "csv")
