@@ -9,7 +9,11 @@ column_map:
       category:
         - code: "Today"
         - code: "< 5 days"
+          cell_regex:
+            - /^<\s*5\s*days?$/i
         - code: "> 5 days"
+          cell_regex:
+            - /^>\s*5\s*days?$/i
       header_regex:
         - /^when_placement_is_needed_by\b/i
       canbeblank: False
@@ -389,6 +393,7 @@ column_map:
       category:
         - code: "Yes"
         - code: "No"
+        - code: "N/A"
       header_regex:
         - /^education_continuity\b/i
       canbeblank: False

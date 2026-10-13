@@ -744,7 +744,7 @@ def convert_column_header_to_match(event, schema: DataSchema):
             if column_config[column].header_regex is not None:
                 for regex in column_config[column].header_regex:
                     parse = Column().parse_regex(regex)
-                    if parse.match(event.header) is not None:
+                    if parse.match(event.header.strip()) is not None:
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)

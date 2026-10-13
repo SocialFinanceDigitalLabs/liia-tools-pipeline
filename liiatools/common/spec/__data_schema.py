@@ -59,6 +59,15 @@ class Category(BaseModel):
         normalised = normalise_text(item)
         return bool(normalised) and normalised in self.normalised_values
 
+    @cached_property
+    def compact_values(self) -> set:
+        return {n.replace(" ", "") for n in self.normalised_values}
+
+    def matches_compact(self, item) -> bool:
+        """Looser match that also ignores where punctuation was, e.g. "NA" matches "N/A"."""
+        compact = normalise_text(item).replace(" ", "")
+        return bool(compact) and compact in self.compact_values
+
 
 class Numeric(BaseModel):
     """
@@ -148,6 +157,7 @@ class Column(BaseModel):
         1. Exact match of stripped, lower case value with code or name
         2. Regex using category-specific regex in schema if exists
         3. Match of normalised value against normalised code or name
+        4. As 3, but also ignoring spaces left by removed punctuation (e.g. "NA" -> "N/A")
         '''
         assert self.category, "Column is not a category"
 
@@ -163,6 +173,8 @@ class Column(BaseModel):
 
         # Relaxed fallback: only accepted when it identifies exactly one category
         relaxed = {c.code for c in self.category if c.matches_normalised(value)}
+        if not relaxed:
+            relaxed = {c.code for c in self.category if c.matches_compact(value)}
         if len(relaxed) == 1:
             code = relaxed.pop()
             log.debug("Category value '%s' matched '%s' after normalisation", value, code)

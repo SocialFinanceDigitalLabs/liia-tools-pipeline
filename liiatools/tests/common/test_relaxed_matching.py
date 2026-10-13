@@ -47,6 +47,26 @@ def test_to_category_relaxed_ambiguous():
         to_category("x_y", column)
 
 
+def test_to_category_compact():
+    column = Column(category=[{"code": "Yes"}, {"code": "No"}, {"code": "N/A"}])
+    assert to_category("NA", column) == "N/A"
+    assert to_category("n.a.", column) == "N/A"
+    assert to_category("n / a", column) == "N/A"
+    assert to_category("No", column) == "No"
+    with pytest.raises(ValueError):
+        to_category("N", column)
+
+    # A normalised match takes priority over a compact one, avoiding false ambiguity
+    column = Column(category=[{"code": "a b"}, {"code": "ab"}])
+    assert to_category("a-b", column) == "a b"
+    assert to_category("AB", column) == "ab"
+
+    # Compact matches to more than one category are rejected
+    column = Column(category=[{"code": "ab c"}, {"code": "a bc"}])
+    with pytest.raises(ValueError):
+        to_category("abc", column)
+
+
 def test_schema_whitespace_is_ignored():
     column = Column(
         category=[

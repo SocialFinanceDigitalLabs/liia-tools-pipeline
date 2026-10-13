@@ -11,5 +11,5 @@ column_map.placements_standard.risk_to_child_sexual_exploitation:
     - code: "No known risk"
     - code: "Risk present"
     header_regex:
-    - /^sexual_exploitation\b/i
+    - /^(risk_to_child_)?sexual_exploitation\b/i
     canbeblank: yes
