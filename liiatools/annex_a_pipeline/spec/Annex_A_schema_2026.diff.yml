@@ -1,0 +1,55 @@
+column_map.list_1.Gender:
+  type: rename
+  description: Rename column in list_1
+  value:
+    Sex
+column_map.list_2.Gender:
+  type: rename
+  description: Rename column in list_2
+  value:
+    Sex
+column_map.list_3.Gender:
+  type: rename
+  description: Rename column in list_3
+  value:
+    Sex
+column_map.list_4.Gender:
+  type: rename
+  description: Rename column in list_4
+  value:
+    Sex
+column_map.list_5.Gender:
+  type: rename
+  description: Rename column in list_5
+  value:
+    Sex
+column_map.list_6.Gender:
+  type: rename
+  description: Rename column in list_6
+  value:
+    Sex
+column_map.list_7.Gender:
+  type: rename
+  description: Rename column in list_7
+  value:
+    Sex
+column_map.list_8.Gender:
+  type: rename
+  description: Rename column in list_8
+  value:
+    Sex
+column_map.list_9.Gender:
+  type: rename
+  description: Rename column in list_9
+  value:
+    Sex
+column_map.list_10.Gender:
+  type: rename
+  description: Rename column in list_10
+  value:
+    Sex
+column_map.list_11.Gender:
+  type: rename
+  description: Rename column in list_11
+  value:
+    Sex

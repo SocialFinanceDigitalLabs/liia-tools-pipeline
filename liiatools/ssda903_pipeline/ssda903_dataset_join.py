@@ -63,7 +63,7 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> p
     Merges data from the latest 903 episodes for each child onto the 903 header dataframe
     Returns 903 header dataframe
     """
-    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"])
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"], dayfirst=True)
 
     # Keep only the latest episode for each child
     latest_episodes = (
@@ -144,7 +144,7 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     Returns 903 episodes dataframe
     """
     # Join pnw_census onto episodes, keeping all children in episodes
-    episodes_merged = episodes.merge(
+    pnw_census_merged = episodes.merge(
         pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
         left_on="CHILD",
         right_on="Identifier",
@@ -152,24 +152,20 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     )
 
     # Filter to only keep episodes open on day of snapshot
-    episodes_merged = _filter_to_open_on_snapshot_date(
-        episodes_merged, "DEC", "snapshot_date", "DECOM"
+    pnw_census_merged = _filter_to_open_on_snapshot_date(
+        pnw_census_merged, "DEC", "snapshot_date", "DECOM"
     )
 
-    # Row number in pnw_census should not have changed
-    try:
-        assert len(episodes) == len(episodes_merged)
-    except AssertionError:
-        log.error(
-            f"Join with PNW Census results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
-        )
+    # Merge the filtered PNW census data back onto the episodes dataframe
+    episodes_merged = episodes.merge(
+        pnw_census_merged[["CHILD", "EPISODE_ID"] + pnw_join_columns],
+        on=["CHILD", "EPISODE_ID"],
+        how="left"
+    )
 
     # Log number of joins made
-    joins = episodes_merged["snapshot_date"].count()
+    joins = pnw_census_merged["snapshot_date"].count()
     log.info(f"{joins} joins made from PNW Census file")
-
-    # Drop unnecessary columns
-    episodes_merged = episodes_merged.drop(columns=["snapshot_date", "Identifier"])
 
     return episodes_merged
 
@@ -211,9 +207,8 @@ def join_latest_cans_data(
     Merges data from CANS dataframe onto 903 header dataframe
     Returns 903 header dataframe
     """
-
     # Make sure dates are datetime
-    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"])
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"], dayfirst=True).dt.date
 
     # Keep only the latest CANS assessment for each child
     latest_cans = (
@@ -221,9 +216,12 @@ def join_latest_cans_data(
         .drop_duplicates(subset="Child Unique ID", keep="first")
     )
 
+    # Add any cans_columns missing from this file as blank columns
+    latest_cans = latest_cans.reindex(columns=["Child Unique ID"] + cans_columns)
+
     # Merge with header
     header_merged = header.merge(
-        latest_cans, left_on="CHILD", right_on="Child Unique ID", how="left"
+        latest_cans[["Child Unique ID"] + cans_columns], left_on="CHILD", right_on="Child Unique ID", how="left"
     )
 
     # Row count in header should not have changed
@@ -254,7 +252,7 @@ def join_latest_placements_standard_data(
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"])
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
 
     # Keep only the latest Placements Standard assessment for each child
     latest_placements_standard = (
