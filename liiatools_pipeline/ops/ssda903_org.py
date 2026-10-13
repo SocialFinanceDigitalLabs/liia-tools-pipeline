@@ -212,10 +212,14 @@ def joins_pan_sufficiency(
 
     files = session_folder.listdir("/")
 
-    try:
-        episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No SSDA903 episodes file to open: {err}")
+    log.info("Removing existing PAN_SUFFICIENCY file from the shared folder before processing a new one")
+    existing_pan_sufficiency_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_SUFFICIENCY", existing_pan_sufficiency_files, shared_folder())
+
+    episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
+
+    if episodes_file is None:
+        log.error("No SSDA903 episodes file to open")
         log.info("Exiting run as SSDA903 episodes file not available")
         return
 
@@ -352,8 +356,7 @@ def joins_pan_sufficiency(
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
     log.info("Writing joined episodes output to shared folder")
-    output_folder = shared_folder()
-    episodes_dc.export(output_folder, "", "csv")
+    episodes_dc.export(shared_folder(), "", "csv")
 
 
 @op(
