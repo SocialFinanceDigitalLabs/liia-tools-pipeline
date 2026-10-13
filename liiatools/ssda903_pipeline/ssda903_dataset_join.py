@@ -144,7 +144,7 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     Returns 903 episodes dataframe
     """
     # Join pnw_census onto episodes, keeping all children in episodes
-    episodes_merged = episodes.merge(
+    pnw_census_merged = episodes.merge(
         pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
         left_on="CHILD",
         right_on="Identifier",
@@ -152,24 +152,20 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     )
 
     # Filter to only keep episodes open on day of snapshot
-    episodes_merged = _filter_to_open_on_snapshot_date(
-        episodes_merged, "DEC", "snapshot_date", "DECOM"
+    pnw_census_merged = _filter_to_open_on_snapshot_date(
+        pnw_census_merged, "DEC", "snapshot_date", "DECOM"
     )
 
-    # Row number in pnw_census should not have changed
-    try:
-        assert len(episodes) == len(episodes_merged)
-    except AssertionError:
-        log.error(
-            f"Join with PNW Census results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
-        )
+    # Merge the filtered PNW census data back onto the episodes dataframe
+    episodes_merged = episodes.merge(
+        pnw_census_merged[["CHILD", "EPISODE_ID"] + pnw_join_columns],
+        on=["CHILD", "EPISODE_ID"],
+        how="left"
+    )
 
     # Log number of joins made
-    joins = episodes_merged["snapshot_date"].count()
+    joins = pnw_census_merged["snapshot_date"].count()
     log.info(f"{joins} joins made from PNW Census file")
-
-    # Drop unnecessary columns
-    episodes_merged = episodes_merged.drop(columns=["snapshot_date", "Identifier"])
 
     return episodes_merged
 
