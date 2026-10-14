@@ -219,10 +219,14 @@ def joins_pan_sufficiency(
 
     files = session_folder.listdir("/")
 
-    try:
-        episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No SSDA903 episodes file to open: {err}")
+    log.info("Removing existing PAN_SUFFICIENCY file from the shared folder before processing a new one")
+    existing_pan_sufficiency_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_SUFFICIENCY", existing_pan_sufficiency_files, shared_folder())
+
+    episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
+
+    if episodes_file is None:
+        log.error("No SSDA903 episodes file to open")
         log.info("Exiting run as SSDA903 episodes file not available")
         return
 
@@ -359,8 +363,7 @@ def joins_pan_sufficiency(
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
     log.info("Writing joined episodes output to shared folder")
-    output_folder = shared_folder()
-    episodes_dc.export(output_folder, "", "csv")
+    episodes_dc.export(shared_folder(), "", "csv")
 
 
 @op(
@@ -387,7 +390,7 @@ def create_pan_commissioning_join_session_folder() -> FS:
         )
 
     if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
+        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN_CDM")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
@@ -419,10 +422,14 @@ def joins_pan_commissioning(
 
     files = session_folder.listdir("/")
 
-    try:
-        episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No SSDA903 episodes file to open: {err}")
+    log.info("Removing existing PAN_COMMISSIONING file from the shared folder before processing a new one")
+    existing_pan_commissioning_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_COMMISSIONING", existing_pan_commissioning_files, shared_folder())
+
+    episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
+
+    if episodes_file is None:
+        log.error("No SSDA903 episodes file to open")
         log.info("Exiting run as SSDA903 episodes file not available")
         return
 
@@ -436,7 +443,7 @@ def joins_pan_commissioning(
 
     # Open the SSDA903 episodes file
     episodes = open_file(session_folder, episodes_file)
-    episodes_columns = ["EPISODE_ID", "DECOM", "PLACE", "PLACE_PROVIDER", "URN", "LA", "YEAR"]
+    episodes_columns = ["CHILD", "EPISODE_ID", "DECOM", "DEC", "PLACE", "PLACE_PROVIDER", "URN", "LA", "YEAR"]
     episodes = episodes[episodes_columns]
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
@@ -444,7 +451,6 @@ def joins_pan_commissioning(
         pnw_join_columns = [
             "Type of provision",
             "Primary Registration type",
-            "Provider type",
             "Does this placement cost include additional packages?",
             "Does this CYP require a solo placement?",
             "Contribution type",
@@ -481,7 +487,7 @@ def joins_pan_commissioning(
                 "Month"
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        placements_standard_column_renames = {"Month": "PNW_Month"}
+        placements_standard_column_renames = {"Month": "placements_standard_month"}
         # Check and process the Placement Standard file
         if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placements Standard data with SSDA903 episodes data")
@@ -498,8 +504,7 @@ def joins_pan_commissioning(
     # Export Episodes file
     episodes_dc = DataContainer({"PAN_COMMISSIONING": episodes})
     log.info("Writing joined episodes output to shared folder")
-    output_folder = shared_folder()
-    episodes_dc.export(output_folder, "", "csv")
+    episodes_dc.export(shared_folder(), "", "csv")
 
 
 @op(
@@ -526,7 +531,7 @@ def create_pan_child_join_session_folder() -> FS:
         )
 
     if "cans" in allowed_datasets:
-        cans_reports_folder = workspace_folder().opendir("current/cans/PAN")
+        cans_reports_folder = workspace_folder().opendir("current/cans/ENRICHED")
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
@@ -557,16 +562,19 @@ def joins_pan_child(
     child_pattern = re.compile(r"0_5")
     youth_pattern = re.compile(r"6_21")
 
-
     # Placements standard file patterns
     placements_standard_pattern = re.compile(r"placements_standard")
 
     files = session_folder.listdir("/")
 
-    try:
-        header_file = next((f for f in files if header_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No SSDA903 header file to open: {err}")
+    log.info("Removing existing PAN_CHILD file from the shared folder before processing a new one")
+    existing_pan_child_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_CHILD", existing_pan_child_files, shared_folder())
+    
+    header_file = next((f for f in files if header_pattern.search(f)), None)
+
+    if header_file is None:
+        log.error("No SSDA903 header file to open")
         log.info("Exiting run as SSDA903 header file not available")
         return
 
@@ -688,5 +696,4 @@ def joins_pan_child(
     # Export header file
     header_dc = DataContainer({"PAN_CHILD": header})
     log.info("Writing joined header output to shared folder")
-    output_folder = shared_folder()
-    header_dc.export(output_folder, "", "csv")
+    header_dc.export(shared_folder(), "", "csv")
