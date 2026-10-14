@@ -36,11 +36,21 @@ def create_placements_standard_session_folder() -> FS:
     log.info("Creating Placements Standard session folder")
     session_folder = session_folder.opendir(SessionNamesPanPlacementsStandardJoins.INCOMING_FOLDER)
 
-    current_folder = opendir_location(workspace_folder(), "current/cans/PAN")
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
+    current_folder = opendir_location(workspace_folder(), "current/placements_standard/PAN")
     pl.move_files_for_sharing(
         current_folder,
         session_folder,
     )
+
+    if "ssda903" in allowed_datasets:
+            ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+            pl.move_files_for_sharing(
+                ssda903_reports_folder,
+                session_folder,
+                required_table_id=["episodes"],
+                )
 
     return session_folder
 
@@ -64,10 +74,13 @@ def joins_pan_placements_standard(
 
     files = session_folder.listdir("/")
 
-    try:
-        placements_standard_file = next((f for f in files if placements_standard_pattern.search(f)), None)
-    except errors.ResourceNotFound as err:
-        log.error(f"No placements standard file to open: {err}")
+    log.info("Removing existing PAN_PLACEMENTS_STANDARD file from the shared folder before processing a new one")
+    existing_pan_placements_standard_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_PLACEMENTS_STANDARD", existing_pan_placements_standard_files, shared_folder())
+
+    placements_standard_file = next((f for f in files if placements_standard_pattern.search(f)), None)
+    if not placements_standard_file:
+        log.error("No placements standard file to open")
         log.info("Exiting run as placements standard file not available")
         return
 
@@ -98,5 +111,4 @@ def joins_pan_placements_standard(
     # Export header file
     placements_standard_dc = DataContainer({"PAN_PLACEMENTS_STANDARD": placements_standard})
     log.info("Writing joined placements standard output to shared folder")
-    output_folder = shared_folder()
-    placements_standard_dc.export(output_folder, "", "csv")
+    placements_standard_dc.export(shared_folder(), "", "csv")
