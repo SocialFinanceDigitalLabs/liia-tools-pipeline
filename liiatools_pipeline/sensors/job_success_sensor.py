@@ -789,11 +789,20 @@ def ssda903_pan_child_joins_sensor(context):
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def pan_cans_joins_sensor(context):
-    run_records = context.instance.get_run_records(
+    reports_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "ssda903"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    cans_run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=transform_pan_cans_data.name,
             statuses=[DagsterRunStatus.SUCCESS],
-            tags={"dataset": ["cans", "ssda903"]},
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -801,12 +810,9 @@ def pan_cans_joins_sensor(context):
     )
 
     # Get the most recent ssda903 & CANS run ids
-    latest_run_id_cans = find_previous_matching_dataset_run(
-        run_records,
-        "cans",
-    )
+    latest_run_id_cans = cans_run_records[0].dagster_run.run_id if cans_run_records else None
     latest_run_id_ssda903 = find_previous_matching_dataset_run(
-        run_records,
+        reports_run_records,
         "ssda903",
     )
 
