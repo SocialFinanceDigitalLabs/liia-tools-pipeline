@@ -27,9 +27,13 @@ def _transform(
     functions: Dict[str, Callable],
     additional_property: Optional[str] = None,
     secret_key: Optional[str] = None,
+    input_schema_version: Optional[str] = None,
 ):
     """Performs a transform on a table"""
     for column_config in table_config.columns:
+        # Skip columns excluded for this input schema version as they won't be present in the data
+        if input_schema_version and input_schema_version in column_config.exclude:
+            continue
         transform_name = getattr(column_config, property)
         if transform_name:
             if isinstance(transform_name, list):
@@ -134,7 +138,8 @@ def data_transforms(
                     property,
                     functions,
                     additional_property,
-                    secret_key
+                    secret_key,
+                    config.input_schema_version,
                 )
                 remove_row_mask = (
                     ~data[table_config.id].isin(["remove_row"]).any(axis=1)
