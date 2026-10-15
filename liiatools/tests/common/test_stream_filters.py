@@ -55,6 +55,16 @@ def test_parse_tabular_xlsx():
     )
 
 
+def test_parse_tabular_csv_cp1252():
+    samples_fs = open_fs("mem://")
+    samples_fs.writebytes("cp1252.csv", 'a,"cost\xa0(enter £0)"\n1,2\n'.encode("cp1252"))
+
+    locator = FileLocator(samples_fs, "cp1252.csv")
+    stream = list(tablib_parse(locator))
+
+    assert stream[1].headers == ["a", "cost\xa0(enter £0)"]
+
+
 def test_parse_with_alternative_name():
     samples_fs = open_fs(DIR_903.as_posix())
 

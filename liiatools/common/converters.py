@@ -16,6 +16,10 @@ log = logging.getLogger(__name__)
 
 POSTCODE_PATTERN = re.compile(r"^([A-Z]+\d\d?[A-Z]?)\s*(\d+)([A-Z]{2})$")
 
+# Thousands separators and £ signs, including mis-encoded forms: "Â£" (UTF-8 read as
+# Windows-1252) and "\ufffd" (undecodable byte replaced during decoding)
+NUMERIC_STRIP_PATTERN = re.compile("Â£|[£\ufffd,]")
+
 
 def allow_blank(func):
     """A decorator that adds a kwarg to the decorated function to turn on/off the blank value check.
@@ -153,7 +157,7 @@ def to_numeric(
             raise ValueError(f"Invalid age: {value}") from e
 
     try:
-        value = value.replace(",", "") if isinstance(value, str) else value
+        value = NUMERIC_STRIP_PATTERN.sub("", value).strip() if isinstance(value, str) else value
         value = float(value)
         if _type == "float":
             value = round(value, decimal_places) if decimal_places else value

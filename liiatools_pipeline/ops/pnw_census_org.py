@@ -259,7 +259,7 @@ def create_transform_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPNWCensusJoins.INCOMING_FOLDER)
 
-    pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
+    pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN", recreate=True)
     pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     return session_folder
@@ -314,7 +314,7 @@ def transform_pnw_census_data(
 
         data = DataContainer({"PAN_CDM_pnw_census": vertical_pnw_census})
 
-        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN_CDM")
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN_CDM", recreate=True)
         existing_report_files = pnw_census_reports_folder.listdir("/")
         pl.remove_files("pnw_census", existing_report_files, pnw_census_reports_folder)
 
