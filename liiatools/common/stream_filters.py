@@ -54,13 +54,12 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     """
     filename = source.name
     with source.open("rb") as f:
-        data = f.read()
+        raw = f.read()
 
     try:
-        data = data.decode("utf-8-sig")
-        data = StringIO(data)
+        data = StringIO(raw.decode("utf-8-sig"))
     except UnicodeDecodeError:
-        data = BytesIO(data)
+        data = BytesIO(raw)
 
     try:
         databook = import_book(data)
@@ -76,6 +75,10 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     except Exception as e:
         logger.debug("Failed to open %s as a book", filename, exc_info=e)
         pass
+
+    if isinstance(data, BytesIO):
+        # Not UTF-8 and not a workbook, so assume legacy-encoded text such as an Excel "CSV" save
+        data = StringIO(raw.decode("cp1252", errors="replace"))
 
     try:
         dataset = _import_set_workaround(data)
@@ -741,10 +744,22 @@ def convert_column_header_to_match(event, schema: DataSchema):
             if column_config[column].header_regex is not None:
                 for regex in column_config[column].header_regex:
                     parse = Column().parse_regex(regex)
-                    if parse.match(event.header) is not None:
+                    if parse.match(event.header.strip()) is not None:
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
+
+        # Mirrors the relaxed fallback in DataSchema.get_table_from_headers
+        relaxed = [
+            c
+            for c in column_config
+            if DataSchema.match_column_name(event.header, c, relaxed=True)
+        ]
+        if len(relaxed) == 1:
+            logger.debug(
+                'Header="%s" matched "%s" after normalisation', event.header, relaxed[0]
+            )
+            return event.from_event(event, header=relaxed[0])
         logger.debug(
             'No match found for cell with header="%s" and table_name="%s"',
             event.header,
