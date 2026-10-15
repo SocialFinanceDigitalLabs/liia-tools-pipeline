@@ -30,6 +30,7 @@ from liiatools.ssda903_pipeline.sufficiency_transform import (
 )
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
+from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger()
 
@@ -173,7 +174,7 @@ def create_pan_sufficiency_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().makedirs("current/ssda903/PAN", recreate=True)
+    ssda903_reports_folder = opendir_location(workspace_folder(), ("current/ssda903/PAN"))
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
@@ -181,11 +182,11 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         )
 
     if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN", recreate=True)
+        pnw_census_reports_folder = opendir_location(workspace_folder(), "current/pnw_census/PAN")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = workspace_folder().makedirs("current/placements_standard/PAN", recreate=True)
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/PAN")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
