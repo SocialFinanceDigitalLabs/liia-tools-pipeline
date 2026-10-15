@@ -173,7 +173,7 @@ def create_pan_sufficiency_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = opendir_location(workspace_folder(), ("current/ssda903/PAN"))
+    ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
