@@ -528,7 +528,7 @@ def create_pan_child_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanChildJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().makedirs("current/ssda903/PAN", recreate=True)
+    ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
@@ -536,11 +536,11 @@ def create_pan_child_join_session_folder() -> FS:
         )
 
     if "cans" in allowed_datasets:
-        cans_reports_folder = workspace_folder().makedirs("current/cans/ENRICHED", recreate=True)
+        cans_reports_folder = opendir_location(workspace_folder(), "current/cans/ENRICHED")
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = workspace_folder().makedirs("current/placements_standard/PAN", recreate=True)
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/PAN")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
