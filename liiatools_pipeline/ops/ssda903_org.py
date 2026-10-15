@@ -46,13 +46,16 @@ log = get_dagster_logger()
     }
 )
 def create_sufficiency_session_folder() -> FS:
+    """Create a session, ensuring the sufficiency reports folder exists."""
     log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesSufficiency
     )
     session_folder = session_folder.opendir(SessionNamesSufficiency.INCOMING_FOLDER)
 
-    reports_folder = workspace_folder().opendir("current/ssda903/SUFFICIENCY")
+    reports_folder = workspace_folder().makedirs(
+        "current/ssda903/SUFFICIENCY", recreate=True
+    )
     log.info("Moving 903 input files for sufficiency to session folder")
     pl.move_files_for_sharing(
         reports_folder, session_folder, required_table_id=["episodes", "header", "uasc"]
@@ -177,7 +180,7 @@ def create_pan_sufficiency_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+    ssda903_reports_folder = workspace_folder().makedirs("current/ssda903/PAN", recreate=True)
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
@@ -185,11 +188,11 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         )
 
     if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN", recreate=True)
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        placements_standard_reports_folder = workspace_folder().makedirs("current/placements_standard/PAN", recreate=True)
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
@@ -307,10 +310,10 @@ def joins_pan_sufficiency(
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
                 "dol",
-                "needs_assesment",
+                "needs_assessment",
                 "foster_care_suitability",
                 "residential_care_suitability",
-                "supported_accommodation",
+                "supported_accommodation_suitability",
                 "risk_to_child_self_harm",
                 "risk_to_child_criminal_exploitation",
                 "risk_to_child_drug_and_alcohol_use",
@@ -344,6 +347,7 @@ def joins_pan_sufficiency(
                 "placement_location_non_preferable_reason",
                 "education_continuity",
                 "how_many_siblings_were_placed_together",
+                "Month",
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
         placements_standard_column_renames = {"Month": "placements_standard_Month"}
@@ -382,7 +386,7 @@ def create_pan_commissioning_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanCommissioningJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+    ssda903_reports_folder = workspace_folder().makedirs("current/ssda903/PAN", recreate=True)
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
@@ -390,11 +394,11 @@ def create_pan_commissioning_join_session_folder() -> FS:
         )
 
     if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN_CDM")
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN_CDM", recreate=True)
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        placements_standard_reports_folder = workspace_folder().makedirs("current/placements_standard/PAN", recreate=True)
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
