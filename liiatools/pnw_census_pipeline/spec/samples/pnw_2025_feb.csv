@@ -1,0 +1,21 @@
+"Looked after child? All placements on this social care sheet should be looked after children. If the individual also has SEND, please see the overview guidance for information.","Placing Authority
+This is the authority that acts as the Corporate Parent for this young person. It will also be the authority completing the return. ","Identifier 
+This is the unique reference for the child. If you are not able to include this it would be helpful if the same identifier could be used in each quarter. ","Age
+This will be rounded down",Gender,"Ethnic Group
+(Please select from drop down list)","How the placement was sourced
+(Please select from drop down list)","Placement start date (DD/MM/YYYY)
+This should be the start date of this specific placement not the date the young person moved to the provider or they entered care if these are different.","Organisation
+This is the organisation you have the contract with for this placement ",Provider ID,"Establishment
+This should be the name of the Children's Home (as on the Ofsted CH List or registration) or Supported Accommodation provision. For foster carers, enter 'foster carer'. Do not enter the carers' name or address. ",Registration type,"Establishment registration URN 
+This should be the Ofsted or CQC code or equivalent ","Host Authority
+(Local authority where the provision is located)","Primary Placing at Distance Reason
+(please select from drop down list)","Type of provision
+(Please select from drop down list)","UASC (Unaccompanied Asylum Seeking Child)
+(Please select from drop down list)","Total weekly cost (actual weekly fee paid)
+(For SEND placements please divide any annual costs by the relevant number of weeks). This figure should equal the total of the social care, education and health contribution columns.","Contribution from Social Care
+(This should be the financial contribution, not percentage, to the total weekly cost)","Contribution from Education
+(This should be the financial contribution, not percentage, to the total weekly cost)","Contribution from Health
+(This should be the financial contribution, not percentage, to the total weekly cost)","SEND
+(Please select from drop down list)",Primary SEND category (Please select from drop down list).,Primary SEND need (Please select from drop down list)
+Yes,Manchester,186835,5,M,White,NW Contract - Fostering FPS or previous,02/12/2024,Foremans,680692,Nice residential,Ofsted,821049,Lincolnshire,Placement available locally but provider refused due to need,Residential - Secure Welfare,Yes,1605.5,845.2,68.2,68.2,yes,learning,autism
+Y,Manchester,151627,6.5,F,Pakistani (Asian or Asian British),NW Contract - SEND FPS,09/04/2024,Oldham,887711,Big Blue,CQC,674090,Norfolk,Placement available locally but provider refused due to matching,Fostering - Parent and Child,,845.2,415,50,50,,,
