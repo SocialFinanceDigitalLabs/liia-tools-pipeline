@@ -45,7 +45,7 @@ def create_placements_standard_session_folder() -> FS:
     )
 
     if "ssda903" in allowed_datasets:
-            ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+            ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
             pl.move_files_for_sharing(
                 ssda903_reports_folder,
                 session_folder,
