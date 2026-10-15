@@ -38,13 +38,16 @@ log = get_dagster_logger()
     }
 )
 def create_sufficiency_session_folder() -> FS:
+    """Create a session, ensuring the sufficiency reports folder exists."""
     log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesSufficiency
     )
     session_folder = session_folder.opendir(SessionNamesSufficiency.INCOMING_FOLDER)
 
-    reports_folder = workspace_folder().opendir("current/ssda903/SUFFICIENCY")
+    reports_folder = workspace_folder().makedirs(
+        "current/ssda903/SUFFICIENCY", recreate=True
+    )
     log.info("Moving 903 input files for sufficiency to session folder")
     pl.move_files_for_sharing(
         reports_folder, session_folder, required_table_id=["episodes", "header", "uasc"]
