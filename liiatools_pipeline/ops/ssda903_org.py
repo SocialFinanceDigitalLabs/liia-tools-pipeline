@@ -172,7 +172,7 @@ def create_pan_sufficiency_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = workspace_folder().opendir("current/ssda903/PAN")
+    ssda903_reports_folder = workspace_folder().makedirs("current/ssda903/PAN", recreate=True)
     pl.move_files_for_sharing(
         ssda903_reports_folder,
         session_folder,
@@ -180,11 +180,11 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         )
 
     if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = workspace_folder().opendir("current/pnw_census/PAN")
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN", recreate=True)
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = workspace_folder().opendir("current/placements_standard/PAN")
+        placements_standard_reports_folder = workspace_folder().makedirs("current/placements_standard/PAN", recreate=True)
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
@@ -291,7 +291,7 @@ def joins_pan_sufficiency(
         placements_standard_join_columns = [
                 "when_placement_is_needed_by",
                 "number_of_siblings_to_place_with",
-                "preferred_location_for_home_search",
+                # "preferred_location_for_home_search", not in IG
                 "communication_language_learning_needs",
                 "specific_communication_and_language_requirements",
                 "adaptation_to_the_home",
@@ -301,11 +301,11 @@ def joins_pan_sufficiency(
                 "additional_support",
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
-                "dol",
-                "needs_assesment",
+                # "dol", not in IG
+                "needs_assessment",
                 "foster_care_suitability",
                 "residential_care_suitability",
-                "supported_accommodation",
+                "supported_accommodation_suitability",
                 "risk_to_child_self_harm",
                 "risk_to_child_criminal_exploitation",
                 "risk_to_child_drug_and_alcohol_use",
@@ -339,6 +339,7 @@ def joins_pan_sufficiency(
                 "placement_location_non_preferable_reason",
                 "education_continuity",
                 "how_many_siblings_were_placed_together",
+                "Month",
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
         placements_standard_column_renames = {"Month": "placements_standard_Month"}
