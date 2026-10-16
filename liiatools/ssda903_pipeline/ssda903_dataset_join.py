@@ -1,0 +1,120 @@
+import numpy as np
+import pandas as pd
+from dagster import get_dagster_logger
+
+from liiatools.pnw_census_pipeline.pnw_dataset_join import (
+    _filter_to_open_on_snapshot_date,
+)
+
+log = get_dagster_logger(__name__)
+
+def join_header_data(header: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from 903 header dataframe onto 903 episodes dataframe
+    Returns 903 episodes dataframe
+    """
+    episodes_merged = episodes.merge(
+        header[["CHILD", "SEX", "ETHNIC", "DOB"]],
+        on="CHILD",
+        how="left",
+    )
+
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 header results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = episodes_merged["CHILD"].nunique()
+    log.info(f"{joins} joins made from 903 header file")
+
+    return episodes_merged
+
+
+def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from 903 UASC dataframe onto 903 episodes dataframe
+    Returns 903 episodes dataframe
+    """
+    episodes_merged = episodes.merge(
+        uasc[["CHILD", "DUC"]], on="CHILD", how="left"
+    )
+
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 uasc results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = episodes_merged["DUC"].count()
+    log.info(f"{joins} joins made from 903 uasc file")
+
+    return episodes_merged
+
+
+def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
+    """
+    Merges data from pnw census dataframe onto 903 episodes dataframe
+    Returns 903 episodes dataframe
+    """
+    # Join pnw_census onto episodes, keeping all children in episodes
+    pnw_census_merged = episodes.merge(
+        pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
+        left_on="CHILD",
+        right_on="Identifier",
+        how="left",
+    )
+
+    # Filter to only keep episodes open on day of snapshot
+    pnw_census_merged = _filter_to_open_on_snapshot_date(
+        pnw_census_merged, "DEC", "snapshot_date", "DECOM"
+    )
+
+    # Merge the filtered PNW census data back onto the episodes dataframe
+    episodes_merged = episodes.merge(
+        pnw_census_merged[["CHILD", "EPISODE_ID"] + pnw_join_columns],
+        on=["CHILD", "EPISODE_ID"],
+        how="left"
+    )
+
+    # Log number of joins made
+    joins = pnw_census_merged["snapshot_date"].count()
+    log.info(f"{joins} joins made from PNW Census file")
+
+    return episodes_merged
+
+
+def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: pd.DataFrame, placements_standard_join_columns: list) -> pd.DataFrame:
+    """
+    Merges data from placement standard dataframe onto 903 episodes dataframe
+    Returns 903 episodes dataframe
+    """
+    episodes_merged = episodes.merge(
+        placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
+        left_on=["CHILD", "DECOM"],
+        right_on=["child_ID", "placement_start_date"],
+        how="left",
+    )
+
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with Placements Standard results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = episodes_merged["child_ID"].count()
+    log.info(f"{joins} joins made from Placements Standard file")
+
+    # Drop unnecessary columns
+    episodes_merged = episodes_merged.drop(columns=["child_ID", "placement_start_date"])
+
+    return episodes_merged
