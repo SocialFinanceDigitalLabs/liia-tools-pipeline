@@ -30,6 +30,12 @@ from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
 from liiatools.csww_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_csww,
 )
+from liiatools.placements_standard_pipeline.spec import (
+    load_schema as load_schema_placements_standard,
+)
+from liiatools.placements_standard_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_placements_standard,
+)
 from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_census
 from liiatools.pnw_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_pnw_census,
@@ -115,7 +121,14 @@ def process_files(
 
     output_config = pipeline_config(config)
     la_signed_dict = output_config.la_signed[la_name]
-    la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
+    if output_config.input_schema_version:
+        la_profiles = [
+            k
+            for k, v in la_signed_dict.items()
+            if k == output_config.input_schema_version and v == "Yes"
+        ]
+    else:
+        la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
     if len(la_profiles) == 0:
         log.info(f"{la_name} is not signed up for {config.dataset} data processing.")
         error_report.append(
@@ -179,7 +192,12 @@ def process_files(
             )
 
             month = None
-            if config.dataset in ["annex_a", "pnw_census", "cans"]:
+            if config.dataset in [
+                "annex_a",
+                "pnw_census",
+                "cans",
+                "placements_standard",
+            ]:
                 month = pl.discover_month(file_locator)
                 if month is None:
                     error_report.append(
@@ -256,6 +274,10 @@ def process_files(
                     if config.dataset == "school_census"
                     else globals()[f"load_schema_{config.dataset}"](year, month)
                     if config.dataset == "pnw_census"
+                    else globals()[f"load_schema_{config.dataset}"](
+                        year, month, output_config.input_schema_version
+                    )
+                    if config.dataset == "placements_standard"
                     else globals()[f"load_schema_{config.dataset}"](year)
                 )
             except KeyError:
