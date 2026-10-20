@@ -40,12 +40,23 @@ from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
 )
+from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
+from liiatools.csww_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_csww,
+)
+from liiatools.placements_standard_pipeline.spec import (
+    load_schema as load_schema_placements_standard,
+)
+from liiatools.placements_standard_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_placements_standard,
+)
 from liiatools_pipeline.assets.common import (
     pipeline_config,
     shared_folder,
     workspace_folder,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.resources.hashing import HashingSecretResource
 from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger(__name__)
@@ -95,6 +106,7 @@ def process_files(
     current: DataframeArchive,
     session_id: str,
     config: CleanConfig,
+    hashing_secret: HashingSecretResource,
 ):
     la_name = authorities.get_by_code(config.input_la_code)
     log.info(f"Processing {config.dataset} {la_name} files...")
@@ -109,7 +121,14 @@ def process_files(
 
     output_config = pipeline_config(config)
     la_signed_dict = output_config.la_signed[la_name]
-    la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
+    if output_config.input_schema_version:
+        la_profiles = [
+            k
+            for k, v in la_signed_dict.items()
+            if k == output_config.input_schema_version and v == "Yes"
+        ]
+    else:
+        la_profiles = [k for k, v in la_signed_dict.items() if v == "Yes"]
     if len(la_profiles) == 0:
         log.info(f"{la_name} is not signed up for {config.dataset} data processing.")
         error_report.append(
@@ -171,7 +190,7 @@ def process_files(
             )
 
             month = None
-            if config.dataset in ["annex_a", "pnw_census", "cans"]:
+            if config.dataset in ["annex_a", "pnw_census", "cans", "placements_standard"]:
                 month = pl.discover_month(file_locator)
                 if month is None:
                     error_report.append(
@@ -243,11 +262,13 @@ def process_files(
             try:
                 schema = (
                     globals()[f"load_schema_{config.dataset}"]()
-                    if config.dataset in ["annex_a", "cans"]
+                    if config.dataset in ["cans"]
                     else globals()[f"load_schema_{config.dataset}"](year, term)
                     if config.dataset == "school_census"
                     else globals()[f"load_schema_{config.dataset}"](year, month)
                     if config.dataset == "pnw_census"
+                    else globals()[f"load_schema_{config.dataset}"](year, month, output_config.input_schema_version)
+                    if config.dataset == "placements_standard"
                     else globals()[f"load_schema_{config.dataset}"](year)
                 )
             except KeyError:
@@ -319,7 +340,7 @@ def process_files(
             degrade_flag = all(output_config.degrade_at_clean.values())
             if degrade_flag:
                 degraded_result = degrade_data(
-                    enrich_result.data, output_config, metadata
+                    enrich_result.data, output_config, metadata, hashing_secret.key
                 )
                 degraded_result.data.export(
                     session_folder.opendir(SessionNames.DEGRADED_FOLDER),

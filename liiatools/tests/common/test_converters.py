@@ -146,6 +146,10 @@ def test_to_numeric():
 
     assert to_numeric(1.23, "float") == 1.23
     assert to_numeric("1,200,300.23", "float") == 1200300.23
+    assert to_numeric("£5,000.54", "float") == 5000.54
+    assert to_numeric("Â£0.56", "float") == 0.56
+    assert to_numeric("\ufffd500.00", "float") == 500.0
+    assert to_numeric(" £ 1,000 ", "integer") == 1000
     assert to_numeric("", "float") == ""
     assert to_numeric(None, "float") == ""
     assert to_numeric(0.5, "float", min_value=0, max_value=1) == 0.5

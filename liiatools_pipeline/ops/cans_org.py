@@ -121,6 +121,8 @@ def transform_cans_data(
     category_mapping = load_category_mapping()
     summary_sheet_mapping = load_summary_sheet_mapping()
 
+    pan_cans = pd.DataFrame()
+
     for file in files:
         log.info(f"Transforming CANS data for {file}")
         # assign name of file without suffix
@@ -130,21 +132,24 @@ def transform_cans_data(
         # fetch the correct mapping for the table
         file_category_mapping = category_mapping[table_name]
         file_summary_sheet_mapping = summary_sheet_mapping[table_name]
-        identifier_col = "Child Unique ID" if table_name == "0_5" else "Youth Unique ID"
 
         data = open_file(session_folder, file)
+
+        # Align Youth Unique ID with Child Unique ID for merging
+        if table_name == "6_21":
+            data["Child Unique ID"] = data["Youth Unique ID"]
 
         try:
             subcategory_cols = [col for col in file_category_mapping if col in data.columns]
 
             vertical_cans = data.melt(
-                id_vars=[identifier_col, "Assessment Date"],
+                id_vars=["Child Unique ID", "Assessment Date"],
                 value_vars=subcategory_cols,
                 var_name="CANS subcategory",
                 value_name="Score",
             )
             vertical_cans["CANS category"] = vertical_cans["CANS subcategory"].map(file_category_mapping)
-            vertical_cans = vertical_cans[[identifier_col, "Assessment Date", "CANS category", "CANS subcategory", "Score"]]
+            vertical_cans = vertical_cans[["Child Unique ID", "Assessment Date", "CANS category", "CANS subcategory", "Score"]]
 
             # Replace empty strings with NA and drop rows with NA in the "Score" column
             vertical_cans["Score"] = vertical_cans["Score"].replace(r"^\s*$", pd.NA, regex=True)
@@ -156,16 +161,21 @@ def transform_cans_data(
                 args=(file_summary_sheet_mapping,),
             )
 
-            vertical_cans = vertical_cans.sort_values(by=[identifier_col, "Assessment Date"])
+            vertical_cans = vertical_cans.sort_values(by=["Child Unique ID", "Assessment Date"])
+
+            pan_cans = pd.concat([pan_cans, vertical_cans], ignore_index=True)
 
         except TypeError as err:
             log.error(f"Transforming CANS data failed: {err}")
 
-        data = DataContainer({f"PAN_CDM_{name}": vertical_cans})
+    data = DataContainer({"CDM_cans": pan_cans})
 
-        log.info(f"Writing Pan Common Data Model CANS output to shared folder for {file}")
-        output_folder = shared_folder()
-        data.export(output_folder, "", "csv")
+    cans_reports_folder = workspace_folder().makedirs("current/cans/PAN_CDM", recreate=True)
+    existing_report_files = cans_reports_folder.listdir("/")
+    pl.remove_files("CDM_cans", existing_report_files, cans_reports_folder)
+
+    log.info(f"Exporting Common Data Model CANS output to workspace folder for {file}")
+    data.export(cans_reports_folder, "", "csv")
 
 
 @op(
@@ -183,11 +193,21 @@ def create_pan_cans_session_folder() -> FS:
     log.info("Creating CANS session folder")
     session_folder = session_folder.opendir(SessionNamesCANSMapping.INCOMING_FOLDER)
 
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
     current_folder = opendir_location(workspace_folder(), "current/cans/PAN_CDM")
     pl.move_files_for_sharing(
         current_folder,
         session_folder,
     )
+
+    if "ssda903" in allowed_datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["episodes"],
+            )
 
     return session_folder
 
@@ -204,40 +224,33 @@ def joins_pan_cans(
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
     # CANS file patterns
-    child_pattern = re.compile(r"0_5")
-    youth_pattern = re.compile(r"6_21")
+    cans_pattern = re.compile(r"CDM_cans")
 
     # SSDA903 file patterns
     episodes_pattern = re.compile(r"episodes")
 
     files = session_folder.listdir("/")
 
-    child_file = next((f for f in files if child_pattern.search(f)), None)
-    youth_file = next((f for f in files if youth_pattern.search(f)), None)
+    log.info("Removing existing PAN_CDM_cans file from the shared folder before processing a new one")
+    existing_pan_child_files = shared_folder().listdir("/")
+    pl.remove_files("PAN_CDM_cans", existing_pan_child_files, shared_folder())
 
-    if child_file is None and youth_file is None:
+    cans = next((f for f in files if cans_pattern.search(f)), None)
+
+    if cans is None:
         log.error("No CANS file to open")
         log.info("Exiting run as CANS file not available")
         return
 
-    cans_patterns = [
-        child_pattern,
-        youth_pattern,
-    ]
-
     # If no SSDA903 or CANS terminate process
     if not any(
-        any(pattern.search(f) for f in files) for pattern in cans_patterns
+        any(pattern.search(f) for f in files) for pattern in [cans_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in [episodes_pattern]):
         log.error("No SSDA903 or CANS files found: terminating process.")
         return
 
     # Open the CANS files
-    if child_file is not None:
-        child_file = open_file(session_folder, child_file)
-
-    if youth_file is not None:
-        youth_file = open_file(session_folder, youth_file)
+    cans = open_file(session_folder, cans)
 
     # Check and process SSDA903 episodes file
     if "ssda903" in allowed_datasets:
@@ -245,25 +258,14 @@ def joins_pan_cans(
             log.info("Joining CANS data with SSDA903 episodes data")
             episodes_file = next(f for f in files if episodes_pattern.search(f))
             episodes = open_file(session_folder, episodes_file)
-            if child_file is not None:
-                child_file = join_episodes_data(child_file, episodes, identifier_col="Child Unique ID")
-            if youth_file is not None:
-                youth_file = join_episodes_data(youth_file, episodes, identifier_col="Youth Unique ID")
+            cans = join_episodes_data(cans, episodes)
         else:
             log.error("No 903 episodes data to join with CANS")
             empty_episodes_cols = ["EPISODE_ID"]
             for col in empty_episodes_cols:
-                child_file[col] = None
-                youth_file[col] = None
+                cans[col] = None
 
     # Export CANS files
-    if child_file is not None:
-        cans_child_dc = DataContainer({"PAN_CDM_cans_0_5": child_file})
-        log.info("Writing joined CANS child file output to shared folder")
-        output_folder = shared_folder()
-        cans_child_dc.export(output_folder, "", "csv")
-    if youth_file is not None:
-        cans_youth_dc = DataContainer({"PAN_CDM_cans_6_21": youth_file})
-        log.info("Writing joined CANS youth file output to shared folder")
-        output_folder = shared_folder()
-        cans_youth_dc.export(output_folder, "", "csv")
+    cans_dc = DataContainer({"PAN_CDM_cans": cans})
+    log.info("Writing joined CANS file output to shared folder")
+    cans_dc.export(shared_folder(), "", "csv")

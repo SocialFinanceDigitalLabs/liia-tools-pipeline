@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import tablib
 import xmlschema
+from xlsxwriter.utility import xl_col_to_name
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
@@ -53,13 +54,12 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     """
     filename = source.name
     with source.open("rb") as f:
-        data = f.read()
+        raw = f.read()
 
     try:
-        data = data.decode("utf-8-sig")
-        data = StringIO(data)
+        data = StringIO(raw.decode("utf-8-sig"))
     except UnicodeDecodeError:
-        data = BytesIO(data)
+        data = BytesIO(raw)
 
     try:
         databook = import_book(data)
@@ -75,6 +75,10 @@ def tablib_parse(source: FileLocator, table_info: Optional[Dict] = None):
     except Exception as e:
         logger.debug("Failed to open %s as a book", filename, exc_info=e)
         pass
+
+    if isinstance(data, BytesIO):
+        # Not UTF-8 and not a workbook, so assume legacy-encoded text such as an Excel "CSV" save
+        data = StringIO(raw.decode("cp1252", errors="replace"))
 
     try:
         dataset = _import_set_workaround(data)
@@ -96,7 +100,7 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
         for c_ix, cell in enumerate(row):
             yield events.Cell(
                 row_number=r_ix + 2,  # tablib rows are 0-indexed, plus 1 for header row
-                column_number=c_ix,
+                column_letter=xl_col_to_name(c_ix),
                 header=dataset.headers[c_ix],
                 cell=cell,
             )
@@ -117,7 +121,7 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
                     cell = ""
             yield events.Cell(
                 row_number=r_ix + 2,  # pandas rows are 0-indexed, plus 1 for header row
-                column_number=c_ix,
+                column_letter=xl_col_to_name(c_ix),
                 header=dataset.columns.tolist()[c_ix],
                 cell=cell,
             )
@@ -436,12 +440,30 @@ def collect_tables(stream):
     """
     # A dict to hold all the tables we find in the stream
     dataset = {}
+    in_table = False
+    table_row_count = 0
 
     # Iterate over the stream and collect the tables from the StartRow events
     for event in stream:
+        if isinstance(event, events.StartTable):
+            in_table = True
+            table_row_count = 0
+
+        if isinstance(event, events.StartRow):
+            table_row_count += 1
+
         if isinstance(event, events.StartRow) and hasattr(event, "table_name"):
             table_data = dataset.setdefault(event.table_name, [])
             table_data.append(event.row_values)
+
+        if isinstance(event, events.EndTable) and in_table:
+            if table_row_count == 0:
+                event = EventErrors.add_to_event(
+                    event,
+                    type="NoDataRows",
+                    message="Table has headers but no data rows",
+                )
+            in_table = False
 
         yield event
 
@@ -487,7 +509,7 @@ def collect_errors(stream):
                     error_entry,
                     "filename",
                     "row_number",
-                    "column_number",
+                    "column_letter",
                     "table_name",
                     "header",
                     "xml_row",
@@ -722,10 +744,22 @@ def convert_column_header_to_match(event, schema: DataSchema):
             if column_config[column].header_regex is not None:
                 for regex in column_config[column].header_regex:
                     parse = Column().parse_regex(regex)
-                    if parse.match(event.header) is not None:
+                    if parse.match(event.header.strip()) is not None:
                         return event.from_event(event, header=column)
             elif column.lower().strip() == event.header.lower().strip():
                 return event.from_event(event, header=column)
+
+        # Mirrors the relaxed fallback in DataSchema.get_table_from_headers
+        relaxed = [
+            c
+            for c in column_config
+            if DataSchema.match_column_name(event.header, c, relaxed=True)
+        ]
+        if len(relaxed) == 1:
+            logger.debug(
+                'Header="%s" matched "%s" after normalisation', event.header, relaxed[0]
+            )
+            return event.from_event(event, header=relaxed[0])
         logger.debug(
             'No match found for cell with header="%s" and table_name="%s"',
             event.header,

@@ -26,9 +26,14 @@ def _transform(
     property: str,
     functions: Dict[str, Callable],
     additional_property: Optional[str] = None,
+    secret_key: Optional[str] = None,
+    input_schema_version: Optional[str] = None,
 ):
     """Performs a transform on a table"""
     for column_config in table_config.columns:
+        # Skip columns excluded for this input schema version as they won't be present in the data
+        if input_schema_version and input_schema_version in column_config.exclude:
+            continue
         transform_name = getattr(column_config, property)
         if transform_name:
             if isinstance(transform_name, list):
@@ -40,6 +45,25 @@ def _transform(
                         mapping_field = getattr(column_config, additional_property)
                         mapping_function = functions[transform_name]
                         data = mapping_function(data, mapping_field, column_config.id)
+                    elif transform_name == "distance_between_postcodes":
+                        postcodes = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, postcodes[0], postcodes[1], column_config.id)
+                    elif transform_name == "hash_sha256":
+                        data[column_config.id] = data.apply(
+                            lambda row: functions[transform_name](
+                                row, column_config, secret_key
+                            ),
+                            axis=1,
+                        )
+                    elif transform_name == "combine_columns":
+                        columns_to_combine = getattr(column_config, additional_property)
+                        data[column_config.id] = data.apply(
+                            lambda row: functions[transform_name](
+                                row, columns_to_combine, column_config
+                            ),
+                            axis=1,
+                        )
                     else:
                         data[column_config.id] = data.apply(
                             lambda row: functions[transform_name](
@@ -55,6 +79,25 @@ def _transform(
                     mapping_field = getattr(column_config, additional_property)
                     mapping_function = functions[transform_name]
                     data = mapping_function(data, mapping_field, column_config.id)
+                elif transform_name == "distance_between_postcodes":
+                        postcodes = getattr(column_config, additional_property)
+                        mapping_function = functions[transform_name]
+                        data = mapping_function(data, postcodes[0], postcodes[1], column_config.id)
+                elif transform_name == "hash_sha256":
+                    data[column_config.id] = data.apply(
+                        lambda row: functions[transform_name](
+                            row, column_config, secret_key
+                        ),
+                        axis=1,
+                    )
+                elif transform_name == "combine_columns":
+                    columns_to_combine = getattr(column_config, additional_property)
+                    data[column_config.id] = data.apply(
+                        lambda row: functions[transform_name](
+                            row, columns_to_combine, column_config
+                        ),
+                        axis=1,
+                    )
                 else:
                     data[column_config.id] = data.apply(
                         lambda row: functions[transform_name](
@@ -71,6 +114,7 @@ def data_transforms(
     property: str,
     functions: Dict[str, Callable],
     additional_property: Optional[str] = None,
+    secret_key: Optional[str] = None,
 ) -> ProcessResult:
     """Pipelines can have a set of data transforms that are applied to the data after it has been cleaned.
 
@@ -94,6 +138,8 @@ def data_transforms(
                     property,
                     functions,
                     additional_property,
+                    secret_key,
+                    config.input_schema_version,
                 )
                 remove_row_mask = (
                     ~data[table_config.id].isin(["remove_row"]).any(axis=1)
@@ -135,13 +181,16 @@ def enrich_data(
 
 
 def degrade_data(
-    data: DataContainer, config: PipelineConfig, metadata: Metadata = None
+    data: DataContainer,
+    config: PipelineConfig,
+    metadata: Metadata = None,
+    sha256_secret_key: Optional[str] = None,
 ) -> ProcessResult:
     """Standard set of degradation transforms removing or modifying columns in the dataset."""
     if metadata is None:
         metadata = {}
 
-    return data_transforms(data, config, metadata, "degrade", degrade_functions)
+    return data_transforms(data, config, metadata, "degrade", degrade_functions, secret_key=sha256_secret_key)
 
 
 def prepare_export(

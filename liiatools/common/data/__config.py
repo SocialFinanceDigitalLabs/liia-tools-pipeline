@@ -10,7 +10,7 @@ class ColumnConfig(BaseModel):
     type: str
     unique_key: bool = False
     enrich: str | list = None
-    enrich_input: str = None
+    enrich_input: str | List[str] = None
     degrade: str = None
     sort: int = None
     asc: bool = False
@@ -63,6 +63,7 @@ class PipelineConfig(BaseModel):
     reports_to_shared: Dict
     la_signed: Dict
     table_list: List[TableConfig]
+    input_schema_version: Optional[str] = None
 
     def __getitem__(self, value) -> TableConfig:
         ix = {t.id: t for t in self.table_list}
