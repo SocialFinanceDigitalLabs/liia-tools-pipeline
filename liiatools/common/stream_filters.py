@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import tablib
 import xmlschema
-from xlsxwriter.utility import xl_col_to_name
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
@@ -18,14 +17,15 @@ from sfdata_stream_parser.filters.generic import (
     streamfilter,
 )
 from tablib import UnsupportedFormat, import_book, import_set
+from xlsxwriter.utility import xl_col_to_name
 
 from liiatools.common.converters import (
     to_category,
     to_date,
-    to_time,
     to_numeric,
     to_postcode,
     to_regex,
+    to_time,
 )
 from liiatools.common.data import FileLocator, PipelineConfig
 from liiatools.common.stream_errors import EventErrors, StreamError
@@ -230,6 +230,20 @@ def add_table_name_from_headers(event, schema: DataSchema):
                 type="BlankHeaders",
                 message=f"Could not identify headers as first row is blank",
             )
+
+        # Duplicate headers
+        lower_headers = [header.lower() for header in headers if header]
+        duplicate_headers = {
+            header for header in lower_headers if lower_headers.count(header) > 1
+        }
+        if duplicate_headers:
+            for header in duplicate_headers:
+                event = EventErrors.add_to_event(
+                    event,
+                    type="HeaderError",
+                    message=f"Duplicate headers found: {header}",
+                )
+            return event
         try:
             table_name = schema.get_table_from_headers(event.headers)
         except ValueError as e:
@@ -244,6 +258,7 @@ def add_table_name_from_headers(event, schema: DataSchema):
         return event.from_event(
             event, table_name=table_name, table_spec=schema.column_map[table_name]
         )
+
     else:
         sheetname = getattr(event, "sheetname", None)
         message = (
