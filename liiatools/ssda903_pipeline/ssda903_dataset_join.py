@@ -82,7 +82,7 @@ def join_header_data(header: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.D
     Returns 903 episodes dataframe and a dataframe of unmatched header rows
     """
     unmatched_header = _get_unmatched_rows(
-        header, episodes, "CHILD", "CHILD", "header", "episodes"
+        header, episodes, "CHILD", "CHILD", "ssda903_header", "ssda903_episodes"
     )
 
     episodes_merged = episodes.merge(
@@ -111,7 +111,7 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> tuple[pd.DataF
     Merges data from 903 UASC dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched uasc rows
     """
-    unmatched_uasc = _get_unmatched_rows(uasc, episodes, "CHILD", "CHILD", "uasc", "episodes")
+    unmatched_uasc = _get_unmatched_rows(uasc, episodes, "CHILD", "CHILD", "ssda903_uasc", "ssda903_episodes")
 
     episodes_merged = episodes.merge(
         uasc[["CHILD", "DUC"]], on="CHILD", how="left"
@@ -145,7 +145,7 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> t
         .drop_duplicates(subset="CHILD", keep="first")
     )
 
-    unmatched_episodes = _get_unmatched_rows(latest_episodes, header, "CHILD", "CHILD", "episodes", "header")
+    unmatched_episodes = _get_unmatched_rows(latest_episodes, header, "CHILD", "CHILD", "ssda903_episodes", "ssda903_header")
 
     header_merged = header.merge(
         latest_episodes[["CHILD", "CIN"]], on="CHILD", how="left",
@@ -171,7 +171,7 @@ def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.
     Merges data from the latest 903 UASC dataframe onto 903 header dataframe
     Returns 903 header dataframe and a dataframe of unmatched uasc rows
     """
-    unmatched_uasc = _get_unmatched_rows(uasc, header, "CHILD", "CHILD", "uasc", "header")
+    unmatched_uasc = _get_unmatched_rows(uasc, header, "CHILD", "CHILD", "ssda903_uasc", "ssda903_header")
 
     header_merged = header.merge(
         uasc[["CHILD", "DUC"]], on="CHILD", how="left"
@@ -197,7 +197,7 @@ def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.Da
     Merges data from the latest 903 oc2 dataframe onto 903 header dataframe
     Returns 903 header dataframe and a dataframe of unmatched oc2 rows
     """
-    unmatched_oc2 = _get_unmatched_rows(oc2, header, "CHILD", "CHILD", "oc2", "header")
+    unmatched_oc2 = _get_unmatched_rows(oc2, header, "CHILD", "CHILD", "ssda903_oc2", "ssda903_header")
 
     header_merged = header.merge(
         oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
@@ -223,8 +223,6 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     Merges data from pnw census dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched pnw census rows
     """
-    unmatched_pnw = _get_unmatched_rows(pnw_census, episodes, "Identifier", "CHILD", "pnw_census", "episodes")
-
     # Join pnw_census onto episodes, keeping all children in episodes
     pnw_census_merged = episodes.merge(
         pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
@@ -236,6 +234,20 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     # Filter to only keep episodes open on day of snapshot
     pnw_census_merged = _filter_to_open_on_snapshot_date(
         pnw_census_merged, "DEC", "snapshot_date", "DECOM"
+    )
+
+    unmatched_pnw = _get_unmatched_rows(
+        pnw_census,
+        pnw_census_merged,
+        ["Identifier", "snapshot_date"],
+        ["Identifier", "snapshot_date"],
+        "pnw_census",
+        "ssda903_episodes",
+    )
+    unmatched_pnw["Matching Criteria"] = (
+        "pnw_census Identifier = ssda903_episodes CHILD, "
+        "ssda903_episodes DECOM < pnw_census snapshot_date "
+        "<= ssda903_episodes DEC"
     )
 
     # Merge the filtered PNW census data back onto the episodes dataframe
@@ -254,11 +266,11 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
 
 def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: pd.DataFrame, placements_standard_join_columns: list) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Merges data from placement standard dataframe onto 903 episodes dataframe
+    Merges data from placements standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched placements standard rows
     """
     unmatched_placements_standard = _get_unmatched_rows(
-        placements_standard, episodes, ["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "placements_standard", "episodes"
+        placements_standard, episodes, ["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "placements_standard", "ssda903_episodes"
     )
 
     episodes_merged = episodes.merge(
@@ -344,7 +356,7 @@ def join_latest_placements_standard_data(
     )
 
     unmatched_placements_standard = _get_unmatched_rows(
-        latest_placements_standard, header, "child_ID", "CHILD", "placements_standard", "header"
+        latest_placements_standard, header, "child_ID", "CHILD", "placements_standard", "ssda903_header"
     )
 
     header_merged = header.merge(

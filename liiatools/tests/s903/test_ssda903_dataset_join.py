@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
-=======
 import numpy as np
->>>>>>> Stashed changes
 import pandas as pd
 
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
@@ -37,7 +34,6 @@ def test_find_column():
 
 
 def test_describe_matching_criteria():
-<<<<<<< Updated upstream
     assert (
         _describe_matching_criteria(["CHILD"], ["CHILD"], "header", "episodes")
         == "header CHILD = episodes CHILD"
@@ -56,17 +52,6 @@ def test_describe_matching_criteria():
             "episodes",
         )
         == "placements_standard child_ID = episodes CHILD, placements_standard placement_start_date = episodes DECOM"
-=======
-    assert _describe_matching_criteria(["CHILD"], ["CHILD"]) == "CHILD"
-    assert _describe_matching_criteria(["child_ID"], ["CHILD"]) == "child_ID = CHILD"
-    assert (
-        _describe_matching_criteria(["CHILD", "DECOM"], ["CHILD", "DECOM"])
-        == "CHILD + DECOM"
-    )
-    assert (
-        _describe_matching_criteria(["CHILD", "CIN"], ["CHILD", "CIN_ID"])
-        == "CHILD + CIN = CIN_ID"
->>>>>>> Stashed changes
     )
 
 
@@ -82,7 +67,6 @@ def test_get_unmatched_rows_single_key():
     )
     target = pd.DataFrame({"CHILD": ["1", "2"]})
 
-<<<<<<< Updated upstream
     result = _get_unmatched_rows(
         source, target, "CHILD", "CHILD", "test_source_dataset", "test_target_dataset"
     )
@@ -93,30 +77,15 @@ def test_get_unmatched_rows_single_key():
         "Year",
         "Month",
         "LA",
-=======
-    result = _get_unmatched_rows(source, target, "CHILD", "CHILD", "test_dataset")
-
-    assert list(result.columns) == [
-        "Row Number",
-        "Year",
-        "Month",
-        "LA",
-        "Dataset",
->>>>>>> Stashed changes
         "Matching Criteria",
     ]
     assert len(result) == 1
     assert result["Row Number"].iloc[0] == 4
-<<<<<<< Updated upstream
     assert result["Dataset"].iloc[0] == "test_source_dataset"
     assert (
         result["Matching Criteria"].iloc[0]
         == "test_source_dataset CHILD = test_target_dataset CHILD"
     )
-=======
-    assert result["Dataset"].iloc[0] == "test_dataset"
-    assert result["Matching Criteria"].iloc[0] == "CHILD"
->>>>>>> Stashed changes
 
 
 def test_get_unmatched_rows_composite_key():
@@ -132,39 +101,26 @@ def test_get_unmatched_rows_composite_key():
     )
     target = pd.DataFrame(
         {
-<<<<<<< Updated upstream
             "child_ID": ["1", "2"],
             "placement_start_date": pd.to_datetime(["2024-01-01", "2024-06-01"]),
-=======
-            "CHILD": ["1", "2"],
-            "DECOM": pd.to_datetime(["2024-01-01", "2024-06-01"]),
->>>>>>> Stashed changes
         }
     )
 
     result = _get_unmatched_rows(
-<<<<<<< Updated upstream
         source,
         target,
         ["CHILD", "DECOM"],
         ["child_ID", "placement_start_date"],
         "episodes",
         "placements_standard",
-=======
-        source, target, ["CHILD", "DECOM"], ["CHILD", "DECOM"], "episodes"
->>>>>>> Stashed changes
     )
 
     assert len(result) == 2
     assert set(result["Row Number"]) == {3, 4}
-<<<<<<< Updated upstream
     assert (
         result["Matching Criteria"]
         == "episodes CHILD = placements_standard child_ID, episodes DECOM = placements_standard placement_start_date"
     ).all()
-=======
-    assert (result["Matching Criteria"] == "CHILD + DECOM").all()
->>>>>>> Stashed changes
 
 
 def test_get_unmatched_rows_handles_aliases_and_missing_columns():
@@ -179,13 +135,9 @@ def test_get_unmatched_rows_handles_aliases_and_missing_columns():
     )
     target = pd.DataFrame({"CHILD": ["1"]})
 
-<<<<<<< Updated upstream
     result = _get_unmatched_rows(
         source, target, "CHILD", "CHILD", "annual_dataset", "test_target_dataset"
     )
-=======
-    result = _get_unmatched_rows(source, target, "CHILD", "CHILD", "annual_dataset")
->>>>>>> Stashed changes
 
     assert len(result) == 1
     assert result["Row Number"].iloc[0] == 3
@@ -219,14 +171,10 @@ def test_join_header_data():
     assert episodes_merged["SEX"].tolist() == ["M", "M", "F"]
     assert len(unmatched_header) == 1
     assert unmatched_header["Row Number"].iloc[0] == 4
-    assert unmatched_header["Dataset"].iloc[0] == "header"
-<<<<<<< Updated upstream
+    assert unmatched_header["Dataset"].iloc[0] == "ssda903_header"
     assert (
-        unmatched_header["Matching Criteria"].iloc[0] == "header CHILD = episodes CHILD"
+        unmatched_header["Matching Criteria"].iloc[0] == "ssda903_header CHILD = ssda903_episodes CHILD"
     )
-=======
-    assert unmatched_header["Matching Criteria"].iloc[0] == "CHILD"
->>>>>>> Stashed changes
 
 
 def test_join_uasc_data():
@@ -318,13 +266,9 @@ def test_join_latest_oc2_data():
 
     assert len(header_merged) == 2
     assert header_merged.loc[header_merged["CHILD"] == "1", "SDQ_SCORE"].iloc[0] == 10
-<<<<<<< Updated upstream
     assert pd.isna(
         header_merged.loc[header_merged["CHILD"] == "2", "SDQ_SCORE"].iloc[0]
     )
-=======
-    assert pd.isna(header_merged.loc[header_merged["CHILD"] == "2", "SDQ_SCORE"].iloc[0])
->>>>>>> Stashed changes
     assert len(unmatched_oc2) == 1
     assert unmatched_oc2["Row Number"].iloc[0] == 3
 
@@ -332,7 +276,6 @@ def test_join_latest_oc2_data():
 def test_join_pnw_data():
     pnw_df = pd.DataFrame(
         {
-<<<<<<< Updated upstream
             "Identifier": ["1", "2", "5", "6"],
             "snapshot_date": pd.to_datetime(
                 ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31"]
@@ -342,30 +285,14 @@ def test_join_pnw_data():
             "Year": [2024, 2024, 2024, 2024],
             "Month": [12, 12, 12, 12],
             "LA": ["999", "999", "999", "999"],
-=======
-            "Identifier": ["1", "2", "5"],
-            "snapshot_date": pd.to_datetime(
-                ["2024-12-31", "2024-12-31", "2024-12-31"]
-            ),
-            "Placement type": ["Foster", "Resi", "Foster"],
-            "row_number": [2, 3, 4],
-            "Year": [2024, 2024, 2024],
-            "Month": [12, 12, 12],
-            "LA": ["999", "999", "999"],
->>>>>>> Stashed changes
         }
     )
     episodes_df = pd.DataFrame(
         {
-<<<<<<< Updated upstream
             "CHILD": ["1", "2", "6"],
+            "EPISODE_ID": ["1", "2", "3"],
             "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-01"]),
             "DEC": pd.to_datetime([None, None, "2024-11-30"]),
-=======
-            "CHILD": ["1", "2"],
-            "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01"]),
-            "DEC": pd.to_datetime([None, None]),
->>>>>>> Stashed changes
         }
     )
 
@@ -373,32 +300,22 @@ def test_join_pnw_data():
         pnw_df, episodes_df, ["Placement type"]
     )
 
-    assert len(episodes_merged) == 2
-    assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi"]
-<<<<<<< Updated upstream
+    assert len(episodes_merged) == 3
+    assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi", np.nan]
     assert len(unmatched_pnw) == 2
     assert unmatched_pnw["Row Number"].tolist() == [4, 5]
     assert unmatched_pnw["Dataset"].tolist() == ["pnw_census", "pnw_census"]
     assert unmatched_pnw["Matching Criteria"].tolist() == [
-        "pnw_census Identifier = episodes CHILD",
-        "episodes DECOM <= pnw_census snapshot_date <= episodes DEC",
+        "pnw_census Identifier = ssda903_episodes CHILD, ssda903_episodes DECOM < pnw_census snapshot_date <= ssda903_episodes DEC",
+        "pnw_census Identifier = ssda903_episodes CHILD, ssda903_episodes DECOM < pnw_census snapshot_date <= ssda903_episodes DEC",
     ]
-=======
-    assert len(unmatched_pnw) == 1
-    assert unmatched_pnw["Row Number"].iloc[0] == 4
-    assert unmatched_pnw["Dataset"].iloc[0] == "pnw_census"
-    assert unmatched_pnw["Matching Criteria"].iloc[0] == "Identifier = CHILD"
->>>>>>> Stashed changes
 
 
 def test_join_placements_standard_data():
     placements_standard_df = pd.DataFrame(
         {
             "child_ID": ["1", "6"],
-<<<<<<< Updated upstream
             "placement_start_date": pd.to_datetime(["2024-01-01", "2024-04-06"]),
-=======
->>>>>>> Stashed changes
             "placement_type_offers": ["Foster", "Resi"],
             "row_number": [2, 3],
             "Year": [2024, 2024],
@@ -406,20 +323,15 @@ def test_join_placements_standard_data():
             "LA": ["999", "999"],
         }
     )
-<<<<<<< Updated upstream
     episodes_df = pd.DataFrame(
         {"CHILD": ["1", "2"], "DECOM": pd.to_datetime(["2024-01-01", "2024-04-06"])}
     )
-=======
-    episodes_df = pd.DataFrame({"CHILD": ["1", "2"]})
->>>>>>> Stashed changes
 
     episodes_merged, unmatched_placements_standard = join_placements_standard_data(
         placements_standard_df, episodes_df, ["placement_type_offers"]
     )
 
     assert len(episodes_merged) == 2
-<<<<<<< Updated upstream
     assert episodes_merged.loc[episodes_merged["CHILD"] == "1", "DECOM"].iloc[
         0
     ] == pd.to_datetime("2024-01-01")
@@ -427,17 +339,8 @@ def test_join_placements_standard_data():
     assert unmatched_placements_standard["Row Number"].iloc[0] == 3
     assert (
         unmatched_placements_standard["Matching Criteria"].iloc[0]
-        == "placements_standard child_ID = episodes CHILD, placements_standard placement_start_date = episodes DECOM"
+        == "placements_standard child_ID = ssda903_episodes CHILD, placements_standard placement_start_date = ssda903_episodes DECOM"
     )
-=======
-    assert (
-        episodes_merged.loc[episodes_merged["CHILD"] == "1", "placement_type_offers"].iloc[0]
-        == "Foster"
-    )
-    assert len(unmatched_placements_standard) == 1
-    assert unmatched_placements_standard["Row Number"].iloc[0] == 3
-    assert unmatched_placements_standard["Matching Criteria"].iloc[0] == "child_ID = CHILD"
->>>>>>> Stashed changes
 
 
 def test_join_latest_cans_data():
@@ -454,37 +357,22 @@ def test_join_latest_cans_data():
     )
     header_df = pd.DataFrame({"CHILD": ["1", "2"]})
 
-<<<<<<< Updated upstream
     header_merged = join_latest_cans_data(cans_df, header_df, ["Assessment type"])
-=======
-    header_merged, unmatched_cans = join_latest_cans_data(
-        cans_df, header_df, ["Assessment type"]
-    )
->>>>>>> Stashed changes
 
     assert len(header_merged) == 2
     assert (
         header_merged.loc[header_merged["CHILD"] == "1", "Assessment type"].iloc[0]
         == "B"
     )
-<<<<<<< Updated upstream
-=======
-    assert len(unmatched_cans) == 1
-    assert unmatched_cans["Row Number"].iloc[0] == 4
->>>>>>> Stashed changes
 
 
 def test_join_latest_placements_standard_data():
     placements_standard_df = pd.DataFrame(
         {
             "child_ID": ["1", "1", "8"],
-<<<<<<< Updated upstream
             "placement_start_date": pd.to_datetime(
                 ["2024-01-01", "2024-06-01", "2024-01-01"]
             ),
-=======
-            "placement_start_date": ["2024-01-01", "2024-06-01", "2024-01-01"],
->>>>>>> Stashed changes
             "placement_type_offers": ["Foster", "Resi", "Solo"],
             "row_number": [2, 3, 4],
             "Year": [2024, 2024, 2024],
@@ -500,13 +388,9 @@ def test_join_latest_placements_standard_data():
 
     assert len(header_merged) == 2
     assert (
-<<<<<<< Updated upstream
         header_merged.loc[header_merged["CHILD"] == "1", "placement_type_offers"].iloc[
             0
         ]
-=======
-        header_merged.loc[header_merged["CHILD"] == "1", "placement_type_offers"].iloc[0]
->>>>>>> Stashed changes
         == "Resi"
     )
     assert len(unmatched_placements_standard) == 1

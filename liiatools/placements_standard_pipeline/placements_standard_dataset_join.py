@@ -11,7 +11,7 @@ def join_episodes_data(episodes: pd.DataFrame, placements_standard: pd.DataFrame
     Returns placements standard dataframe and unmatched placements dataframe
     """
     unmatched_placements = _get_unmatched_rows(
-            episodes, placements_standard, ["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "episodes", "placements_standard"
+            episodes, placements_standard, ["CHILD", "DECOM"], ["child_ID", "placement_start_date"], "ssda903_episodes", "placements_standard"
         )
     
     placements_standard_merged = placements_standard.merge(

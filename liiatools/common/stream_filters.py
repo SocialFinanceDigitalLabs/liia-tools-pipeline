@@ -385,15 +385,16 @@ def conform_cell_types(event, preserve_value=False):
 )
 def collect_cell_values_for_row(row):
     """
-    Collects the cell values for each row and set these as `column_spec` on the StartRow event.
+    Collects cell values and the original input row number into `row_values` on StartRow.
 
     Requires:
         * `table_spec` on Cell events to identify this column as part of the table
         * `header` on Cell events with the column key
         * `cell` on Cell events with the value
+        * Optional `row_number` on Cell events with the original input row number
 
     Provides:
-        * `row_values` on StartRow events with a dictionary of column values for the row
+        * `row_values` on StartRow events with column values and, when available, `row_number`
 
     Yields:
         * All the events
@@ -408,10 +409,16 @@ def collect_cell_values_for_row(row):
 
     # Where we have identified the column, set values on the start row
     values = {}
+    row_number = None
     for cell in row:
+        if row_number is None and isinstance(cell, events.Cell):
+            row_number = getattr(cell, "row_number", None)
         schema: Column = getattr(cell, "column_spec", None)
         if schema:
             values[cell.header] = cell.cell
+
+    if row_number is not None:
+        values["row_number"] = row_number
 
     # Yield events
     yield start_row.from_event(start_row, row_values=values)

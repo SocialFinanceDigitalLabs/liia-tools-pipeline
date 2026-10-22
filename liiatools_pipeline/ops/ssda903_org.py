@@ -716,7 +716,7 @@ def joins_pan_child(
 
     if "cans" in allowed_datasets:
         # Load CANS summary sheet column order, use 6-21 as it has superset of columns
-        cans_join_columns = ["Assessment Date", "Assessment type"] + load_summary_sheet_column_order()["6_21"]
+        cans_join_columns = ["Assessment Date", "Assessment Type"] + load_summary_sheet_column_order()["6_21"]
         # Check and process CANS files
         if any(pattern.search(f) for pattern in cans_patterns for f in files):
             child_cans = None
@@ -735,10 +735,7 @@ def joins_pan_child(
                 cans_data = pd.concat([child_cans, youth_cans], ignore_index=True)
             else:
                 cans_data = child_cans if child_cans is not None else youth_cans
-            header, unmatched_cans = join_latest_cans_data(cans_data, header, cans_join_columns)
-            unmatched_rows = pd.concat(
-                [unmatched_rows, unmatched_cans], ignore_index=True
-            )
+            header = join_latest_cans_data(cans_data, header, cans_join_columns)
 
         else:
             log.error("No CANS data to join")

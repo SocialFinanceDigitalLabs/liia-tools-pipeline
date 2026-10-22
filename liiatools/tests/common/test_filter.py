@@ -67,6 +67,33 @@ def test_collect_tables():
     ]
 
 
+def test_collect_row_preserves_original_row_numbers():
+    spec = Column(string="alphanumeric")
+    stream = [
+        events.StartTable(),
+        events.StartRow(table_name="header"),
+        events.Cell(header="OTHER", cell="ignored", row_number=4),
+        events.Cell(header="CHILD", cell="123", column_spec=spec),
+        events.EndRow(),
+        events.StartRow(table_name="header"),
+        events.Cell(header="CHILD", cell="456", column_spec=spec, row_number=9),
+        events.EndRow(),
+        events.EndTable(),
+    ]
+    cells = [event for event in stream if isinstance(event, events.Cell)]
+    stream = stream_filters.collect_cell_values_for_row(stream)
+    dataset, stream = stream_filters.collect_tables(stream)
+    output = list(stream)
+
+    assert dataset.value == {
+        "header": [
+            {"CHILD": "123", "row_number": 4},
+            {"CHILD": "456", "row_number": 9},
+        ]
+    }
+    assert [event for event in output if isinstance(event, events.Cell)] == cells
+
+
 def test_collect_tables_no_data_rows_adds_error():
     stream = [
         events.StartContainer(),
