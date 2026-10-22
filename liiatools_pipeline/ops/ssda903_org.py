@@ -404,7 +404,14 @@ def create_pan_commissioning_join_session_folder() -> FS:
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets:
-        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/PAN")
+        clean_config = CleanConfig(
+                        dataset_folder=None,
+                        la_folder=None,
+                        input_la_code=None,
+                        dataset="placements_standard",
+                    )
+        output_config = pipeline_config(clean_config)
+        placements_standard_reports_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
