@@ -14,7 +14,12 @@ from liiatools.common.pipeline import open_file
 from liiatools.placements_standard_pipeline.placements_standard_dataset_join import (
     join_episodes_data,
 )
-from liiatools_pipeline.assets.common import shared_folder, workspace_folder
+from liiatools_pipeline.assets.common import (
+    pipeline_config,
+    shared_folder,
+    workspace_folder,
+)
+from liiatools_pipeline.ops.common_config import CleanConfig
 from liiatools_pipeline.util.utility import opendir_location
 
 yaml = YAML()
@@ -39,7 +44,15 @@ def create_placements_standard_session_folder() -> FS:
 
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
-    current_folder = opendir_location(workspace_folder(), "current/placements_standard/PAN")
+    clean_config = CleanConfig(
+                    dataset_folder=None,
+                    la_folder=None,
+                    input_la_code=None,
+                    dataset="placements_standard",
+                )
+    output_config = pipeline_config(clean_config)
+    current_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
+
     pl.move_files_for_sharing(
         current_folder,
         session_folder,
