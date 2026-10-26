@@ -98,7 +98,6 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     for r_ix, row in enumerate(dataset):
         # Skip row if every cell is blank
         if all(cell is None or str(cell).strip() == "" for cell in row):
-            print(f"Skipping empty row at index {r_ix} (_tablib_)")
             continue
 
         yield events.StartRow()
@@ -125,7 +124,6 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
             or str(cell).strip() == ""
             for cell in row
         ):
-            print(f"Skipping empty row at index {r_ix} (pandas)")
             continue
 
         yield events.StartRow()
