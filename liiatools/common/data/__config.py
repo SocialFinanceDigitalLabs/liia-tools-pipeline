@@ -23,7 +23,6 @@ class TableConfig(BaseModel):
     id: str
     sheetname: Optional[str] = None
     retain: List[str] = []
-    deduplicate: Optional[bool] = True
     columns: List[ColumnConfig]
 
     def __getitem__(self, value) -> ColumnConfig:
