@@ -243,19 +243,6 @@ def add_table_name_from_headers(event, schema: DataSchema):
                 message=f"Could not identify headers as first row is blank",
             )
 
-        # Duplicate headers
-        lower_headers = [header.lower() for header in headers if header]
-        duplicate_headers = {
-            header for header in lower_headers if lower_headers.count(header) > 1
-        }
-        if duplicate_headers:
-            for header in duplicate_headers:
-                event = EventErrors.add_to_event(
-                    event,
-                    type="HeaderError",
-                    message=f"Duplicate headers found: {header}",
-                )
-            return event
         try:
             table_name = schema.get_table_from_headers(event.headers)
         except ValueError as e:
