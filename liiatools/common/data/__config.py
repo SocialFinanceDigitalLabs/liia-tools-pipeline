@@ -23,6 +23,7 @@ class TableConfig(BaseModel):
     id: str
     sheetname: Optional[str] = None
     retain: List[str] = []
+    deduplicate: Optional[bool] = True
     columns: List[ColumnConfig]
 
     def __getitem__(self, value) -> ColumnConfig:
@@ -41,15 +42,19 @@ class TableConfig(BaseModel):
         return [(col_id, asc) for col_id, asc, _ in sort_tuples]
 
     def columns_for_profile(self, profile: str | list[str]) -> List[ColumnConfig]:
-        '''
+        """
         If a profile is passed, keep columns that don't mention this profile in "exclude"
         If a list of profiles is passed, keep columns that aren't excluded for all these profiles
         If an empty list of profiles is passed, all cols will be dropped
-        '''
+        """
         if isinstance(profile, str):
             return [c for c in self.columns if profile not in c.exclude]
         elif isinstance(profile, list):
-            return [c for c in self.columns if not set(getattr(c, "exclude", [])).issuperset(set(profile))]
+            return [
+                c
+                for c in self.columns
+                if not set(getattr(c, "exclude", [])).issuperset(set(profile))
+            ]
         raise TypeError
 
 
@@ -70,10 +75,10 @@ class PipelineConfig(BaseModel):
         return ix[value]
 
     def tables_for_profile(self, profile: str | list[str]) -> List[TableConfig]:
-        '''
+        """
         If a single profile is passed, tables that match this profile in the retain options will be kept
         If a list of profiles is passed, any intersection between the list and retain will mean a table is kept
-        '''
+        """
         if isinstance(profile, str):
             return [t for t in self.table_list if profile in t.retain]
         elif isinstance(profile, list):
