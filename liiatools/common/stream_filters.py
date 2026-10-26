@@ -96,6 +96,11 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
+        # Skip row if every cell is blank
+        if all(cell is None or str(cell).strip() == "" for cell in row):
+            print(f"Skipping empty row at index {r_ix} (_tablib_)")
+            continue
+
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
             yield events.Cell(
@@ -114,6 +119,15 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.columns.tolist())
     for r_ix, row in enumerate(dataset.itertuples(index=False)):
+        if all(
+            cell is None
+            or (isinstance(cell, float) and np.isnan(cell))
+            or str(cell).strip() == ""
+            for cell in row
+        ):
+            print(f"Skipping empty row at index {r_ix} (pandas)")
+            continue
+
         yield events.StartRow()
         for c_ix, cell in enumerate(row[0:]):
             if isinstance(cell, float):

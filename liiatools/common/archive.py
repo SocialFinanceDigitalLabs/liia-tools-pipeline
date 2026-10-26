@@ -217,6 +217,14 @@ class DataframeArchive:
         errors = ErrorContainer()
 
         for table_spec in self.config.table_list:
+            # if self.dataset == "ssda903" and table_spec.id == "missing":
+            #     print(f"Skipping table: {table_spec.id} for dataset: {self.dataset}")
+            #     continue
+            if not table_spec.deduplicate:
+                print(
+                    f"(archive) Skipping table: {table_spec.id} for dataset: {self.dataset}"
+                )
+                continue
             if table_spec.id in data:
                 sort_tuples = table_spec.sort_keys
 
@@ -227,6 +235,8 @@ class DataframeArchive:
                     df = df.sort_values(by=by, ascending=asc)
 
                 subset = [c.id for c in table_spec.columns if c.unique_key]
+                if table_spec.id == "missing":
+                    print(f"(archive) subset for {table_spec.id}: {subset}")
                 duplicate_mask = df.duplicated(
                     subset=subset if subset else None,
                     keep="first",
@@ -256,6 +266,7 @@ class DataframeArchive:
                                 table_name=table_spec.id,
                             )
                         )
+
                 data[table_spec.id] = df
 
         return ProcessResult(data=data, errors=errors)
