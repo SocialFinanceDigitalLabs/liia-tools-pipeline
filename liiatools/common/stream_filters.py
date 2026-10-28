@@ -118,12 +118,8 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.columns.tolist())
     for r_ix, row in enumerate(dataset.itertuples(index=False)):
-        if all(
-            cell is None
-            or (isinstance(cell, float) and np.isnan(cell))
-            or str(cell).strip() == ""
-            for cell in row
-        ):
+        # Skip row if every cell is blank
+        if all(pd.isna(cell) or str(cell).strip() == "" for cell in row):
             continue
 
         yield events.StartRow()
