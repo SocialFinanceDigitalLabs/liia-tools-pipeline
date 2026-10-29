@@ -44,9 +44,9 @@ def _filter_to_open_on_snapshot_date(
     - One opened on the snapshot date
     """
     df = df.copy()
-    df[episode_start] = pd.to_datetime(df[episode_start], errors="coerce")
-    df[snapshot_date] = pd.to_datetime(df[snapshot_date], errors="coerce")
-    df[episode_end] = pd.to_datetime(df[episode_end], errors="coerce")
+    df[episode_start] = pd.to_datetime(df[episode_start], errors="coerce", dayfirst=True)
+    df[snapshot_date] = pd.to_datetime(df[snapshot_date], errors="coerce", dayfirst=True)
+    df[episode_end] = pd.to_datetime(df[episode_end], errors="coerce", dayfirst=True)
 
     filtered_df = df[
         ((df[episode_end].isna()) | (df[episode_end] >= df[snapshot_date]))
