@@ -236,13 +236,13 @@ def add_table_name_from_headers(event, schema: DataSchema):
         duplicate_headers = {
             header for header in lower_headers if lower_headers.count(header) > 1
         }
+
         if duplicate_headers:
-            for header in duplicate_headers:
-                event = EventErrors.add_to_event(
-                    event,
-                    type="HeaderError",
-                    message=f"Duplicate headers found: {header}",
-                )
+            event = EventErrors.add_to_event(
+                event,
+                type="HeaderError",
+                message=f"File not processed due to duplicate headers. Affected headers: {list(duplicate_headers)}",
+            )
             return event
         try:
             table_name = schema.get_table_from_headers(event.headers)
