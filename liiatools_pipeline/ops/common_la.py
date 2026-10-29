@@ -151,7 +151,7 @@ def process_files(
                 error_report.append(
                     dict(
                         type="MissingYear",
-                        message=f"Could not find a year in the filename or path for {basename(file_locator.name)}",
+                        message=f"Could not find a year in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
