@@ -1,9 +1,8 @@
-from os.path import basename, relpath
+from os.path import basename
 from typing import List, Tuple
 
 import fs.errors
 from dagster import In, Out, get_dagster_logger, op
-from decouple import config as env_config
 from fs import open_fs
 from fs.base import FS
 
@@ -151,7 +150,7 @@ def process_files(
                 error_report.append(
                     dict(
                         type="MissingYear",
-                        message=f"Could not find a year in the filename or path for {basename(file_locator.name)}",
+                        message="Could not find a year in the filename or path",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
@@ -168,25 +167,11 @@ def process_files(
                 error_report.append(
                     dict(
                         type="RetentionPeriod",
-                        message="This file is not within the year ranges of data retention policy so will be deleted from the input folder",
+                        message="This file is not within the year ranges of data retention policy",
                         filename=file_locator.name,
                         uuid=uuid,
                     )
                 )
-
-                # Delete files that are not in retention period
-                input_location = env_config("INPUT_LOCATION", cast=str)
-                incoming_folder = open_fs(input_location)
-                incoming_file_path = relpath(file_locator.name, input_location)
-
-                log.info(f"About to remove: {file_locator.name}")
-
-                # check if other file types are allowed
-                pl.remove_files(
-                    r".*\.(csv|xlsx)$", [incoming_file_path], incoming_folder
-                )
-                log.info(f"Removed {basename(file_locator.name)} from incoming folder")
-
                 continue
             log.info(
                 f"Year in {la_name} {basename(str(file_locator.name))} is within retention period"
