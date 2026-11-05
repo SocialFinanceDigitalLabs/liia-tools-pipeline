@@ -322,6 +322,16 @@ def process_files(
                 f"Cleanfile task completed for {la_name} {basename(str(file_locator.name))}"
             )
 
+            header_errors = {"UnidentifiedTable", "BlankHeaders", "HeaderError"}
+            if cleanfile_result.errors and all(
+                error["type"] in header_errors for error in cleanfile_result.errors
+            ):
+                error_report.extend(cleanfile_result.errors)
+                log.info(
+                    f"No tables identified for {la_name} {basename(file_locator.name)}. Skipping enrichment, degradation and export."
+                )
+                continue
+
             cleanfile_result.data = prepare_export(
                 cleanfile_result.data, output_config, la_profiles
             )
