@@ -5,7 +5,7 @@ from liiatools.common import pipeline as pl
 from liiatools.common.aggregate import DataframeAggregator
 from liiatools.common.constants import SessionNamesOrg
 from liiatools.common.reference import authorities
-from liiatools.common.transform import apply_retention, prepare_export, degrade_data
+from liiatools.common.transform import apply_retention, degrade_data, prepare_export
 from liiatools_pipeline.assets.common import (
     incoming_folder,
     pipeline_config,
@@ -110,9 +110,7 @@ def create_reports(
     )
     log.info("Aggregating Data Frames...")
     output_config = pipeline_config(config)
-    aggregate = DataframeAggregator(
-        session_folder, output_config, config.dataset
-    )
+    aggregate = DataframeAggregator(session_folder, output_config, config.dataset)
     aggregate_data = aggregate.current()
     log.debug(f"Using config: {config}")
     signed_reports = []
@@ -127,17 +125,18 @@ def create_reports(
     for report in signed_reports:
         log.info(f"Processing report {report}...")
         report_folder = export_folder.makedirs(report, recreate=True)
-        
+
         # Evaluate whether to degrade report contents
-        degrade_flag = any(not v for v in output_config.degrade_at_clean.values()) and output_config.degrade_at_clean[report]
+        degrade_flag = (
+            any(not v for v in output_config.degrade_at_clean.values())
+            and output_config.degrade_at_clean[report]
+        )
         if degrade_flag:
             log.info(f"Degrading report {report}...")
             degraded_data = degrade_data(aggregate_data, output_config)
             aggregate_data = degraded_data.data
 
-        report_data = prepare_export(
-            aggregate_data, output_config, profile=report
-        )
+        report_data = prepare_export(aggregate_data, output_config, profile=report)
         log.info(f"Applying retention to {report}...")
         report_data = apply_retention(
             report_data,
@@ -146,6 +145,10 @@ def create_reports(
             year_column=output_config.retention_columns["year_column"],
             la_column=output_config.retention_columns["la_column"],
         )
+
+        if all(df.empty for df in report_data.values()):
+            log.info(f"No data to export for report {report}")
+            continue
 
         existing_report_files = report_folder.listdir("/")
         pl.remove_files(f"{config.dataset}", existing_report_files, report_folder)
@@ -159,4 +162,9 @@ def create_reports(
             pl.remove_files(
                 f"{report}_{config.dataset}", existing_shared_files, shared_folder()
             )
-            report_data.export(shared_folder(), f"{report}_{config.dataset}_", "csv", max_file_size_mb=50)
+            report_data.export(
+                shared_folder(),
+                f"{report}_{config.dataset}_",
+                "csv",
+                max_file_size_mb=50,
+            )
