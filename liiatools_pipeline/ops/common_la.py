@@ -322,6 +322,7 @@ def process_files(
                 f"Cleanfile task completed for {la_name} {basename(str(file_locator.name))}"
             )
 
+            # Skip enrichment, degradation and export when no tables were identified.
             header_errors = {"UnidentifiedTable", "BlankHeaders", "HeaderError"}
             if cleanfile_result.errors and all(
                 error["type"] in header_errors for error in cleanfile_result.errors
