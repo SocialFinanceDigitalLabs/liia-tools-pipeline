@@ -83,6 +83,14 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
         how="left"
     )
 
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with PNW Census results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
     # Log number of joins made
     joins = pnw_census_merged["snapshot_date"].count()
     log.info(f"{joins} joins made from PNW Census file")
@@ -95,6 +103,11 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Merges data from placement standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe
     """
+
+    # Make sure dates are datetime
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x, dayfirst=True).dt.date)
+
     episodes_merged = episodes.merge(
         placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
         left_on=["CHILD", "DECOM"],

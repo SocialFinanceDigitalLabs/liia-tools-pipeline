@@ -167,7 +167,7 @@ def create_dim_fact_tables(
         "session_folder": Out(FS),
     }
 )
-def create_pan_sufficiency_join_session_folder() -> FS:
+def create_cdm_sufficiency_join_session_folder() -> FS:
     log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesPanSufficiencyJoins
@@ -208,7 +208,7 @@ def create_pan_sufficiency_join_session_folder() -> FS:
         "session_folder": In(FS),
     },
 )
-def joins_pan_sufficiency(
+def joins_cdm_sufficiency(
     session_folder: FS,
 ):
     log.info("Checking necessary files are present...")
@@ -227,9 +227,9 @@ def joins_pan_sufficiency(
 
     files = session_folder.listdir("/")
 
-    log.info("Removing existing PAN_SUFFICIENCY file from the shared folder before processing a new one")
-    existing_pan_sufficiency_files = shared_folder().listdir("/")
-    pl.remove_files("PAN_SUFFICIENCY", existing_pan_sufficiency_files, shared_folder())
+    log.info("Removing existing CDM_SUFFICIENCY file from the shared folder before processing a new one")
+    existing_cdm_sufficiency_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_SUFFICIENCY", existing_cdm_sufficiency_files, shared_folder())
 
     episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
 
@@ -370,6 +370,6 @@ def joins_pan_sufficiency(
                 episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
-    episodes_dc = DataContainer({"PAN_SUFFICIENCY": episodes})
+    episodes_dc = DataContainer({"CDM_SUFFICIENCY": episodes})
     log.info("Writing joined episodes output to shared folder")
     episodes_dc.export(shared_folder(), "", "csv")

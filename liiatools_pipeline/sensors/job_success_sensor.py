@@ -32,7 +32,7 @@ from liiatools_pipeline.jobs.school_census_org import (
 )
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import (
-    ssda903_pan_sufficiency_joins,
+    cdm_sufficiency_joins,
     ssda903_sufficiency,
 )
 from liiatools_pipeline.ops.common_config import CleanConfig
@@ -585,13 +585,34 @@ def sc_region_reports_sensor(context):
         )
 
 
+def _get_latest_run_id_if_sensor_enabled(run_records, dataset, sensor_trigger_config_name):
+    """
+    Get the latest run ID for a dataset if the corresponding sensor is enabled in config.
+    :param run_records: List of run records to search through
+    :param dataset: Dataset name to search for
+    :param sensor_trigger_config_name: Sensor trigger config key
+    :returns: Latest run ID if sensor is enabled, None otherwise
+    """
+    clean_config = CleanConfig(
+        dataset_folder=None,
+        la_folder=None,
+        input_la_code=None,
+        dataset=dataset,
+    )
+    sensor_trigger = pipeline_config(clean_config).sensor_trigger[sensor_trigger_config_name]
+    
+    if sensor_trigger:
+        return find_previous_matching_dataset_run(run_records, dataset)
+    return None
+
+
 @sensor(
-    job=ssda903_pan_sufficiency_joins,
-    description="Runs ssda903_pan_sufficiency_joins job once reports job is complete",
+    job=cdm_sufficiency_joins,
+    description="Runs cdm_sufficiency_joins job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
-def ssda903_pan_sufficiency_joins_sensor(context):
+def cdm_sufficiency_joins_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
@@ -603,20 +624,14 @@ def ssda903_pan_sufficiency_joins_sensor(context):
         limit=1000,
     )
 
-    # Get the most recent ssda903, placements_standard & pnw_census run ids
-    latest_run_id_ssda903 = find_previous_matching_dataset_run(
-        run_records,
-        "ssda903",
+    # Get the most recent ssda903, placements_standard & pnw_census run ids if sensor is enabled for them
+    latest_run_id_ssda903 = _get_latest_run_id_if_sensor_enabled(run_records, "ssda903", "cdm_sufficiency_joins_sensor")
+    latest_run_id_pnw = _get_latest_run_id_if_sensor_enabled(run_records, "pnw_census", "cdm_sufficiency_joins_sensor")
+    latest_run_id_placements_standard = _get_latest_run_id_if_sensor_enabled(
+        run_records, "placements_standard", "cdm_sufficiency_joins_sensor"
     )
-    latest_run_id_pnw = find_previous_matching_dataset_run(
-        run_records,
-        "pnw_census",
-    )
-    latest_run_id_placements_standard = find_previous_matching_dataset_run(
-        run_records,
-        "placements_standard",
-    )
-    # Ensure there is at least one of each record
+
+    # Ensure there is at least one ssda903 run and at least one run for either pnw_census or placements_standard
     if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
         run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
         context.log.info(f"Run key: {run_key}")

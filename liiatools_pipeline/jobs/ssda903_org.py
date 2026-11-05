@@ -13,8 +13,8 @@ def ssda903_sufficiency():
     ssda903.create_dim_fact_tables(session_folder)
 
 @job
-def ssda903_pan_sufficiency_joins():
+def cdm_sufficiency_joins():
     log.info("Joining additional datasets with SSDA903...")
-    session_folder = ssda903.create_pan_sufficiency_join_session_folder()
-    ssda903.joins_pan_sufficiency(session_folder)
+    session_folder = ssda903.create_cdm_sufficiency_join_session_folder()
+    ssda903.joins_cdm_sufficiency(session_folder)
 
