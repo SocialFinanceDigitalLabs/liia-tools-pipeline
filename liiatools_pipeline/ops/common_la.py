@@ -324,8 +324,12 @@ def process_files(
 
             # Skip enrichment and degradation when no tables were identified.
             header_errors = {"UnidentifiedTable", "BlankHeaders", "HeaderError"}
-            if cleanfile_result.errors and all(
-                error["type"] in header_errors for error in cleanfile_result.errors
+            if (
+                not cleanfile_result.data
+                and cleanfile_result.errors
+                and all(
+                    error["type"] in header_errors for error in cleanfile_result.errors
+                )
             ):
                 error_report.extend(cleanfile_result.errors)
                 log.info(
