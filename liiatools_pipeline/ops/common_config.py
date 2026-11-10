@@ -10,3 +10,7 @@ class CleanConfig(Config):
 
 class ReportsConfig(Config):
     dataset: str
+
+
+class CdmConfig(Config):
+    datasets: list[str]

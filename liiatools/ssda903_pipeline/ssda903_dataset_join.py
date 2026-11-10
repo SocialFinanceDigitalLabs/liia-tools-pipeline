@@ -106,7 +106,7 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
 
     # Make sure dates are datetime
     placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
-    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x, dayfirst=True).dt.date)
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"], dayfirst=True).dt.date
 
     episodes_merged = episodes.merge(
         placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],

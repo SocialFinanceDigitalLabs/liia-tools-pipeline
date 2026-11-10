@@ -35,7 +35,7 @@ from liiatools_pipeline.jobs.ssda903_org import (
     cdm_sufficiency_joins,
     ssda903_sufficiency,
 )
-from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.ops.common_config import CdmConfig, CleanConfig
 from liiatools_pipeline.sensors.location_schedule import (
     check_la,
     input_directory_walker,
@@ -585,25 +585,29 @@ def sc_region_reports_sensor(context):
         )
 
 
-def _get_latest_run_id_if_sensor_enabled(run_records, dataset, sensor_trigger_config_name):
+def _create_cdm_config(datasets, sensor_trigger_config_name):
     """
-    Get the latest run ID for a dataset if the corresponding sensor is enabled in config.
-    :param run_records: List of run records to search through
-    :param dataset: Dataset name to search for
+    Create a list of datasets for which the corresponding sensor is enabled in config.
+    :param datasets: List of dataset names to check
     :param sensor_trigger_config_name: Sensor trigger config key
-    :returns: Latest run ID if sensor is enabled, None otherwise
+    :returns: List of approved datasets for which the sensor is enabled
     """
-    clean_config = CleanConfig(
-        dataset_folder=None,
-        la_folder=None,
-        input_la_code=None,
-        dataset=dataset,
-    )
-    sensor_trigger = pipeline_config(clean_config).sensor_trigger[sensor_trigger_config_name]
-    
-    if sensor_trigger:
-        return find_previous_matching_dataset_run(run_records, dataset)
-    return None
+    approved_datasets = []
+
+    for dataset in datasets:
+        clean_config = CleanConfig(
+            dataset_folder=None,
+            la_folder=None,
+            input_la_code=None,
+            dataset=dataset,
+        )
+        sensor_trigger = pipeline_config(clean_config).sensor_trigger.get(sensor_trigger_config_name)
+        if sensor_trigger:
+            approved_datasets.append(dataset)
+
+    cdm_config = CdmConfig(datasets=approved_datasets)
+
+    return cdm_config
 
 
 @sensor(
@@ -624,12 +628,21 @@ def cdm_sufficiency_joins_sensor(context):
         limit=1000,
     )
 
-    # Get the most recent ssda903, placements_standard & pnw_census run ids if sensor is enabled for them
-    latest_run_id_ssda903 = _get_latest_run_id_if_sensor_enabled(run_records, "ssda903", "cdm_sufficiency_joins_sensor")
-    latest_run_id_pnw = _get_latest_run_id_if_sensor_enabled(run_records, "pnw_census", "cdm_sufficiency_joins_sensor")
-    latest_run_id_placements_standard = _get_latest_run_id_if_sensor_enabled(
-        run_records, "placements_standard", "cdm_sufficiency_joins_sensor"
+    # Get the most recent ssda903, placements_standard & pnw_census run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
     )
+    latest_run_id_pnw = find_previous_matching_dataset_run(
+        run_records,
+        "pnw_census",
+    )
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        run_records,
+        "placements_standard",
+    )
+
+    cdm_config = _create_cdm_config(["ssda903", "pnw_census", "placements_standard"], "cdm_sufficiency_joins_sensor")
 
     # Ensure there is at least one ssda903 run and at least one run for either pnw_census or placements_standard
     if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
@@ -637,4 +650,10 @@ def cdm_sufficiency_joins_sensor(context):
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_sufficiency_join_session_folder": cdm_config,
+                    "joins_cdm_sufficiency": cdm_config,
+                }
+            ),
         )
