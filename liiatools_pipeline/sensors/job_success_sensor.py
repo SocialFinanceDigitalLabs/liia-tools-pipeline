@@ -36,10 +36,10 @@ from liiatools_pipeline.jobs.school_census_org import (
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import (
     ssda903_pan_commissioning_joins,
-    ssda903_pan_sufficiency_joins,
+    cdm_sufficiency_joins,
     ssda903_sufficiency,
 )
-from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.ops.common_config import CdmConfig, CleanConfig
 from liiatools_pipeline.sensors.location_schedule import (
     check_la,
     input_directory_walker,
@@ -589,13 +589,38 @@ def sc_region_reports_sensor(context):
         )
 
 
+def _create_cdm_config(datasets, sensor_trigger_config_name):
+    """
+    Create a list of datasets for which the corresponding sensor is enabled in config.
+    :param datasets: List of dataset names to check
+    :param sensor_trigger_config_name: Sensor trigger config key
+    :returns: List of approved datasets for which the sensor is enabled
+    """
+    approved_datasets = []
+
+    for dataset in datasets:
+        clean_config = CleanConfig(
+            dataset_folder=None,
+            la_folder=None,
+            input_la_code=None,
+            dataset=dataset,
+        )
+        sensor_trigger = pipeline_config(clean_config).sensor_trigger.get(sensor_trigger_config_name)
+        if sensor_trigger:
+            approved_datasets.append(dataset)
+
+    cdm_config = CdmConfig(datasets=approved_datasets)
+
+    return cdm_config
+
+
 @sensor(
-    job=ssda903_pan_sufficiency_joins,
-    description="Runs ssda903_pan_sufficiency_joins job once reports job is complete",
+    job=cdm_sufficiency_joins,
+    description="Runs cdm_sufficiency_joins job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
-def ssda903_pan_sufficiency_joins_sensor(context):
+def cdm_sufficiency_joins_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
@@ -620,12 +645,21 @@ def ssda903_pan_sufficiency_joins_sensor(context):
         run_records,
         "placements_standard",
     )
-    # Ensure there is at least one of each record
+
+    cdm_config = _create_cdm_config(["ssda903", "pnw_census", "placements_standard"], "cdm_sufficiency_joins_sensor")
+
+    # Ensure there is at least one ssda903 run and at least one run for either pnw_census or placements_standard
     if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
         run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_sufficiency_join_session_folder": cdm_config,
+                    "joins_cdm_sufficiency": cdm_config,
+                }
+            ),
         )
 
 
