@@ -19,17 +19,27 @@ from liiatools_pipeline.jobs.common_la import (
     no_op_job,
     start_clean_dataset,
 )
-from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
     move_error_reports,
     reports,
 )
-from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
+from liiatools_pipeline.jobs.pnw_census_org import (
+    pnw_census_joins,
+    transform_pan_pnw_census_data,
+)
+from liiatools_pipeline.jobs.school_census_org import (
+    school_census_cross,
+    school_census_region,
+)
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
-from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.jobs.ssda903_org import (
+    cdm_commissioning_joins,
+    cdm_sufficiency_joins,
+    ssda903_sufficiency,
+)
+from liiatools_pipeline.ops.common_config import CdmConfig, CleanConfig
 from liiatools_pipeline.sensors.location_schedule import (
     check_la,
     input_directory_walker,
@@ -577,4 +587,159 @@ def sc_region_reports_sensor(context):
         yield RunRequest(
             run_key=latest_run_id,
         )
-        
+
+
+def _create_cdm_config(datasets, sensor_trigger_config_name):
+    """
+    Create a list of datasets for which the corresponding sensor is enabled in config.
+    :param datasets: List of dataset names to check
+    :param sensor_trigger_config_name: Sensor trigger config key
+    :returns: List of approved datasets for which the sensor is enabled
+    """
+    approved_datasets = []
+
+    for dataset in datasets:
+        clean_config = CleanConfig(
+            dataset_folder=None,
+            la_folder=None,
+            input_la_code=None,
+            dataset=dataset,
+        )
+        sensor_trigger = pipeline_config(clean_config).sensor_trigger.get(sensor_trigger_config_name)
+        if sensor_trigger:
+            approved_datasets.append(dataset)
+
+    cdm_config = CdmConfig(datasets=approved_datasets)
+
+    return cdm_config
+
+
+@sensor(
+    job=cdm_sufficiency_joins,
+    description="Runs cdm_sufficiency_joins job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cdm_sufficiency_joins_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["ssda903", "pnw_census", "placements_standard"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903, placements_standard & pnw_census run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        run_records,
+        "ssda903",
+    )
+    latest_run_id_pnw = find_previous_matching_dataset_run(
+        run_records,
+        "pnw_census",
+    )
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        run_records,
+        "placements_standard",
+    )
+
+    cdm_config = _create_cdm_config(["ssda903", "pnw_census", "placements_standard"], "cdm_sufficiency_joins_sensor")
+
+    # Ensure there is at least one ssda903 run and at least one run for either pnw_census or placements_standard
+    if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_sufficiency_join_session_folder": cdm_config,
+                    "joins_cdm_sufficiency": cdm_config,
+                }
+            ),
+        )
+
+
+@sensor(
+    job=transform_pan_pnw_census_data,
+    description="Runs transform_pan_pnw_census_data job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def transform_pan_pnw_census_data_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "pnw_census"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info("Run records found for PNW Census reports job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
+
+
+@sensor(
+    job=cdm_commissioning_joins,
+    description="Runs cdm_commissioning_joins job once reports job and/or transform_pan_pnw_census_data job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cdm_commissioning_joins_sensor(context):
+    reports_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["ssda903", "placements_standard"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    pnw_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=transform_pan_pnw_census_data.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903, placements_standard & pnw_census run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        reports_run_records,
+        "ssda903",
+    )
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        reports_run_records,
+        "placements_standard",
+    )
+    latest_run_id_pnw = pnw_run_records[0].dagster_run.run_id if pnw_run_records else None
+
+    cdm_config = _create_cdm_config(["ssda903", "pnw_census", "placements_standard"], "cdm_commissioning_joins_sensor")
+
+    # Ensure there is at least one of each record
+    if (latest_run_id_pnw or latest_run_id_placements_standard) and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_pnw}_{latest_run_id_placements_standard}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_commissioning_join_session_folder": cdm_config,
+                    "joins_cdm_commissioning": cdm_config,
+                }
+            ),
+        )
