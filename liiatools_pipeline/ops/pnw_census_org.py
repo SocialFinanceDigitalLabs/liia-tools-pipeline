@@ -312,9 +312,9 @@ def transform_pnw_census_data(
         except TypeError as err:
             log.error(f"Transforming PNW census data failed: {err}")
 
-        data = DataContainer({"PAN_CDM_pnw_census": vertical_pnw_census})
+        data = DataContainer({"CDM_pnw_census": vertical_pnw_census})
 
-        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN_CDM", recreate=True)
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
         existing_report_files = pnw_census_reports_folder.listdir("/")
         pl.remove_files("pnw_census", existing_report_files, pnw_census_reports_folder)
 

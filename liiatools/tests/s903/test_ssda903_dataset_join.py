@@ -182,7 +182,7 @@ def test_join_placements_standard_data():
     assert len(episodes_merged) == 2
     assert episodes_merged.loc[episodes_merged["CHILD"] == "1", "DECOM"].iloc[
         0
-    ] == pd.to_datetime("2024-01-01")
+    ] == pd.to_datetime("2024-01-01").date()
 
 
 def test_join_latest_cans_data():
