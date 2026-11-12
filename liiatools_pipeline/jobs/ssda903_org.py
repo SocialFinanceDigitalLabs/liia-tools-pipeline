@@ -28,7 +28,7 @@ def cdm_commissioning_joins():
 
 
 @job
-def ssda903_pan_child_joins():
+def cdm_child_joins():
     log.info("Joining additional datasets with SSDA903...")
-    session_folder = ssda903.create_pan_child_join_session_folder()
-    ssda903.joins_pan_child(session_folder)
+    session_folder = ssda903.create_cdm_child_join_session_folder()
+    ssda903.joins_cdm_child(session_folder)

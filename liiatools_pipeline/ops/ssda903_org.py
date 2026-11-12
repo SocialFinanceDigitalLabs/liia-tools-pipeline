@@ -548,7 +548,7 @@ def joins_cdm_commissioning(
         "session_folder": Out(FS),
     }
 )
-def create_pan_child_join_session_folder() -> FS:
+def create_cdm_child_join_session_folder(config: CdmConfig) -> FS:
     log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesPanChildJoins
@@ -559,18 +559,19 @@ def create_pan_child_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanChildJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
-    pl.move_files_for_sharing(
-        ssda903_reports_folder,
-        session_folder,
-        required_table_id=["header", "episodes", "uasc", "oc2"],
-        )
+    if "ssda903" in config.datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["header", "episodes", "uasc", "oc2"],
+            )
 
-    if "cans" in allowed_datasets:
-        cans_reports_folder = opendir_location(workspace_folder(), "current/cans/ENRICHED")
+    if "cans" in allowed_datasets and "cans" in config.datasets:
+        cans_reports_folder = workspace_folder().makedirs("current/cans/ENRICHED", recreate=True)
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
-    if "placements_standard" in allowed_datasets:
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
         clean_config = CleanConfig(
                         dataset_folder=None,
                         la_folder=None,
@@ -589,8 +590,9 @@ def create_pan_child_join_session_folder() -> FS:
         "session_folder": In(FS),
     },
 )
-def joins_pan_child(
+def joins_cdm_child(
     session_folder: FS,
+    config: CdmConfig
 ):
     log.info("Checking necessary files are present...")
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -610,9 +612,13 @@ def joins_pan_child(
 
     files = session_folder.listdir("/")
 
-    log.info("Removing existing PAN_CHILD file from the shared folder before processing a new one")
-    existing_pan_child_files = shared_folder().listdir("/")
-    pl.remove_files("PAN_CHILD", existing_pan_child_files, shared_folder())
+    log.info("Removing existing CDM_CHILD file from the shared folder before processing a new one")
+    existing_cdm_child_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_CHILD", existing_cdm_child_files, shared_folder())
+
+    if "ssda903" not in config.datasets:
+        log.error("SSDA903 dataset not included in CDM config")
+        return
     
     header_file = next((f for f in files if header_pattern.search(f)), None)
 
@@ -680,7 +686,7 @@ def joins_pan_child(
         for col in empty_oc2_cols:
             header[col] = None
 
-    if "cans" in allowed_datasets:
+    if "cans" in allowed_datasets and "cans" in config.datasets:
         # Load CANS summary sheet column order, use 6-21 as it has superset of columns
         cans_join_columns = ["Assessment Date", "Assessment type"] + load_summary_sheet_column_order()["6_21"]
         # Check and process CANS files
@@ -708,7 +714,7 @@ def joins_pan_child(
             for col in cans_join_columns:
                 header[col] = None
 
-    if "placements_standard" in allowed_datasets:
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
         placements_standard_join_columns = [
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
@@ -737,6 +743,6 @@ def joins_pan_child(
                 header[col] = None
 
     # Export header file
-    header_dc = DataContainer({"PAN_CHILD": header})
+    header_dc = DataContainer({"CDM_CHILD": header})
     log.info("Writing joined header output to shared folder")
     header_dc.export(shared_folder(), "", "csv")

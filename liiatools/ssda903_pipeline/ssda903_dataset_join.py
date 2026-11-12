@@ -63,7 +63,7 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> p
     Merges data from the latest 903 episodes for each child onto the 903 header dataframe
     Returns 903 header dataframe
     """
-    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"], dayfirst=True)
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"])
 
     # Keep only the latest episode for each child
     latest_episodes = (
@@ -221,7 +221,7 @@ def join_latest_cans_data(
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"], dayfirst=True).dt.date
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"]).dt.date
 
     # Keep only the latest CANS assessment for each child
     latest_cans = (
@@ -265,7 +265,7 @@ def join_latest_placements_standard_data(
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
 
     # Keep only the latest Placements Standard assessment for each child
     latest_placements_standard = (
