@@ -67,3 +67,18 @@ class SessionNamesCANSMapping(StrEnum):
     """Enum for CANS Mapping session folders."""
 
     INCOMING_FOLDER = "incoming"
+
+class SessionNamesPanSufficiencyJoins(StrEnum):
+    """Enum for PAN Sufficiency joins session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesPanCommissioningJoins(StrEnum):
+    """Enum for PAN Commissioning joins session folders."""
+
+    INCOMING_FOLDER = "incoming"
+
+class SessionNamesPanChildJoins(StrEnum):
+    """Enum for PAN Child joins session folders."""
+
+    INCOMING_FOLDER = "incoming"
