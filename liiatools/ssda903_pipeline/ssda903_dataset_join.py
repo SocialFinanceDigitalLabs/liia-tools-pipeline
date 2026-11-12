@@ -63,7 +63,7 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> p
     Merges data from the latest 903 episodes for each child onto the 903 header dataframe
     Returns 903 header dataframe
     """
-    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"], dayfirst=True)
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"])
 
     # Keep only the latest episode for each child
     latest_episodes = (
@@ -163,6 +163,14 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
         how="left"
     )
 
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with PNW Census results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
     # Log number of joins made
     joins = pnw_census_merged["snapshot_date"].count()
     log.info(f"{joins} joins made from PNW Census file")
@@ -175,6 +183,11 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Merges data from placement standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe
     """
+
+    # Make sure dates are datetime
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"]).dt.date
+
     episodes_merged = episodes.merge(
         placements_standard[["child_ID", "placement_start_date"] + placements_standard_join_columns],
         left_on=["CHILD", "DECOM"],
@@ -208,7 +221,7 @@ def join_latest_cans_data(
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"], dayfirst=True).dt.date
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"]).dt.date
 
     # Keep only the latest CANS assessment for each child
     latest_cans = (
@@ -252,7 +265,7 @@ def join_latest_placements_standard_data(
     Returns 903 header dataframe
     """
     # Make sure dates are datetime
-    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
 
     # Keep only the latest Placements Standard assessment for each child
     latest_placements_standard = (

@@ -26,6 +26,16 @@ from liiatools.common.data import ErrorContainer, FileLocator
 from liiatools.common.reference import authorities
 from liiatools.common.stream_errors import StreamError
 from liiatools.common.transform import degrade_data, enrich_data, prepare_export
+from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
+from liiatools.csww_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_csww,
+)
+from liiatools.placements_standard_pipeline.spec import (
+    load_schema as load_schema_placements_standard,
+)
+from liiatools.placements_standard_pipeline.stream_pipeline import (
+    task_cleanfile as task_cleanfile_placements_standard,
+)
 from liiatools.pnw_census_pipeline.spec import load_schema as load_schema_pnw_census
 from liiatools.pnw_census_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_pnw_census,
@@ -39,16 +49,6 @@ from liiatools.school_census_pipeline.stream_pipeline import (
 from liiatools.ssda903_pipeline.spec import load_schema as load_schema_ssda903
 from liiatools.ssda903_pipeline.stream_pipeline import (
     task_cleanfile as task_cleanfile_ssda903,
-)
-from liiatools.csww_pipeline.spec import load_schema as load_schema_csww
-from liiatools.csww_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_csww,
-)
-from liiatools.placements_standard_pipeline.spec import (
-    load_schema as load_schema_placements_standard,
-)
-from liiatools.placements_standard_pipeline.stream_pipeline import (
-    task_cleanfile as task_cleanfile_placements_standard,
 )
 from liiatools_pipeline.assets.common import (
     pipeline_config,
@@ -141,6 +141,8 @@ def process_files(
         log.info(f"{la_name} is signed for {config.dataset} data processing.")
 
         for file_locator in incoming_files:
+            errors_count = len(error_report)
+
             log.info(f"Processing file {la_name} {basename(file_locator.name)}")
             uuid = file_locator.meta["uuid"]
             year = pl.discover_year(file_locator)
@@ -190,7 +192,12 @@ def process_files(
             )
 
             month = None
-            if config.dataset in ["annex_a", "pnw_census", "cans", "placements_standard"]:
+            if config.dataset in [
+                "annex_a",
+                "pnw_census",
+                "cans",
+                "placements_standard",
+            ]:
                 month = pl.discover_month(file_locator)
                 if month is None:
                     error_report.append(
@@ -267,7 +274,9 @@ def process_files(
                     if config.dataset == "school_census"
                     else globals()[f"load_schema_{config.dataset}"](year, month)
                     if config.dataset == "pnw_census"
-                    else globals()[f"load_schema_{config.dataset}"](year, month, output_config.input_schema_version)
+                    else globals()[f"load_schema_{config.dataset}"](
+                        year, month, output_config.input_schema_version
+                    )
                     if config.dataset == "placements_standard"
                     else globals()[f"load_schema_{config.dataset}"](year)
                 )
@@ -376,6 +385,15 @@ def process_files(
                 )
 
             error_report.extend(current.deduplicate(cleanfile_result.data).errors)
+            if len(error_report) == errors_count:
+                error_report.append(
+                    dict(
+                        type="NoErrors",
+                        message="No errors found",
+                        filename=file_locator.name,
+                        uuid=uuid,
+                    )
+                )
 
             error_report.set_property("filename", file_locator.name)
             error_report.set_property("uuid", uuid)

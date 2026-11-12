@@ -217,6 +217,10 @@ class DataframeArchive:
         errors = ErrorContainer()
 
         for table_spec in self.config.table_list:
+            # Skip tables that are not marked for deduplication
+            if not table_spec.deduplicate:
+                continue
+
             if table_spec.id in data:
                 sort_tuples = table_spec.sort_keys
 
