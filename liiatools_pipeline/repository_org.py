@@ -2,7 +2,11 @@ from dagster import repository
 
 from liiatools.common._fs_serializer import register
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
-from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cans_org import (
+    cans_summary_columns,
+    pan_cans_joins,
+    transform_pan_cans_data,
+)
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
@@ -11,22 +15,38 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.external_dataset import external_incoming
-from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
-from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
-from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
+from liiatools_pipeline.jobs.pnw_census_org import (
+    pnw_census_joins,
+    transform_pan_pnw_census_data,
+)
+from liiatools_pipeline.jobs.school_census_org import (
+    school_census_cross,
+    school_census_region,
+)
+from liiatools_pipeline.jobs.ssda903_org import (
+    cdm_child_joins,
+    cdm_commissioning_joins,
+    cdm_sufficiency_joins,
+    ssda903_sufficiency,
+)
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     cans_summary_columns_sensor,
+    cdm_child_joins_sensor,
+    cdm_commissioning_joins_sensor,
+    cdm_sufficiency_joins_sensor,
     cin_reports_sensor,
     deduplicate_annex_a_sensor,
     move_concat_sensor,
     move_current_org_sensor,
     move_error_reports_sensor,
+    pan_cans_joins_sensor,
     pnw_census_joins_sensor,
-    sufficiency_sensor,
-    cin_reports_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
+    sufficiency_sensor,
+    transform_pan_cans_data_sensor,
+    transform_pan_pnw_census_data_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
 
@@ -48,12 +68,18 @@ def sync():
         reports,
         external_incoming,
         ssda903_sufficiency,
+        cdm_sufficiency_joins,
+        cdm_child_joins,
         deduplicate_annex_a,
         pnw_census_joins,
+        transform_pan_pnw_census_data,
         cin_reports,
+        cdm_commissioning_joins,
         school_census_cross,
         school_census_region,
         cans_summary_columns,
+        pan_cans_joins,
+        transform_pan_cans_data,
     ]
     schedules = [
         reports_schedule,
@@ -67,9 +93,15 @@ def sync():
         deduplicate_annex_a_sensor,
         pnw_census_joins_sensor,
         cin_reports_sensor,
+        transform_pan_pnw_census_data_sensor,
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
+        transform_pan_cans_data_sensor,
+        pan_cans_joins_sensor,
+        cdm_child_joins_sensor,
+        cdm_commissioning_joins_sensor,
+        cdm_sufficiency_joins_sensor,
     ]
 
     return jobs + schedules + sensors

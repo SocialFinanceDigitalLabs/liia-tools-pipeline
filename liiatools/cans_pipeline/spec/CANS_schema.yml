@@ -157,7 +157,7 @@ column_map:
         Bullying: *0_3_not_blank
         Victimisation/Exploitation*: *0_3_not_blank
         Duration of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
-        Age of Onset – Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
+        Age of Onset - Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Perception of Dangerousness (Victimisation/Exploitation*): *0_3_can_be_blank
         Knowledge of Exploitation (Victimisation/Exploitation*): *0_3_can_be_blank
         Trauma Bond (Victimisation/Exploitation*): *0_3_can_be_blank
