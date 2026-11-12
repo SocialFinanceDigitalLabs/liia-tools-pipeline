@@ -387,7 +387,7 @@ def joins_cdm_sufficiency(
         "session_folder": Out(FS),
     }
 )
-def create_pan_commissioning_join_session_folder() -> FS:
+def create_cdm_commissioning_join_session_folder(config: CdmConfig) -> FS:
     log.info("Creating session folder...")
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesPanCommissioningJoins
@@ -398,18 +398,19 @@ def create_pan_commissioning_join_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPanCommissioningJoins.INCOMING_FOLDER)
 
-    ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
-    pl.move_files_for_sharing(
-        ssda903_reports_folder,
-        session_folder,
-        required_table_id=["episodes"],
-        )
+    if "ssda903" in config.datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["episodes"],
+            )
 
-    if "pnw_census" in allowed_datasets:
-        pnw_census_reports_folder = opendir_location(workspace_folder(), "current/pnw_census/PAN_CDM")
+    if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
-    if "placements_standard" in allowed_datasets:
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
         clean_config = CleanConfig(
                         dataset_folder=None,
                         la_folder=None,
@@ -428,8 +429,9 @@ def create_pan_commissioning_join_session_folder() -> FS:
         "session_folder": In(FS),
     },
 )
-def joins_pan_commissioning(
+def joins_cdm_commissioning(
     session_folder: FS,
+    config: CdmConfig
 ):
     log.info("Checking necessary files are present...")
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -445,9 +447,13 @@ def joins_pan_commissioning(
 
     files = session_folder.listdir("/")
 
-    log.info("Removing existing PAN_COMMISSIONING file from the shared folder before processing a new one")
-    existing_pan_commissioning_files = shared_folder().listdir("/")
-    pl.remove_files("PAN_COMMISSIONING", existing_pan_commissioning_files, shared_folder())
+    log.info("Removing existing CDM_COMMISSIONING file from the shared folder before processing a new one")
+    existing_cdm_commissioning_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_COMMISSIONING", existing_cdm_commissioning_files, shared_folder())
+
+    if "ssda903" not in config.datasets:
+        log.error("SSDA903 dataset not included in CDM config")
+        return
 
     episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
 
@@ -470,7 +476,7 @@ def joins_pan_commissioning(
     episodes = episodes[episodes_columns]
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
-    if "pnw_census" in allowed_datasets:
+    if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
         pnw_join_columns = [
             "Type of provision",
             "Primary Registration type",
@@ -500,7 +506,7 @@ def joins_pan_commissioning(
             for col in pnw_join_columns:
                 episodes[pnw_column_renames.get(col, col)] = None
 
-    if "placements_standard" in allowed_datasets:
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
         placements_standard_join_columns = [
                 "placement_search_foster_total_number",
                 "placement_search_supported_accommodation_total_number",
@@ -525,6 +531,6 @@ def joins_pan_commissioning(
                 episodes[placements_standard_column_renames.get(col, col)] = None
 
     # Export Episodes file
-    episodes_dc = DataContainer({"PAN_COMMISSIONING": episodes})
+    episodes_dc = DataContainer({"CDM_COMMISSIONING": episodes})
     log.info("Writing joined episodes output to shared folder")
     episodes_dc.export(shared_folder(), "", "csv")
