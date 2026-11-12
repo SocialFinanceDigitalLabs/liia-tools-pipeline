@@ -20,9 +20,9 @@ from liiatools_pipeline.jobs.school_census_org import (
     school_census_region,
 )
 from liiatools_pipeline.jobs.ssda903_org import (
-    ssda903_pan_child_joins,
     cdm_commissioning_joins,
     cdm_sufficiency_joins,
+    ssda903_pan_child_joins,
     ssda903_sufficiency,
 )
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
