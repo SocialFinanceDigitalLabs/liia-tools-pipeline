@@ -28,12 +28,11 @@ from liiatools.ssda903_pipeline.sufficiency_transform import (
     ss903_transform,
 )
 from liiatools_pipeline.assets.common import (
-    pipeline_config,
     shared_folder,
     workspace_folder,
 )
 from liiatools_pipeline.assets.external_dataset import external_data_folder
-from liiatools_pipeline.ops.common_config import CdmConfig, CleanConfig
+from liiatools_pipeline.ops.common_config import CdmConfig
 from liiatools_pipeline.util.utility import opendir_location
 
 log = get_dagster_logger()
@@ -179,7 +178,7 @@ def create_cdm_sufficiency_join_session_folder(config: CdmConfig) -> FS:
     session_folder = session_folder.opendir(SessionNamesPanSufficiencyJoins.INCOMING_FOLDER)
 
     if "ssda903" in config.datasets:
-        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
@@ -187,18 +186,11 @@ def create_cdm_sufficiency_join_session_folder(config: CdmConfig) -> FS:
             )
 
     if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
-        pnw_census_reports_folder = opendir_location(workspace_folder(), "current/pnw_census/PAN")
+        pnw_census_reports_folder = opendir_location(workspace_folder(), "current/pnw_census/CDM")
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
-        clean_config = CleanConfig(
-                        dataset_folder=None,
-                        la_folder=None,
-                        input_la_code=None,
-                        dataset="placements_standard",
-                    )
-        output_config = pipeline_config(clean_config)
-        placements_standard_reports_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/CDM")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
