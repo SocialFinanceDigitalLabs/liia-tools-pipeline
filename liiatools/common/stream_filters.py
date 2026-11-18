@@ -249,7 +249,7 @@ def add_table_name_from_headers(event, schema: DataSchema):
             event = EventErrors.add_to_event(
                 event,
                 type="HeaderError",
-                message=f"File not processed due to duplicate headers. Affected headers: {list(duplicate_headers)}",
+                message=f"File not processed due to duplicate headers. Affected headers: {', '.join(duplicate_headers)}",
             )
             return event
 
