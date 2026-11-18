@@ -117,10 +117,7 @@ def create_reports(
     log.debug(f"Using config: {config}")
     signed_reports = []
     for la_signed_dict in output_config.la_signed.values():
-        if output_config.input_schema_version:
-            reports_to_check = [output_config.input_schema_version]
-        else:
-            reports_to_check = la_signed_dict.keys()
+        reports_to_check = la_signed_dict.keys()
         for report in reports_to_check:
             if la_signed_dict.get(report) == "Yes" and report not in signed_reports:
                 signed_reports.append(report)
