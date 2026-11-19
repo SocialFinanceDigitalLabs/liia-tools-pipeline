@@ -119,8 +119,14 @@ def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> pd.DataFram
     Merges data from the latest 903 oc2 dataframe onto 903 header dataframe
     Returns 903 header dataframe
     """
+    # Keep only the latest oc2 for each child
+    latest_oc2 = (
+        oc2.sort_values(["CHILD", "YEAR"], ascending=[True, False])
+        .drop_duplicates(subset="CHILD", keep="first")
+    )
+
     header_merged = header.merge(
-        oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
+        latest_oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
     )
 
     # Row number in header should not have changed

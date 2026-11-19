@@ -543,7 +543,7 @@ def create_cdm_child_join_session_folder(config: CdmConfig) -> FS:
     session_folder = session_folder.opendir(SessionNamesPanChildJoins.INCOMING_FOLDER)
 
     if "ssda903" in config.datasets:
-        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
@@ -555,14 +555,7 @@ def create_cdm_child_join_session_folder(config: CdmConfig) -> FS:
         pl.move_files_for_sharing(cans_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
-        clean_config = CleanConfig(
-                        dataset_folder=None,
-                        la_folder=None,
-                        input_la_code=None,
-                        dataset="placements_standard",
-                    )
-        output_config = pipeline_config(clean_config)
-        placements_standard_reports_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/CDM")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
