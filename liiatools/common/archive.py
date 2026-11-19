@@ -215,7 +215,6 @@ class DataframeArchive:
         If a dataframe has a 'sort' configuration, then the dataframe is sorted by the specified columns before deduplication.
         """
         errors = ErrorContainer()
-
         for table_spec in self.config.table_list:
             # Skip tables that are not marked for deduplication
             if not table_spec.deduplicate:
@@ -260,6 +259,7 @@ class DataframeArchive:
                                 table_name=table_spec.id,
                             )
                         )
+
                 data[table_spec.id] = df
 
         return ProcessResult(data=data, errors=errors)
