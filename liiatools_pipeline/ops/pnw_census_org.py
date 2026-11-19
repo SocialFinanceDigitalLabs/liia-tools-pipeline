@@ -259,7 +259,7 @@ def create_transform_session_folder() -> FS:
     log.info("Opening incoming folder...")
     session_folder = session_folder.opendir(SessionNamesPNWCensusJoins.INCOMING_FOLDER)
 
-    pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/PAN", recreate=True)
+    pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
     pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     return session_folder
@@ -312,11 +312,11 @@ def transform_pnw_census_data(
         except TypeError as err:
             log.error(f"Transforming PNW census data failed: {err}")
 
-        data = DataContainer({"CDM_pnw_census": vertical_pnw_census})
+        data = DataContainer({"TRANSFORMED_pnw_census": vertical_pnw_census})
 
-        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/TRANSFORMED", recreate=True)
         existing_report_files = pnw_census_reports_folder.listdir("/")
-        pl.remove_files("pnw_census", existing_report_files, pnw_census_reports_folder)
+        pl.remove_files("TRANSFORMED_pnw_census", existing_report_files, pnw_census_reports_folder)
 
         log.info(f"Exporting Pan Commissioning PNW census report to workspace folder for {file}")
         data.export(pnw_census_reports_folder, "", "csv")
