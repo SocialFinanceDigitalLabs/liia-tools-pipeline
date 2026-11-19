@@ -58,9 +58,10 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
     return episodes_merged
 
 
-def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
+def join_latest_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
     """
-    Merges data from pnw census dataframe onto 903 episodes dataframe
+    Merges data from pnw census dataframe onto 903 episodes dataframe.
+    Joins only the latest PNW record (snapshot_date) that occurs between DEC and DECOM.
     Returns 903 episodes dataframe
     """
     # Join pnw_census onto episodes, keeping all children in episodes
@@ -76,10 +77,19 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
         pnw_census_merged, "DEC", "snapshot_date", "DECOM"
     )
 
+    # Make sure dates are datetime
+    pnw_census_merged[["DECOM", "snapshot_date"]] = pnw_census_merged[["DECOM", "snapshot_date"]].apply(lambda x: pd.to_datetime(x).dt.date)
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x).dt.date)
+
+    # Keep only the latest snapshot_date per episode to remove one-to-many joins
+    pnw_census_merged = pnw_census_merged.sort_values("snapshot_date").drop_duplicates(
+        subset=["CHILD", "DECOM"], keep="last"
+    )
+
     # Merge the filtered PNW census data back onto the episodes dataframe
     episodes_merged = episodes.merge(
-        pnw_census_merged[["CHILD", "EPISODE_ID"] + pnw_join_columns],
-        on=["CHILD", "EPISODE_ID"],
+        pnw_census_merged[["CHILD", "DECOM"] + pnw_join_columns],
+        on=["CHILD", "DECOM"],
         how="left"
     )
 
@@ -103,7 +113,6 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Merges data from placement standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe
     """
-
     # Make sure dates are datetime
     placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
     episodes["DECOM"] = pd.to_datetime(episodes["DECOM"]).dt.date
