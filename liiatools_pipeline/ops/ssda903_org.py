@@ -302,7 +302,6 @@ def joins_cdm_sufficiency(
         placements_standard_join_columns = [
                 "when_placement_is_needed_by",
                 "number_of_siblings_to_place_with",
-                "preferred_location_for_home_search",
                 "communication_language_learning_needs",
                 "specific_communication_and_language_requirements",
                 "adaptation_to_the_home",
@@ -312,7 +311,6 @@ def joins_cdm_sufficiency(
                 "additional_support",
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
-                "dol",
                 "needs_assessment",
                 "foster_care_suitability",
                 "residential_care_suitability",
