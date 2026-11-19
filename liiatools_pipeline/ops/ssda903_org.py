@@ -18,6 +18,7 @@ from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_header_data,
     join_latest_pnw_data,
     join_placements_standard_data,
+    join_pnw_data,
     join_uasc_data,
 )
 from liiatools.ssda903_pipeline.sufficiency_transform import (

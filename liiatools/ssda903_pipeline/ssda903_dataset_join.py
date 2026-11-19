@@ -108,6 +108,42 @@ def join_latest_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_j
     return episodes_merged
 
 
+def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
+    """
+    Merges data from pnw census dataframe onto 903 episodes dataframe.
+    Returns 903 episodes dataframe
+    """
+    # Join pnw_census onto episodes, keeping all children in episodes
+    pnw_census_merged = episodes.merge(
+        pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
+        left_on="CHILD",
+        right_on="Identifier",
+        how="left",
+    )
+
+    # Filter to only keep episodes open on day of snapshot
+    pnw_census_merged = _filter_to_open_on_snapshot_date(
+        pnw_census_merged, "DEC", "snapshot_date", "DECOM"
+    )
+
+    # Make sure dates are datetime
+    pnw_census_merged["DECOM"] = pd.to_datetime(pnw_census_merged["DECOM"]).dt.date
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x).dt.date)
+
+    # Merge the filtered PNW census data back onto the episodes dataframe
+    episodes_merged = episodes.merge(
+        pnw_census_merged[["CHILD", "DECOM"] + pnw_join_columns],
+        on=["CHILD", "DECOM"],
+        how="left"
+    )
+
+    # Log number of joins made
+    joins = pnw_census_merged["snapshot_date"].count()
+    log.info(f"{joins} joins made from PNW Census file")
+
+    return episodes_merged
+
+
 def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: pd.DataFrame, placements_standard_join_columns: list) -> pd.DataFrame:
     """
     Merges data from placement standard dataframe onto 903 episodes dataframe
