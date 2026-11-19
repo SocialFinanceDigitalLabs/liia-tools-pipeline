@@ -4,8 +4,8 @@ from liiatools.common._fs_serializer import register
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.cans_org import (
     cans_summary_columns,
-    pan_cans_joins,
-    transform_pan_cans_data,
+    cdm_cans_joins,
+    transform_cdm_cans_data,
 )
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_org import (
@@ -32,6 +32,7 @@ from liiatools_pipeline.jobs.ssda903_org import (
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     cans_summary_columns_sensor,
+    cdm_cans_joins_sensor,
     cdm_child_joins_sensor,
     cdm_commissioning_joins_sensor,
     cdm_sufficiency_joins_sensor,
@@ -40,12 +41,11 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     move_concat_sensor,
     move_current_org_sensor,
     move_error_reports_sensor,
-    pan_cans_joins_sensor,
     pnw_census_joins_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
     sufficiency_sensor,
-    transform_pan_cans_data_sensor,
+    transform_cdm_cans_data_sensor,
     transform_pan_pnw_census_data_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
@@ -78,8 +78,8 @@ def sync():
         school_census_cross,
         school_census_region,
         cans_summary_columns,
-        pan_cans_joins,
-        transform_pan_cans_data,
+        cdm_cans_joins,
+        transform_cdm_cans_data,
     ]
     schedules = [
         reports_schedule,
@@ -97,8 +97,8 @@ def sync():
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
-        transform_pan_cans_data_sensor,
-        pan_cans_joins_sensor,
+        transform_cdm_cans_data_sensor,
+        cdm_cans_joins_sensor,
         cdm_child_joins_sensor,
         cdm_commissioning_joins_sensor,
         cdm_sufficiency_joins_sensor,

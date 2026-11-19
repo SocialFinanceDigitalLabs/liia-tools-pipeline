@@ -12,8 +12,8 @@ from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
 from liiatools_pipeline.jobs.cans_org import (
     cans_summary_columns,
-    pan_cans_joins,
-    transform_pan_cans_data,
+    cdm_cans_joins,
+    transform_cdm_cans_data,
 )
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import (
@@ -537,12 +537,12 @@ def cans_summary_columns_sensor(context):
 
 
 @sensor(
-    job=transform_pan_cans_data,
-    description="Runs transform_cans_data job once reports job is complete",
+    job=transform_cdm_cans_data,
+    description="Runs transform_cdm_cans_data job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
-def transform_pan_cans_data_sensor(context):
+def transform_cdm_cans_data_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
@@ -833,12 +833,12 @@ def cdm_child_joins_sensor(context):
 
 
 @sensor(
-    job=pan_cans_joins,
-    description="Runs pan_cans_joins job once transform_pan_cans_data job is complete",
+    job=cdm_cans_joins,
+    description="Runs cdm_cans_joins job once transform_cdm_cans_data job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
-def pan_cans_joins_sensor(context):
+def cdm_cans_joins_sensor(context):
     reports_run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
@@ -851,7 +851,7 @@ def pan_cans_joins_sensor(context):
     )
     cans_run_records = context.instance.get_run_records(
         filters=RunsFilter(
-            job_name=transform_pan_cans_data.name,
+            job_name=transform_cdm_cans_data.name,
             statuses=[DagsterRunStatus.SUCCESS],
         ),
         order_by="update_timestamp",
@@ -866,10 +866,18 @@ def pan_cans_joins_sensor(context):
         "ssda903",
     )
 
+    cdm_config = _create_cdm_config(["ssda903", "cans"], "cdm_cans_joins_sensor")
+
     # Ensure there is at least one of each record
     if latest_run_id_cans and latest_run_id_ssda903:
         run_key = f"{latest_run_id_cans}_{latest_run_id_ssda903}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
-            run_key=run_key
+            run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_cans_session_folder": cdm_config,
+                    "joins_cdm_cans": cdm_config,
+                }
+            ),
         )
