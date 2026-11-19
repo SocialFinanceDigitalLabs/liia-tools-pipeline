@@ -389,7 +389,7 @@ def create_cdm_commissioning_join_session_folder(config: CdmConfig) -> FS:
     session_folder = session_folder.opendir(SessionNamesPanCommissioningJoins.INCOMING_FOLDER)
 
     if "ssda903" in config.datasets:
-        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
@@ -397,18 +397,11 @@ def create_cdm_commissioning_join_session_folder(config: CdmConfig) -> FS:
             )
 
     if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
-        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/TRANSFORMED", recreate=True)
         pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
 
     if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
-        clean_config = CleanConfig(
-                        dataset_folder=None,
-                        la_folder=None,
-                        input_la_code=None,
-                        dataset="placements_standard",
-                    )
-        output_config = pipeline_config(clean_config)
-        placements_standard_reports_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/CDM")
         pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
 
     return session_folder
@@ -506,7 +499,7 @@ def joins_cdm_commissioning(
                 "Month"
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        placements_standard_column_renames = {"Month": "placements_standard_month"}
+        placements_standard_column_renames = {"Month": "placements_standard_Month"}
         # Check and process the Placement Standard file
         if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placements Standard data with SSDA903 episodes data")
