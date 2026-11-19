@@ -112,8 +112,8 @@ def test_join_latest_oc2_data():
             "CHILD": ["1", "4"],
             "SDQ_SCORE": [10, 20],
             "row_number": [2, 3],
-            "Year": [2024, 2024],
-            "Month": ["Jan", "Jan"],
+            "YEAR": [2024, 2024],
+            "MONTH": ["Jan", "Jan"],
             "LA": ["999", "999"],
         }
     )
