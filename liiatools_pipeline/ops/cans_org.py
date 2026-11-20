@@ -1,11 +1,9 @@
 import os
 import re
-from importlib import resources
 
 import pandas as pd
 from dagster import In, Out, get_dagster_logger, op
 from decouple import config as env_config
-from fs import errors
 from fs.base import FS
 from ruamel.yaml import YAML
 
@@ -24,6 +22,7 @@ from liiatools.common.constants import SessionNamesCANSMapping
 from liiatools.common.data import DataContainer
 from liiatools.common.pipeline import open_file
 from liiatools_pipeline.assets.common import shared_folder, workspace_folder
+from liiatools_pipeline.ops.common_config import CdmConfig
 from liiatools_pipeline.util.utility import opendir_location
 
 yaml = YAML()
@@ -36,7 +35,7 @@ log = get_dagster_logger()
         "session_folder": Out(FS),
     }
 )
-def create_cans_session_folder() -> FS:
+def create_summary_cans_session_folder() -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesCANSMapping
     )
@@ -104,6 +103,30 @@ def cans_summary_sheet_mapping(
 
 
 @op(
+    out={
+        "session_folder": Out(FS),
+    }
+)
+def create_transform_cans_session_folder() -> FS:
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesCANSMapping
+    )
+    """
+    Create CANS session folder and move required files for mapping into it
+    """
+    log.info("Creating CANS session folder")
+    session_folder = session_folder.opendir(SessionNamesCANSMapping.INCOMING_FOLDER)
+
+    current_folder = opendir_location(workspace_folder(), "current/cans/CDM")
+    pl.move_files_for_sharing(
+        current_folder,
+        session_folder,
+    )
+
+    return session_folder
+
+
+@op(
     ins={
         "session_folder": In(FS),
     },
@@ -168,11 +191,11 @@ def transform_cans_data(
         except TypeError as err:
             log.error(f"Transforming CANS data failed: {err}")
 
-    data = DataContainer({"CDM_cans": pan_cans})
+    data = DataContainer({"TRANSFORMED_cans": pan_cans})
 
-    cans_reports_folder = workspace_folder().makedirs("current/cans/PAN_CDM", recreate=True)
+    cans_reports_folder = workspace_folder().makedirs("current/cans/TRANSFORMED", recreate=True)
     existing_report_files = cans_reports_folder.listdir("/")
-    pl.remove_files("CDM_cans", existing_report_files, cans_reports_folder)
+    pl.remove_files("TRANSFORMED_cans", existing_report_files, cans_reports_folder)
 
     log.info(f"Exporting Common Data Model CANS output to workspace folder for {file}")
     data.export(cans_reports_folder, "", "csv")
@@ -183,7 +206,7 @@ def transform_cans_data(
         "session_folder": Out(FS),
     }
 )
-def create_pan_cans_session_folder() -> FS:
+def create_cdm_cans_session_folder(config: CdmConfig) -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesCANSMapping
     )
@@ -195,14 +218,15 @@ def create_pan_cans_session_folder() -> FS:
 
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
-    current_folder = opendir_location(workspace_folder(), "current/cans/PAN_CDM")
-    pl.move_files_for_sharing(
-        current_folder,
-        session_folder,
-    )
+    if "cans" in config.datasets:
+        current_folder = opendir_location(workspace_folder(), "current/cans/TRANSFORMED")
+        pl.move_files_for_sharing(
+            current_folder,
+            session_folder,
+        )
 
-    if "ssda903" in allowed_datasets:
-        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
+    if "ssda903" in allowed_datasets and "ssda903" in config.datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
@@ -217,23 +241,28 @@ def create_pan_cans_session_folder() -> FS:
         "session_folder": In(FS),
     },
 )
-def joins_pan_cans(
+def joins_cdm_cans(
     session_folder: FS,
+    config: CdmConfig
 ):
     log.info("Checking necessary files are present...")
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
     # CANS file patterns
-    cans_pattern = re.compile(r"CDM_cans")
+    cans_pattern = re.compile(r"TRANSFORMED_cans")
 
     # SSDA903 file patterns
     episodes_pattern = re.compile(r"episodes")
 
     files = session_folder.listdir("/")
 
-    log.info("Removing existing PAN_CDM_cans file from the shared folder before processing a new one")
-    existing_pan_child_files = shared_folder().listdir("/")
-    pl.remove_files("PAN_CDM_cans", existing_pan_child_files, shared_folder())
+    log.info("Removing existing CDM_CANS file from the shared folder before processing a new one")
+    existing_cdm_child_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_CANS", existing_cdm_child_files, shared_folder())
+
+    if "cans" not in config.datasets:
+        log.error("CANS dataset not included in CDM config")
+        return
 
     cans = next((f for f in files if cans_pattern.search(f)), None)
 
@@ -253,19 +282,19 @@ def joins_pan_cans(
     cans = open_file(session_folder, cans)
 
     # Check and process SSDA903 episodes file
-    if "ssda903" in allowed_datasets:
+    if "ssda903" in allowed_datasets and "ssda903" in config.datasets:
         if any(episodes_pattern.search(f) for f in files):
             log.info("Joining CANS data with SSDA903 episodes data")
             episodes_file = next(f for f in files if episodes_pattern.search(f))
             episodes = open_file(session_folder, episodes_file)
             cans = join_episodes_data(cans, episodes)
         else:
-            log.error("No 903 episodes data to join with CANS")
+            log.error("No SSDA903 episodes data to join with CANS")
             empty_episodes_cols = ["EPISODE_ID"]
             for col in empty_episodes_cols:
                 cans[col] = None
 
     # Export CANS files
-    cans_dc = DataContainer({"PAN_CDM_cans": cans})
+    cans_dc = DataContainer({"CDM_CANS": cans})
     log.info("Writing joined CANS file output to shared folder")
     cans_dc.export(shared_folder(), "", "csv")

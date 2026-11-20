@@ -8,6 +8,7 @@ from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_latest_oc2_data,
     join_latest_placements_standard_data,
     join_latest_uasc_data,
+    join_latest_pnw_data,
     join_placements_standard_data,
     join_pnw_data,
     join_uasc_data,
@@ -112,8 +113,8 @@ def test_join_latest_oc2_data():
             "CHILD": ["1", "4"],
             "SDQ_SCORE": [10, 20],
             "row_number": [2, 3],
-            "Year": [2024, 2024],
-            "Month": ["Jan", "Jan"],
+            "YEAR": [2024, 2024],
+            "MONTH": ["Jan", "Jan"],
             "LA": ["999", "999"],
         }
     )
@@ -128,26 +129,55 @@ def test_join_latest_oc2_data():
     )
 
 
-def test_join_pnw_data():
+def test_join_latest_pnw_data():
     pnw_df = pd.DataFrame(
         {
-            "Identifier": ["1", "2", "5", "6"],
+            "Identifier": ["1", "2", "5", "6", "7", "7"],
             "snapshot_date": pd.to_datetime(
-                ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31"]
+                ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31", "2024-11-30", "2024-12-31"]
             ),
-            "Placement type": ["Foster", "Resi", "Foster", "Foster"],
-            "row_number": [2, 3, 4, 5],
-            "Year": [2024, 2024, 2024, 2024],
-            "Month": [12, 12, 12, 12],
-            "LA": ["999", "999", "999", "999"],
+            "Placement type": ["Foster", "Resi", "Foster", "Foster", "Resi", "Foster"],
+            "row_number": [2, 3, 4, 5, 6, 7],
+            "Year": [2024, 2024, 2024, 2024, 2024, 2024],
+            "Month": [12, 12, 12, 12, 12, 12],
+            "LA": ["999", "999", "999", "999", "999", "999"],
         }
     )
     episodes_df = pd.DataFrame(
         {
-            "CHILD": ["1", "2", "6"],
-            "EPISODE_ID": ["1", "2", "3"],
-            "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-01"]),
-            "DEC": pd.to_datetime([None, None, "2024-11-30"]),
+            "CHILD": ["1", "2", "6", "7"],
+            "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-01", "2024-01-01"]),
+            "DEC": pd.to_datetime([None, None, "2024-11-30", "2025-01-30"]),
+        }
+    )
+
+    episodes_merged = join_latest_pnw_data(
+        pnw_df, episodes_df, ["Placement type"]
+    )
+
+    assert len(episodes_merged) == 4
+    assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi", np.nan, "Foster"]
+
+
+def test_join_pnw_data():
+    pnw_df = pd.DataFrame(
+        {
+            "Identifier": ["1", "2", "5", "6", "7", "7"],
+            "snapshot_date": pd.to_datetime(
+                ["2024-12-31", "2024-12-31", "2024-12-31", "2024-12-31", "2024-11-30", "2024-12-31"]
+            ),
+            "Placement type": ["Foster", "Resi", "Foster", "Foster", "Resi", "Foster"],
+            "row_number": [2, 3, 4, 5, 6, 7],
+            "Year": [2024, 2024, 2024, 2024, 2024, 2024],
+            "Month": [12, 12, 12, 12, 12, 12],
+            "LA": ["999", "999", "999", "999", "999", "999"],
+        }
+    )
+    episodes_df = pd.DataFrame(
+        {
+            "CHILD": ["1", "2", "6", "7"],
+            "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-01", "2024-01-01"]),
+            "DEC": pd.to_datetime([None, None, "2024-11-30", "2025-01-30"]),
         }
     )
 
@@ -155,8 +185,8 @@ def test_join_pnw_data():
         pnw_df, episodes_df, ["Placement type"]
     )
 
-    assert len(episodes_merged) == 3
-    assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi", np.nan]
+    assert len(episodes_merged) == 5
+    assert episodes_merged["Placement type"].tolist() == ["Foster", "Resi", np.nan, "Resi", "Foster"]
 
 
 def test_join_placements_standard_data():
@@ -182,7 +212,7 @@ def test_join_placements_standard_data():
     assert len(episodes_merged) == 2
     assert episodes_merged.loc[episodes_merged["CHILD"] == "1", "DECOM"].iloc[
         0
-    ] == pd.to_datetime("2024-01-01")
+    ] == pd.to_datetime("2024-01-01").date()
 
 
 def test_join_latest_cans_data():

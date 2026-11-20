@@ -11,8 +11,8 @@ def join_episodes_data(cans: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFra
     """
 
     # Make sure dates are datetime
-    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"], dayfirst=True).dt.date
-    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x, dayfirst=True).dt.date)
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"]).dt.date
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x).dt.date)
 
     # Track original cans rows so unmatched rows can be added back after filtering
     cans = cans.reset_index(drop=True)
