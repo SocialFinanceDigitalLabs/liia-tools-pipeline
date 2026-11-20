@@ -89,6 +89,7 @@ def transform_input(source: FileLocator, table_info: dict) -> pd.DataFrame:
                           "containing the assessment criteria and data.")
     
     data["Unnamed: 1"] = data["Unnamed: 1"].str.strip()
+    data["Unnamed: 1"] = data["Unnamed: 1"].str.replace("–", "-")  # Replace en dash with hyphen for consistency
     data = data.dropna(subset=["Unnamed: 1"])
     
 
