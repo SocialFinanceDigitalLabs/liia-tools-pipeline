@@ -22,6 +22,7 @@ from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_latest_episodes_data,
     join_latest_oc2_data,
     join_latest_placements_standard_data,
+    join_latest_pnw_data,
     join_latest_uasc_data,
     join_placements_standard_data,
     join_pnw_data,
@@ -299,7 +300,7 @@ def joins_cdm_sufficiency(
                 pnw_census[["Year", "Month"]].assign(day=1)
             ) + MonthEnd(0)
 
-            episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
+            episodes = join_latest_pnw_data(pnw_census, episodes, pnw_join_columns)
             episodes = episodes.rename(columns=pnw_column_renames)
         else:
             log.error("No PNW Census data to join")
