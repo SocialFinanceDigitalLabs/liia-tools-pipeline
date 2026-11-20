@@ -1,0 +1,278 @@
+'6_21':
+  Family Strengths: &child_strengths
+    CHILD STRENGTHS (6+)
+  Interpersonal: *child_strengths
+  Optimism: *child_strengths
+  Educational Setting: *child_strengths
+  Vocational: *child_strengths
+  Talents & Interests: *child_strengths
+  Community Life: *child_strengths
+  Relationship Permanence: *child_strengths
+  Resiliency: *child_strengths
+  Resourcefulness: *child_strengths
+  Cultural Identity: *child_strengths
+  Natural Supports: *child_strengths
+  Family Functioning: &child_life_functioning
+    CHILD LIFE FUNCTIONING (6+)
+  Living Situation: *child_life_functioning
+  Social Functioning: *child_life_functioning
+  Recreational: *child_life_functioning
+  Developmental/Intellectual*: *child_life_functioning
+  Cognitive (Developmental/Intellectual*): *child_life_functioning
+  Developmental (Developmental/Intellectual*): *child_life_functioning
+  Communication (Developmental/Intellectual*): *child_life_functioning
+  Self-care/Daily Living Skills (Developmental/Intellectual*): *child_life_functioning
+  Job Functioning: *child_life_functioning
+  Legal: *child_life_functioning
+  Medical/Physical: *child_life_functioning
+  Sexual Development: *child_life_functioning
+  Sleep: *child_life_functioning
+  School Attendance: *child_life_functioning
+  School Behaviour: *child_life_functioning
+  School Achievement: *child_life_functioning
+  Decision-Making: *child_life_functioning
+  Psychosis (Thought Disorder): &behavioural_emotional_needs
+    BEHAVIOURAL/EMOTIONAL NEEDS (6+)
+  Impulsivity/Hyperactivity: *behavioural_emotional_needs
+  Attention/Concentration: *behavioural_emotional_needs
+  Depression: *behavioural_emotional_needs
+  Anxiety: *behavioural_emotional_needs
+  Oppositional: *behavioural_emotional_needs
+  Conduct (Antisocial Behaviour): *behavioural_emotional_needs
+  Adjustment to Trauma: *behavioural_emotional_needs
+  Anger Control: *behavioural_emotional_needs
+  Substance Use*: *behavioural_emotional_needs
+  Severity of Use (Substance Use*): *behavioural_emotional_needs
+  Duration of Use (Substance Use*): *behavioural_emotional_needs
+  Stage of Recovery (Substance Use*): *behavioural_emotional_needs
+  Peer Influences (Substance Use*): *behavioural_emotional_needs
+  Environmental Influences (Substance Use*): *behavioural_emotional_needs
+  Recovery Support in Community (Substance Use*): *behavioural_emotional_needs
+  Acute Intoxication (Substance Use*): *behavioural_emotional_needs
+  Withdrawal History (Substance Use*): *behavioural_emotional_needs
+  Awareness of Relapse Triggers (Substance Use*): *behavioural_emotional_needs
+  Withdrawal Risks (Substance Use*): *behavioural_emotional_needs
+  Eating Disturbance: *behavioural_emotional_needs
+  Attachment Difficulties: *behavioural_emotional_needs
+  Behavioural Regression: *behavioural_emotional_needs
+  Psycho-somatic Symptoms (Somatisation): *behavioural_emotional_needs
+  Suicide Risk: &child_risk_behaviours
+    CHILD RISK BEHAVIOURS (6+)
+  Non-Suicidal Self-Harm/Self-Injury: *child_risk_behaviours
+  Other Self-harm: *child_risk_behaviours
+  Danger to Others*: *child_risk_behaviours
+  CH History of Violence (Need) (Danger to Others*): *child_risk_behaviours
+  CH Fustration Management (Need) (Danger to Others*): *child_risk_behaviours
+  CH Bullying (Need) (Danger to Others*): *child_risk_behaviours
+  Hostility (Need) (Danger to Others*): *child_risk_behaviours
+  CH Paraniod Thinking (Need) (Danger to Others*): *child_risk_behaviours
+  CH Secondary Gains from Anger (Need) (Danger to Others*): *child_risk_behaviours
+  CH Violent Thinking (Need) (Danger to Others*): *child_risk_behaviours
+  CH Awareness of Violence Potential (Strength): *child_risk_behaviours
+  CH Response to Consequences (Strength): *child_risk_behaviours
+  CH Commitment to Self-Control (Strength): *child_risk_behaviours
+  CH Treatment Involvement (Strength): *child_risk_behaviours
+  Sexual Agression*: *child_risk_behaviours
+  Relationship (Sexual Agression*): *child_risk_behaviours
+  Physical Force/Threat (Sexual Agression*): *child_risk_behaviours
+  Planning (Sexual Agression*): *child_risk_behaviours
+  Age Differential (Sexual Agression*): *child_risk_behaviours
+  Type of Sex Act (Sexual Agression*): *child_risk_behaviours
+  Response to Accusation (Sexual Agression*): *child_risk_behaviours
+  Temporal Consistency (Sexual Agression*): *child_risk_behaviours
+  History of Sexually Aggressive Behaviour (Sexual Agression*): *child_risk_behaviours
+  Running Away*: *child_risk_behaviours
+  Frequency of Running (Running Away*): *child_risk_behaviours
+  Consistency of Destination (Running Away*): *child_risk_behaviours
+  Safety of Destination (Running Away*): *child_risk_behaviours
+  Involvement in Illegal Activities (Running Away*): *child_risk_behaviours
+  Likelihood of Return on Own (Running Away*): *child_risk_behaviours
+  Involvement with Others (Running Away*): *child_risk_behaviours
+  Realistic Expectations (Running Away*): *child_risk_behaviours
+  Planning (Running Away*): *child_risk_behaviours
+  Offending/Criminal Behaviour*: *child_risk_behaviours
+  History (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Seriousness (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Planning (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Community Safety (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Peer Influences (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Parental Criminal Behaviour (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Environmental Influences (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Legal Compliance (Offending/Criminal Behaviour*): *child_risk_behaviours
+  Fire Setting*: *child_risk_behaviours
+  History (Fire Setting*): *child_risk_behaviours
+  Seriousness (Fire Setting*): *child_risk_behaviours
+  Planning (Fire Setting*): *child_risk_behaviours
+  Use of Accelerants (Fire Setting*): *child_risk_behaviours
+  Intention to Harm (Fire Setting*): *child_risk_behaviours
+  Community Safety (Fire Setting*): *child_risk_behaviours
+  Response to Accusation (Fire Setting*): *child_risk_behaviours
+  Remorse (Fire Setting*): *child_risk_behaviours
+  Likelihood of Future Fire Setting (Fire Setting*): *child_risk_behaviours
+  Intentional Misbehaviour: *child_risk_behaviours
+  Bullying: *child_risk_behaviours
+  Victimisation/Exploitation*: *child_risk_behaviours
+  Duration of Exploitation (Victimisation/Exploitation*): *child_risk_behaviours
+  Age of Onset - Exploitation (Victimisation/Exploitation*): *child_risk_behaviours
+  Perception of Dangerousness (Victimisation/Exploitation*): *child_risk_behaviours
+  Knowledge of Exploitation (Victimisation/Exploitation*): *child_risk_behaviours
+  Trauma Bond (Victimisation/Exploitation*): *child_risk_behaviours
+  Exploitation of Others (Victimisation/Exploitation*): *child_risk_behaviours
+  Reproductive Health (Victimisation/Exploitation*): *child_risk_behaviours
+  Arrests for Liotering/Solicitaion (Victimisation/Exploitation*): *child_risk_behaviours
+  Exploitation History (Victimisation/Exploitation*): *child_risk_behaviours
+  Gang Involvement: *child_risk_behaviours
+  Language: &cultural_factors
+    CULTURAL FACTORS
+  Traditions & Rituals: *cultural_factors
+  Cultural Stress: *cultural_factors
+  Cultural Differences within the Family: *cultural_factors
+  Sexual Abuse*: &potentially_traumatic_adverse_childhood_experiences
+    POTENTIALLY TRAUMATIC/ADVERSE CHILDHOOD EXPERIENCES
+  Emotional Closeness to Perpetrator (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Frequency of Abuse (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Duration (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Force (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Reaction to Disclosure (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Physical Abuse: *potentially_traumatic_adverse_childhood_experiences
+  Neglect: *potentially_traumatic_adverse_childhood_experiences
+  Emotional Abuse: *potentially_traumatic_adverse_childhood_experiences
+  Medical Trauma: *potentially_traumatic_adverse_childhood_experiences
+  Natural or Manmade Disaster: *potentially_traumatic_adverse_childhood_experiences
+  Witness to Family Violence: *potentially_traumatic_adverse_childhood_experiences
+  Witness to Community/School Violence: *potentially_traumatic_adverse_childhood_experiences
+  Witness/Victim of Criminal Activity: *potentially_traumatic_adverse_childhood_experiences
+  War/Terrorism Affected: *potentially_traumatic_adverse_childhood_experiences
+  Discruption in Caregiving/Attachment: *potentially_traumatic_adverse_childhood_experiences
+  Intrusions/Re-experiencing: &traumatic_stress_symptoms
+    TRAUMATIC STRESS SYMPTOMS
+  Emotional and/or Physical Dysregulation: *traumatic_stress_symptoms
+  Traumatic Grief: *traumatic_stress_symptoms
+  Hyperarousal: *traumatic_stress_symptoms
+  Avoidance: *traumatic_stress_symptoms
+  Numbing: *traumatic_stress_symptoms
+  Dissociation: *traumatic_stress_symptoms
+  Time Before Treatment: *traumatic_stress_symptoms
+  Supervision (Caregiver needs): &caregiver_needs_resources
+    CAREGIVER NEEDS/RESOURCES
+  Involvement with Care (Caregiver needs): *caregiver_needs_resources
+  Knowledge (Caregiver needs): *caregiver_needs_resources
+  Organisation (Caregiver needs): *caregiver_needs_resources
+  Social Resources (Caregiver needs): *caregiver_needs_resources
+  Residential Stability (Caregiver needs): *caregiver_needs_resources
+  Medical/Physical (Caregiver needs): *caregiver_needs_resources
+  Mental Health (Caregiver needs): *caregiver_needs_resources
+  Substance Use (Caregiver needs): *caregiver_needs_resources
+  Developmental (Caregiver needs): *caregiver_needs_resources
+  Safety (Caregiver needs): *caregiver_needs_resources
+  Family Stress (Caregiver needs): *caregiver_needs_resources
+  Post-traumatic Reactions (Caregiver needs): *caregiver_needs_resources
+  Marital/Partner Violence in Home (Caregiver needs): *caregiver_needs_resources
+  Family Relationship to the System (Caregiver needs): *caregiver_needs_resources
+  Legal Involvement (Caregiver needs): *caregiver_needs_resources
+  Interpersonal Problems: &transition_age_needs
+    TRANSITION AGE NEEDS (16+)
+  Independent Living Skills: *transition_age_needs
+  Young Carer/Parenting Roles*: *transition_age_needs
+  Knowledge of Needs (Young Carer/Parenting Roles*): *transition_age_needs
+  Supervision (Young Carer/Parenting Roles*): *transition_age_needs
+  Involvement with Care (Young Carer/Parenting Roles*): *transition_age_needs
+  Organisation (Young Carer/Parenting Roles*): *transition_age_needs
+  Marital/Partner Violence in the Home (Young Carer/Parenting Roles*): *transition_age_needs
+  Job Functioning*: *transition_age_needs
+  Career Aspirations (Job Functioning*): *transition_age_needs
+  Aspirational Congruence (Job Functioning*): *transition_age_needs
+  Job Market Expectations (Job Functioning*): *transition_age_needs
+  Work Ethic (Job Functioning*): *transition_age_needs
+  Work History (Job Functioning*): *transition_age_needs
+  Time Since Last Job (Job Functioning*): *transition_age_needs
+  Job Turnover (Job Functioning*): *transition_age_needs
+  Job Attendance (Job Functioning*): *transition_age_needs
+  Job Performance (Job Functioning*): *transition_age_needs
+  Job Relations (Job Functioning*): *transition_age_needs
+  Job Enjoyment (Job Functioning*): *transition_age_needs
+  Customer Orientation (Job Functioning*): *transition_age_needs
+  Routine (Job Functioning*): *transition_age_needs
+  Skills Relevant to Aspirations (Job Functioning*): *transition_age_needs
+  Digital Literacy (Job Functioning*): *transition_age_needs
+  Financial Literacy (Job Functioning*): *transition_age_needs
+  CV/Cover Letter (Job Functioning*): *transition_age_needs
+  Interview Clothes (Job Functioning*): *transition_age_needs
+  Self-Care: *transition_age_needs
+  Medication Adherence: *transition_age_needs
+  Intimate Relationships: *transition_age_needs
+  Transportation: *transition_age_needs
+'0_5':
+  Impulsivity/Hyperactivity (3yrs+): &early_childhood_challenges
+    EARLY CHILDHOOD (0-5) CHALLENGES
+  Depression: *early_childhood_challenges
+  Anxiety: *early_childhood_challenges
+  Oppositional (3yrs+): *early_childhood_challenges
+  Attachment Difficulties: *early_childhood_challenges
+  Adjustment to Trauma: *early_childhood_challenges
+  'Regulatory: Body/Emotion': *early_childhood_challenges
+  Atypical Behaviours: *early_childhood_challenges
+  Sleep (12mo+): *early_childhood_challenges
+  Family Functioning: *early_childhood_challenges
+  Early Education: *early_childhood_challenges
+  Social Emotional Functioning: *early_childhood_challenges
+  Development/Intellectual: *early_childhood_challenges
+  Medical/Physical: *early_childhood_challenges
+  Self-Injury (12mo+): *early_childhood_challenges
+  Prenatal Care: *early_childhood_challenges
+  Exposure: *early_childhood_challenges
+  Labour & Delivery: *early_childhood_challenges
+  Birth Weight: *early_childhood_challenges
+  Failure to Thrive: *early_childhood_challenges
+  Family Strengths: &strengths
+    (0-5) STRENGTHS
+  Interpersonal: *strengths
+  Natural Supports: *strengths
+  Resiliency (Persistence and Adaptability): *strengths
+  Relationship Permanence: *strengths
+  Playfulness: *strengths
+  Language: *cultural_factors
+  Traditions & Rituals: *cultural_factors
+  Cultural Stress: *cultural_factors
+  Cultural Differences within the Family: *cultural_factors
+  Sexual Abuse*: *potentially_traumatic_adverse_childhood_experiences
+  Emotional Closeness to Perpetrator (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Frequency of Abuse (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Duration (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Force (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Reaction to Disclosure (Sexual Abuse*): *potentially_traumatic_adverse_childhood_experiences
+  Physical Abuse: *potentially_traumatic_adverse_childhood_experiences
+  Neglect: *potentially_traumatic_adverse_childhood_experiences
+  Emotional Abuse: *potentially_traumatic_adverse_childhood_experiences
+  Medical Trauma: *potentially_traumatic_adverse_childhood_experiences
+  Natural or Manmade Disaster: *potentially_traumatic_adverse_childhood_experiences
+  Witness to Family Violence: *potentially_traumatic_adverse_childhood_experiences
+  Witness to Community/School Violence: *potentially_traumatic_adverse_childhood_experiences
+  Witness/Victim of Criminal Activity: *potentially_traumatic_adverse_childhood_experiences
+  War/Terrorism Affected: *potentially_traumatic_adverse_childhood_experiences
+  Disruption in Caregiving/Attachment: *potentially_traumatic_adverse_childhood_experiences
+  Intrusions/Re-experiencing: *traumatic_stress_symptoms
+  Emotional and/or Physical Dysregulation: *traumatic_stress_symptoms
+  Traumatic Grief: *traumatic_stress_symptoms
+  Hyperarousal: *traumatic_stress_symptoms
+  Avoidance: *traumatic_stress_symptoms
+  Numbing: *traumatic_stress_symptoms
+  Dissociation: *traumatic_stress_symptoms
+  Time Before Treatment: *traumatic_stress_symptoms
+  Supervision (Caregiver needs): &caregiver_needs
+    CAREGIVER NEEDS/RESOURCES (Foster carers do not need to rate this domain)
+  Involvement with Care (Caregiver needs): *caregiver_needs
+  Knowledge (Caregiver needs): *caregiver_needs
+  Organisation (Caregiver needs): *caregiver_needs
+  Social Resources (Caregiver needs): *caregiver_needs
+  Residential Stability (Caregiver needs): *caregiver_needs
+  Medical/Physical (Caregiver needs): *caregiver_needs
+  Mental Health (Caregiver needs): *caregiver_needs
+  Substance Use (Caregiver needs): *caregiver_needs
+  Developmental (Caregiver needs): *caregiver_needs
+  Safety (Caregiver needs): *caregiver_needs
+  Family Stress (Caregiver needs): *caregiver_needs
+  Post-traumatic Reactions (Caregiver needs): *caregiver_needs
+  Marital/Partner Violence in Home (Caregiver needs): *caregiver_needs
+  Family Relationship to the System (Caregiver needs): *caregiver_needs
+  Legal Involvement (Caregiver needs): *caregiver_needs
