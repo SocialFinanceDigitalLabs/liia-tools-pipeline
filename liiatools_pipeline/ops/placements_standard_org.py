@@ -3,7 +3,6 @@ import re
 import pandas as pd
 from dagster import In, Out, get_dagster_logger, op
 from decouple import config as env_config
-from fs import errors
 from fs.base import FS
 from ruamel.yaml import YAML
 
@@ -15,11 +14,10 @@ from liiatools.placements_standard_pipeline.placements_standard_dataset_join imp
     join_episodes_data,
 )
 from liiatools_pipeline.assets.common import (
-    pipeline_config,
     shared_folder,
     workspace_folder,
 )
-from liiatools_pipeline.ops.common_config import CleanConfig
+from liiatools_pipeline.ops.common_config import CdmConfig
 from liiatools_pipeline.util.utility import opendir_location
 
 yaml = YAML()
@@ -32,7 +30,7 @@ log = get_dagster_logger()
         "session_folder": Out(FS),
     }
 )
-def create_placements_standard_session_folder() -> FS:
+def create_cdm_placements_standard_session_folder(config: CdmConfig) -> FS:
     session_folder, session_id = pl.create_session_folder(
         workspace_folder(), SessionNamesPanPlacementsStandardJoins
     )
@@ -44,27 +42,20 @@ def create_placements_standard_session_folder() -> FS:
 
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
 
-    clean_config = CleanConfig(
-                    dataset_folder=None,
-                    la_folder=None,
-                    input_la_code=None,
-                    dataset="placements_standard",
-                )
-    output_config = pipeline_config(clean_config)
-    current_folder = opendir_location(workspace_folder(), f"current/placements_standard/{output_config.input_schema_version}")
+    if "placements_standard" in config.datasets:
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/CDM")
+        pl.move_files_for_sharing(
+            placements_standard_reports_folder,
+            session_folder,
+        )
 
-    pl.move_files_for_sharing(
-        current_folder,
-        session_folder,
-    )
-
-    if "ssda903" in allowed_datasets:
-            ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/PAN")
-            pl.move_files_for_sharing(
-                ssda903_reports_folder,
-                session_folder,
-                required_table_id=["episodes"],
-                )
+    if "ssda903" in allowed_datasets and "ssda903" in config.datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["episodes"],
+            )
 
     return session_folder
 
@@ -74,8 +65,9 @@ def create_placements_standard_session_folder() -> FS:
         "session_folder": In(FS),
     },
 )
-def joins_pan_placements_standard(
+def joins_cdm_placements_standard(
     session_folder: FS,
+    config: CdmConfig
 ):
     log.info("Checking necessary files are present...")
     allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
@@ -88,9 +80,13 @@ def joins_pan_placements_standard(
 
     files = session_folder.listdir("/")
 
-    log.info("Removing existing PAN_PLACEMENTS_STANDARD file from the shared folder before processing a new one")
-    existing_pan_placements_standard_files = shared_folder().listdir("/")
-    pl.remove_files("PAN_PLACEMENTS_STANDARD", existing_pan_placements_standard_files, shared_folder())
+    log.info("Removing existing CDM_PLACEMENTS_STANDARD file from the shared folder before processing a new one")
+    existing_cdm_placements_standard_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_PLACEMENTS_STANDARD", existing_cdm_placements_standard_files, shared_folder())
+
+    if "placements_standard" not in config.datasets:
+        log.error("Placements Standard dataset not included in CDM config")
+        return
 
     placements_standard_file = next((f for f in files if placements_standard_pattern.search(f)), None)
     if not placements_standard_file:
@@ -113,7 +109,7 @@ def joins_pan_placements_standard(
     unmatched_rows = pd.DataFrame(columns=["Row Number", "Dataset", "Year", "Month", "LA", "Matching Criteria"])
 
     # Check and process SSDA903 episodes file type
-    if "ssda903" in allowed_datasets:
+    if "ssda903" in allowed_datasets and "ssda903" in config.datasets:
         if any(episodes_pattern.search(f) for f in files):
             log.info("Joining SSDA903 episodes data with placements standard data")
             episodes_file = next(f for f in files if episodes_pattern.search(f))
@@ -129,8 +125,8 @@ def joins_pan_placements_standard(
     # Export header file
     placements_standard_dc = DataContainer(
         {
-            "PAN_PLACEMENTS_STANDARD": placements_standard,
-            "PAN_PLACEMENTS_STANDARD_MATCHING_REPORT": unmatched_rows
+            "CDM_PLACEMENTS_STANDARD": placements_standard,
+            "CDM_PLACEMENTS_STANDARD_MATCHING_REPORT": unmatched_rows
          }
     )
     log.info("Writing joined placements standard output to shared folder")

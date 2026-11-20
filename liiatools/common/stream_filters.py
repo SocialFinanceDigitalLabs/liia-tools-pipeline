@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import tablib
 import xmlschema
-from xlsxwriter.utility import xl_col_to_name
 from sfdata_stream_parser import collectors, events
 from sfdata_stream_parser.checks import type_check
 from sfdata_stream_parser.filters.generic import (
@@ -18,14 +17,15 @@ from sfdata_stream_parser.filters.generic import (
     streamfilter,
 )
 from tablib import UnsupportedFormat, import_book, import_set
+from xlsxwriter.utility import xl_col_to_name
 
 from liiatools.common.converters import (
     to_category,
     to_date,
-    to_time,
     to_numeric,
     to_postcode,
     to_regex,
+    to_time,
 )
 from liiatools.common.data import FileLocator, PipelineConfig
 from liiatools.common.stream_errors import EventErrors, StreamError
@@ -96,6 +96,10 @@ def _tablib_dataset_to_stream(dataset: tablib.Dataset, **kwargs):
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.headers, sheetname=dataset.title)
     for r_ix, row in enumerate(dataset):
+        # Skip row if every cell is blank
+        if all(cell is None or str(cell).strip() == "" for cell in row):
+            continue
+
         yield events.StartRow()
         for c_ix, cell in enumerate(row):
             yield events.Cell(
@@ -114,6 +118,10 @@ def pandas_dataframe_to_stream(dataset: pd.DataFrame, **kwargs):
     yield events.StartContainer(**params)
     yield events.StartTable(headers=dataset.columns.tolist())
     for r_ix, row in enumerate(dataset.itertuples(index=False)):
+        # Skip row if every cell is blank
+        if all(pd.isna(cell) or str(cell).strip() == "" for cell in row):
+            continue
+
         yield events.StartRow()
         for c_ix, cell in enumerate(row[0:]):
             if isinstance(cell, float):
@@ -230,6 +238,7 @@ def add_table_name_from_headers(event, schema: DataSchema):
                 type="BlankHeaders",
                 message=f"Could not identify headers as first row is blank",
             )
+
         try:
             table_name = schema.get_table_from_headers(event.headers)
         except ValueError as e:
@@ -244,6 +253,7 @@ def add_table_name_from_headers(event, schema: DataSchema):
         return event.from_event(
             event, table_name=table_name, table_spec=schema.column_map[table_name]
         )
+
     else:
         sheetname = getattr(event, "sheetname", None)
         message = (

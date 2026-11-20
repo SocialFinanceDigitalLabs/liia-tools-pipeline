@@ -137,7 +137,7 @@ def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> t
     Merges data from the latest 903 episodes for each child onto the 903 header dataframe
     Returns 903 header dataframe and a dataframe of unmatched episodes rows
     """
-    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"], dayfirst=True)
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"])
 
     # Keep only the latest episode for each child
     latest_episodes = (
@@ -199,8 +199,14 @@ def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.Da
     """
     unmatched_oc2 = _get_unmatched_rows(oc2, header, "CHILD", "CHILD", "ssda903_oc2", "ssda903_header")
 
+    # Keep only the latest oc2 for each child
+    latest_oc2 = (
+        oc2.sort_values(["CHILD", "YEAR"], ascending=[True, False])
+        .drop_duplicates(subset="CHILD", keep="first")
+    )
+
     header_merged = header.merge(
-        oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
+        latest_oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
     )
 
     # Row number in header should not have changed
@@ -218,10 +224,11 @@ def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> tuple[pd.Da
     return header_merged, unmatched_oc2
 
 
-def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> tuple[pd.DataFrame, pd.DataFrame]:
+def join_latest_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
     """
-    Merges data from pnw census dataframe onto 903 episodes dataframe
-    Returns 903 episodes dataframe and a dataframe of unmatched pnw census rows
+    Merges data from pnw census dataframe onto 903 episodes dataframe.
+    Joins only the latest PNW record (snapshot_date) that occurs between DEC and DECOM.
+    Returns 903 episodes dataframe
     """
     # Join pnw_census onto episodes, keeping all children in episodes
     pnw_census_merged = episodes.merge(
@@ -235,6 +242,59 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
     pnw_census_merged = _filter_to_open_on_snapshot_date(
         pnw_census_merged, "DEC", "snapshot_date", "DECOM"
     )
+
+    # Make sure dates are datetime
+    pnw_census_merged[["DECOM", "snapshot_date"]] = pnw_census_merged[["DECOM", "snapshot_date"]].apply(lambda x: pd.to_datetime(x).dt.date)
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x).dt.date)
+
+    # Keep only the latest snapshot_date per episode to remove one-to-many joins
+    pnw_census_merged = pnw_census_merged.sort_values("snapshot_date").drop_duplicates(
+        subset=["CHILD", "DECOM"], keep="last"
+    )
+
+    # Merge the filtered PNW census data back onto the episodes dataframe
+    episodes_merged = episodes.merge(
+        pnw_census_merged[["CHILD", "DECOM"] + pnw_join_columns],
+        on=["CHILD", "DECOM"],
+        how="left"
+    )
+
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with PNW Census results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = pnw_census_merged["snapshot_date"].count()
+    log.info(f"{joins} joins made from PNW Census file")
+
+    return episodes_merged, unmatched_pnw
+
+
+def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
+    """
+    Merges data from pnw census dataframe onto 903 episodes dataframe.
+    Returns 903 episodes dataframe
+    """
+    # Join pnw_census onto episodes, keeping all children in episodes
+    pnw_census_merged = episodes.merge(
+        pnw_census[["Identifier", "snapshot_date"] + pnw_join_columns],
+        left_on="CHILD",
+        right_on="Identifier",
+        how="left",
+    )
+
+    # Filter to only keep episodes open on day of snapshot
+    pnw_census_merged = _filter_to_open_on_snapshot_date(
+        pnw_census_merged, "DEC", "snapshot_date", "DECOM"
+    )
+
+    # Make sure dates are datetime
+    pnw_census_merged["DECOM"] = pd.to_datetime(pnw_census_merged["DECOM"]).dt.date
+    episodes[["DECOM", "DEC"]] = episodes[["DECOM", "DEC"]].apply(lambda x: pd.to_datetime(x).dt.date)
 
     unmatched_pnw = _get_unmatched_rows(
         pnw_census,
@@ -252,8 +312,8 @@ def join_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_col
 
     # Merge the filtered PNW census data back onto the episodes dataframe
     episodes_merged = episodes.merge(
-        pnw_census_merged[["CHILD", "EPISODE_ID"] + pnw_join_columns],
-        on=["CHILD", "EPISODE_ID"],
+        pnw_census_merged[["CHILD", "DECOM"] + pnw_join_columns],
+        on=["CHILD", "DECOM"],
         how="left"
     )
 
@@ -269,6 +329,10 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     Merges data from placements standard dataframe onto 903 episodes dataframe
     Returns 903 episodes dataframe and a dataframe of unmatched placements standard rows
     """
+    # Make sure dates are datetime
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"]).dt.date
+
     unmatched_placements_standard = _get_unmatched_rows(
         placements_standard, episodes, ["child_ID", "placement_start_date"], ["CHILD", "DECOM"], "placements_standard", "ssda903_episodes"
     )
@@ -306,7 +370,7 @@ def join_latest_cans_data(
     Returns 903 header dataframe and a dataframe of unmatched cans rows
     """
     # Make sure dates are datetime
-    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"], dayfirst=True).dt.date
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"]).dt.date
 
     # Keep only the latest CANS assessment for each child
     latest_cans = (
@@ -347,7 +411,7 @@ def join_latest_placements_standard_data(
     Returns 903 header dataframe and a dataframe of unmatched placements standard rows
     """
     # Make sure dates are datetime
-    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"], dayfirst=True).dt.date
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
 
     # Keep only the latest Placements Standard assessment for each child
     latest_placements_standard = (
