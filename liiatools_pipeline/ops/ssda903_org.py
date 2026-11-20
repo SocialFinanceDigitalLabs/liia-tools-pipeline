@@ -1,7 +1,8 @@
-from dagster import In, Out, op, get_dagster_logger
-from fs.base import FS
-from fs import errors
 import re
+
+from dagster import In, Out, get_dagster_logger, op
+from fs import errors
+from fs.base import FS
 
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import SessionNamesSufficiency
@@ -18,6 +19,7 @@ from liiatools_pipeline.assets.common import shared_folder, workspace_folder
 from liiatools_pipeline.assets.external_dataset import external_data_folder
 
 log = get_dagster_logger()
+
 
 @op(
     out={
@@ -51,6 +53,22 @@ def create_sufficiency_session_folder() -> FS:
 def create_dim_fact_tables(
     session_folder: FS,
 ):
+    log.info("Removing previous Sufficiency outputs...")
+
+    # Shared Sufficiency output
+    output_folder = shared_folder()
+    existing_shared_files = output_folder.listdir("/")
+
+    pl.remove_files("dim", existing_shared_files, output_folder)
+    pl.remove_files("fact", existing_shared_files, output_folder)
+
+    # Workspace Sufficiency output
+    reports_folder = workspace_folder().opendir("current/ssda903/SUFFICIENCY")
+    existing_report_files = reports_folder.listdir("/")
+
+    pl.remove_files("dim", existing_report_files, reports_folder)
+    pl.remove_files("fact", existing_report_files, reports_folder)
+
     # Check that the files necessary for the job are in the folder
     log.info("Checking required input files are all present")
     episodes = re.compile(r"episodes")
@@ -66,7 +84,9 @@ def create_dim_fact_tables(
 
     # Run the data transformation if all necessary files are present
     if all_files_present:
-        log.info("All 903 input files present in session folder; proceeding to data transformation")
+        log.info(
+            "All 903 input files present in session folder; proceeding to data transformation"
+        )
         ext_folder = external_data_folder()
         output_folder = shared_folder()
 
@@ -81,7 +101,7 @@ def create_dim_fact_tables(
             log.error(f"No ONS_Area file to open: {err}")
             log.info("Exiting run as external dataset resources not available")
             return
-        
+
         # Transform ONSArea table
         ONSArea = ons_transform(ONSArea)
         log.info("Creating dimONSArea table")
@@ -95,7 +115,7 @@ def create_dim_fact_tables(
             log.error(f"No ONSPD postcode file to open: {err}")
             log.info("Exiting run as external dataset resources not available")
             return
-                    
+
         # Transform Postcode table
         Postcode = postcode_transform(Postcode)
         log.info("Creating dimPostcode table")
@@ -103,11 +123,13 @@ def create_dim_fact_tables(
 
         # Create dimOfstedProvider and factOfstedInspection tables
         # Open and transform files
-        OfstedProvider, factOfstedInspection = ofsted_transform(ext_folder, ONSArea, log)
+        OfstedProvider, factOfstedInspection = ofsted_transform(
+            ext_folder, ONSArea, log
+        )
         if OfstedProvider is None and factOfstedInspection is None:
             log.info("Terminating process")
             return
-        
+
         log.info("Creating dimOfstedProvider table")
         dim_tables["dimOfstedProvider"] = OfstedProvider
         log.info("Creating factOfstedInspection table")
