@@ -8,6 +8,10 @@ def join_episodes_data(episodes: pd.DataFrame, placements_standard: pd.DataFrame
     Merges data from 903 episodes dataframe onto placements standard dataframe
     Returns placements standard dataframe
     """
+    # Make sure dates are datetime
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"]).dt.date
+
     placements_standard_merged = placements_standard.merge(
         episodes[["CHILD", "DECOM", "EPISODE_ID"]],
         left_on=["child_ID", "placement_start_date"],

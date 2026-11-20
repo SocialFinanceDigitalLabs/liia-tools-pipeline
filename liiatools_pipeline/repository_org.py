@@ -16,7 +16,7 @@ from liiatools_pipeline.jobs.common_org import (
 )
 from liiatools_pipeline.jobs.external_dataset import external_incoming
 from liiatools_pipeline.jobs.placements_standard_org import (
-    pan_placements_standard_joins,
+    cdm_placements_standard_joins,
 )
 from liiatools_pipeline.jobs.pnw_census_org import (
     pnw_census_joins,
@@ -38,13 +38,13 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     cdm_cans_joins_sensor,
     cdm_child_joins_sensor,
     cdm_commissioning_joins_sensor,
+    cdm_placements_standard_joins_sensor,
     cdm_sufficiency_joins_sensor,
     cin_reports_sensor,
     deduplicate_annex_a_sensor,
     move_concat_sensor,
     move_current_org_sensor,
     move_error_reports_sensor,
-    pan_placements_standard_joins_sensor,
     pnw_census_joins_sensor,
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
@@ -82,7 +82,7 @@ def sync():
         school_census_cross,
         school_census_region,
         cans_summary_columns,
-        pan_placements_standard_joins,
+        cdm_placements_standard_joins,
         cdm_cans_joins,
         transform_cdm_cans_data,
     ]
@@ -102,7 +102,7 @@ def sync():
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
-        pan_placements_standard_joins_sensor,
+        cdm_placements_standard_joins_sensor,
         transform_cdm_cans_data_sensor,
         cdm_cans_joins_sensor,
         cdm_child_joins_sensor,

@@ -30,7 +30,7 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.placements_standard_org import (
-    pan_placements_standard_joins,
+    cdm_placements_standard_joins,
 )
 from liiatools_pipeline.jobs.pnw_census_org import (
     pnw_census_joins,
@@ -887,12 +887,12 @@ def cdm_cans_joins_sensor(context):
 
 
 @sensor(
-    job=pan_placements_standard_joins,
-    description="Runs pan_placements_standard_joins job once reports job is complete",
+    job=cdm_placements_standard_joins,
+    description="Runs cdm_placements_standard_joins job once reports job is complete",
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
-def pan_placements_standard_joins_sensor(context):
+def cdm_placements_standard_joins_sensor(context):
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
@@ -913,10 +913,19 @@ def pan_placements_standard_joins_sensor(context):
         run_records,
         "ssda903",
     )
+
+    cdm_config = _create_cdm_config(["ssda903", "placements_standard"], "cdm_placements_standard_joins_sensor")
+
     # Ensure there is at least one of each record
     if latest_run_id_placements_standard and latest_run_id_ssda903:
         run_key = f"{latest_run_id_placements_standard}_{latest_run_id_ssda903}"
         context.log.info(f"Run key: {run_key}")
         yield RunRequest(
             run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_placements_standard_session_folder": cdm_config,
+                    "joins_cdm_placements_standard": cdm_config,
+                }
+            ),
         )
