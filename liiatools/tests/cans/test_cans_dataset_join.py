@@ -10,14 +10,14 @@ from liiatools.cans_pipeline.cans_dataset_join import join_episodes_data
 @pytest.mark.parametrize(
     ("assessment_date", "episode_end", "expected_episode_id"),
     [
-        pytest.param("03/04/2024", "06/04/2024", None, id="before-start"),
-        pytest.param("04/04/2024", "06/04/2024", "episode-1", id="on-start"),
-        pytest.param("05/04/2024", "06/04/2024", "episode-1", id="within-episode"),
-        pytest.param("06/04/2024", "06/04/2024", None, id="on-end"),
-        pytest.param("07/04/2024", "06/04/2024", None, id="after-end"),
-        pytest.param("03/04/2024", np.nan, None, id="before-ongoing-episode"),
-        pytest.param("04/04/2024", np.nan, "episode-1", id="on-ongoing-start"),
-        pytest.param("05/04/2025", np.nan, "episode-1", id="within-ongoing-episode"),
+        pytest.param("2024-04-03", "2024-04-06", None, id="before-start"),
+        pytest.param("2024-04-04", "2024-04-06", "episode-1", id="on-start"),
+        pytest.param("2024-04-05", "2024-04-06", "episode-1", id="within-episode"),
+        pytest.param("2024-04-06", "2024-04-06", None, id="on-end"),
+        pytest.param("2024-04-07", "2024-04-06", None, id="after-end"),
+        pytest.param("2024-04-03", np.nan, None, id="before-ongoing-episode"),
+        pytest.param("2024-04-04", np.nan, "episode-1", id="on-ongoing-start"),
+        pytest.param("2025-04-05", np.nan, "episode-1", id="within-ongoing-episode"),
     ],
 )
 def test_join_episodes_data_date_boundaries(assessment_date, episode_end, expected_episode_id):
@@ -25,7 +25,7 @@ def test_join_episodes_data_date_boundaries(assessment_date, episode_end, expect
     episodes = pd.DataFrame(
         {
             "CHILD": ["child-1"],
-            "DECOM": ["04/04/2024"],
+            "DECOM": ["2024-04-04"],
             "DEC": [episode_end],
             "EPISODE_ID": ["episode-1"],
         }
@@ -44,7 +44,7 @@ def test_join_episodes_data():
     cans = pd.DataFrame(
         {
             "Child Unique ID": ["child-1", "unknown-child", "child-1", "child-2", "child-1", "child-1"],
-            "Assessment Date": ["05/04/2024"] * 4 + ["01/03/2024", "05/04/2024"],
+            "Assessment Date": ["2024-04-05"] * 4 + ["2024-03-01", "2024-04-05"],
             "Score": [1, 2, 3, 4, 5, 1],
         },
         index=[10, 20, 30, 40, 50, 60],
@@ -52,8 +52,8 @@ def test_join_episodes_data():
     episodes = pd.DataFrame(
         {
             "CHILD": ["child-1", "child-2", "child-1"],
-            "DECOM": ["04/04/2024", "01/04/2024", "01/01/2024"],
-            "DEC": [np.nan, "06/04/2024", "01/02/2024"],
+            "DECOM": ["2024-04-04", "2024-01-04", "2024-01-01"],
+            "DEC": [np.nan, "2024-04-06", "2024-02-01"],
             "EPISODE_ID": ["1", "2", "3"],
         }
     )
