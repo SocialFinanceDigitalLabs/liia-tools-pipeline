@@ -58,6 +58,43 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
     return episodes_merged
 
 
+def join_dol_data(dol: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from 903 deprivation of liberty order dataframe onto 903 episodes dataframe
+    Determine a deprivation of liberty ["DOL"] status column which is Yes when DOLO_END is either empty or occurs after the submission date
+    i.e the child is considered to be under a deprivation of liberty order at the time of submission
+    Returns 903 episodes dataframe
+    """
+    # Determine a deprivation of liberty ["DOL"] column
+    dol["YEAR_latest"] = dol.groupby("LA")["YEAR"].transform("max")
+    dol["submission_date"] = pd.to_datetime(dol["YEAR_latest"].astype(str) + "-3-31")
+    dol["DOL"] = dol.apply(
+        lambda row: "Yes" if pd.isna(row["DOLO_END"]) or (pd.to_datetime(row["DOLO_END"]) > row["submission_date"]) else "No",
+        axis=1
+    )
+
+    # Keep only the latest DOL record per child to avoid one-to-many joins
+    dol = dol.sort_values("YEAR").drop_duplicates("CHILD", keep="last")
+
+    episodes_merged = episodes.merge(
+        dol[["CHILD", "DOL"]], on="CHILD", how="left"
+    )
+
+    # Row number in episodes should not have changed
+    try:
+        assert len(episodes) == len(episodes_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 deprivation of liberty order results in incorrect row count: {len(episodes_merged)-len(episodes)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = episodes_merged["DOL"].count()
+    log.info(f"{joins} joins made from 903 deprivation of liberty order file")
+
+    return episodes_merged
+
+
 def join_latest_pnw_data(pnw_census: pd.DataFrame, episodes: pd.DataFrame, pnw_join_columns: list) -> pd.DataFrame:
     """
     Merges data from pnw census dataframe onto 903 episodes dataframe.
