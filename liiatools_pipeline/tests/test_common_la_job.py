@@ -26,6 +26,11 @@ def test_start_clean_dataset():
 
 def test_clean_job(monkeypatch):
     monkeypatch.setenv(
+        "WORKSPACE_LOCATION",
+        "mem://workspace",
+    )
+
+    monkeypatch.setenv(
         "HASH_SECRET_KEY",
         "test-secret",
     )
@@ -61,32 +66,38 @@ def test_clean_job(monkeypatch):
     assert result.success
 
 
-def test_move_current_la_job():
+def test_move_current_la_job(monkeypatch):
+    test_fs = MemoryFS()
+
+    test_fs.makedirs("current")
+
+    monkeypatch.setattr(
+        common_la,
+        "workspace_folder",
+        lambda: test_fs,
+    )
+
     result = move_current_la.execute_in_process()
 
     assert result.success
 
 
 def test_concatenate_job(monkeypatch):
-    # Safe filesystems that only exist during the test
     archive_fs = MemoryFS()
     shared_fs = MemoryFS()
 
-    # Replace the filesystem used by open_current().
     monkeypatch.setattr(
         common_la,
         "workspace_folder",
         lambda: archive_fs,
     )
 
-    # Replace the filesystem used by create_concatenated_view().
     monkeypatch.setattr(
         common_la,
         "shared_folder",
         lambda: shared_fs,
     )
 
-    # Prevent the test from using the real pipeline config.
     output_config = MagicMock()
     output_config.table_list = []
 
