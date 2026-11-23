@@ -19,7 +19,6 @@ from liiatools_pipeline.jobs.common_la import (
     no_op_job,
     start_clean_dataset,
 )
-from liiatools_pipeline.jobs.school_census_org import school_census_cross, school_census_region
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
     move_current_org,
@@ -27,6 +26,10 @@ from liiatools_pipeline.jobs.common_org import (
     reports,
 )
 from liiatools_pipeline.jobs.pnw_census_org import pnw_census_joins
+from liiatools_pipeline.jobs.school_census_org import (
+    school_census_cross,
+    school_census_region,
+)
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import ssda903_sufficiency
 from liiatools_pipeline.ops.common_config import CleanConfig
@@ -357,7 +360,7 @@ def deduplicate_annex_a_sensor(context):
 @sensor(
     job=pnw_census_joins,
     description="Runs pnw_census_joins job once reports job is complete",
-    default_status=DefaultSensorStatus.STOPPED,
+    default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def pnw_census_joins_sensor(context):
@@ -434,7 +437,6 @@ def full_clean_sensor(context):
         filters=RunsFilter(
             job_name=start_clean_dataset.name,
             statuses=[DagsterRunStatus.SUCCESS],
-
         ),
         order_by="update_timestamp",
         ascending=False,
@@ -493,6 +495,7 @@ def full_clean_sensor(context):
             ),
         )
 
+
 @sensor(
     job=cans_summary_columns,
     description="Runs cans_summary_columns job once reports job is complete",
@@ -518,7 +521,6 @@ def cans_summary_columns_sensor(context):
         yield RunRequest(
             run_key=latest_run_id,
         )
-
 
 
 @sensor(
@@ -577,4 +579,3 @@ def sc_region_reports_sensor(context):
         yield RunRequest(
             run_key=latest_run_id,
         )
-        
