@@ -25,9 +25,26 @@ def test_start_clean_dataset():
 
 
 def test_clean_job(monkeypatch):
-    monkeypatch.setenv(
-        "WORKSPACE_LOCATION",
-        "mem://workspace",
+    workspace = MemoryFS()
+    shared = MemoryFS()
+    incoming = MemoryFS()
+
+    monkeypatch.setattr(
+        common_la,
+        "workspace_folder",
+        lambda: workspace,
+    )
+
+    monkeypatch.setattr(
+        common_la,
+        "shared_folder",
+        lambda: shared,
+    )
+
+    monkeypatch.setattr(
+        common_la,
+        "open_fs",
+        lambda location: incoming,
     )
 
     monkeypatch.setenv(
@@ -67,35 +84,62 @@ def test_clean_job(monkeypatch):
 
 
 def test_move_current_la_job(monkeypatch):
-    test_fs = MemoryFS()
-
-    test_fs.makedirs("current")
-
-    monkeypatch.setattr(
-        common_la,
-        "workspace_folder",
-        lambda: test_fs,
-    )
-
-    result = move_current_la.execute_in_process()
-
-    assert result.success
-
-
-def test_concatenate_job(monkeypatch):
-    archive_fs = MemoryFS()
-    shared_fs = MemoryFS()
+    workspace = MemoryFS()
+    shared = MemoryFS()
+    current = MemoryFS()
 
     monkeypatch.setattr(
         common_la,
         "workspace_folder",
-        lambda: archive_fs,
+        lambda: workspace,
     )
 
     monkeypatch.setattr(
         common_la,
         "shared_folder",
-        lambda: shared_fs,
+        lambda: shared,
+    )
+
+    monkeypatch.setattr(
+        common_la,
+        "opendir_location",
+        lambda workspace_fs, name: current,
+    )
+
+    move_files = MagicMock()
+
+    monkeypatch.setattr(
+        common_la.pl,
+        "move_files_for_sharing",
+        move_files,
+    )
+
+    result = move_current_la.execute_in_process()
+
+    assert result.success
+    assert shared.exists("current")
+
+    move_files.assert_called_once()
+
+    source, destination = move_files.call_args.args
+
+    assert source is current
+
+
+def test_concatenate_job(monkeypatch):
+    workspace = MemoryFS()
+    shared = MemoryFS()
+
+    monkeypatch.setattr(
+        common_la,
+        "workspace_folder",
+        lambda: workspace,
+    )
+
+    monkeypatch.setattr(
+        common_la,
+        "shared_folder",
+        lambda: shared,
     )
 
     output_config = MagicMock()
@@ -128,5 +172,4 @@ def test_concatenate_job(monkeypatch):
     )
 
     assert result.success
-
-    assert shared_fs.exists("concatenated/ssda903")
+    assert shared.exists("concatenated/ssda903")
