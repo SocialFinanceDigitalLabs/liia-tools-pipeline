@@ -1308,8 +1308,8 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git"
-reference = "HEAD"
-resolved_reference = "7c517848b10bdf49a7b872e1707f676ae17be106"
+reference = "9b12edd3300cdeeecb770d72377bdc63763b6bab"
+resolved_reference = "9b12edd3300cdeeecb770d72377bdc63763b6bab"
 
 [[package]]
 name = "lxml"
@@ -4231,4 +4231,4 @@ s3 = ["fs-s3fs"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13, <3.14"
-content-hash = "fdbd6b5b0c9468306d5ea2ee1dae1be90e4120953eba5b186a16c7eddf9adbe9"
+content-hash = "bae66ab7b76713494d9102a994906af11f7e7f8b0a40942fcdada0c725178599"
