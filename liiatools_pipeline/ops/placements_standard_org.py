@@ -89,20 +89,77 @@ def joins_cdm_placements_standard(
 
     placements_standard_file = next((f for f in files if placements_standard_pattern.search(f)), None)
     if not placements_standard_file:
-        log.error("No placements standard file to open")
-        log.info("Exiting run as placements standard file not available")
+        log.error("No placements standard file to open. Exiting run as placements standard file not available")
         return
 
     # If no Placements Standard or SSDA903 files, terminate process
     if not any(
         any(pattern.search(f) for f in files) for pattern in [episodes_pattern]
-    ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ):
-        log.error("No SSDA903 or Placements Standard files found: terminating process.")
+        log.error("No SSDA903 files found: terminating process.")
         return
 
     # Open the placements standard file
     placements_standard = open_file(session_folder, placements_standard_file)
+    placements_standard_columns = [
+        "child_ID",
+        "when_placement_is_needed_by",
+        "number_of_siblings_to_place_with",
+        "communication_language_learning_needs",
+        "specific_communication_and_language_requirements",
+        "adaptation_to_the_home",
+        "cultural_needs",
+        "who_can_the_child_be_cared_for_alongside",
+        "can_child_live_with_pets",
+        "additional_support",
+        "mental_health_diagnosis",
+        "neurodevelopmental_diagnosis",
+        "open_to_CAMHS",
+        "needs_assessment",
+        "foster_care_suitability",
+        "residential_care_suitability",
+        "supported_accommodation_suitability",
+        "risk_to_child_self_harm",
+        "risk_to_child_criminal_exploitation",
+        "risk_to_child_drug_and_alcohol_use",
+        "risk_to_child_eating_disorder",
+        "risk_to_child_going_missing",
+        "risk_to_child_sexual_exploitation",
+        "risk_to_others_physical_harm",
+        "risk_to_others_sexual_harm",
+        "risk_to_others_fire_setting",
+        "risk_to_others_harm_to_animals",
+        "risk_to_others_criminal_exploitation",
+        "placement_search_foster_total_number",
+        "placement_search_foster_U4",
+        "placement_search_foster_U5",
+        "placement_search_foster_U6",
+        "placement_search_supported_accommodation_total_number",
+        "placement_search_supported_accommodation_solo",
+        "placement_search_supported_accommodation_shared_lac",
+        "placement_search_supported_accommodation_shared_other",
+        "placement_search_supported_accommodation_shared_lodgings",
+        "placement_search_residential_total_number",
+        "placement_search_residential_ebd",
+        "placement_search_residential_mhd",
+        "placement_search_residential_si",
+        "placement_search_residential_alc",
+        "placement_search_residential_drug",
+        "placement_search_residential_ld",
+        "placement_search_residential_pd",
+        "placement_start_date",
+        "total_weekly_cost",
+        "preferability_of_placement_location",
+        "placement_location_non_preferable_reason",
+        "education_continuity",
+        "how_many_siblings_were_placed_together",
+        "placement_type_offers",
+        "placement_sourced",
+        "LA",
+        "Month",
+        "Year"
+    ]
+    placements_standard = placements_standard[placements_standard_columns]
 
     # Check and process SSDA903 episodes file type
     if "ssda903" in allowed_datasets and "ssda903" in config.datasets:
