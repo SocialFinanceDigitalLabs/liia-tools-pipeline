@@ -167,13 +167,13 @@ def transform_cans_data(
             subcategory_cols = [col for col in file_category_mapping if col in data.columns]
 
             vertical_cans = data.melt(
-                id_vars=["Child Unique ID", "Assessment Date", "Month", "Year"],
+                id_vars=["Child Unique ID", "Assessment Date", "LA", "Month", "Year"],
                 value_vars=subcategory_cols,
                 var_name="CANS subcategory",
                 value_name="Score",
             )
             vertical_cans["CANS category"] = vertical_cans["CANS subcategory"].map(file_category_mapping)
-            vertical_cans = vertical_cans[["Child Unique ID", "Assessment Date", "CANS category", "CANS subcategory", "Score", "Month", "Year"]]
+            vertical_cans = vertical_cans[["Child Unique ID", "Assessment Date", "CANS category", "CANS subcategory", "Score", "LA", "Month", "Year"]]
 
             # Replace empty strings with NA and drop rows with NA in the "Score" column
             vertical_cans["Score"] = vertical_cans["Score"].replace(r"^\s*$", pd.NA, regex=True)
