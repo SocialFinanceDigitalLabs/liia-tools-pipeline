@@ -17,6 +17,7 @@ from liiatools.common.constants import (
 )
 from liiatools.common.data import DataContainer
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
+    join_dol_data,
     join_header_data,
     join_latest_cans_data,
     join_latest_episodes_data,
@@ -191,7 +192,7 @@ def create_cdm_sufficiency_join_session_folder(config: CdmConfig) -> FS:
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
-            required_table_id=["episodes", "header", "uasc"],
+            required_table_id=["episodes", "header", "uasc", "deprivation_of_liberty_order"],
             )
 
     if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
@@ -221,6 +222,7 @@ def joins_cdm_sufficiency(
     episodes_pattern = re.compile(r"episodes")
     header_pattern = re.compile(r"header")
     uasc_pattern = re.compile(r"uasc")
+    dol_pattern = re.compile(r"deprivation_of_liberty_order")
 
     # PNW file pattern
     pnw_pattern = re.compile(r"pnw")
@@ -241,13 +243,13 @@ def joins_cdm_sufficiency(
     episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
 
     if episodes_file is None:
-        log.error("No SSDA903 episodes file to open")
-        log.info("Exiting run as SSDA903 episodes file not available")
+        log.error("No SSDA903 episodes file to open. Exiting run as SSDA903 episodes file not available")
         return
 
     ssda903_patterns = [
         header_pattern,
         uasc_pattern,
+        dol_pattern,
     ]
 
     # If no SSDA903, PNW or Placements Standard files, terminate process
@@ -260,6 +262,27 @@ def joins_cdm_sufficiency(
 
     # Open the SSDA903 episodes file
     episodes = open_file(session_folder, episodes_file)
+    episodes_columns = [
+        "EPISODE_ID",
+        "CHILD",
+        "DECOM",
+        "RNE",
+        "LS",
+        "CIN",
+        "PLACE",
+        "PLACE_PROVIDER",
+        "DEC",
+        "REC",
+        "REASON_PLACE_CHANGE",
+        "HOME_POST",
+        "PL_POST",
+        "PL_HOST",
+        "URN",
+        "DISTANCE",
+        "LA",
+        "YEAR"
+        ]
+    episodes = episodes[episodes_columns]
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
     # Check and process each SSDA903 file type
@@ -285,10 +308,28 @@ def joins_cdm_sufficiency(
         for col in empty_uasc_cols:
             episodes[col] = None
 
+    if any(dol_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 deprivation of liberty order data with SSDA903 episodes data")
+        dol_file = next(f for f in files if dol_pattern.search(f))
+        dol = open_file(session_folder, dol_file)
+        episodes = join_dol_data(dol, episodes)
+    else:
+        log.error("No 903 deprivation of liberty order data to join")
+        empty_dol_cols = ["DOL"]
+        for col in empty_dol_cols:
+            episodes[col] = None
+
     if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
-        pnw_join_columns = ["Type of provision", "Primary Registration type", "Month"]
+        pnw_join_columns = [
+            "Type of provision",
+            "Primary Registration type",
+            "Primary Placing at Distance Reason",
+            "Placing at Distance Reason",
+            "Month",
+            "Year"
+            ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        pnw_column_renames = {"Month": "PNW_Month"}
+        pnw_column_renames = {"Month": "PNW_Month", "Year": "PNW_Year"}
         # Check and process the PNW Census file
         if any(pnw_pattern.search(f) for f in files):
             log.info("Joining PNW Census data with SSDA903 episodes data")
@@ -320,6 +361,7 @@ def joins_cdm_sufficiency(
                 "additional_support",
                 "mental_health_diagnosis",
                 "open_to_CAMHS",
+                "neurodevelopmental_diagnosis",
                 "needs_assessment",
                 "foster_care_suitability",
                 "residential_care_suitability",
@@ -358,9 +400,10 @@ def joins_cdm_sufficiency(
                 "education_continuity",
                 "how_many_siblings_were_placed_together",
                 "Month",
+                "Year"
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        placements_standard_column_renames = {"Month": "placements_standard_Month"}
+        placements_standard_column_renames = {"Month": "placements_standard_Month", "Year": "placements_standard_Year"}
         # Check and process the Placement Standard file
         if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placement Standard data with SSDA903 episodes data")
@@ -449,36 +492,48 @@ def joins_cdm_commissioning(
     episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
 
     if episodes_file is None:
-        log.error("No SSDA903 episodes file to open")
-        log.info("Exiting run as SSDA903 episodes file not available")
+        log.error("No SSDA903 episodes file to open. Exiting run as SSDA903 episodes file not available")
         return
 
-    # If no SSDA903, PNW or Placements Standard files, terminate process
+    # If no PNW or Placements Standard files, terminate process
     if not any(
-        any(pattern.search(f) for f in files) for pattern in [episodes_pattern]
-    ) and not any(pattern.search(f) for f in files for pattern in [placements_standard_pattern]
+        pattern.search(f) for f in files for pattern in [placements_standard_pattern]
     ) and not any(pattern.search(f) for f in files for pattern in [pnw_pattern]):
-        log.error("No SSDA903, PNW or Placements Standard files found: terminating process.")
+        log.error("No PNW or Placements Standard files found: terminating process.")
         return
 
     # Open the SSDA903 episodes file
     episodes = open_file(session_folder, episodes_file)
-    episodes_columns = ["CHILD", "EPISODE_ID", "DECOM", "DEC", "PLACE", "PLACE_PROVIDER", "URN", "LA", "YEAR"]
+    episodes_columns = [
+        "EPISODE_ID",
+        "CHILD",
+        "DECOM",
+        "DEC",
+        "PLACE",
+        "PLACE_PROVIDER",
+        "URN",
+        "PL_HOST",
+        "LA",
+        "YEAR"
+        ]
     episodes = episodes[episodes_columns]
     episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
 
     if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
         pnw_join_columns = [
             "Type of provision",
+            "Registration type",
             "Primary Registration type",
+            "Organisation",
             "Does this placement cost include additional packages?",
             "Does this CYP require a solo placement?",
             "Contribution type",
             "Contribution",
             "Month",
+            "Year"
             ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        pnw_column_renames = {"Month": "PNW_Month"}
+        pnw_column_renames = {"Month": "PNW_Month", "Year": "PNW_Year"}
         # Check and process the PNW Census file
         if any(pnw_pattern.search(f) for f in files):
             log.info("Joining PNW Census data with SSDA903 episodes data")
@@ -504,10 +559,11 @@ def joins_cdm_commissioning(
                 "placement_search_residential_total_number",
                 "placement_type_offers",
                 "placement_sourced",
-                "Month"
+                "Month",
+                "Year"
                 ]
         # Applied after the join, and to the blank columns, so output headers match either way
-        placements_standard_column_renames = {"Month": "placements_standard_Month"}
+        placements_standard_column_renames = {"Month": "placements_standard_Month", "Year": "placements_standard_Year"}
         # Check and process the Placement Standard file
         if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placements Standard data with SSDA903 episodes data")
@@ -548,7 +604,7 @@ def create_cdm_child_join_session_folder(config: CdmConfig) -> FS:
         pl.move_files_for_sharing(
             ssda903_reports_folder,
             session_folder,
-            required_table_id=["header", "episodes", "uasc", "oc2"],
+            required_table_id=["header", "episodes", "uasc", "oc2", "deprivation_of_liberty_order"],
             )
 
     if "cans" in allowed_datasets and "cans" in config.datasets:
@@ -579,6 +635,7 @@ def joins_cdm_child(
     episodes_pattern = re.compile(r"episodes")
     uasc_pattern = re.compile(r"uasc")
     oc2_pattern = re.compile(r"oc2")
+    dol_pattern = re.compile(r"deprivation_of_liberty_order")
 
     # CANS file patterns
     child_pattern = re.compile(r"0_5")
@@ -608,6 +665,7 @@ def joins_cdm_child(
         episodes_pattern,
         uasc_pattern,
         oc2_pattern,
+        dol_pattern,
     ]
 
     cans_patterns = [
@@ -663,9 +721,26 @@ def joins_cdm_child(
         for col in empty_oc2_cols:
             header[col] = None
 
+    if any(dol_pattern.search(f) for f in files):
+        log.info("Joining SSDA903 deprivation of liberty order data with SSDA903 header data")
+        dol_file = next(f for f in files if dol_pattern.search(f))
+        dol = open_file(session_folder, dol_file)
+        header = join_dol_data(dol, header)
+    else:
+        log.error("No 903 DOL data to join")
+        empty_dol_cols = ["DOL"]
+        for col in empty_dol_cols:
+            header[col] = None
+
     if "cans" in allowed_datasets and "cans" in config.datasets:
         # Load CANS summary sheet column order, use 6-21 as it has superset of columns
-        cans_join_columns = ["Assessment Date", "Assessment type"] + load_summary_sheet_column_order()["6_21"]
+        cans_join_columns = (
+            ["Assessment Date", "Assessment type"] 
+            + load_summary_sheet_column_order()["6_21"]
+            + ["Month", "Year"]
+            )
+        # Applied after the join, and to the blank columns, so output headers match either way
+        cans_column_renames = {"Month": "cans_Month", "Year": "cans_Year"}
         # Check and process CANS files
         if any(pattern.search(f) for pattern in cans_patterns for f in files):
             child_cans = None
@@ -684,12 +759,14 @@ def joins_cdm_child(
                 cans_data = pd.concat([child_cans, youth_cans], ignore_index=True)
             else:
                 cans_data = child_cans if child_cans is not None else youth_cans
+
             header = join_latest_cans_data(cans_data, header, cans_join_columns)
+            header = header.rename(columns=cans_column_renames)
 
         else:
             log.error("No CANS data to join")
             for col in cans_join_columns:
-                header[col] = None
+                header[cans_column_renames.get(col, col)] = None
 
     if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
         placements_standard_join_columns = [
@@ -705,8 +782,12 @@ def joins_cdm_child(
                 "risk_to_others_sexual_harm",
                 "risk_to_others_fire_setting",
                 "risk_to_others_harm_to_animals",
-                "risk_to_others_criminal_exploitation"
+                "risk_to_others_criminal_exploitation",
+                "Month",
+                "Year"
                 ]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        placements_standard_column_renames = {"Month": "placements_standard_Month", "Year": "placements_standard_Year"}
         # Check and process the Placements Standard file
         if any(placements_standard_pattern.search(f) for f in files):
             log.info("Joining Placements Standard data with SSDA903 header data")
@@ -714,10 +795,11 @@ def joins_cdm_child(
             placements_standard = open_file(session_folder, placements_standard_file)
 
             header = join_latest_placements_standard_data(placements_standard, header, placements_standard_join_columns)
+            header = header.rename(columns=placements_standard_column_renames)
         else:
             log.error("No Placements Standard data to join")
             for col in placements_standard_join_columns:
-                header[col] = None
+                header[placements_standard_column_renames.get(col, col)] = None
 
     # Export header file
     header_dc = DataContainer({"CDM_CHILD": header})

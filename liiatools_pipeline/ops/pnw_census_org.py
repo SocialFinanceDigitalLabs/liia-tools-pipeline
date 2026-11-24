@@ -274,8 +274,10 @@ def transform_pnw_census_data(
     session_folder: FS,
 ):
     """
-    Transform PNW census data by pivoting it to be vertical instead of horizontal
-    and export enriched files to shared folder
+    Transform PNW census data by pivoting it to be vertical instead of horizontal.
+    Originally PNW census has a column for weekly cost and contributions each, this pivot 
+    creates a contribution type column and a contribution value column.
+    This is a prerequisite step before the CDM_COMMISSIONING output can be created.
     """
     files = session_folder.listdir("/")
     log.info(f"Files in session folder: {files}")
@@ -318,5 +320,5 @@ def transform_pnw_census_data(
         existing_report_files = pnw_census_reports_folder.listdir("/")
         pl.remove_files("TRANSFORMED_pnw_census", existing_report_files, pnw_census_reports_folder)
 
-        log.info(f"Exporting Pan Commissioning PNW census report to workspace folder for {file}")
+        log.info(f"Exporting TRANSFORMED PNW census report to workspace folder for {file}")
         data.export(pnw_census_reports_folder, "", "csv")

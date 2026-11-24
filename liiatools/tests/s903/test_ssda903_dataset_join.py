@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from liiatools.ssda903_pipeline.ssda903_dataset_join import (
+    join_dol_data,
     join_header_data,
     join_latest_cans_data,
     join_latest_episodes_data,
@@ -127,6 +128,28 @@ def test_join_latest_oc2_data():
     assert pd.isna(
         header_merged.loc[header_merged["CHILD"] == "2", "SDQ_SCORE"].iloc[0]
     )
+
+
+def test_join_dol_data():
+    dol_df = pd.DataFrame(
+        {
+            "CHILD": ["1", "2", "2", "3"],
+            "DOLO_END": [None, "2024-12-31", "2023-01-01", "2023-12-31"],
+            "YEAR": [2024, 2024, 2023, 2024],
+            "LA": ["999", "999", "999", "999"],
+        }
+    )
+    episodes_df = pd.DataFrame(
+        {
+            "CHILD": ["1", "2", "3"],
+            "DECOM": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-01"]),
+        }
+    )
+
+    episodes_merged = join_dol_data(dol_df, episodes_df)
+
+    assert len(episodes_merged) == 3
+    assert episodes_merged["DOL"].tolist() == ["Yes", "Yes", "No"]
 
 
 def test_join_latest_pnw_data():
