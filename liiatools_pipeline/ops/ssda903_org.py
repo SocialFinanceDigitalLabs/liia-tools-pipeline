@@ -657,8 +657,7 @@ def joins_cdm_child(
     header_file = next((f for f in files if header_pattern.search(f)), None)
 
     if header_file is None:
-        log.error("No SSDA903 header file to open")
-        log.info("Exiting run as SSDA903 header file not available")
+        log.error("No SSDA903 header file to open. Exiting run as SSDA903 header file not available")
         return
 
     ssda903_patterns = [
