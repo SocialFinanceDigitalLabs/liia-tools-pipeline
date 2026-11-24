@@ -243,3 +243,82 @@ def joins_pnw_census(
     log.info("Writing joined PNW Census output to shared folder")
     output_folder = shared_folder()
     pnw_dc.export(output_folder, "", "csv")
+
+
+@op(
+    out={
+        "session_folder": Out(FS),
+    }
+)
+def create_transform_session_folder() -> FS:
+    log.info("Creating session folder...")
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesPNWCensusJoins
+    )
+
+    log.info("Opening incoming folder...")
+    session_folder = session_folder.opendir(SessionNamesPNWCensusJoins.INCOMING_FOLDER)
+
+    pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/CDM", recreate=True)
+    pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
+
+    return session_folder
+
+
+@op(
+    ins={
+        "session_folder": In(FS),
+    },
+)
+def transform_pnw_census_data(
+    session_folder: FS,
+):
+    """
+    Transform PNW census data by pivoting it to be vertical instead of horizontal.
+    Originally PNW census has a column for weekly cost and contributions each, this pivot 
+    creates a contribution type column and a contribution value column.
+    This is a prerequisite step before the CDM_COMMISSIONING output can be created.
+    """
+    files = session_folder.listdir("/")
+    log.info(f"Files in session folder: {files}")
+
+    for file in files:
+        log.info(f"Transforming PNW census data for {file}")
+        identifier_col = "Identifier"
+
+        data = open_file(session_folder, file)
+
+        try:
+            contribution_cols = [
+                "Total weekly cost",
+                "Contribution from Social Care",
+                "Contribution from Education",
+                "Contribution from Health",
+            ]
+
+            vertical_pnw_census = data.melt(
+                id_vars=[col for col in data.columns if col not in contribution_cols],
+                value_vars=contribution_cols,
+                var_name="Contribution type",
+                value_name="Contribution",
+            )
+
+            # Drop rows where Contribution is missing or blank (NaN or empty/whitespace string)
+            vertical_pnw_census = vertical_pnw_census[
+                vertical_pnw_census["Contribution"].astype(str).str.strip().ne("")
+                & vertical_pnw_census["Contribution"].notna()
+            ]
+
+            vertical_pnw_census = vertical_pnw_census.sort_values(by=[identifier_col, "Placement start date", "Year", "Month"], ascending=False)
+
+        except TypeError as err:
+            log.error(f"Transforming PNW census data failed: {err}")
+
+        data = DataContainer({"TRANSFORMED_pnw_census": vertical_pnw_census})
+
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/TRANSFORMED", recreate=True)
+        existing_report_files = pnw_census_reports_folder.listdir("/")
+        pl.remove_files("TRANSFORMED_pnw_census", existing_report_files, pnw_census_reports_folder)
+
+        log.info(f"Exporting TRANSFORMED PNW census report to workspace folder for {file}")
+        data.export(pnw_census_reports_folder, "", "csv")
