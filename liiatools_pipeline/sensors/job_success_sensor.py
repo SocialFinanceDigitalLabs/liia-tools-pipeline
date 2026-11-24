@@ -671,6 +671,9 @@ def cdm_sufficiency_joins_sensor(context):
     minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
 )
 def transform_pan_pnw_census_data_sensor(context):
+    """
+    Sensor for the transform_pan_pnw_census_data job. Is required to run before the CDM_PAN_COMMISSIONING output can be created.
+    """
     run_records = context.instance.get_run_records(
         filters=RunsFilter(
             job_name=reports.name,
