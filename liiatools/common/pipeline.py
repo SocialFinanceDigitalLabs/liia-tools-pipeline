@@ -131,16 +131,23 @@ def move_files_for_sharing(
                     copy_file(source_fs, file_path, destination_fs, dest_path)
                 else:
                     table_id = re.search(
-                        r"(([a-zA-Z0-9]*)_([a-zA-Z0-9]*))\.", file_path
+                        r"([a-zA-Z0-9_]+?)\.", file_path
                     )
-                    if (
-                        table_id
-                        and table_id.group(3) in required_table_id
-                        or table_id
-                        and table_id.group(1) in required_table_id
-                    ):
-                        dest_path = file_path.split("/")[-1]
-                        copy_file(source_fs, file_path, destination_fs, dest_path)
+                    if table_id:
+                        full_match = table_id.group(1)
+                        parts = full_match.split("_")
+                        
+                        # Try matching from right to left, progressively building longer strings
+                        matched = False
+                        for i in range(len(parts) - 1, -1, -1):
+                            candidate = "_".join(parts[i:])
+                            if candidate in required_table_id:
+                                matched = True
+                                break
+                        
+                        if matched:
+                            dest_path = file_path.split("/")[-1]
+                            copy_file(source_fs, file_path, destination_fs, dest_path)
             except Exception as e:
                 logger.error(f"Error moving file {file_path} to destination folder")
                 if continue_on_error:
