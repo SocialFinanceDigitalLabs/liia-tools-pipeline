@@ -135,8 +135,9 @@ def transform_cans_data(
     session_folder: FS,
 ):
     """
-    Transform CANS data by pivoting it to be vertical instead of horizontal
-    and export enriched files to shared folder
+    Transform CANS data by pivoting it to be vertical instead of horizontal.
+    It then applies the category mapping (getting the CANS category for each subcategory)
+    and the summary sheet mapping to the pivoted data.
     """
     files = session_folder.listdir("/")
     log.info(f"Files in session folder: {files}")
@@ -166,13 +167,13 @@ def transform_cans_data(
             subcategory_cols = [col for col in file_category_mapping if col in data.columns]
 
             vertical_cans = data.melt(
-                id_vars=["Child Unique ID", "Assessment Date"],
+                id_vars=["Child Unique ID", "Assessment Date", "Month", "Year"],
                 value_vars=subcategory_cols,
                 var_name="CANS subcategory",
                 value_name="Score",
             )
             vertical_cans["CANS category"] = vertical_cans["CANS subcategory"].map(file_category_mapping)
-            vertical_cans = vertical_cans[["Child Unique ID", "Assessment Date", "CANS category", "CANS subcategory", "Score"]]
+            vertical_cans = vertical_cans[["Child Unique ID", "Assessment Date", "CANS category", "CANS subcategory", "Score", "Month", "Year"]]
 
             # Replace empty strings with NA and drop rows with NA in the "Score" column
             vertical_cans["Score"] = vertical_cans["Score"].replace(r"^\s*$", pd.NA, regex=True)
@@ -267,15 +268,13 @@ def joins_cdm_cans(
     cans = next((f for f in files if cans_pattern.search(f)), None)
 
     if cans is None:
-        log.error("No CANS file to open")
-        log.info("Exiting run as CANS file not available")
+        log.error("No CANS file to open. Exiting run as CANS file not available")
         return
 
     # If no SSDA903 or CANS terminate process
     if not any(
-        any(pattern.search(f) for f in files) for pattern in [cans_pattern]
-    ) and not any(pattern.search(f) for f in files for pattern in [episodes_pattern]):
-        log.error("No SSDA903 or CANS files found: terminating process.")
+        pattern.search(f) for f in files for pattern in [episodes_pattern]):
+        log.error("No SSDA903 files found: terminating process.")
         return
 
     # Open the CANS files
