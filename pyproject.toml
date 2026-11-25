@@ -38,7 +38,7 @@ dagster-postgres = "^0.28.18"
 alembic = "^1.13.1"
 python-dateutil = "^2.9.0.post0"
 chardet = "^5.2.0"
-liia-tools-pipeline-config = {git = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git", rev = "f5986d965d82e1793e2de0dd65df45051116f4dc"}
+liia-tools-pipeline-config = {git = "https://github.com/SocialFinanceDigitalLabs/liia-tools-pipeline-config.git", rev = "9572b08520ab5950114ec1515c02f5241d370c9f"}
 pre-commit = "^4.2.0"
 pyarrow = ">=21,<24"
 psycopg2-binary = "^2.9.11"
