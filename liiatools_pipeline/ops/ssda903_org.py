@@ -316,6 +316,7 @@ def joins_cdm_sufficiency(
         pnw_join_columns = [
             "Type of provision",
             "Primary Registration type",
+            "Registration type",
             "Primary Placing at Distance Reason",
             "Placing at Distance Reason",
             "Month",
