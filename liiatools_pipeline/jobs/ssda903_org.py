@@ -25,3 +25,10 @@ def cdm_commissioning_joins():
     log.info("Joining additional datasets with SSDA903...")
     session_folder = ssda903.create_cdm_commissioning_join_session_folder()
     ssda903.joins_cdm_commissioning(session_folder)
+
+
+@job
+def cdm_child_joins():
+    log.info("Joining additional datasets with SSDA903...")
+    session_folder = ssda903.create_cdm_child_join_session_folder()
+    ssda903.joins_cdm_child(session_folder)
