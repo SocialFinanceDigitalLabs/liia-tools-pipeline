@@ -9,6 +9,7 @@ from pandas.tseries.offsets import MonthEnd
 
 from liiatools.common import pipeline as pl
 from liiatools.common.constants import (
+    SessionNamesPanCommissioningJoins,
     SessionNamesPanSufficiencyJoins,
     SessionNamesSufficiency,
 )
@@ -18,6 +19,7 @@ from liiatools.ssda903_pipeline.ssda903_dataset_join import (
     join_header_data,
     join_latest_pnw_data,
     join_placements_standard_data,
+    join_pnw_data,
     join_uasc_data,
 )
 from liiatools.ssda903_pipeline.sufficiency_transform import (
@@ -234,8 +236,7 @@ def joins_cdm_sufficiency(
     episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
 
     if episodes_file is None:
-        log.error("No SSDA903 episodes file to open")
-        log.info("Exiting run as SSDA903 episodes file not available")
+        log.error("No SSDA903 episodes file to open. Exiting run as SSDA903 episodes file not available")
         return
 
     ssda903_patterns = [
@@ -412,5 +413,165 @@ def joins_cdm_sufficiency(
 
     # Export Episodes file
     episodes_dc = DataContainer({"CDM_SUFFICIENCY": episodes})
+    log.info("Writing joined episodes output to shared folder")
+    episodes_dc.export(shared_folder(), "", "csv")
+
+
+@op(
+    out={
+        "session_folder": Out(FS),
+    }
+)
+def create_cdm_commissioning_join_session_folder(config: CdmConfig) -> FS:
+    log.info("Creating session folder...")
+    session_folder, session_id = pl.create_session_folder(
+        workspace_folder(), SessionNamesPanCommissioningJoins
+    )
+
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
+    log.info("Opening incoming folder...")
+    session_folder = session_folder.opendir(SessionNamesPanCommissioningJoins.INCOMING_FOLDER)
+
+    if "ssda903" in config.datasets:
+        ssda903_reports_folder = opendir_location(workspace_folder(), "current/ssda903/CDM")
+        pl.move_files_for_sharing(
+            ssda903_reports_folder,
+            session_folder,
+            required_table_id=["episodes"],
+            )
+
+    if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
+        pnw_census_reports_folder = workspace_folder().makedirs("current/pnw_census/TRANSFORMED", recreate=True)
+        pl.move_files_for_sharing(pnw_census_reports_folder, session_folder)
+
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
+        placements_standard_reports_folder = opendir_location(workspace_folder(), "current/placements_standard/CDM")
+        pl.move_files_for_sharing(placements_standard_reports_folder, session_folder)
+
+    return session_folder
+
+
+@op(
+    ins={
+        "session_folder": In(FS),
+    },
+)
+def joins_cdm_commissioning(
+    session_folder: FS,
+    config: CdmConfig
+):
+    log.info("Checking necessary files are present...")
+    allowed_datasets = env_config("ALLOWED_DATASETS").split(",")
+
+    # SSDA903 file patterns
+    episodes_pattern = re.compile(r"episodes")
+
+    # PNW file pattern
+    pnw_pattern = re.compile(r"pnw")
+
+    # Placements standard file patterns
+    placements_standard_pattern = re.compile(r"placements_standard")
+
+    files = session_folder.listdir("/")
+
+    log.info("Removing existing CDM_COMMISSIONING file from the shared folder before processing a new one")
+    existing_cdm_commissioning_files = shared_folder().listdir("/")
+    pl.remove_files("CDM_COMMISSIONING", existing_cdm_commissioning_files, shared_folder())
+
+    if "ssda903" not in config.datasets:
+        log.error("SSDA903 dataset not included in CDM config")
+        return
+
+    episodes_file = next((f for f in files if episodes_pattern.search(f)), None)
+
+    if episodes_file is None:
+        log.error("No SSDA903 episodes file to open. Exiting run as SSDA903 episodes file not available")
+        return
+
+    # If no PNW or Placements Standard files, terminate process
+    if not any(
+        pattern.search(f) for f in files for pattern in [placements_standard_pattern]
+    ) and not any(pattern.search(f) for f in files for pattern in [pnw_pattern]):
+        log.error("No PNW or Placements Standard files found: terminating process.")
+        return
+
+    # Open the SSDA903 episodes file
+    episodes = open_file(session_folder, episodes_file)
+    episodes_columns = [
+        "EPISODE_ID",
+        "CHILD",
+        "DECOM",
+        "DEC",
+        "PLACE",
+        "PLACE_PROVIDER",
+        "URN",
+        "PL_HOST",
+        "LA",
+        "YEAR"
+        ]
+    episodes = episodes[episodes_columns]
+    episodes = episodes.rename(columns={"YEAR": "903_YEAR"})
+
+    if "pnw_census" in allowed_datasets and "pnw_census" in config.datasets:
+        pnw_join_columns = [
+            "Type of provision",
+            "Registration type",
+            "Primary Registration type",
+            "Organisation",
+            "Does this placement cost include additional packages?",
+            "Does this CYP require a solo placement?",
+            "Contribution type",
+            "Contribution",
+            "Month",
+            "Year"
+            ]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        pnw_column_renames = {"Month": "PNW_Month", "Year": "PNW_Year"}
+        # Check and process the PNW Census file
+        if any(pnw_pattern.search(f) for f in files):
+            log.info("Joining PNW Census data with SSDA903 episodes data")
+            pnw_census_file = next(f for f in files if pnw_pattern.search(f))
+            pnw_census = open_file(session_folder, pnw_census_file)
+
+            # Derive 'snapshot' date used in every table join equal to the last day of the snapshot month
+            pnw_census["snapshot_date"] = pd.to_datetime(
+                pnw_census[["Year", "Month"]].assign(day=1)
+            ) + MonthEnd(0)
+
+            episodes = join_pnw_data(pnw_census, episodes, pnw_join_columns)
+            episodes = episodes.rename(columns=pnw_column_renames)
+        else:
+            log.error("No PNW Census data to join")
+            for col in pnw_join_columns:
+                episodes[pnw_column_renames.get(col, col)] = None
+
+    if "placements_standard" in allowed_datasets and "placements_standard" in config.datasets:
+        placements_standard_join_columns = [
+                "placement_search_foster_total_number",
+                "placement_search_supported_accommodation_total_number",
+                "placement_search_residential_total_number",
+                "placement_type_offers",
+                "placement_sourced",
+                "Month",
+                "Year"
+                ]
+        # Applied after the join, and to the blank columns, so output headers match either way
+        placements_standard_column_renames = {"Month": "placements_standard_Month", "Year": "placements_standard_Year"}
+        # Check and process the Placement Standard file
+        if any(placements_standard_pattern.search(f) for f in files):
+            log.info("Joining Placements Standard data with SSDA903 episodes data")
+            placements_standard_file = next(f for f in files if placements_standard_pattern.search(f))
+            placements_standard = open_file(session_folder, placements_standard_file)
+
+            episodes = join_placements_standard_data(placements_standard, episodes, placements_standard_join_columns)
+            episodes = episodes.rename(columns=placements_standard_column_renames)
+        else:
+            log.error("No Placements Standard data to join")
+            for col in placements_standard_join_columns:
+                episodes[placements_standard_column_renames.get(col, col)] = None
+
+    # Export Episodes file
+    episodes_dc = DataContainer({"CDM_COMMISSIONING": episodes})
     log.info("Writing joined episodes output to shared folder")
     episodes_dc.export(shared_folder(), "", "csv")
