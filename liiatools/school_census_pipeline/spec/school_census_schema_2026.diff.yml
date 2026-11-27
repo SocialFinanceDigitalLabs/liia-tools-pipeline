@@ -1,3 +1,91 @@
+autumn:
+  column_map.fsmperiodsonroll.fsmeligibilityverificationdate:
+    type: add
+    description: Add new column for 2026/27 return
+    value:
+      date: "%Y-%b-%d %H:%M:%S"
+      canbeblank: yes
+  column_map.fsmperiodsonroll.fsmcategory:
+    type: add
+    description: Add new column for 2026/27 return
+    value:
+      category:
+        - code: "TFSM"
+        - code: "EFSM"
+        - code: "OFSM"
+      canbeblank: yes
+  column_map.pupilonroll.kinshipcareindicator:
+    type: add
+    description: Add new column for 2026/27 return
+    value:
+      category:
+        - code: "ND"
+        - code: "KF"
+        - code: "KI"
+        - code: "KU"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.reason1:
+    type: modify
+    description: Modifies existing values
+    value:
+      &exclusion-reason
+      category:
+      - code: "PP"
+      - code: "PA"
+      - code: "VP"
+      - code: "VA"
+      - code: "OW"
+      - code: "BW"
+      - code: "BU"
+      - code: "TB"
+      - code: "RA"
+      - code: "LG"
+      - code: "DS"
+      - code: "SM"
+      - code: "SB"
+      - code: "MB"
+      - code: "AB"
+      - code: "DR"
+      - code: "AR"
+      - code: "SR"
+      - code: "VR"
+      - code: "DA"
+      - code: "DM"
+      - code: "TH"
+      - code: "LD"
+      - code: "CB"
+      - code: "DB"
+      - code: "MT"
+      - code: "MP"
+      - code: "OS"
+      - code: "PH"
+      canbeblank: yes
+  column_map.termlyexclusionsoffroll.reason2:
+    type: modify
+    description: Modifies existing values
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsoffroll.reason3:
+    type: modify
+    description: Modifies existing values
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.reason1:
+    type: modify
+    description: Modifies existing values
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.reason2:
+    type: modify
+    description: Modifies existing values
+    value:
+      *exclusion-reason
+  column_map.termlyexclusionsonroll.reason3:
+    type: modify
+    description: Modifies existing values
+    value:
+      *exclusion-reason
+
 spring:
   column_map.learnerfamoffroll.learnerfamtype:
     type: modify
