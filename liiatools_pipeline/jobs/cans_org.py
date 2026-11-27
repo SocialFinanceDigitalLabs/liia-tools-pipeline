@@ -8,6 +8,22 @@ log = get_dagster_logger()
 @job
 def cans_summary_columns():
     log.info("Mapping CANS Summary Sheet Columns")
-    session_folder = cans.create_cans_session_folder()
+    session_folder = cans.create_summary_cans_session_folder()
     cans.cans_summary_sheet_mapping(session_folder)
     log.info("CANS Summary Sheet Columns mapped successfully.")
+
+
+@job
+def transform_cdm_cans_data():
+    log.info("Transforming CANS Data")
+    session_folder = cans.create_transform_cans_session_folder()
+    cans.transform_cans_data(session_folder)
+    log.info("CANS Data transformed successfully.")
+
+
+@job
+def cdm_cans_joins():
+    log.info("Joining CANS Data with SSDA903 episodes Data")
+    session_folder = cans.create_cdm_cans_session_folder()
+    cans.joins_cdm_cans(session_folder)
+    log.info("CANS Data joined successfully.")

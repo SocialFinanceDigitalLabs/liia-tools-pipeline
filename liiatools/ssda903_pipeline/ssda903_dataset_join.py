@@ -58,6 +58,92 @@ def join_uasc_data(uasc: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
     return episodes_merged
 
 
+def join_latest_episodes_data(episodes: pd.DataFrame, header: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from the latest 903 episodes for each child onto the 903 header dataframe
+    Returns 903 header dataframe
+    """
+    episodes["DECOM"] = pd.to_datetime(episodes["DECOM"])
+
+    # Keep only the latest episode for each child
+    latest_episodes = (
+        episodes.sort_values(["CHILD", "DECOM"], ascending=[True, False])
+        .drop_duplicates(subset="CHILD", keep="first")
+    )
+
+    header_merged = header.merge(
+        latest_episodes[["CHILD", "CIN"]], on="CHILD", how="left",
+    )
+
+    # Row number in header should not have changed
+    try:
+        assert len(header) == len(header_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 episodes results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = header_merged["CIN"].count()
+    log.info(f"{joins} joins made from 903 episodes file")
+
+    return header_merged
+
+
+def join_latest_uasc_data(uasc: pd.DataFrame, header: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from the latest 903 UASC dataframe onto 903 header dataframe
+    Returns 903 header dataframe
+    """
+    header_merged = header.merge(
+        uasc[["CHILD", "DUC"]], on="CHILD", how="left"
+    )
+
+    # Row number in header should not have changed
+    try:
+        assert len(header) == len(header_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 uasc results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = header_merged["DUC"].count()
+    log.info(f"{joins} joins made from 903 uasc file")
+
+    return header_merged
+
+
+def join_latest_oc2_data(oc2: pd.DataFrame, header: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges data from the latest 903 oc2 dataframe onto 903 header dataframe
+    Returns 903 header dataframe
+    """
+    # Keep only the latest oc2 for each child
+    latest_oc2 = (
+        oc2.sort_values(["CHILD", "YEAR"], ascending=[True, False])
+        .drop_duplicates(subset="CHILD", keep="first")
+    )
+
+    header_merged = header.merge(
+        latest_oc2[["CHILD", "SDQ_SCORE"]], on="CHILD", how="left"
+    )
+
+    # Row number in header should not have changed
+    try:
+        assert len(header) == len(header_merged)
+    except AssertionError:
+        log.error(
+            f"Join with 903 oc2 results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = header_merged["SDQ_SCORE"].count()
+    log.info(f"{joins} joins made from 903 oc2 file")
+
+    return header_merged
+
+
 def join_dol_data(dol: pd.DataFrame, episodes: pd.DataFrame) -> pd.DataFrame:
     """
     Merges data from 903 deprivation of liberty order dataframe onto 903 episodes dataframe
@@ -213,3 +299,88 @@ def join_placements_standard_data(placements_standard: pd.DataFrame, episodes: p
     episodes_merged = episodes_merged.drop(columns=["child_ID", "placement_start_date"])
 
     return episodes_merged
+
+
+def join_latest_cans_data(
+    cans: pd.DataFrame, header: pd.DataFrame, cans_columns: list
+) -> pd.DataFrame:
+    """
+    Merges data from CANS dataframe onto 903 header dataframe
+    Returns 903 header dataframe
+    """
+    # Make sure dates are datetime
+    cans["Assessment Date"] = pd.to_datetime(cans["Assessment Date"]).dt.date
+
+    # Keep only the latest CANS assessment for each child
+    latest_cans = (
+        cans.sort_values(["Child Unique ID", "Assessment Date"], ascending=[True, False])
+        .drop_duplicates(subset="Child Unique ID", keep="first")
+    )
+
+    # Add any cans_columns missing from this file as blank columns
+    latest_cans = latest_cans.reindex(columns=["Child Unique ID"] + cans_columns)
+
+    # Merge with header
+    header_merged = header.merge(
+        latest_cans[["Child Unique ID"] + cans_columns], left_on="CHILD", right_on="Child Unique ID", how="left"
+    )
+
+    # Row count in header should not have changed
+    try:
+        assert len(header) == len(header_merged)
+    except AssertionError:
+        log.error(
+            f"Join with CANS assessments results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = header_merged[
+        header_merged["Child Unique ID"].notna()
+        & (header_merged["Child Unique ID"] != "")
+    ].shape[0]
+    log.info(f"{joins} joins made from CANS on CHILD")
+
+    header_merged = header_merged.drop(columns="Child Unique ID")
+
+    return header_merged
+
+
+def join_latest_placements_standard_data(
+    placements_standard: pd.DataFrame, header: pd.DataFrame, placements_standard_join_columns: list
+    ) -> pd.DataFrame:
+    """
+    Merges data from placements standard dataframe onto 903 header dataframe
+    Returns 903 header dataframe
+    """
+    # Make sure dates are datetime
+    placements_standard["placement_start_date"] = pd.to_datetime(placements_standard["placement_start_date"]).dt.date
+
+    # Keep only the latest Placements Standard assessment for each child
+    latest_placements_standard = (
+        placements_standard.sort_values(["child_ID", "placement_start_date"], ascending=[True, False])
+        .drop_duplicates(subset="child_ID", keep="first")
+    )
+
+    header_merged = header.merge(
+        latest_placements_standard[["child_ID"] + placements_standard_join_columns],
+        left_on="CHILD",
+        right_on="child_ID",
+        how="left",
+    )
+
+    # Row number in header should not have changed
+    try:
+        assert len(header) == len(header_merged)
+    except AssertionError:
+        log.error(
+            f"Join with Placements Standard results in incorrect row count: {len(header_merged)-len(header)} additional rows."
+        )
+
+    # Log number of joins made
+    joins = header_merged["child_ID"].count()
+    log.info(f"{joins} joins made from Placements Standard file")
+
+    # Drop unnecessary columns
+    header_merged = header_merged.drop(columns=["child_ID"])
+
+    return header_merged

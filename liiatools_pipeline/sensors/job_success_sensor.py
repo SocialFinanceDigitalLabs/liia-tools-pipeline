@@ -10,7 +10,11 @@ from decouple import config as env_config
 
 from liiatools_pipeline.assets.common import pipeline_config
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
-from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cans_org import (
+    cans_summary_columns,
+    cdm_cans_joins,
+    transform_cdm_cans_data,
+)
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_la import (
     clean,
@@ -35,6 +39,7 @@ from liiatools_pipeline.jobs.school_census_org import (
 )
 from liiatools_pipeline.jobs.ssda903_la import ssda903_fix_episodes
 from liiatools_pipeline.jobs.ssda903_org import (
+    cdm_child_joins,
     cdm_commissioning_joins,
     cdm_sufficiency_joins,
     ssda903_sufficiency,
@@ -503,6 +508,7 @@ def full_clean_sensor(context):
             ),
         )
 
+
 @sensor(
     job=cans_summary_columns,
     description="Runs cans_summary_columns job once reports job is complete",
@@ -529,6 +535,32 @@ def cans_summary_columns_sensor(context):
             run_key=latest_run_id,
         )
 
+
+@sensor(
+    job=transform_cdm_cans_data,
+    description="Runs transform_cdm_cans_data job once reports job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def transform_cdm_cans_data_sensor(context):
+    run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "cans"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    if run_records:  # Ensure there is at least one run record
+        context.log.info(f"Run records found for CANS reports job")
+        latest_run_id = run_records[0].dagster_run.run_id  # Get the most recent run id
+        context.log.info(f"Run key: {latest_run_id}")
+        yield RunRequest(
+            run_key=latest_run_id,
+        )
 
 
 @sensor(
@@ -743,6 +775,112 @@ def cdm_commissioning_joins_sensor(context):
                 ops={
                     "create_cdm_commissioning_join_session_folder": cdm_config,
                     "joins_cdm_commissioning": cdm_config,
+                }
+            ),
+        )
+    
+
+@sensor(
+    job=cdm_child_joins,
+    description="Runs cdm_child_joins job once reports job and/or cans_summary_columns job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cdm_child_joins_sensor(context):
+    reports_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": ["ssda903", "placements_standard"]},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    cans_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=cans_summary_columns.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903, placements_standard & cans run ids
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        reports_run_records,
+        "ssda903",
+    )
+    latest_run_id_placements_standard = find_previous_matching_dataset_run(
+        reports_run_records,
+        "placements_standard",
+    )
+    latest_run_id_cans = cans_run_records[0].dagster_run.run_id if cans_run_records else None
+
+    cdm_config = _create_cdm_config(["ssda903", "cans", "placements_standard"], "cdm_child_joins_sensor")
+
+    # Ensure there is at least one of each record
+    if (latest_run_id_cans or latest_run_id_placements_standard) and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_ssda903}_{latest_run_id_cans}_{latest_run_id_placements_standard}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_child_join_session_folder": cdm_config,
+                    "joins_cdm_child": cdm_config,
+                }
+            ),
+        )
+
+
+@sensor(
+    job=cdm_cans_joins,
+    description="Runs cdm_cans_joins job once transform_cdm_cans_data job is complete",
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=int(env_config("SENSOR_MIN_INTERVAL")),
+)
+def cdm_cans_joins_sensor(context):
+    reports_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=reports.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+            tags={"dataset": "ssda903"},
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+    cans_run_records = context.instance.get_run_records(
+        filters=RunsFilter(
+            job_name=transform_cdm_cans_data.name,
+            statuses=[DagsterRunStatus.SUCCESS],
+        ),
+        order_by="update_timestamp",
+        ascending=False,
+        limit=1000,
+    )
+
+    # Get the most recent ssda903 & CANS run ids
+    latest_run_id_cans = cans_run_records[0].dagster_run.run_id if cans_run_records else None
+    latest_run_id_ssda903 = find_previous_matching_dataset_run(
+        reports_run_records,
+        "ssda903",
+    )
+
+    cdm_config = _create_cdm_config(["ssda903", "cans"], "cdm_cans_joins_sensor")
+
+    # Ensure there is at least one of each record
+    if latest_run_id_cans and latest_run_id_ssda903:
+        run_key = f"{latest_run_id_cans}_{latest_run_id_ssda903}"
+        context.log.info(f"Run key: {run_key}")
+        yield RunRequest(
+            run_key=run_key,
+            run_config=RunConfig(
+                ops={
+                    "create_cdm_cans_session_folder": cdm_config,
+                    "joins_cdm_cans": cdm_config,
                 }
             ),
         )

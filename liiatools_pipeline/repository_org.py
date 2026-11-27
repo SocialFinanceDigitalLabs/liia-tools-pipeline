@@ -2,7 +2,11 @@ from dagster import repository
 
 from liiatools.common._fs_serializer import register
 from liiatools_pipeline.jobs.annex_a_org import deduplicate_annex_a
-from liiatools_pipeline.jobs.cans_org import cans_summary_columns
+from liiatools_pipeline.jobs.cans_org import (
+    cans_summary_columns,
+    cdm_cans_joins,
+    transform_cdm_cans_data,
+)
 from liiatools_pipeline.jobs.cin_org import cin_reports
 from liiatools_pipeline.jobs.common_org import (
     move_concat,
@@ -20,6 +24,7 @@ from liiatools_pipeline.jobs.school_census_org import (
     school_census_region,
 )
 from liiatools_pipeline.jobs.ssda903_org import (
+    cdm_child_joins,
     cdm_commissioning_joins,
     cdm_sufficiency_joins,
     ssda903_sufficiency,
@@ -27,6 +32,8 @@ from liiatools_pipeline.jobs.ssda903_org import (
 from liiatools_pipeline.sensors.config_schedule import pipeline_config_schedule
 from liiatools_pipeline.sensors.job_success_sensor import (
     cans_summary_columns_sensor,
+    cdm_cans_joins_sensor,
+    cdm_child_joins_sensor,
     cdm_commissioning_joins_sensor,
     cdm_sufficiency_joins_sensor,
     cin_reports_sensor,
@@ -38,6 +45,7 @@ from liiatools_pipeline.sensors.job_success_sensor import (
     sc_cross_reports_sensor,
     sc_region_reports_sensor,
     sufficiency_sensor,
+    transform_cdm_cans_data_sensor,
     transform_pan_pnw_census_data_sensor,
 )
 from liiatools_pipeline.sensors.location_schedule import reports_schedule
@@ -61,6 +69,7 @@ def sync():
         external_incoming,
         ssda903_sufficiency,
         cdm_sufficiency_joins,
+        cdm_child_joins,
         deduplicate_annex_a,
         pnw_census_joins,
         transform_pan_pnw_census_data,
@@ -69,6 +78,8 @@ def sync():
         school_census_cross,
         school_census_region,
         cans_summary_columns,
+        cdm_cans_joins,
+        transform_cdm_cans_data,
     ]
     schedules = [
         reports_schedule,
@@ -86,6 +97,9 @@ def sync():
         sc_cross_reports_sensor,
         sc_region_reports_sensor,
         cans_summary_columns_sensor,
+        transform_cdm_cans_data_sensor,
+        cdm_cans_joins_sensor,
+        cdm_child_joins_sensor,
         cdm_commissioning_joins_sensor,
         cdm_sufficiency_joins_sensor,
     ]
